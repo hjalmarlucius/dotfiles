@@ -21,7 +21,8 @@ bindsym $mod+n border normal
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font xft:URWGothic-Book 11
+# font xft:URWGothic-Book 11
+font pango:Noto Sans 11
 
 # Use Mouse+$mod to drag floating windows
 floating_modifier $mod
@@ -62,10 +63,11 @@ bindsym Scroll_Lock exec amixer -q sset Master toggle
 bindsym $mod+Ctrl+b exec terminal -e 'bmenu'
 bindsym $mod+F2 exec chromium
 bindsym $mod+F3 exec thunar
-bindsym $mod+Shift+F3 exec ranger
+bindsym $mod+Shift+F3 exec terminal -e 'ranger'
 bindsym $mod+F5 exec terminal -e 'mocp'
-bindsym $mod+t exec --no-startup-id pkill compton
-bindsym $mod+Ctrl+t exec --no-startup-id compton -b
+bindsym $mod++Shift+F5 exec terminal -e 'ncspot'
+bindsym $mod+t exec --no-startup-id pkill picom
+bindsym $mod+Shift+t exec --no-startup-id picom -b
 bindsym $mod+Shift+d --release exec "killall dunst; exec notify-send 'restart dunst'"
 bindsym F12 exec --no-startup-id i3-scrot
 bindsym $mod+F12 --release exec --no-startup-id i3-scrot -w
@@ -269,7 +271,7 @@ bindsym $mod+9 exec --no-startup-id blurlock
 
 # Autostart applications
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-exec --no-startup-id nitrogen --random ~/Wallpapers/; sleep 1; compton -b
+exec --no-startup-id nitrogen --random ~/Wallpapers/; sleep 1; picom -b
 #exec --no-startup-id manjaro-hello
 exec --no-startup-id nm-applet
 exec --no-startup-id xfce4-power-manager
@@ -356,7 +358,7 @@ bindsym $mod+m bar mode toggle
 
 # Theme colors
 # class                   border  backgr. text    indic.   child_border
-  client.focused          #556064 #556064 #80FFF9 #FDF6E3
+  client.focused          #556064 #f9ce5c #000000 #FDF6E3
   client.focused_inactive #2F3D44 #2F3D44 #1ABC9C #454948
   client.unfocused        #2F3D44 #2F3D44 #1ABC9C #454948
   client.urgent           #CB4B16 #FDF6E3 #1ABC9C #268BD2
