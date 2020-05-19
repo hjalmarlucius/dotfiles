@@ -280,7 +280,8 @@ c.ConsoleWidget.include_other_output = True
 
 ## If not empty, use this Pygments style for syntax highlighting. Otherwise, the
 #  style sheet is queried for Pygments style information.
-#c.JupyterWidget.syntax_style = ''
+c.JupyterWidget.syntax_style = 'monokai'
+# monokai, fruity, native, paraiso-dark, rrt, solarized-dark, stata-dark, vim
 
 #------------------------------------------------------------------------------
 # KernelManager(ConnectionFileMixin) configuration

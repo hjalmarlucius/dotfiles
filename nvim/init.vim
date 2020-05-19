@@ -16,7 +16,6 @@ Plug 'junegunn/fzf.vim'
 Plug 'sheerun/vim-polyglot'           " language syntax
 Plug 'godlygeek/tabular'              " help aligning text on tabs
 Plug 'tpope/vim-fugitive'
-Plug 'jupyter-vim/jupyter-vim'
 " markdown
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
 Plug 'plasticboy/vim-markdown'        " markdown helper.
@@ -212,13 +211,13 @@ imap <silent><expr> <TAB>
 imap <expr><S-Tab> pumvisible() ? "\<C-p>" : "\<C-h>"
 imap <silent><expr> <C-space> coc#refresh()
 " coc helpers
-nmap <silent> gP <Plug>(coc-diagnostic-prev)
-nmap <silent> gp <Plug>(coc-diagnostic-next)
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-nmap <silent> gR <Plug>(coc-refactor)
+nmap gP <Plug>(coc-diagnostic-prev)
+nmap gp <Plug>(coc-diagnostic-next)
+nmap gd <Plug>(coc-definition)
+nmap gy <Plug>(coc-type-definition)
+nmap gi <Plug>(coc-implementation)
+nmap gr <Plug>(coc-references)
+nmap gR <Plug>(coc-refactor)
 " coc git
 nmap <leader>gn <Plug>(coc-git-nextchunk)
 nmap <leader>gp <Plug>(coc-git-prevchunk)
@@ -274,21 +273,6 @@ map <leader>t :BuffergatorTabsOpen<cr>
 map <leader>T :BuffergatorTabsClose<cr>
 nmap <leader>j :BuffergatorMruCyclePrev<cr>
 nmap <leader>k :BuffergatorMruCycleNext<cr>
-
-" jupyter-vim
-let g:jupyter_mapkeys = 0
-" Send a selection of lines
-nmap <buffer> <silent> <leader>qR :JupyterRunFile<CR>
-nmap <buffer> <silent> <leader>qQ :JupyterSendCell<CR>
-nmap <buffer> <silent> <leader>qq <Plug>JupyterRunTextObj
-vmap <buffer> <silent> <leader>qq <Plug>JupyterRunVisual
-" nmap <buffer> <silent> <leader>qr :JupyterSendRange<CR>
-" other
-nmap <buffer> <silent> <leader>qc :JupyterConnect<cr>
-nmap <buffer> <silent> <leader>qi :PythonImportThisFile<CR>
-nmap <buffer> <silent> <leader>qu :JupyterUpdateShell<CR>
-nmap <buffer> <silent> <leader>qb :PythonSetBreak<CR>
-nmap <buffer> <silent> <leader>qd :JupyterCd %:p:h<CR>
 
 " -----------------------------------------------------------------------------
 " plugin config
@@ -351,28 +335,13 @@ let g:mkdp_auto_start=0             " auto start on moving into
 let g:mkdp_auto_close=0             " auto close on moving away
 let g:mkdp_open_to_the_world=0      " available to others
 let g:mkdp_open_ip=''               " use custom IP to open preview page
-let g:mkdp_port=''                  " use a custom port to start server or random for empty
-let g:mkdp_browser='google-chrome'  " specify browser to open preview page
-let g:mkdp_markdown_css=''          " use a custom markdown style must be absolute path
-let g:mkdp_highlight_css=''         " use a custom highlight style must absolute path
 let g:mkdp_preview_options={
-    \ 'mkit': {},
-    \ 'katex': {},
-    \ 'uml': {},
-    \ 'maid': {},
     \ 'disable_sync_scroll': 0,
     \ 'sync_scroll_type': 'middle',
     \ 'hide_yaml_meta': 1
     \ }
-" mkit: markdown-it options for render
-" katex: katex options for math
-" uml: markdown-it-plantuml options
-" maid: mermaid options
 " disable_sync_scroll: if disable sync scroll, default 0
-" sync_scroll_type: 'middle', 'top' or 'relative', default value is 'middle'
-"   middle: mean the cursor position alway show at the middle of the preview page
-"   top: mean the vim top viewport alway show at the top of the preview page
-"   relative: mean the cursor position alway show at the relative positon of the preview page
+" sync_scroll_type: 'middle', 'top' or 'relative'
 " hide_yaml_meta: if hide yaml metadata, default is 1
 
 " peekaboo
