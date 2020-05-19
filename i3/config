@@ -8,7 +8,7 @@ set $mod Mod4
 # workspace_layout tabbed <stacking|tabbed>
 
 # Configure border style <normal|1pixel|pixel xx|none|pixel>
-default_border pixel 1
+default_border pixel 3
 default_floating_border normal
 
 # Hide borders
@@ -18,6 +18,11 @@ hide_edge_borders none
 bindsym $mod+u border none
 bindsym $mod+y border pixel 1
 bindsym $mod+n border normal
+
+# configure some stuff
+focus_follows_mouse no
+mouse_warping none
+workspace_auto_back_and_forth no
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
@@ -34,7 +39,10 @@ bindsym $mod+Return exec terminal
 bindsym $mod+Shift+q kill
 
 # start program launcher
-bindsym $mod+d exec --no-startup-id dmenu_recency
+# bindsym $mod+d exec --no-startup-id dmenu_recency
+bindsym $mod+d exec --no-startup-id rofi -show run
+#-lines 10 -eh 2 -width 30 -padding 800
+
 
 # launch categorized menu
 bindsym $mod+z exec --no-startup-id morc_menu
@@ -64,17 +72,13 @@ bindsym $mod+Ctrl+b exec terminal -e 'bmenu'
 bindsym $mod+F2 exec chromium
 bindsym $mod+F3 exec thunar
 bindsym $mod+Shift+F3 exec terminal -e 'ranger'
-bindsym $mod+F5 exec terminal -e 'mocp'
-bindsym $mod++Shift+F5 exec terminal -e 'ncspot'
+bindsym $mod+F4 exec terminal -e 'mocp'
+bindsym $mod++Shift+F4 exec terminal -e 'ncspot'
 bindsym $mod+t exec --no-startup-id pkill picom
 bindsym $mod+Shift+t exec --no-startup-id picom -b
 bindsym $mod+Shift+d --release exec "killall dunst; exec notify-send 'restart dunst'"
-bindsym F12 exec --no-startup-id i3-scrot
-bindsym $mod+F12 --release exec --no-startup-id i3-scrot -w
-bindsym $mod+Shift+F12 --release exec --no-startup-id i3-scrot -s
+bindsym $mod+F12 --release exec --no-startup-id i3-scrot -s
 bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
-
-# focus_follows_mouse no
 
 # change focus
 bindsym $mod+h focus left
@@ -93,9 +97,12 @@ bindsym $mod+Shift+h move left
 bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
 bindsym $mod+Shift+l move right
+bindsym $mod+Shift+left move left
+bindsym $mod+Shift+down move down
+bindsym $mod+Shift+up move up
+bindsym $mod+Shift+right move right
 
 # workspace back and forth (with/without active container)
-workspace_auto_back_and_forth yes
 bindsym $mod+b workspace back_and_forth
 bindsym $mod+Shift+b move container to workspace back_and_forth; workspace back_and_forth
 
@@ -271,24 +278,23 @@ bindsym $mod+9 exec --no-startup-id blurlock
 
 # Autostart applications
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-exec --no-startup-id nitrogen --random ~/Wallpapers/; sleep 1; picom -b
-#exec --no-startup-id manjaro-hello
 exec --no-startup-id nm-applet
+exec --no-startup-id nitrogen --restore
 exec --no-startup-id xfce4-power-manager
 exec --no-startup-id pamac-tray
 exec --no-startup-id clipit
-# exec --no-startup-id blueman-applet
-# exec_always --no-startup-id sbxkb
-exec --no-startup-id start_conky_maia
-# exec --no-startup-id start_conky_green
+exec --no-startup-id start_conky_live_green
 exec --no-startup-id xautolock -time 10 -locker blurlock
+exec_always --no-startup-id sbxkb
 exec_always --no-startup-id ff-theme-util
 exec_always --no-startup-id fix_xcursor
+exec --no-startup-id xrandr --output HDMI-0 --primary --output DP-0 --rotate left --right-of HDMI-0 --output DP-2 --rotate left --left-of HDMI-0
 
 # HB STARTUP ADDITIONS
+bindsym Shift+Pause exec --no-startup-id setxkbmap -option "caps:escape"
+bindsym Shift+Scroll_Lock exec --no-startup-id setxkbmap -option
 exec --no-startup-id setxkbmap -option "caps:escape"
 exec --no-startup-id redshift-gtk
-exec --no-startup-id megasync &
 exec --no-startup-id dropbox start &
 exec --no-startup-id nvidia-settings -a GPUFanControlState=1 -a GPUTargetFanSpeed=60
 
@@ -331,6 +337,7 @@ bar {
 	position bottom
 
 ## please set your primary output first. Example: 'xrandr --output eDP1 --primary'
+
 #	tray_output primary
 #	tray_output eDP1
 
