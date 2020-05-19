@@ -1,10 +1,8 @@
-# Vim-style keybindings for Tig
-#
-# To use these keybindings copy the file to your HOME directory and include
-# it from your ~/.tigrc file:
-#
-#	$ cp contrib/vim.tigrc ~/.tigrc.vim
-#	$ echo "source ~/.tigrc.vim" >> ~/.tigrc
+set blame-view = date:default line-number:yes
+set main-view-id-display = yes
+set main-view-author-display = full
+set ignore-space = all
+set blob-view-line-number-display = yes
 
 bind generic h scroll-left
 bind generic j move-down
@@ -15,9 +13,9 @@ bind generic g  none
 bind generic gg move-first-line
 bind generic J next
 bind generic K previous
-bind generic gp parent
-bind generic gP back
-bind generic gn view-next
+bind generic H parent
+bind generic L back
+bind generic <Tab> view-next
 
 bind main    G move-last-line
 bind generic G move-last-line
@@ -41,18 +39,21 @@ bind generic vp view-pager
 bind generic vh view-help
 
 bind generic o  none
+
 bind generic oo :toggle sort-order
 bind generic os :toggle sort-field
+
 bind generic on :toggle line-number
 bind generic od :toggle date
 bind generic oa :toggle author
-bind generic og :toggle line-graphics
 bind generic of :toggle file-name
 bind generic op :toggle ignore-space
 bind generic oi :toggle id
+bind generic or :toggle commit-title-refs
+
 bind generic ot :toggle commit-title-overflow
 bind generic oF :toggle file-filter
-bind generic or :toggle commit-title-refs
+bind generic og :toggle line-graphics
 
 bind generic @  none
 bind generic @j :/^@@
@@ -65,8 +66,8 @@ bind stage   u  none
 bind generic uu status-update
 bind generic ur status-revert
 bind generic um status-merge
-bind generic ul stage-update-line
-bind generic us stage-split-chunk
+bind generic - stage-update-line
+bind generic \ stage-split-chunk
 
 bind generic c  none
 bind generic cc !git commit
