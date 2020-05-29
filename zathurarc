@@ -34,6 +34,9 @@ map [fullscreen] <C-y> scroll up
 map [normal]     R rotate rotate-ccw
 map [fullscreen] R rotate rotate-ccw
 
+map [normal]     c recolor
+map [fullscreen] c recolor
+
 map [normal]     <PageUp>   navigate previous
 map [fullscreen] <PageUp>   navigate previous
 map [normal]     <PageDown> navigate next

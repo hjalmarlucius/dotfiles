@@ -77,7 +77,7 @@ bindsym $mod++Shift+F4 exec terminal -e 'ncspot'
 bindsym $mod+t exec --no-startup-id pkill picom
 bindsym $mod+Shift+t exec --no-startup-id picom -b
 bindsym $mod+Shift+d --release exec "killall dunst; exec notify-send 'restart dunst'"
-bindsym $mod+F12 --release exec --no-startup-id i3-scrot -s
+bindsym $mod+Shift+s --release exec --no-startup-id flameshot gui
 bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
 
 # change focus
