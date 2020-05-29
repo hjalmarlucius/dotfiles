@@ -19,6 +19,7 @@ Plug 'tpope/vim-fugitive'
 " markdown
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
 Plug 'plasticboy/vim-markdown'        " markdown helper.
+Plug 'ferrine/md-img-paste.vim'
 " helpers
 Plug 'scrooloose/nerdcommenter'       " commenting tool
 Plug 'tpope/vim-surround'             " parentheses helper
@@ -343,6 +344,9 @@ let g:mkdp_preview_options={
 " disable_sync_scroll: if disable sync scroll, default 0
 " sync_scroll_type: 'middle', 'top' or 'relative'
 " hide_yaml_meta: if hide yaml metadata, default is 1
+
+" md-img-paste
+autocmd FileType markdown nmap <buffer><silent> <leader>p :call mdip#MarkdownClipboardImage()<CR>
 
 " peekaboo
 let g:peekaboo_window='vert bo 80new'
