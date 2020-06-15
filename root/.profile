@@ -9,7 +9,7 @@ export PYTHONBREAKPOINT=ipdb.set_trace
 # cuda stuff
 export CUDA_HOME=/opt/cuda
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${CUDA_HOME}/lib64
-PATH=${CUDA_HOME}/bin:${PATH}
+PATH=${CUDA_HOME}/bin:/home/hjalmarlucius/.local/bin/:${PATH}
 export PATH
 
 # MKL AMD fix
