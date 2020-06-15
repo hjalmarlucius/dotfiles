@@ -13,7 +13,7 @@
 * set shell to 'fish' via `bmenu`
 * replace caps with esc `setxkbmap -option 'caps:escape`
 * nvidia
-  * `sudo pacman -S cuda`
+  * `sudo pacman -S cuda cudnn`
   * `yay nvidia-vulkan`
 
 # python

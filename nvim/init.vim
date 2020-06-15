@@ -190,6 +190,8 @@ nmap <silent> <C-Right> :execute 'silent! tabmove ' . (tabpagenr()+1)<cr>
 nmap <C-p>g :GitFiles<ENTER>
 nmap <C-p>f :Files<ENTER>
 nmap <C-p>l :Fag<ENTER>
+nmap <C-p>L :Lines<ENTER>
+nmap <C-p>r :Rg<ENTER>
 nmap <C-p>b :Buffers<ENTER>
 nmap <C-p>c :Commands<ENTER>
 nmap <C-p>t :Colors<ENTER>
