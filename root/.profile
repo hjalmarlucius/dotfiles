@@ -14,3 +14,6 @@ export PATH
 
 # MKL AMD fix
 export MKL_DEBUG_CPU_TYPE=5
+
+export NVM_DIR="/home/hjalmarlucius/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
