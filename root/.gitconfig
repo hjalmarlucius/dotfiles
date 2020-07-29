@@ -2,6 +2,7 @@
     autocrlf = input
     fileMode = false
 	pager = diff-so-fancy | less --tabs=4 -RFX
+	autorcrlf = true
 [user]
 	name = Henrik Bakken
 	email = bakken.henrik@gmail.com

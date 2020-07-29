@@ -1,6 +1,6 @@
 {
     "signature.target": "echo",
-    "python.jediEnabled": false,
+    "python.jediEnabled": true,
     "suggest.autoTrigger": "always",
     "python.autoComplete.addBrackets": true,
     "python.linting.pylintEnabled": false,

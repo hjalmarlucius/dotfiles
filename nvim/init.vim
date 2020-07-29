@@ -41,10 +41,10 @@ Plug 'chrisbra/Colorizer'             " show color codes
 Plug 'junegunn/rainbow_parentheses.vim' " colorize parentheses
 " file mgmt
 Plug 'jeetsukumaran/vim-buffergator'
-"Plug 'scrooloose/nerdtree'
+Plug 'scrooloose/nerdtree'
 "Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 "Plug 'vifm/vifm.vim'
-Plug 'rafaqz/ranger.vim'
+"Plug 'rafaqz/ranger.vim'
 " themes
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -68,7 +68,6 @@ let g:airline_theme='badwolf'
 " Transparent Background (For i3 and compton)
 highlight Normal guibg=NONE ctermbg=NONE
 highlight LineNr guibg=NONE ctermbg=NONE
-
 
 " -----------------------------------------------------------------------------
 " settings
@@ -98,15 +97,25 @@ let g:tex_conceal='bd'
 set ai                                " auto indent
 set si                                " smart indent
 
-" Disables automatic commenting on newline:
-autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
-autocmd Filetype markdown setlocal shiftwidth=2
-
 " Automatically deletes all trailing whitespace on save.
 autocmd BufWritePre * %s/\s\+$//e
 
 " default new file is markdown
 autocmd BufEnter * if &filetype == "" | setlocal ft=markdown | endif
+
+set fileformat=unix
+au Filetype python set
+    \ tabstop=4
+    \ softtabstop=4
+    \ shiftwidth=4
+
+au Filetype markdown,yaml set
+    \ tabstop=2
+    \ softtabstop=2
+    \ shiftwidth=2
+"
+" Disables automatic commenting on newline:
+"autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 " -----------------------------------------------------------------------------
 " keybinds
@@ -190,6 +199,7 @@ nmap <silent> <C-Right> :execute 'silent! tabmove ' . (tabpagenr()+1)<cr>
 nmap <C-p>g :GitFiles<ENTER>
 nmap <C-p>f :Files<ENTER>
 nmap <C-p>l :Fag<ENTER>
+nmap <C-p>l :Ag<ENTER>
 nmap <C-p>L :Lines<ENTER>
 nmap <C-p>r :Rg<ENTER>
 nmap <C-p>b :Buffers<ENTER>
@@ -237,15 +247,15 @@ nmap <leader>gg :vertical Gstatus<cr>:vertical resize 60<cr>
 map <leader>N :NERDTreeToggle<cr>
 
 " ranger.vim
-map <leader>rr :RangerEdit<cr>
-map <leader>rv :RangerVSplit<cr>
-map <leader>rs :RangerSplit<cr>
-map <leader>rt :RangerTab<cr>
-map <leader>ri :RangerInsert<cr>
-map <leader>ra :RangerAppend<cr>
-map <leader>rc :set operatorfunc=RangerChangeOperator<cr>g@
-map <leader>rd :RangerCD<cr>
-map <leader>rld :RangerLCD<cr>
+"map <leader>rr :RangerEdit<cr>
+"map <leader>rv :RangerVSplit<cr>
+"map <leader>rs :RangerSplit<cr>
+"map <leader>rt :RangerTab<cr>
+"map <leader>ri :RangerInsert<cr>
+"map <leader>ra :RangerAppend<cr>
+"map <leader>rc :set operatorfunc=RangerChangeOperator<cr>g@
+"map <leader>rd :RangerCD<cr>
+"map <leader>rld :RangerLCD<cr>
 
 " nerdcommenter
 " '<leader>c ', '<leader>cl' aligned and '<leader>cu>' remove
@@ -361,9 +371,6 @@ function! s:check_back_space() abort
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 nmap <silent> K :call <SID>show_documentation()<CR>
-
-" fzf only search lines and show preview
-command! -bang -nargs=* Fag call s:fag(<q-args>, {'options': '--delimiter : --nth 4..'}, <bang>1)
 
 " fzf files with preview
 command! -bang -nargs=? -complete=dir Files
@@ -513,9 +520,6 @@ set smartcase      " ... but case sensitive when uc present
 set scrolljump=5   " Line to scroll when cursor leaves screen
 set scrolloff=3    " Minumum lines to keep above and below cursor
 set nowrap         " Do not wrap long lines
-set shiftwidth=4   " Use indents of 4 spaces
-set tabstop=4      " An indentation every four columns
-set softtabstop=4  " Let backspace delete indent
 set splitright     " Puts new vsplit windows to the right of the current
 set splitbelow     " Puts new split windows to the bottom of the current
 set autowrite      " Automatically write a file when leaving a modified buffer
