@@ -1,6 +1,6 @@
 [core]
     autocrlf = input
-    fileMode = false
+    filemode = false
 	pager = diff-so-fancy | less --tabs=4 -RFX
 	autorcrlf = true
 [user]

@@ -4,6 +4,7 @@ export BROWSER=/usr/bin/chromium
 export QT_QPA_PLATFORMTHEME="qt5ct"
 export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
 export PYTHONBREAKPOINT=ipdb.set_trace
+export JAVA_HOME="/usr/lib/jvm/java-14-openjdk/bin/javac"
 
 
 # cuda stuff
