@@ -7,6 +7,14 @@ if ! filereadable(expand('~/.config/nvim/autoload/plug.vim'))
     silent !mkdir -p ~/.config/nvim/autoload/
     silent !curl "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" > ~/.config/nvim/autoload/plug.vim
 endif
+let g:coc_global_extensions = [
+      \ 'coc-fzf-preview',
+      \ 'coc-python',
+      \ 'coc-git',
+      \ 'coc-tsserver',
+      \ 'coc-diagnostic',
+      \ 'coc-yaml'
+      \ ]
 
 call plug#begin('~/.config/nvim/plugged')
 " tools
@@ -54,11 +62,18 @@ call plug#end()
 " -----------------------------------------------------------------------------
 " format
 " -----------------------------------------------------------------------------
-"if has("nvim")
-"    set termguicolors
-"endif
-let base16colorspace=256
-colorscheme seoul256
+set t_Co=256       " Use 256 colors
+if filereadable(expand("~/.vimrc_background"))
+  let base16colorspace=256
+  source ~/.vimrc_background
+endif
+if has("nvim")
+  if $TERM =~ '^\(rxvt\)\(-.*\)\?$'
+      set notermguicolors
+  else
+      set termguicolors
+  endif
+endif
 "let g:airline_theme='molokai'
 "let g:airline_theme='qwq'
 let g:airline_theme='badwolf'
@@ -79,6 +94,8 @@ let g:BASH_Ctrl_l='off'             " avoid 'C-l' being overridden to newline
 set updatetime=300
 set timeoutlen=500
 set lazyredraw
+" set shell=/usr/bin/bash
+" let $SHELL = "/usr/bin/bash"
 
 " fold config
 set foldmethod=indent
@@ -103,6 +120,10 @@ autocmd BufWritePre * %s/\s\+$//e
 " default new file is markdown
 autocmd BufEnter * if &filetype == "" | setlocal ft=markdown | endif
 
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set expandtab
 set fileformat=unix
 au Filetype python set
     \ tabstop=4
@@ -196,22 +217,36 @@ nmap <silent> <C-Left> :execute 'silent! tabmove ' . (tabpagenr()-2)<cr>
 nmap <silent> <C-Right> :execute 'silent! tabmove ' . (tabpagenr()+1)<cr>
 
 " fzf
-nmap <C-p>g :GitFiles<ENTER>
-nmap <C-p>f :Files<ENTER>
-nmap <C-p>l :Fag<ENTER>
-nmap <C-p>l :Ag<ENTER>
-nmap <C-p>L :Lines<ENTER>
-nmap <C-p>r :Rg<ENTER>
-nmap <C-p>b :Buffers<ENTER>
-nmap <C-p>c :Commands<ENTER>
+"nmap <C-p>g :GitFiles<ENTER>
+"nmap <C-p>f :Files<ENTER>
+"nmap <C-p>l :Ag<ENTER>
+"nmap <C-p>L :Lines<ENTER>
+"nmap <C-p>r :Rg<ENTER>
+"nmap <C-p>b :Buffers<ENTER>
+"nmap <C-p>c :Commands<ENTER>
 nmap <C-p>t :Colors<ENTER>
-nmap <C-p>m :Marks<ENTER>
-nmap <C-p>w :Windows<ENTER>
-nmap <F2> :Maps<ENTER>
-let g:fzf_action={
-  \ 'ctrl-o': 'tab split',
-  \ 'ctrl-h': 'split',
-  \ 'ctrl-l': 'vsplit' }
+"nmap <C-p>m :Marks<ENTER>
+"nmap <C-p>w :Windows<ENTER>
+"nmap <F2> :Maps<ENTER>
+nmap <C-p> [fzf-p]
+xmap <C-p> [fzf-p]
+
+nnoremap <silent> [fzf-p]f     :<C-u>CocCommand fzf-preview.FromResources project_mru git<CR>
+nnoremap <silent> [fzf-p]F     :<C-u>CocCommand fzf-preview.DirectoryFiles<CR>
+nnoremap <silent> [fzf-p]g     :<C-u>CocCommand fzf-preview.GitStatus<CR>
+nnoremap <silent> [fzf-p]G     :<C-u>CocCommand fzf-preview.GitActions<CR>
+nnoremap <silent> [fzf-p]b     :<C-u>CocCommand fzf-preview.Buffers<CR>
+nnoremap <silent> [fzf-p]B     :<C-u>CocCommand fzf-preview.AllBuffers<CR>
+" nnoremap <silent> [fzf-p]o     :<C-u>CocCommand fzf-preview.FromResources buffer project_mru<CR>
+" nnoremap <silent> [fzf-p]<C-o> :<C-u>CocCommand fzf-preview.Jumps<CR>
+" nnoremap <silent> [fzf-p]g;    :<C-u>CocCommand fzf-preview.Changes<CR>
+nnoremap <silent> [fzf-p]/     :<C-u>CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'"<CR>
+nnoremap <silent> [fzf-p]*     :<C-u>CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
+nnoremap          [fzf-p]l     :<C-u>CocCommand fzf-preview.ProjectGrep<Space>
+xnoremap          [fzf-p]l     "sy:CocCommand   fzf-preview.ProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+nnoremap <silent> [fzf-p]t     :<C-u>CocCommand fzf-preview.BufferTags<CR>
+"nnoremap <silent> [fzf-p]q     :<C-u>CocCommand fzf-preview.QuickFix<CR>
+"nnoremap <silent> [fzf-p]l     :<C-u>CocCommand fzf-preview.LocationList<CR>
 
 " Close preview window when completion is done
 autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
@@ -245,17 +280,6 @@ nmap <leader>gg :vertical Gstatus<cr>:vertical resize 60<cr>
 
 " nerdtree
 map <leader>N :NERDTreeToggle<cr>
-
-" ranger.vim
-"map <leader>rr :RangerEdit<cr>
-"map <leader>rv :RangerVSplit<cr>
-"map <leader>rs :RangerSplit<cr>
-"map <leader>rt :RangerTab<cr>
-"map <leader>ri :RangerInsert<cr>
-"map <leader>ra :RangerAppend<cr>
-"map <leader>rc :set operatorfunc=RangerChangeOperator<cr>g@
-"map <leader>rd :RangerCD<cr>
-"map <leader>rld :RangerLCD<cr>
 
 " nerdcommenter
 " '<leader>c ', '<leader>cl' aligned and '<leader>cu>' remove
@@ -371,10 +395,8 @@ function! s:check_back_space() abort
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 nmap <silent> K :call <SID>show_documentation()<CR>
-
-" fzf files with preview
-command! -bang -nargs=? -complete=dir Files
-    \ call fzf#vim#files(<q-args>, {'options': ['--info=default', '--preview', 'cat {}']}, <bang>1)
+let g:coc_node_path = '/usr/bin/node'
+let g:fzf_preview_command = 'bat --color=always --plain {-1}' " Installed bat
 
 " vim asterisk
 let g:asterisk#keeppos = 1
@@ -399,22 +421,6 @@ function! s:show_documentation()
     call CocAction('doHover')
   endif
 endfunction
-
-" fzf
-let s:TYPE={'dict': type({}), 'funcref': type(function('call')), 'string': type(''), 'list': type([])}
-
-if !exists("*s:fag")
-function! s:fag(query, ...)
-  if type(a:query) != s:TYPE.string
-    return s:warn('Invalid query argument')
-  endif
-  let query=empty(a:query) ? '^(?=.)' : a:query
-  let args=copy(a:000)
-  let ag_opts=len(args) > 1 && type(args[0]) == s:TYPE.string ? remove(args, 0) : '--follow'
-  let command=ag_opts . ' ' . fzf#shellescape(query)
-  return call('fzf#vim#ag_raw', insert(args, command, 0))
-endfunction
-endif
 
 " for moving of tabs
 if !exists("*MoveToPrevTab")
@@ -525,7 +531,6 @@ set splitbelow     " Puts new split windows to the bottom of the current
 set autowrite      " Automatically write a file when leaving a modified buffer
 set mousehide      " Hide the mouse cursor while typing
 set hidden         " Allow buffer switching without saving
-set t_Co=256       " Use 256 colors
 set ruler          " Show the ruler
 set showcmd        " Show partial commands in status line and Selected characters/lines in visual mode
 set showmode       " Show current mode in command-line
@@ -534,10 +539,6 @@ set matchtime=5    " Show matching time
 set report=0       " Always report changed lines
 set linespace=0    " No extra spaces between rows
 set pumheight=20   " Avoid the pop up menu occupying the whole screen
-
-if !exists('g:vim_better_default_tabs_as_spaces') || g:vim_better_default_tabs_as_spaces
-  set expandtab    " Tabs are spaces, not tabs
-end
 
 " http://stackoverflow.com/questions/6427650/vim-in-tmux-background-color-changes-when-paging/15095377#15095377
 set t_ut=
@@ -608,7 +609,6 @@ endif
 set cursorline              " Highlight current line
 set fileformats=unix,dos,mac        " Use Unix as the standard file type
 set number                  " Line numbers on
-"set relativenumber          " Relative numbers on
 set fillchars=vert:│,stl:\ ,stlnc:\
 
 " Annoying temporary files
@@ -706,14 +706,14 @@ if get(g:, 'vim_better_default_key_mapping', 1)
 " }
 
 " File {
-  if get(g:, 'vim_better_default_file_key_mapping', 1)
+  if get(g:, 'vim_better_default_file_key_mapping', 0)
     " File save
     nnoremap <Leader>fs :update<CR>
   endif
 " }
 
 " Fold {
-  if get(g:, 'vim_better_default_fold_key_mapping', 1)
+  if get(g:, 'vim_better_default_fold_key_mapping', 0)
     nnoremap <Leader>f0 :set foldlevel=0<CR>
     nnoremap <Leader>f1 :set foldlevel=1<CR>
     nnoremap <Leader>f2 :set foldlevel=2<CR>

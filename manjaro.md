@@ -1,25 +1,29 @@
 # linux
-* storage
-  * `yay megasync`
-  * `yay onedrive-abraunegg`
-  * `yay dropbox`
-* nvidia
-  * `sudo pacman -S cuda`
-  * `yay nvidia-vulkan`
+* yay stuff
+  * AUR `sudo pacman -S yay`
+  * `yay onedrive-abraunegg dropbox slack-desktop ncspot-git nvidia-vulkan`
 * applications
-  * `sudo pacman -S npm nodejs`
-  * `sudo pacman -S ninja the_silver_searcher`
-  * `sudo pacman -S zathura-pdf-mupdf redshift yay trash-cli rofi`
-  * `yay ncspot-git`
-* code
-  * `sudo pacman -S neovim powerline tmux diff-so-fancy ttf-inconsolata`
-* gaming
-  * `sudo pacman -S steam-manjaro steam-native`
+  * helpers `sudo pacman -S zathura-pdf-mupdf trash-cli rofi`
+  * base16 shell `git clone https://github.com/chriskempson/base16-shell.git ~/.config/base16-shell`
+  * night colors `sudo pacman -S redshift`
+  * gaming `sudo pacman -S steam-manjaro steam-native`
+
+# coding
+* cuda `sudo pacman -S cuda`
+* core `sudo pacman -S neovim tmux`
+* fonts `sudo pacman -S ttf-inconsolata powerline`
+* git addons `sudo pacman -S diff-so-fancy`
+* search `sudo pacman -S the_silver_searcher ripgrep`
+* syntax highlighting `sudo pacman -S bat`
+* javascript `sudo pacman -S npm nodejs yarn`
+* c++ `sudo pacman -S ninja`
+
+# settings
+* set shell to 'fish' via `bmenu`
+* replace caps with esc `setxkbmap -option 'caps:escape' `
 * ssh setup
   * enable SSH `sudo systemctl enable --now sshd.service`
   * enable X11 forwarding in `/etc/ssh/sshd_config`
-* set shell to 'fish' via `bmenu`
-* replace caps with esc `setxkbmap -option 'caps:escape`
 
 # python
 * `pip install --pre torch torchvision -f https://download.pytorch.org/whl/nightly/cu101/torch_nightly.html`
@@ -34,3 +38,8 @@
 
 # IP
 * hjalmar-droneship 88.89.64.249 10.0.0.2
+
+OMF
+* curl -L https://get.oh-my.fish | fish
+* omf install https://github.com/FabioAntunes/fish-nvm
+* omf install https://github.com/edc/bass
