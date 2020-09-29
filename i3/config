@@ -97,10 +97,10 @@ bindsym $mod+Shift+h move left
 bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
 bindsym $mod+Shift+l move right
-bindsym $mod+Shift+left move left
-bindsym $mod+Shift+down move down
-bindsym $mod+Shift+up move up
-bindsym $mod+Shift+right move right
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
 
 # workspace back and forth (with/without active container)
 bindsym $mod+b workspace back_and_forth
@@ -146,44 +146,62 @@ bindsym $mod+Ctrl+Left workspace prev
 # to display names or symbols instead of plain workspace numbers you can use
 # something like: set $ws1 1:mail
 #                 set $ws2 2:
-set $ws1 1
-set $ws2 2
-set $ws3 3
-set $ws4 4
-set $ws5 5
-set $ws6 6
-set $ws7 7
-set $ws8 8
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "Ins"
+set $ws5 "Home"
+set $ws6 "PgUp"
+set $ws7 "Del"
+set $ws8 "End"
+set $ws9 "PgDn"
+set $display1 DP-0
+set $display2 DP-4
+set $display3 DP-2
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
 bindsym $mod+2 workspace $ws2
 bindsym $mod+3 workspace $ws3
-bindsym $mod+4 workspace $ws4
-bindsym $mod+5 workspace $ws5
-bindsym $mod+6 workspace $ws6
-bindsym $mod+7 workspace $ws7
-bindsym $mod+8 workspace $ws8
+bindsym $mod+Insert workspace $ws4
+bindsym $mod+Home workspace $ws5
+bindsym $mod+Prior workspace $ws6
+bindsym $mod+Delete workspace $ws7
+bindsym $mod+End workspace $ws8
+bindsym $mod+Next workspace $ws9
+
+# switch to workspace
+workspace $ws1 output $display1
+workspace $ws2 output $display2
+workspace $ws3 output $display3
+workspace $ws4 output $display1
+workspace $ws5 output $display2
+workspace $ws6 output $display3
+workspace $ws7 output $display1
+workspace $ws8 output $display2
+workspace $ws9 output $display3
 
 # Move focused container to workspace
 bindsym $mod+Ctrl+1 move container to workspace $ws1
 bindsym $mod+Ctrl+2 move container to workspace $ws2
 bindsym $mod+Ctrl+3 move container to workspace $ws3
-bindsym $mod+Ctrl+4 move container to workspace $ws4
-bindsym $mod+Ctrl+5 move container to workspace $ws5
-bindsym $mod+Ctrl+6 move container to workspace $ws6
-bindsym $mod+Ctrl+7 move container to workspace $ws7
-bindsym $mod+Ctrl+8 move container to workspace $ws8
+bindsym $mod+Ctrl+Insert move container to workspace $ws4
+bindsym $mod+Ctrl+Home move container to workspace $ws5
+bindsym $mod+Ctrl+Prior move container to workspace $ws6
+bindsym $mod+Ctrl+Delete move container to workspace $ws7
+bindsym $mod+Ctrl+End move container to workspace $ws8
+bindsym $mod+Ctrl+Next move container to workspace $ws9
 
 # Move to workspace with focused container
 bindsym $mod+Shift+1 move container to workspace $ws1; workspace $ws1
 bindsym $mod+Shift+2 move container to workspace $ws2; workspace $ws2
 bindsym $mod+Shift+3 move container to workspace $ws3; workspace $ws3
-bindsym $mod+Shift+4 move container to workspace $ws4; workspace $ws4
-bindsym $mod+Shift+5 move container to workspace $ws5; workspace $ws5
-bindsym $mod+Shift+6 move container to workspace $ws6; workspace $ws6
-bindsym $mod+Shift+7 move container to workspace $ws7; workspace $ws7
-bindsym $mod+Shift+8 move container to workspace $ws8; workspace $ws8
+bindsym $mod+Shift+Insert move container to workspace $ws4; workspace $ws4
+bindsym $mod+Shift+Home move container to workspace $ws5; workspace $ws5
+bindsym $mod+Shift+Prior move container to workspace $ws6; workspace $ws6
+bindsym $mod+Shift+Delete move container to workspace $ws7; workspace $ws7
+bindsym $mod+Shift+End container to workspace $ws8; workspace $ws8
+bindsym $mod+Shift+Next move container to workspace $ws9; workspace $ws9
 
 # Open applications on specific workspaces
 # assign [class="Thunderbird"] $ws1
@@ -273,9 +291,6 @@ mode "resize" {
         bindsym Escape mode "default"
 }
 
-# Lock screen
-bindsym $mod+9 exec --no-startup-id blurlock
-
 # Autostart applications
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec --no-startup-id nm-applet
@@ -288,7 +303,7 @@ exec --no-startup-id xautolock -time 10 -locker blurlock
 exec_always --no-startup-id sbxkb
 exec_always --no-startup-id ff-theme-util
 exec_always --no-startup-id fix_xcursor
-exec --no-startup-id xrandr --output HDMI-0 --primary --output DP-0 --rotate left --right-of HDMI-0 --output DP-2 --rotate left --left-of HDMI-0
+exec --no-startup-id xrandr --output $display2 --primary --output $display3 --auto --rotate left --right-of $display2 --output $display1 --auto --rotate left --left-of $display2
 
 # HB STARTUP ADDITIONS
 bindsym Shift+Pause exec --no-startup-id setxkbmap -option "caps:escape"

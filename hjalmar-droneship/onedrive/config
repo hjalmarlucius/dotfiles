@@ -1,2 +1,2 @@
-sync_dir="/home/hjalmarlucius/Onedrive"
-skip_dir="Bilder|Pictures|Videos|Backup|Music|Datasets|tmp|Programming/logs"
+sync_dir="/mnt/OneDrive"
+skip_dir="Bilder/Camera Roll|Backup|Datasets|Library|Music|Pictures|Programming/logs|Programming/pysrc|Research - books|Research - papers|Videos"
