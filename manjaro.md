@@ -1,17 +1,20 @@
 # linux
 * yay stuff
   * AUR `sudo pacman -S yay`
-  * `yay onedrive-abraunegg dropbox slack-desktop ncspot-git nvidia-vulkan`
+  * `yay onedrive-abraunegg dropbox slack-desktop ncspot-git`
 * applications
   * helpers `sudo pacman -S zathura-pdf-mupdf trash-cli rofi`
   * base16 shell `git clone https://github.com/chriskempson/base16-shell.git ~/.config/base16-shell`
   * night colors `sudo pacman -S redshift`
   * gaming `sudo pacman -S steam-manjaro steam-native`
+  * vlc player `sudo pacman -S libmicrodns protobuf vlc`
 
 # coding
 * cuda `sudo pacman -S cuda`
 * core `sudo pacman -S neovim tmux`
-* fonts `sudo pacman -S ttf-inconsolata powerline`
+* `git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm`
+* fonts `sudo pacman -S powerline`
+* fonts `yay nerd-fonts-source-code-pro powerline-fonts-git`
 * git addons `sudo pacman -S diff-so-fancy`
 * search `sudo pacman -S the_silver_searcher ripgrep`
 * syntax highlighting `sudo pacman -S bat`
@@ -26,8 +29,9 @@
   * enable X11 forwarding in `/etc/ssh/sshd_config`
 
 # python
-* `pip install --pre torch torchvision -f https://download.pytorch.org/whl/nightly/cu101/torch_nightly.html`
-* `pip install nodejs plotly flake8 numpy scipy sympy matplotlib seaborn pytorch-lightning ggplot ptvsd tensorboard torchtext ipython matplotlib-label-lines ipympl pytest qbstyles`
+* `pip install torch torchvision`
+* `pip install plotly flake8 numpy scipy sympy matplotlib seaborn pytorch-lightning ggplot ptvsd tensorboard torchtext ipython matplotlib-label-lines ipympl pytest qbstyles`
+* `pip install nodejs kafka`
 
 # enable services
 * `systemctl enable --user onedrive --now`
@@ -43,3 +47,4 @@ OMF
 * curl -L https://get.oh-my.fish | fish
 * omf install https://github.com/FabioAntunes/fish-nvm
 * omf install https://github.com/edc/bass
+* omf install https://github.com/jethrokuan/fzf

@@ -1,7 +1,7 @@
 {
     "signature.target": "echo",
     "suggest.autoTrigger": "always",
-    "python.jediEnabled": true,
+    "python.jediEnabled": false,
     "python.autoComplete.addBrackets": true,
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
@@ -11,6 +11,15 @@
     "git.enableGutters": true,
     "tabnine.shortcut": "TN",
     "yaml.format.enable": true,
-    "yaml.format.singleQuote": true
-
+    "yaml.format.singleQuote": true,
+    "diagnostic-languageserver.filetypes": {
+        "vim": "vint",
+        "email": "languagetool",
+        "markdown": [ "write-good", "markdownlint" ],
+        "sh": "shellcheck",
+        "php": ["phpstan", "psalm"]
+    },
+    "diagnostic-languageserver.formatFiletypes": {
+        "sh": "shfmt"
+    }
 }
