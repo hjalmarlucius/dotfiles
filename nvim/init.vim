@@ -26,7 +26,6 @@ Plug 'liuchengxu/vista.vim'           " tags explorer
 Plug 'sheerun/vim-polyglot'           " language syntax
 " git
 Plug 'tpope/vim-fugitive'
-Plug 'junegunn/gv.vim'
 " markdown
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
 Plug 'plasticboy/vim-markdown'        " markdown helper.
@@ -154,16 +153,25 @@ set fillchars=vert:│,stl:\ ,stlnc:\
 " KEYBINDS
 " -----------------------------------------------------------------------------
 let mapleader="\<SPACE>"
-let maplocalleader=","
 nnoremap q: <nop>
 nnoremap Q <nop>
 vnoremap v <Esc>
-nnoremap ø :
 nmap <esc><esc> :noh<cr>
-nnoremap <leader>R :so ~/.config/nvim/init.vim<cr>
-nnoremap <leader>E :tabe ~/.config/nvim/init.vim<cr>
+nmap <leader>R :so ~/.config/nvim/init.vim<cr>
+nmap <leader>E :tabe ~/.config/nvim/init.vim<cr>
 " nerdcommenter: '<leader>c ', '<leader>cl' aligned and '<leader>cu>' remove
 " vim-surround: visual 'SA' to wrap in A. Surround 'csAB' to change from A to B, 'dsA' to remove A. Word 'ysiwA' to wrap with A
+
+" *****************************
+" REMAPPING
+set langmap=å(,¨),Å{,^},Ø\\;,ø:,\\;<,:>,æ^
+" æ ^
+" Ø ;
+" ø :
+" Å {
+" ^ }
+" ; <
+" : >
 
 " *****************************
 " EDITING
@@ -205,21 +213,11 @@ let g:asterisk#keeppos=1
 
 " *****************************
 " CURSOR
-" vertical movement remapping ala US
-map å [
-map ¨ ]
-map Å {
-map ^ }
-" Treat long lines as break lines (useful when moving around in them)
-"nmap j gj
-"nmap k gk
-"vmap j gj
-"vmap k gk
 " indenting
-nnoremap <Tab> >>_
-nnoremap <S-Tab> <<_
-vnoremap <Tab> >gv
-vnoremap <S-Tab> <gv
+"nnoremap <Tab> >>_
+"nnoremap <S-Tab> <<_
+"vnoremap <Tab> >gv
+"vnoremap <S-Tab> <gv
 " Move start and end of line
 noremap H _
 noremap L $
@@ -248,10 +246,10 @@ nnoremap <M-_> :new<cr>
 nnoremap <M-t> <C-w>T
 nnoremap <M-T> :tabnew<cr>
 " buffergator
-nmap <M-N> :bprev<cr>
-nmap <M-n> :bnext<cr>
-nmap <M-M> :tabprev<cr>
-nmap <M-m> :tabnext<cr>
+nmap <M-n> :bprev<cr>
+nmap <M-m> :bnext<cr>
+nmap <M-N> :tabprev<cr>
+nmap <M-M> :tabnext<cr>
 " resize windows with hjkl
 nnoremap <C-h> <C-w><
 nnoremap <C-j> <C-w>-
@@ -291,10 +289,9 @@ let g:mkdp_preview_options={
 " vim-fugitive
 " g? for fugitive help. :Gdiff, :Gblame, :Gstats '=' expand, '-' add/reset changes, :Gcommit % to commit current file with messag
 nmap <leader>gg :vertical Gstatus<cr>:vertical resize 60<cr>
-" gv.vim
-map <leader>gv :GV<cr>
-map <leader>gf :GV!<cr>
-map <leader>gl :GV?<cr>
+" fzf
+map <leader>gc :Commits<cr>
+map <leader>gf :BCommits<cr>
 " coc git
 nmap <leader>gn    <Plug>(coc-git-nextchunk)
 nmap <leader>gp    <Plug>(coc-git-prevchunk)
@@ -314,12 +311,18 @@ let g:vista_fzf_preview = ['right:50%']
 
 " *****************************
 " POPUPS
-" TODO coclist fzf
 nmap          <M-w> :Ag<cr>
+nmap <silent> <M-z> :CocFzfList<cr>
 nmap <silent> <M-g> :CocFzfList symbols<cr>
+nmap <silent> <M-v> :CocFzfList symbols --kind Variable<cr>
+nmap <silent> <M-u> :CocFzfList symbols --kind Function<cr>
 nmap <silent> <M-r> :History<cr>
 nmap <silent> <M-e> :History/<cr>
 nmap <silent> <M-f> :GFiles<cr>
+nmap <silent> <M-F> :Files<cr>
+nmap <silent> <M-b> :Buffers<cr>
+map  <silent> <M-c> :Colors<cr>
+map  <silent> <M-y> :Filetypes<cr>
 let g:fzf_preview_command='bat --color=always --plain {-1}' " Installed bat
 let g:fzf_preview_grep_cmd='rg --smart-case --line-number --no-heading --color=never'
 
