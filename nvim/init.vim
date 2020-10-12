@@ -8,19 +8,23 @@ if ! filereadable(expand('~/.config/nvim/autoload/plug.vim'))
     silent !curl "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" > ~/.config/nvim/autoload/plug.vim
 endif
 let g:coc_global_extensions=[
-      \ 'coc-fzf-preview',
       \ 'coc-python',
       \ 'coc-git',
       \ 'coc-tsserver',
       \ 'coc-diagnostic',
-      \ 'coc-yaml'
+      \ 'coc-yaml',
+      \ 'coc-explorer'
       \ ]
 
 call plug#begin('~/.config/nvim/plugged')
 " tools
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'junegunn/fzf', {'dir': '~/.fzf', 'do': './install --all'}
+Plug 'junegunn/fzf.vim'
+Plug 'antoinemadec/coc-fzf', {'branch': 'release'}
+Plug 'liuchengxu/vista.vim'           " tags explorer
 Plug 'sheerun/vim-polyglot'           " language syntax
+" git
 Plug 'tpope/vim-fugitive'
 Plug 'junegunn/gv.vim'
 " markdown
@@ -34,14 +38,10 @@ Plug 'farmergreg/vim-lastplace'       " When reopen a buffer, puts the cursor wh
 Plug 'christoomey/vim-tmux-navigator' " integrate movement in tmux and vim
 Plug 'haya14busa/vim-asterisk'        " better asterisk motions
 Plug 'bfredl/nvim-miniyank'           " nvim bugfix block copy
-Plug 'qpkorr/vim-bufkill'             " delete buffer without closing window
 " aesthetics
 Plug 'chriskempson/base16-vim'        " base16 themes
 Plug 'chrisbra/Colorizer'             " show color codes
 Plug 'junegunn/rainbow_parentheses.vim' " colorize parentheses
-" file mgmt
-Plug 'jeetsukumaran/vim-buffergator'
-Plug 'scrooloose/nerdtree'
 " themes
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -158,14 +158,18 @@ let maplocalleader=","
 nnoremap q: <nop>
 nnoremap Q <nop>
 vnoremap v <Esc>
-nnoremap . :
-nnoremap , .
+nnoremap ø :
 nmap <esc><esc> :noh<cr>
-nmap <M-d> :BD<cr>
 nnoremap <leader>R :so ~/.config/nvim/init.vim<cr>
 nnoremap <leader>E :tabe ~/.config/nvim/init.vim<cr>
 " nerdcommenter: '<leader>c ', '<leader>cl' aligned and '<leader>cu>' remove
 " vim-surround: visual 'SA' to wrap in A. Surround 'csAB' to change from A to B, 'dsA' to remove A. Word 'ysiwA' to wrap with A
+
+" *****************************
+" EDITING
+nmap cr <Plug>(coc-rename)
+xmap cf <Plug>(coc-format-selected)
+nmap cf <Plug>(coc-format-selected)
 
 " *****************************
 " CLIPBOARD (incl bugfix paste unnamedplus)
@@ -202,17 +206,15 @@ let g:asterisk#keeppos=1
 " *****************************
 " CURSOR
 " vertical movement remapping ala US
-map å (
-map ¨ )
+map å [
+map ¨ ]
 map Å {
 map ^ }
-map + [
-map \ ]
 " Treat long lines as break lines (useful when moving around in them)
-nmap j gj
-nmap k gk
-vmap j gj
-vmap k gk
+"nmap j gj
+"nmap k gk
+"vmap j gj
+"vmap k gk
 " indenting
 nnoremap <Tab> >>_
 nnoremap <S-Tab> <<_
@@ -243,39 +245,23 @@ nnoremap <M-BAR> :vsplit<cr>
 nnoremap <M-§> :vnew<cr>
 nnoremap <M--> :split<cr>
 nnoremap <M-_> :new<cr>
-nnoremap <M-p> <C-w>T
-nnoremap <M-P> :tabnew<cr>
-" buffergator & nerdtree
+nnoremap <M-t> <C-w>T
+nnoremap <M-T> :tabnew<cr>
+" buffergator
 nmap <M-N> :bprev<cr>
 nmap <M-n> :bnext<cr>
-nmap <M-T> :tabprev<cr>
-nmap <M-t> :tabnext<cr>
+nmap <M-M> :tabprev<cr>
+nmap <M-m> :tabnext<cr>
 " resize windows with hjkl
 nnoremap <C-h> <C-w><
 nnoremap <C-j> <C-w>-
 nnoremap <C-k> <C-w>+
 nnoremap <C-l> <C-w>>
-" buffergator & nerdtree
-map <C-f> :NERDTreeToggle<cr>
-map <C-b> :BuffergatorToggle<cr>
-map <C-t> :BuffergatorTabsToggle<cr>
-let g:buffergator_mru_cycle_loop=0
-let g:buffergator_suppress_keymaps=1
-let g:buffergator_autoupdate=1
-let g:buffergator_sort_regime='bufnum'
-let g:buffergator_display_regime='basename'
-let g:buffergator_autodismiss_on_select=0
-let g:buffergator_show_full_directory_path=0
-let g:buffergator_tab_statusline=0
-let g:buffergator_window_statusline=0
-" other C-w commands to remember
-" <C-w>= equalize sizes
-" <C-w>T move buffer to new tab
-" move windows with <leader>+HJKL
-" <C-w>H
-" <C-w>J
-" <C-w>K
-" <C-w>L
+" quickfix window
+nmap <C-n> :cn<cr>
+nmap <C-m> :cp<cr>
+" close buffer
+nmap <M-d> :bd<cr>
 
 " *****************************
 " MARKDOWN
@@ -317,23 +303,23 @@ nmap <leader>gs    :CocCommand git.chunkStage<cr>
 vmap <leader>gs    :CocCommand git.chunkStage<cr>
 nmap <leader>gX    :CocCommand git.chunkUndo<cr>
 vmap <leader>gX    :CocCommand git.chunkUndo<cr>
-" coc fzf
-nmap <silent> <M-g> :<C-u>CocCommand fzf-preview.GitStatus<cr>
-nmap <silent> <M-G> :<C-u>CocCommand fzf-preview.GitActions<cr>
 
 " *****************************
-" COC FZF
-nmap          <M-w> :<C-u>CocCommand fzf-preview.ProjectGrep<Space>
-xmap          <M-w> "sy:CocCommand   fzf-preview.ProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<cr>"
-nmap          <M-W> :<C-u>CocCommand fzf-preview.ProjectGrep<Space>
-nmap <silent> <M-e> :<C-u>CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'"<cr>
-nmap <silent> <M-E> :<C-u>CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'<C-r>=expand('<cword>')<cr>"<cr>
-nmap <silent> <M-r> :<C-u>CocCommand fzf-preview.MruFiles<cr>
-nmap <silent> <M-R> :<C-u>CocCommand fzf-preview.ProjectMruFiles<cr>
-nmap <silent> <M-f> :<C-u>CocCommand fzf-preview.DirectoryFiles<cr>
-nmap <silent> <M-F> :<C-u>CocCommand fzf-preview.ProjectFiles<cr>
-nmap <silent> <M-b> :<C-u>CocCommand fzf-preview.Buffers<cr>
-nmap <silent> <M-B> :<C-u>CocCommand fzf-preview.AllBuffers<cr>
+" EXPLORERS
+" vista and coc-explorer
+map <C-g> :Vista!!<cr>
+map <C-f> :CocCommand explorer<cr>
+let g:vista_default_executive = 'ctags'
+let g:vista_fzf_preview = ['right:50%']
+
+" *****************************
+" POPUPS
+" TODO coclist fzf
+nmap          <M-w> :Ag<cr>
+nmap <silent> <M-g> :CocFzfList symbols<cr>
+nmap <silent> <M-r> :History<cr>
+nmap <silent> <M-e> :History/<cr>
+nmap <silent> <M-f> :GFiles<cr>
 let g:fzf_preview_command='bat --color=always --plain {-1}' " Installed bat
 let g:fzf_preview_grep_cmd='rg --smart-case --line-number --no-heading --color=never'
 
@@ -359,15 +345,6 @@ nmap gy <Plug>(coc-type-definition)
 nmap gi <Plug>(coc-implementation)
 nmap gr <Plug>(coc-references)
 nmap gR <Plug>(coc-refactor)
-" show coc documentation in preview window
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
-nmap <silent> K :call <SID>show_documentation()<cr>
 
 " *****************************
 " autocmd
@@ -375,10 +352,26 @@ augroup myAu   " A unique name for the group.  DO NOT use the same name twice!
     autocmd!
     autocmd FileType python set        tabstop=4 softtabstop=4 shiftwidth=4
     autocmd FileType markdown,yaml set tabstop=2 softtabstop=2 shiftwidth=2
-    autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o  " Disables automatic commenting on newline
+    autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o   " Disables automatic commenting on newline
     autocmd FileType * RainbowParentheses()
     autocmd BufEnter * if &filetype == "" | setlocal ft=markdown | endif             " default new file is markdown
     autocmd BufWritePre * %s/\s\+$//e                                                " Automatically deletes all trailing whitespace on save.
     autocmd BufReadPost quickfix nmap <buffer> <cr> <cr>                             " quickfix <cr>
     autocmd CompleteDone * if pumvisible() == 0 | pclose | endif                     " bugfix
 augroup end
+
+" CTRL-A CTRL-Q to select all and build quickfix list
+
+function! s:build_quickfix_list(lines)
+    call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+    copen
+    cc
+endfunction
+
+let g:fzf_action = {
+\ 'ctrl-q': function('s:build_quickfix_list'),
+\ 'ctrl-t': 'tab split',
+\ 'ctrl-s': 'split',
+\ 'ctrl-v': 'vsplit' }
+
+let $FZF_DEFAULT_OPTS = '--bind ctrl-a:select-all'
