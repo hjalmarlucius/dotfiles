@@ -239,21 +239,21 @@ nnoremap <M-BAR> :vsplit<cr>
 nnoremap <M-§> :vnew<cr>
 nnoremap <M--> :split<cr>
 nnoremap <M-_> :new<cr>
-nnoremap <M-t> <C-w>T
+nnoremap <M-t> :tabe %<cr>
 nnoremap <M-T> :tabnew<cr>
 " buffergator
-nmap <M-n> :bprev<cr>
-nmap <M-m> :bnext<cr>
-nmap <M-N> :tabprev<cr>
-nmap <M-M> :tabnext<cr>
+nmap <M-J> :bprev<cr>
+nmap <M-K> :bnext<cr>
+nmap <M-H> :tabprev<cr>
+nmap <M-L> :tabnext<cr>
 " resize windows with hjkl
 nnoremap <C-h> <C-w><
 nnoremap <C-j> <C-w>-
 nnoremap <C-k> <C-w>+
 nnoremap <C-l> <C-w>>
 " quickfix window
-nmap <C-n> :cn<cr>
-nmap <C-m> :cp<cr>
+nmap <M-n> :cn<cr>
+nmap <M-m> :cp<cr>
 " close buffer
 nmap <M-d> :b#<bar>bd#<cr>
 nmap <M-D> :b#<bar>bd!#<cr>
@@ -290,13 +290,13 @@ nmap <silent> <M-g> :GFiles?<cr>
 nmap <silent> <M-c> :Commits<cr>
 nmap <silent> <M-C> :BCommits<cr>
 " coc git
-nmap <leader>i <Plug>(coc-git-chunkinfo)
-nmap <leader>n <Plug>(coc-git-prevchunk)
-nmap <leader>m <Plug>(coc-git-nextchunk)
-nmap <leader>s :CocCommand git.chunkStage<cr>
-vmap <leader>s :CocCommand git.chunkStage<cr>
-nmap <leader>x :CocCommand git.chunkUndo<cr>
-vmap <leader>x :CocCommand git.chunkUndo<cr>
+nmap <M-i> <Plug>(coc-git-chunkinfo)
+nmap <M-N> <Plug>(coc-git-prevchunk)
+nmap <M-M> <Plug>(coc-git-nextchunk)
+nmap <M-S> :CocCommand git.chunkStage<cr>
+vmap <M-S> :CocCommand git.chunkStage<cr>
+nmap <M-X> :CocCommand git.chunkUndo<cr>
+vmap <M-X> :CocCommand git.chunkUndo<cr>
 
 " *****************************
 " EXPLORERS
