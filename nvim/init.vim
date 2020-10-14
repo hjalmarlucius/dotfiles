@@ -22,7 +22,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'junegunn/fzf', {'dir': '~/.fzf', 'do': './install --all'}
 Plug 'junegunn/fzf.vim'
 Plug 'antoinemadec/coc-fzf', {'branch': 'release'}
-Plug 'liuchengxu/vista.vim'           " tags explorer
+"Plug 'liuchengxu/vista.vim'           " tags explorer
 Plug 'sheerun/vim-polyglot'           " language syntax
 " git
 Plug 'tpope/vim-fugitive'
@@ -136,6 +136,7 @@ set shiftwidth=4
 set expandtab
 
 " other
+set autochdir
 set lazyredraw
 set updatetime=300
 set timeoutlen=500
@@ -158,7 +159,7 @@ nnoremap Q <nop>
 vnoremap v <Esc>
 nmap <esc><esc> :noh<cr>
 nmap <leader>R :so ~/.config/nvim/init.vim<cr>
-nmap <leader>E :tabe ~/.config/nvim/init.vim<cr>
+nmap <leader>E :tabe ~/OneDrive/dotfiles/nvim/init.vim<cr>
 " nerdcommenter: '<leader>c ', '<leader>cl' aligned and '<leader>cu>' remove
 " vim-surround: visual 'SA' to wrap in A. Surround 'csAB' to change from A to B, 'dsA' to remove A. Word 'ysiwA' to wrap with A
 
@@ -213,14 +214,9 @@ let g:asterisk#keeppos=1
 
 " *****************************
 " CURSOR
-" indenting
-"nnoremap <Tab> >>_
-"nnoremap <S-Tab> <<_
-"vnoremap <Tab> >gv
-"vnoremap <S-Tab> <gv
-" Move start and end of line
-noremap H _
-noremap L $
+" stay visual when indenting
+vnoremap <Tab> >gv
+vnoremap <S-Tab> <gv
 " insert mode movement
 inoremap <C-h> <Left>
 inoremap <C-j> <Down>
@@ -259,7 +255,8 @@ nnoremap <C-l> <C-w>>
 nmap <C-n> :cn<cr>
 nmap <C-m> :cp<cr>
 " close buffer
-nmap <M-d> :bd<cr>
+nmap <M-d> :b#<bar>bd#<cr>
+nmap <M-D> :b#<bar>bd!#<cr>
 
 " *****************************
 " MARKDOWN
@@ -269,7 +266,6 @@ let g:vim_markdown_conceal=0
 let g:vim_markdown_conceal_code_blocks=0
 let g:vim_markdown_math=1
 let g:vim_markdown_folding_disabled=0
-let g:vim_markdown_math=0
 " markdown preview
 let g:mkdp_auto_start=0             " auto start on moving into
 let g:mkdp_auto_close=0             " auto close on moving away
@@ -288,32 +284,33 @@ let g:mkdp_preview_options={
 " GIT
 " vim-fugitive
 " g? for fugitive help. :Gdiff, :Gblame, :Gstats '=' expand, '-' add/reset changes, :Gcommit % to commit current file with messag
-nmap <leader>gg :vertical Gstatus<cr>:vertical resize 60<cr>
+nmap <C-g> :vertical Git<cr>:vertical resize 60<cr>
 " fzf
-map <leader>gc :Commits<cr>
-map <leader>gf :BCommits<cr>
+nmap <silent> <M-g> :GFiles?<cr>
+nmap <silent> <M-c> :Commits<cr>
+nmap <silent> <M-C> :BCommits<cr>
 " coc git
-nmap <leader>gn    <Plug>(coc-git-nextchunk)
-nmap <leader>gp    <Plug>(coc-git-prevchunk)
-nmap <leader>g<cr> <Plug>(coc-git-chunkinfo)
-nmap <leader>gs    :CocCommand git.chunkStage<cr>
-vmap <leader>gs    :CocCommand git.chunkStage<cr>
-nmap <leader>gX    :CocCommand git.chunkUndo<cr>
-vmap <leader>gX    :CocCommand git.chunkUndo<cr>
+nmap <leader>i <Plug>(coc-git-chunkinfo)
+nmap <leader>n <Plug>(coc-git-prevchunk)
+nmap <leader>m <Plug>(coc-git-nextchunk)
+nmap <leader>s :CocCommand git.chunkStage<cr>
+vmap <leader>s :CocCommand git.chunkStage<cr>
+nmap <leader>x :CocCommand git.chunkUndo<cr>
+vmap <leader>x :CocCommand git.chunkUndo<cr>
 
 " *****************************
 " EXPLORERS
 " vista and coc-explorer
-map <C-g> :Vista!!<cr>
 map <C-f> :CocCommand explorer<cr>
-let g:vista_default_executive = 'ctags'
-let g:vista_fzf_preview = ['right:50%']
+"map <C-v> :Vista!!<cr>
+"let g:vista_default_executive = 'ctags'
+"let g:vista_fzf_preview = ['right:50%']
 
 " *****************************
 " POPUPS
+command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, {'options': '--delimiter : --nth 4..'}, <bang>0)
 nmap          <M-w> :Ag<cr>
-nmap <silent> <M-z> :CocFzfList<cr>
-nmap <silent> <M-g> :CocFzfList symbols<cr>
+nmap <silent> <M-x> :CocFzfList<cr>
 nmap <silent> <M-v> :CocFzfList symbols --kind Variable<cr>
 nmap <silent> <M-u> :CocFzfList symbols --kind Function<cr>
 nmap <silent> <M-r> :History<cr>
@@ -321,7 +318,7 @@ nmap <silent> <M-e> :History/<cr>
 nmap <silent> <M-f> :GFiles<cr>
 nmap <silent> <M-F> :Files<cr>
 nmap <silent> <M-b> :Buffers<cr>
-map  <silent> <M-c> :Colors<cr>
+map  <silent> <M-z> :Colors<cr>
 map  <silent> <M-y> :Filetypes<cr>
 let g:fzf_preview_command='bat --color=always --plain {-1}' " Installed bat
 let g:fzf_preview_grep_cmd='rg --smart-case --line-number --no-heading --color=never'
