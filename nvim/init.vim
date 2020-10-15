@@ -22,7 +22,6 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'junegunn/fzf', {'dir': '~/.fzf', 'do': './install --all'}
 Plug 'junegunn/fzf.vim'
 Plug 'antoinemadec/coc-fzf', {'branch': 'release'}
-"Plug 'liuchengxu/vista.vim'           " tags explorer
 Plug 'sheerun/vim-polyglot'           " language syntax
 " git
 Plug 'tpope/vim-fugitive'
@@ -82,6 +81,7 @@ let g:airline#extensions#tabline#show_splits=0
 let g:airline#extensions#tabline#show_tabs=0
 let g:airline#extensions#tabline#show_buffers=1
 let g:airline#extensions#tabline#switch_buffers_and_tabs=0
+let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
 
 " temporary files and undo
 set directory=/tmp//,.
@@ -136,7 +136,6 @@ set shiftwidth=4
 set expandtab
 
 " other
-set autochdir
 set lazyredraw
 set updatetime=300
 set timeoutlen=500
@@ -157,9 +156,11 @@ let mapleader="\<SPACE>"
 nnoremap q: <nop>
 nnoremap Q <nop>
 vnoremap v <Esc>
+nnoremap K zz
 nmap <esc><esc> :noh<cr>
 nmap <leader>R :so ~/.config/nvim/init.vim<cr>
 nmap <leader>E :tabe ~/OneDrive/dotfiles/nvim/init.vim<cr>
+nmap <leader>w :cd %:p:h<cr>
 " nerdcommenter: '<leader>c ', '<leader>cl' aligned and '<leader>cu>' remove
 " vim-surround: visual 'SA' to wrap in A. Surround 'csAB' to change from A to B, 'dsA' to remove A. Word 'ysiwA' to wrap with A
 
@@ -177,6 +178,7 @@ set langmap=å(,¨),Å{,^},Ø\\;,ø:,\\;<,:>,æ^
 " *****************************
 " EDITING
 nmap cr <Plug>(coc-rename)
+nmap cR <Plug>(coc-refactor)
 xmap cf <Plug>(coc-format-selected)
 nmap cf <Plug>(coc-format-selected)
 
@@ -215,8 +217,8 @@ let g:asterisk#keeppos=1
 " *****************************
 " CURSOR
 " stay visual when indenting
-vnoremap <Tab> >gv
-vnoremap <S-Tab> <gv
+vnoremap >> >gv
+vnoremap << <gv
 " insert mode movement
 inoremap <C-h> <Left>
 inoremap <C-j> <Down>
@@ -226,6 +228,16 @@ inoremap <C-b> <BS>
 inoremap <C-a> <Home>
 inoremap <C-e> <End>
 inoremap <C-d> <Delete>
+" move between errors
+nmap <M-n> <Plug>(coc-diagnostic-prev)
+nmap <M-m> <Plug>(coc-diagnostic-next)
+" GoTo code navigation
+nnoremap gj <Plug>(coc-git-prevchunk)
+nnoremap gk <Plug>(coc-git-nextchunk)
+nnoremap gd <Plug>(coc-definition)
+nnoremap gy <Plug>(coc-type-definition)
+nnoremap gi <Plug>(coc-implementation)
+nnoremap gr <Plug>(coc-references)
 
 " *****************************
 " WINDOWS / BUFFERS
@@ -242,21 +254,75 @@ nnoremap <M-_> :new<cr>
 nnoremap <M-t> :tabe %<cr>
 nnoremap <M-T> :tabnew<cr>
 " buffergator
-nmap <M-J> :bprev<cr>
-nmap <M-K> :bnext<cr>
-nmap <M-H> :tabprev<cr>
-nmap <M-L> :tabnext<cr>
+nmap <M-H> :bprev<cr>
+nmap <M-L> :bnext<cr>
+nmap <M-J> :tabprev<cr>
+nmap <M-K> :tabnext<cr>
 " resize windows with hjkl
 nnoremap <C-h> <C-w><
 nnoremap <C-j> <C-w>-
 nnoremap <C-k> <C-w>+
 nnoremap <C-l> <C-w>>
 " quickfix window
-nmap <M-n> :cn<cr>
-nmap <M-m> :cp<cr>
-" close buffer
-nmap <M-d> :b#<bar>bd#<cr>
-nmap <M-D> :b#<bar>bd!#<cr>
+nmap <M-N> :cn<cr>
+nmap <M-M> :cp<cr>
+" remove buffer
+nmap <M-d> :bp<bar>bd#<cr>
+nmap <M-D> :bp<bar>bd!#<cr>
+" close window
+nmap <M-q> :q<cr>
+
+" *****************************
+" GIT
+nmap <M-i> <Plug>(coc-git-chunkinfo)
+nmap <M-S> :CocCommand git.chunkStage<cr>
+vmap <M-S> :CocCommand git.chunkStage<cr>
+nmap <M-X> :CocCommand git.chunkUndo<cr>
+vmap <M-X> :CocCommand git.chunkUndo<cr>
+
+" *****************************
+" EXPLORERS
+" coc-explorer
+map <C-f> :CocCommand explorer<cr>
+" vim-fugitive
+" g? for fugitive help. :Gdiff, :Gblame, :Gstats '=' expand, '-' add/reset changes, :Gcommit % to commit current file with messag
+map <C-g> :vertical Git<cr>:vertical resize 60<cr>
+
+" *****************************
+" POPUPS
+command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, {'options': '--delimiter : --nth 4..'}, <bang>0)
+nmap          <M-w> :Ag<cr>
+nmap <silent> <M-x> :CocFzfList<cr>
+nmap <silent> <M-v> :CocFzfList symbols --kind Variable<cr>
+nmap <silent> <M-u> :CocFzfList symbols --kind Function<cr>
+nmap <silent> <M-r> :History<cr>
+nmap <silent> <M-e> :History/<cr>
+nmap <silent> <M-f> :GFiles<cr>
+nmap <silent> <M-F> :Files<cr>
+nmap <silent> <M-b> :Buffers<cr>
+map  <silent> <M-z> :Colors<cr>
+map  <silent> <M-y> :Filetypes<cr>
+let g:fzf_preview_command='bat --color=always --plain {-1}' " Installed bat
+let g:fzf_preview_grep_cmd='rg --smart-case --line-number --no-heading --color=never'
+" fzf git
+nmap <silent> <M-g> :GFiles?<cr>
+nmap <silent> <M-c> :Commits<cr>
+nmap <silent> <M-C> :BCommits<cr>
+
+" *****************************
+" COC CONFIGS
+" coc menus
+let g:coc_node_path='/usr/bin/node'
+function! s:check_back_space() abort
+  let col=col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+imap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+imap <expr><S-Tab> pumvisible() ? "\<C-p>" : "\<C-h>"
+imap <silent><expr> <C-space> coc#refresh()
 
 " *****************************
 " MARKDOWN
@@ -279,72 +345,6 @@ let g:mkdp_preview_options={
 " disable_sync_scroll: if disable sync scroll, default 0
 " sync_scroll_type: 'middle', 'top' or 'relative'
 " hide_yaml_meta: if hide yaml metadata, default is 1
-
-" *****************************
-" GIT
-" vim-fugitive
-" g? for fugitive help. :Gdiff, :Gblame, :Gstats '=' expand, '-' add/reset changes, :Gcommit % to commit current file with messag
-nmap <C-g> :vertical Git<cr>:vertical resize 60<cr>
-" fzf
-nmap <silent> <M-g> :GFiles?<cr>
-nmap <silent> <M-c> :Commits<cr>
-nmap <silent> <M-C> :BCommits<cr>
-" coc git
-nmap <M-i> <Plug>(coc-git-chunkinfo)
-nmap <M-N> <Plug>(coc-git-prevchunk)
-nmap <M-M> <Plug>(coc-git-nextchunk)
-nmap <M-S> :CocCommand git.chunkStage<cr>
-vmap <M-S> :CocCommand git.chunkStage<cr>
-nmap <M-X> :CocCommand git.chunkUndo<cr>
-vmap <M-X> :CocCommand git.chunkUndo<cr>
-
-" *****************************
-" EXPLORERS
-" vista and coc-explorer
-map <C-f> :CocCommand explorer<cr>
-"map <C-v> :Vista!!<cr>
-"let g:vista_default_executive = 'ctags'
-"let g:vista_fzf_preview = ['right:50%']
-
-" *****************************
-" POPUPS
-command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, {'options': '--delimiter : --nth 4..'}, <bang>0)
-nmap          <M-w> :Ag<cr>
-nmap <silent> <M-x> :CocFzfList<cr>
-nmap <silent> <M-v> :CocFzfList symbols --kind Variable<cr>
-nmap <silent> <M-u> :CocFzfList symbols --kind Function<cr>
-nmap <silent> <M-r> :History<cr>
-nmap <silent> <M-e> :History/<cr>
-nmap <silent> <M-f> :GFiles<cr>
-nmap <silent> <M-F> :Files<cr>
-nmap <silent> <M-b> :Buffers<cr>
-map  <silent> <M-z> :Colors<cr>
-map  <silent> <M-y> :Filetypes<cr>
-let g:fzf_preview_command='bat --color=always --plain {-1}' " Installed bat
-let g:fzf_preview_grep_cmd='rg --smart-case --line-number --no-heading --color=never'
-
-" *****************************
-" COC OTHER
-" coc menus
-let g:coc_node_path='/usr/bin/node'
-function! s:check_back_space() abort
-  let col=col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-imap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-imap <expr><S-Tab> pumvisible() ? "\<C-p>" : "\<C-h>"
-imap <silent><expr> <C-space> coc#refresh()
-" coc helpers
-nmap gP <Plug>(coc-diagnostic-prev)
-nmap gp <Plug>(coc-diagnostic-next)
-nmap gd <Plug>(coc-definition)
-nmap gy <Plug>(coc-type-definition)
-nmap gi <Plug>(coc-implementation)
-nmap gr <Plug>(coc-references)
-nmap gR <Plug>(coc-refactor)
 
 " *****************************
 " autocmd
