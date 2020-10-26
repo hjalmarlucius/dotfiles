@@ -67,6 +67,13 @@ bindsym Scroll_Lock exec amixer -q sset Master toggle
 # bindsym XF86MonBrightnessUp exec "xbacklight -inc 10; notify-send 'brightness up'"
 # bindsym XF86MonBrightnessDown exec "xbacklight -dec 10; notify-send 'brightness down'"
 
+# enable / disable caps->escape bind
+bindsym $mod+F10 exec "setxkbmap -layout no -variant nodeadkeys -option"
+bindsym $mod+F11 exec "setxkbmap -layout no -variant nodeadkeys -option 'caps:backspace'"
+bindsym $mod+F12 exec "setxkbmap -layout no -variant nodeadkeys -option 'caps:escape'"
+bindsym $mod+F9 exec "xrandr --output DP-4 --primary --output DP-2 --auto --rotate left --right-of DP-4 --output DP-0 --auto --rotate left --left-of DP-4"
+bindsym $mod+Shift+F9 exec "xrandr --output DP-4 --primary --output DP-2 --off --output DP-0 --off"
+
 # Start Applications
 bindsym $mod+Ctrl+b exec terminal -e 'bmenu'
 bindsym $mod+F2 exec chromium
@@ -296,12 +303,12 @@ exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec --no-startup-id nm-applet
 exec --no-startup-id nitrogen --restore
 exec --no-startup-id xfce4-power-manager
-exec --no-startup-id pamac-tray
-exec --no-startup-id clipit
-exec --no-startup-id start_conky_live_green
+#exec --no-startup-id pamac-tray
+#exec --no-startup-id clipit
+#exec --no-startup-id start_conky_live_green
 exec --no-startup-id xautolock -time 10 -locker blurlock
 exec_always --no-startup-id sbxkb
-exec_always --no-startup-id ff-theme-util
+#exec_always --no-startup-id ff-theme-util
 exec_always --no-startup-id fix_xcursor
 exec --no-startup-id xrandr --output $display2 --primary --output $display3 --auto --rotate left --right-of $display2 --output $display1 --auto --rotate left --left-of $display2
 
@@ -310,7 +317,6 @@ exec --no-startup-id setxkbmap -layout no -variant nodeadkeys -option "caps:esca
 exec --no-startup-id redshift-gtk
 exec --no-startup-id dropbox start &
 exec --no-startup-id nvidia-settings -a GPUFanControlState=1 -a GPUTargetFanSpeed=60
-
 
 # Color palette used for the terminal ( ~/.Xresources file )
 # Colors are gathered based on the documentation:
