@@ -232,12 +232,12 @@ inoremap <C-d> <Delete>
 nmap <M-n> <Plug>(coc-diagnostic-prev)
 nmap <M-m> <Plug>(coc-diagnostic-next)
 " GoTo code navigation
-nnoremap gj <Plug>(coc-git-prevchunk)
-nnoremap gk <Plug>(coc-git-nextchunk)
-nnoremap gd <Plug>(coc-definition)
-nnoremap gy <Plug>(coc-type-definition)
-nnoremap gi <Plug>(coc-implementation)
-nnoremap gr <Plug>(coc-references)
+nmap <M-,> <Plug>(coc-git-prevchunk)
+nmap <M-.> <Plug>(coc-git-nextchunk)
+nmap gd <Plug>(coc-definition)
+nmap gy <Plug>(coc-type-definition)
+nmap gi <Plug>(coc-implementation)
+nmap gr <Plug>(coc-references)
 
 " *****************************
 " WINDOWS / BUFFERS
@@ -264,8 +264,8 @@ nnoremap <C-j> <C-w>-
 nnoremap <C-k> <C-w>+
 nnoremap <C-l> <C-w>>
 " quickfix window
-nmap <M-N> :cn<cr>
-nmap <M-M> :cp<cr>
+nmap <C-n> :cp<cr>
+nmap <C-m> :cn<cr>
 " remove buffer
 nmap <M-d> :bp<bar>bd#<cr>
 nmap <M-D> :bp<bar>bd!#<cr>
@@ -290,8 +290,6 @@ map <C-g> :vertical Git<cr>:vertical resize 60<cr>
 
 " *****************************
 " POPUPS
-command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, {'options': '--delimiter : --nth 4..'}, <bang>0)
-nmap          <M-w> :Ag<cr>
 nmap <silent> <M-x> :CocFzfList<cr>
 nmap <silent> <M-v> :CocFzfList symbols --kind Variable<cr>
 nmap <silent> <M-u> :CocFzfList symbols --kind Function<cr>
@@ -308,6 +306,17 @@ let g:fzf_preview_grep_cmd='rg --smart-case --line-number --no-heading --color=n
 nmap <silent> <M-g> :GFiles?<cr>
 nmap <silent> <M-c> :Commits<cr>
 nmap <silent> <M-C> :BCommits<cr>
+" Grep
+function! RipgrepFzf(query, fullscreen)
+  let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
+  let initial_command = printf(command_fmt, shellescape(a:query))
+  let reload_command = printf(command_fmt, '{q}')
+  let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+  call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
+endfunction
+command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+"command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, {'options': '--delimiter : --nth 4..'}, <bang>0)
+nmap          <M-w> :RG<cr>
 
 " *****************************
 " COC CONFIGS
