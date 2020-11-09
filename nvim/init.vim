@@ -23,19 +23,25 @@ Plug 'junegunn/fzf', {'dir': '~/.fzf', 'do': './install --all'}
 Plug 'junegunn/fzf.vim'
 Plug 'antoinemadec/coc-fzf', {'branch': 'release'}
 Plug 'sheerun/vim-polyglot'           " language syntax
+Plug 'tpope/vim-abolish'              " better search replace
 " git
 Plug 'tpope/vim-fugitive'
 " markdown
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
 Plug 'plasticboy/vim-markdown'        " markdown helper.
 " helpers
-Plug 'scrooloose/nerdcommenter'       " commenting tool
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-commentary'           " commenting tool
 Plug 'tpope/vim-surround'             " parentheses helper
 Plug 'mbbill/undotree'                " Persistent undo
 Plug 'farmergreg/vim-lastplace'       " When reopen a buffer, puts the cursor where it was last time
-Plug 'christoomey/vim-tmux-navigator' " integrate movement in tmux and vim
 Plug 'haya14busa/vim-asterisk'        " better asterisk motions
-Plug 'bfredl/nvim-miniyank'           " nvim bugfix block copy
+Plug 'svermeulen/vim-easyclip'
+Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-sensible'
+" tmux
+Plug 'roxma/vim-tmux-clipboard'
+Plug 'christoomey/vim-tmux-navigator' " integrate movement in tmux and vim
 " aesthetics
 Plug 'chriskempson/base16-vim'        " base16 themes
 Plug 'chrisbra/Colorizer'             " show color codes
@@ -69,7 +75,7 @@ let g:seoul256_background=233
 colo seoul256
 
 " statusline
-set cmdheight=1
+set cmdheight=2
 let g:airline_powerline_fonts=1
 "let g:airline_theme='molokai'
 "let g:airline_theme='qwq'
@@ -98,8 +104,7 @@ set ignorecase     " Case insensitive search
 set smartcase      " ... but case sensitive when uc present
 
 " cursor
-set scrolljump=5   " Line to scroll when cursor leaves screen
-set scrolloff=3    " Minumum lines to keep above and below cursor
+set scrolljump=1   " Line to scroll when cursor leaves screen
 
 " buffers
 set splitright     " Puts new vsplit windows to the right of the current
@@ -119,8 +124,10 @@ set matchtime=5    " Show matching time
 set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
 set fileformats=unix,dos,mac
 
-" indentation and folds
+" indentation
 set smartindent
+
+" folds
 set foldmethod=indent
 set foldlevelstart=20
 " zm/M zr/R increase/increase foldlevel (max)
@@ -146,8 +153,11 @@ let g:BASH_Ctrl_j='off'            " avoid 'C-j' being overridden to newline
 let g:BASH_Ctrl_l='off'            " avoid 'C-l' being overridden to newline
 highlight clear SignColumn         " SignColumn should match background
 set shortmess=atOI                 " No help Uganda information, and overwrite read messages to avoid PRESS ENTER prompts
-set listchars=tab:→\ ,eol:↵,trail:·,extends:↷,precedes:↶
+set listchars=tab:→\ ,eol:↵,trail:·,extends:↷,precedes:↶,nbsp:+
 set fillchars=vert:│,stl:\ ,stlnc:\
+set clipboard+=unnamed
+set list
+
 
 " -----------------------------------------------------------------------------
 " KEYBINDS
@@ -156,17 +166,16 @@ let mapleader="\<SPACE>"
 nnoremap q: <nop>
 nnoremap Q <nop>
 vnoremap v <Esc>
-nnoremap K zz
+set pastetoggle=<F2>
 nmap <esc><esc> :noh<cr>
 nmap <leader>R :so ~/.config/nvim/init.vim<cr>
 nmap <leader>E :tabe ~/OneDrive/dotfiles/nvim/init.vim<cr>
 nmap <leader>w :cd %:p:h<cr>
-" nerdcommenter: '<leader>c ', '<leader>cl' aligned and '<leader>cu>' remove
 " vim-surround: visual 'SA' to wrap in A. Surround 'csAB' to change from A to B, 'dsA' to remove A. Word 'ysiwA' to wrap with A
 
 " *****************************
 " REMAPPING
-set langmap=å(,¨),Å{,^},Ø\\;,ø:,\\;<,:>,æ^
+set langmap=å(,¨),Å{,^},Ø\\;,ø:,æ^
 " æ ^
 " Ø ;
 " ø :
@@ -181,12 +190,6 @@ nmap cr <Plug>(coc-rename)
 nmap cR <Plug>(coc-refactor)
 xmap cf <Plug>(coc-format-selected)
 nmap cf <Plug>(coc-format-selected)
-
-" *****************************
-" CLIPBOARD (incl bugfix paste unnamedplus)
-set clipboard+=unnamedplus
-nmap p <Plug>(miniyank-autoput)
-nmap P <Plug>(miniyank-autoPut)
 
 " *****************************
 " TERMINAL
@@ -333,12 +336,26 @@ imap <silent><expr> <TAB>
 imap <expr><S-Tab> pumvisible() ? "\<C-p>" : "\<C-h>"
 imap <silent><expr> <C-space> coc#refresh()
 
+" Use K to show documentation in preview window.
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  elseif (coc#rpc#ready())
+    call CocActionAsync('doHover')
+  else
+    execute '!' . &keywordprg . " " . expand('<cword>')
+  endif
+endfunction
+
 " *****************************
 " MARKDOWN
 " vim-markdown
 let g:vim_markdown_new_list_item_indent=0
-let g:vim_markdown_conceal=0
-let g:vim_markdown_conceal_code_blocks=0
+let g:vim_markdown_auto_insert_bullets=1
+let g:vim_markdown_conceal=1
+let g:vim_markdown_conceal_code_blocks=1
 let g:vim_markdown_math=1
 let g:vim_markdown_folding_disabled=0
 " markdown preview
@@ -367,6 +384,9 @@ augroup myAu   " A unique name for the group.  DO NOT use the same name twice!
     autocmd BufWritePre * %s/\s\+$//e                                                " Automatically deletes all trailing whitespace on save.
     autocmd BufReadPost quickfix nmap <buffer> <cr> <cr>                             " quickfix <cr>
     autocmd CompleteDone * if pumvisible() == 0 | pclose | endif                     " bugfix
+    autocmd BufNewFile,BufRead *.cfg set syntax=cfg
+    autocmd FileType python map <F9> :CocCommand python.execInTerminal<CR>
+    autocmd FileType python imap <F9> <esc>:CocCommand python.execInTerminal<CR>
 augroup end
 
 " CTRL-A CTRL-Q to select all and build quickfix list

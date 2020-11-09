@@ -10,14 +10,16 @@
   * vlc player `sudo pacman -S libmicrodns protobuf vlc`
 
 # coding
+* dry `yay dry-bin`
 * cuda `sudo pacman -S cuda`
+* cuda-docker `yay nvidia-container-toolkit`
 * core `sudo pacman -S neovim tmux`
 * `git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm`
 * fonts `sudo pacman -S powerline`
 * fonts `yay nerd-fonts-source-code-pro powerline-fonts-git`
 * git addons `sudo pacman -S diff-so-fancy`
 * search `sudo pacman -S the_silver_searcher ripgrep`
-* syntax highlighting `sudo pacman -S bat`
+* cat replacement `sudo pacman -S bat`
 * javascript `sudo pacman -S npm nodejs yarn`
 * c++ `sudo pacman -S ninja`
 
@@ -31,7 +33,6 @@
 # python
 * `pip install torch torchvision`
 * `pip install plotly flake8 numpy scipy sympy matplotlib seaborn pytorch-lightning ggplot ptvsd tensorboard torchtext ipython matplotlib-label-lines ipympl pytest qbstyles`
-* `pip install nodejs kafka`
 
 # enable services
 * `systemctl enable --user onedrive --now`
