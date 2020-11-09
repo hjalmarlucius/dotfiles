@@ -6,3 +6,5 @@ function fish_user_key_bindings
   bind -M insert \ep __fzf_find_file
   bind -M insert \ef '__fzf_open --editor'
 end
+
+fzf_key_bindings
