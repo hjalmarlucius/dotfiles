@@ -8,6 +8,9 @@
   * night colors `sudo pacman -S redshift`
   * gaming `sudo pacman -S steam-manjaro steam-native`
   * vlc player `sudo pacman -S libmicrodns protobuf vlc`
+* hardware
+  * glances
+  * liquidctl
 
 # coding
 * dry `yay dry-bin`
