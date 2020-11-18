@@ -203,7 +203,7 @@ bindsym $mod+Shift+Insert move container to workspace $ws4; workspace $ws4
 bindsym $mod+Shift+Home move container to workspace $ws5; workspace $ws5
 bindsym $mod+Shift+Prior move container to workspace $ws6; workspace $ws6
 bindsym $mod+Shift+Delete move container to workspace $ws7; workspace $ws7
-bindsym $mod+Shift+End container to workspace $ws8; workspace $ws8
+bindsym $mod+Shift+End move container to workspace $ws8; workspace $ws8
 bindsym $mod+Shift+Next move container to workspace $ws9; workspace $ws9
 
 # Open applications on specific workspaces

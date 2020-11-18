@@ -71,8 +71,8 @@ endif
 "highlight LineNr guibg=NONE ctermbg=NONE
 
 " seoul256 theme config (dark 233-239, light 252-256)
-let g:seoul256_background=233
-colo seoul256
+" let g:seoul256_background=233
+" colo seoul256
 
 " statusline
 set cmdheight=2
@@ -176,13 +176,6 @@ nmap <leader>w :cd %:p:h<cr>
 " *****************************
 " REMAPPING
 set langmap=å(,¨),Å{,^},Ø\\;,ø:,æ^
-" æ ^
-" Ø ;
-" ø :
-" Å {
-" ^ }
-" ; <
-" : >
 
 " *****************************
 " EDITING
@@ -222,15 +215,6 @@ let g:asterisk#keeppos=1
 " stay visual when indenting
 vnoremap >> >gv
 vnoremap << <gv
-" insert mode movement
-inoremap <C-h> <Left>
-inoremap <C-j> <Down>
-inoremap <C-k> <Up>
-inoremap <C-l> <Right>
-inoremap <C-b> <BS>
-inoremap <C-a> <Home>
-inoremap <C-e> <End>
-inoremap <C-d> <Delete>
 " move between errors
 nmap <M-n> <Plug>(coc-diagnostic-prev)
 nmap <M-m> <Plug>(coc-diagnostic-next)
@@ -256,7 +240,7 @@ nnoremap <M--> :split<cr>
 nnoremap <M-_> :new<cr>
 nnoremap <M-t> :tabe %<cr>
 nnoremap <M-T> :tabnew<cr>
-" buffergator
+" buffers and tabs
 nmap <M-H> :bprev<cr>
 nmap <M-L> :bnext<cr>
 nmap <M-J> :tabprev<cr>
