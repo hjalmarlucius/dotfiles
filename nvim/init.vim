@@ -36,7 +36,7 @@ Plug 'tpope/vim-surround'             " parentheses helper
 Plug 'mbbill/undotree'                " Persistent undo
 Plug 'farmergreg/vim-lastplace'       " When reopen a buffer, puts the cursor where it was last time
 Plug 'haya14busa/vim-asterisk'        " better asterisk motions
-Plug 'svermeulen/vim-easyclip'
+Plug 'svermeulen/vim-cutlass'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-sensible'
 " tmux
@@ -71,7 +71,7 @@ endif
 "highlight LineNr guibg=NONE ctermbg=NONE
 
 " seoul256 theme config (dark 233-239, light 252-256)
-" let g:seoul256_background=233
+let g:seoul256_background=233
 " colo seoul256
 
 " statusline
@@ -155,7 +155,7 @@ highlight clear SignColumn         " SignColumn should match background
 set shortmess=atOI                 " No help Uganda information, and overwrite read messages to avoid PRESS ENTER prompts
 set listchars=tab:→\ ,eol:↵,trail:·,extends:↷,precedes:↶,nbsp:+
 set fillchars=vert:│,stl:\ ,stlnc:\
-set clipboard+=unnamed
+set clipboard+=unnamedplus
 set list
 
 
@@ -176,6 +176,14 @@ nmap <leader>w :cd %:p:h<cr>
 " *****************************
 " REMAPPING
 set langmap=å(,¨),Å{,^},Ø\\;,ø:,æ^
+
+" *****************************
+" REMAPPING
+nnoremap m d
+xnoremap m d
+
+nnoremap mm dd
+nnoremap M D
 
 " *****************************
 " EDITING
