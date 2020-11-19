@@ -1,7 +1,7 @@
 # linux
 * yay stuff
   * AUR `sudo pacman -S yay`
-  * `yay onedrive-abraunegg dropbox slack-desktop ncspot-git`
+  * `yay onedrive-abraunegg dropbox slack-desktop ncspot-git rxvt-unicode-truecolor-wide-glyphs`
 * applications
   * helpers `sudo pacman -S zathura-pdf-mupdf trash-cli rofi`
   * base16 shell `git clone https://github.com/chriskempson/base16-shell.git ~/.config/base16-shell`
@@ -18,8 +18,7 @@
 * cuda-docker `yay nvidia-container-toolkit`
 * core `sudo pacman -S neovim tmux`
 * `git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm`
-* fonts `sudo pacman -S powerline`
-* fonts `yay nerd-fonts-source-code-pro powerline-fonts-git`
+* fonts `yay nerd-fonts-source-code-pro powerline-fonts-git libxft-bgra`
 * git addons `sudo pacman -S diff-so-fancy`
 * search `sudo pacman -S the_silver_searcher ripgrep`
 * cat replacement `sudo pacman -S bat`
