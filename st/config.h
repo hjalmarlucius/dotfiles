@@ -249,8 +249,8 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_J,           kscrolldown,    {.i =  1} },
 	{ TERMMOD,              XK_U,           kscrollup,      {.i = -1} },
 	{ TERMMOD,              XK_D,           kscrolldown,    {.i = -1} },
-	{ TERMMOD,              XK_Page_Up,     kscrollup,      {.i = -1} },
-	{ TERMMOD,              XK_Page_Down,   kscrolldown,    {.i = -1} },
+	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
+	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
 };
 
@@ -766,7 +766,7 @@ static Key key[] = {
 	{ XK_BackSpace,    Mod1Mask|ControlMask,           "\033[127;7u", 0,  0},
 	{ XK_BackSpace,    Mod1Mask|ControlMask|ShiftMask, "\033[127;8u", 0,  0},
 	{ XK_BackSpace,    Mod1Mask|ShiftMask,             "\033[127;4u", 0,  0},
-	{ XK_BackSpace,    ShiftMask,                      "\033[127;2u", 0,  0},
+	/* { XK_BackSpace,    ShiftMask,                      "\033[127;2u", 0,  0}, */
 	{ XK_Tab,          ControlMask,                    "\033[9;5u",   0,  0},
 	{ XK_Tab,          ControlMask|ShiftMask,          "\033[1;5Z",   0,  0},
 	{ XK_Tab,          Mod1Mask,                       "\033[1;3Z",   0,  0},
@@ -779,7 +779,7 @@ static Key key[] = {
 	{ XK_Return,       Mod1Mask|ControlMask,           "\033[13;7u",  0,  0},
 	{ XK_Return,       Mod1Mask|ControlMask|ShiftMask, "\033[13;8u",  0,  0},
 	{ XK_Return,       Mod1Mask|ShiftMask,             "\033[13;4u",  0,  0},
-	{ XK_Return,       ShiftMask,                      "\033[13;2u",  0,  0},
+	/* { XK_Return,       ShiftMask,                      "\033[13;2u",  0,  0}, */
 	{ XK_Pause,        ControlMask,                    "\033[18;5u",  0,  0},
 	{ XK_Pause,        ControlMask|ShiftMask,          "\033[18;6u",  0,  0},
 	{ XK_Pause,        Mod1Mask,                       "\033[18;3u",  0,  0},
@@ -863,7 +863,7 @@ static Key key[] = {
 	{ XK_space,        Mod1Mask|ControlMask,           "\033[32;7u",  0,  0},
 	{ XK_space,        Mod1Mask|ControlMask|ShiftMask, "\033[32;8u",  0,  0},
 	{ XK_space,        Mod1Mask|ShiftMask,             "\033[32;4u",  0,  0},
-	{ XK_space,        ShiftMask,                      "\033[32;2u",  0,  0},
+	/* { XK_space,        ShiftMask,                      "\033[32;2u",  0,  0}, */
 	{ XK_0,            ControlMask,                    "\033[48;5u",  0,  0},
 	{ XK_A,            ControlMask|ShiftMask,          "\033[65;6u",  0,  0},
 	{ XK_B,            ControlMask|ShiftMask,          "\033[66;6u",  0,  0},
