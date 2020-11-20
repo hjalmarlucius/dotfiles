@@ -36,7 +36,6 @@ Plug 'tpope/vim-surround'             " parentheses helper
 Plug 'mbbill/undotree'                " Persistent undo
 Plug 'farmergreg/vim-lastplace'       " When reopen a buffer, puts the cursor where it was last time
 Plug 'haya14busa/vim-asterisk'        " better asterisk motions
-Plug 'svermeulen/vim-cutlass'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-sensible'
 " tmux
@@ -46,6 +45,7 @@ Plug 'christoomey/vim-tmux-navigator' " integrate movement in tmux and vim
 Plug 'chriskempson/base16-vim'        " base16 themes
 Plug 'chrisbra/Colorizer'             " show color codes
 Plug 'junegunn/rainbow_parentheses.vim' " colorize parentheses
+Plug 'junegunn/goyo.vim'
 " themes
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -162,12 +162,11 @@ set list
 " -----------------------------------------------------------------------------
 " KEYBINDS
 " -----------------------------------------------------------------------------
+
+" *****************************
+" MAPPING
 let mapleader="\<SPACE>"
-nnoremap q: <nop>
-nnoremap Q <nop>
-vnoremap v <Esc>
 set pastetoggle=<F2>
-nmap <esc><esc> :noh<cr>
 nmap <leader>R :so ~/.config/nvim/init.vim<cr>
 nmap <leader>E :tabe ~/OneDrive/dotfiles/nvim/init.vim<cr>
 nmap <leader>w :cd %:p:h<cr>
@@ -176,14 +175,14 @@ nmap <leader>w :cd %:p:h<cr>
 " *****************************
 " REMAPPING
 set langmap=å(,¨),Å{,^},Ø\\;,ø:,æ^
+nnoremap æ "
+vnoremap v <Esc>
+nmap <esc><esc> :noh<cr>
 
 " *****************************
-" REMAPPING
-nnoremap m d
-xnoremap m d
-
-nnoremap mm dd
-nnoremap M D
+" UNMAPPING
+nnoremap q: <nop>
+nnoremap Q <nop>
 
 " *****************************
 " EDITING
@@ -243,7 +242,7 @@ nmap <silent> <M-k> :TmuxNavigateUp<cr>
 nmap <silent> <M-l> :TmuxNavigateRight<cr>
 " make splits and tabs
 nnoremap <M-BAR> :vsplit<cr>
-nnoremap <M-§> :vnew<cr>
+nnoremap § :vnew<cr>
 nnoremap <M--> :split<cr>
 nnoremap <M-_> :new<cr>
 nnoremap <M-t> :tabe %<cr>
@@ -266,6 +265,10 @@ nmap <M-d> :bp<bar>bd#<cr>
 nmap <M-D> :bp<bar>bd!#<cr>
 " close window
 nmap <M-q> :q<cr>
+" goyo
+let g:goyo_linenr=1
+let g:goyo_width=120
+nmap <C-w> :Goyo<cr>
 
 " *****************************
 " GIT
@@ -278,7 +281,7 @@ vmap <M-X> :CocCommand git.chunkUndo<cr>
 " *****************************
 " EXPLORERS
 " coc-explorer
-map <C-f> :CocCommand explorer<cr>
+map <C-x> :CocCommand explorer<cr>
 " vim-fugitive
 " g? for fugitive help. :Gdiff, :Gblame, :Gstats '=' expand, '-' add/reset changes, :Gcommit % to commit current file with messag
 map <C-g> :vertical Git<cr>:vertical resize 60<cr>
