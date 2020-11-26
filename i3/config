@@ -4,6 +4,9 @@
 # Set mod key (Mod1=<Alt>, Mod4=<Super>)
 set $mod Mod4
 
+# set terminal
+set $term st
+
 # set default desktop layout (default is tiling)
 # workspace_layout tabbed <stacking|tabbed>
 
@@ -33,7 +36,7 @@ font pango:Noto Sans 11
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec st
+bindsym $mod+Return exec $term
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -47,7 +50,7 @@ bindsym $mod+d exec --no-startup-id rofi -show combi -combi-modi "run#drun" -lin
 ################################################################################################
 
 exec --no-startup-id volumeicon
-bindsym $mod+Ctrl+m exec terminal -e 'alsamixer'
+bindsym $mod+Ctrl+m exec $term -e 'alsamixer'
 #exec --no-startup-id pulseaudio
 #exec --no-startup-id pa-applet
 #bindsym $mod+Ctrl+m exec pavucontrol
@@ -70,13 +73,13 @@ bindsym $mod+F9 exec "xrandr --output DP-4 --primary --output DP-2 --auto --rota
 bindsym $mod+Shift+F9 exec "xrandr --output DP-4 --primary --output DP-2 --off --output DP-0 --off"
 
 # Start Applications
-bindsym $mod+Ctrl+b exec terminal -e 'bmenu'
+bindsym $mod+Ctrl+b exec $term -e 'bmenu'
 bindsym $mod+F1 exec glances -w
 bindsym $mod+F2 exec chromium
 bindsym $mod+F3 exec thunar
-bindsym $mod+Shift+F3 exec terminal -e 'ranger'
-bindsym $mod+F4 exec terminal -e 'mocp'
-bindsym $mod++Shift+F4 exec terminal -e 'ncspot'
+bindsym $mod+Shift+F3 exec $term -e 'ranger'
+bindsym $mod+F4 exec $term -e 'mocp'
+bindsym $mod++Shift+F4 exec $term -e 'ncspot'
 bindsym $mod+t exec --no-startup-id pkill picom
 bindsym $mod+Shift+t exec --no-startup-id picom -b
 bindsym $mod+Shift+d --release exec "killall dunst; exec notify-send 'restart dunst'"
@@ -302,11 +305,12 @@ exec --no-startup-id xfce4-power-manager
 #exec --no-startup-id pamac-tray
 #exec --no-startup-id clipit
 #exec --no-startup-id start_conky_live_green
-exec --no-startup-id xautolock -time 10 -locker blurlock
+exec --no-startup-id xautolock -time 30 -locker blurlock
 exec_always --no-startup-id sbxkb
 #exec_always --no-startup-id ff-theme-util
 exec_always --no-startup-id fix_xcursor
 exec --no-startup-id xrandr --output $display2 --primary --output $display3 --auto --rotate left --right-of $display2 --output $display1 --auto --rotate left --left-of $display2
+exec_always for id in $(xinput list | grep "pointer" | cut -d '=' -f 2 | cut -f 1); do xinput --set-prop $id 'libinput Accel Profile Enabled' 0, 1; done
 
 # HB STARTUP ADDITIONS
 exec --no-startup-id setxkbmap -layout no -variant nodeadkeys -option "caps:escape"

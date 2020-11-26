@@ -11,6 +11,7 @@
 * hardware
   * glances
   * liquidctl
+  * `sudo pacman -S pulseaudio-bluetooth`
 
 # coding
 * dry `yay dry-bin`
@@ -46,8 +47,16 @@
 # IP
 * hjalmar-droneship 88.89.64.249 10.0.0.2
 
-OMF
+#OMF
 * curl -L https://get.oh-my.fish | fish
 * omf install https://github.com/FabioAntunes/fish-nvm
 * omf install https://github.com/edc/bass
 * omf install https://github.com/jethrokuan/fzf
+
+# ROUTER
+* asus merlin - install Diversion, conmon, skynet, scMerlin, uiDivStats
+* wifi adapter: kill bluetooth and background scans. tools:
+  * **rfkill** (=interact with wireless devices) see blocked `rfkill`
+  * **inxi** (=tool to show stuff) see network drivers `inxi -N`
+  * **iwconfig** (=wireless ifconfig) see signal strength, bit rate etc `iwconfig`
+  * **lsusb & lspci**: show info on usb & pci `sudo lsusb -vv -s [device]` and `sudo lspci -vv -s [device]`

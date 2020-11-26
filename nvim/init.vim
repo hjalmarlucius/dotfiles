@@ -13,7 +13,8 @@ let g:coc_global_extensions=[
       \ 'coc-tsserver',
       \ 'coc-diagnostic',
       \ 'coc-yaml',
-      \ 'coc-explorer'
+      \ 'coc-explorer',
+      \ 'coc-markmap'
       \ ]
 
 call plug#begin('~/.config/nvim/plugged')
@@ -73,6 +74,7 @@ endif
 " seoul256 theme config (dark 233-239, light 252-256)
 let g:seoul256_background=233
 " colo seoul256
+" colo base16-tomorrow-night
 
 " statusline
 set cmdheight=2
@@ -80,8 +82,8 @@ let g:airline_powerline_fonts=1
 "let g:airline_theme='molokai'
 "let g:airline_theme='qwq'
 "let g:airline_theme='badwolf'
-"let g:airline_theme='silver'
-let g:airline_theme='raven'
+let g:airline_theme='silver'
+" let g:airline_theme='raven'
 let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#tabline#show_splits=0
 let g:airline#extensions#tabline#show_tabs=0
@@ -176,6 +178,11 @@ nmap <leader>w :cd %:p:h<cr>
 " REMAPPING
 set langmap=å(,¨),Å{,^},Ø\\;,ø:,æ^
 nnoremap æ "
+vnoremap æ "
+nnoremap Æ @
+vnoremap Æ @
+nnoremap ÆÆ @@
+vnoremap ÆÆ @@
 vnoremap v <Esc>
 nmap <esc><esc> :noh<cr>
 
@@ -220,8 +227,8 @@ let g:asterisk#keeppos=1
 " *****************************
 " CURSOR
 " stay visual when indenting
-vnoremap >> >gv
-vnoremap << <gv
+vnoremap <Tab> >gv
+vnoremap <S-Tab> <gv
 " move between errors
 nmap <M-n> <Plug>(coc-diagnostic-prev)
 nmap <M-m> <Plug>(coc-diagnostic-next)
@@ -242,9 +249,9 @@ nmap <silent> <M-k> :TmuxNavigateUp<cr>
 nmap <silent> <M-l> :TmuxNavigateRight<cr>
 " make splits and tabs
 nnoremap <M-BAR> :vsplit<cr>
-nnoremap § :vnew<cr>
+nnoremap <C-BAR> :vnew<cr>
 nnoremap <M--> :split<cr>
-nnoremap <M-_> :new<cr>
+nnoremap <C--> :new<cr>
 nnoremap <M-t> :tabe %<cr>
 nnoremap <M-T> :tabnew<cr>
 " buffers and tabs
@@ -267,8 +274,9 @@ nmap <M-D> :bp<bar>bd!#<cr>
 nmap <M-q> :q<cr>
 " goyo
 let g:goyo_linenr=1
-let g:goyo_width=120
-nmap <C-w> :Goyo<cr>
+let g:goyo_width="140"
+let g:goyo_height="100%"
+nmap <C-q> :Goyo<cr>
 
 " *****************************
 " GIT
@@ -281,30 +289,14 @@ vmap <M-X> :CocCommand git.chunkUndo<cr>
 " *****************************
 " EXPLORERS
 " coc-explorer
-map <C-x> :CocCommand explorer<cr>
+map <C-p> :CocCommand explorer<cr>
 " vim-fugitive
 " g? for fugitive help. :Gdiff, :Gblame, :Gstats '=' expand, '-' add/reset changes, :Gcommit % to commit current file with messag
 map <C-g> :vertical Git<cr>:vertical resize 60<cr>
 
 " *****************************
 " POPUPS
-nmap <silent> <M-x> :CocFzfList<cr>
-nmap <silent> <M-v> :CocFzfList symbols --kind Variable<cr>
-nmap <silent> <M-u> :CocFzfList symbols --kind Function<cr>
-nmap <silent> <M-r> :History<cr>
-nmap <silent> <M-e> :History/<cr>
-nmap <silent> <M-f> :GFiles<cr>
-nmap <silent> <M-F> :Files<cr>
-nmap <silent> <M-b> :Buffers<cr>
-map  <silent> <M-z> :Colors<cr>
-map  <silent> <M-y> :Filetypes<cr>
-let g:fzf_preview_command='bat --color=always --plain {-1}' " Installed bat
-let g:fzf_preview_grep_cmd='rg --smart-case --line-number --no-heading --color=never'
-" fzf git
-nmap <silent> <M-g> :GFiles?<cr>
-nmap <silent> <M-c> :Commits<cr>
-nmap <silent> <M-C> :BCommits<cr>
-" Grep
+" Grep function
 function! RipgrepFzf(query, fullscreen)
   let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
   let initial_command = printf(command_fmt, shellescape(a:query))
@@ -314,7 +306,25 @@ function! RipgrepFzf(query, fullscreen)
 endfunction
 command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 "command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, {'options': '--delimiter : --nth 4..'}, <bang>0)
-nmap          <M-w> :RG<cr>
+let g:fzf_preview_command='bat --color=always --plain {-1}' " Installed bat
+let g:fzf_preview_grep_cmd='rg --smart-case --line-number --no-heading --color=never'
+" shortcuts
+nmap <silent> <F2> :Buffers<cr>
+map  <silent> <F3> :Colors<cr>
+nmap <silent> <F4> :CocFzfList<cr>
+nmap <silent> <F5> :CocFzfList symbols<cr>
+nmap <silent> <F6> :CocFzfList symbols --kind Variable<cr>
+nmap <silent> <F7> :CocFzfList symbols --kind Function<cr>
+nmap <silent> <F8> :CocFzfList symbols --kind Class<cr>
+nmap <silent> <F9> :Commits<cr>
+nmap <silent> <F10> :BCommits<cr>
+nmap <silent> <M-w> :RG<cr>
+nmap <silent> <M-g> :GFiles?<cr>
+nmap <silent> <M-r> :History<cr>
+nmap <silent> <M-s> :History/<cr>
+nmap <silent> <M-f> :Files<cr>
+nmap <silent> <M-F> :GFiles<cr>
+map  <silent> <M-y> :Filetypes<cr>
 
 " *****************************
 " COC CONFIGS
@@ -347,7 +357,9 @@ endfunction
 " *****************************
 " MARKDOWN
 " vim-markdown
-let g:vim_markdown_new_list_item_indent=0
+nmap <Leader>m <Plug>(coc-markmap-create)
+vmap <Leader>m <Plug>(coc-markmap-create-v)
+let g:vim_markdown_new_list_item_indent=2
 let g:vim_markdown_auto_insert_bullets=1
 let g:vim_markdown_conceal=1
 let g:vim_markdown_conceal_code_blocks=1

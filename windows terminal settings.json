@@ -30,7 +30,7 @@
             // Put settings here that you want to apply to all profiles.
             "colorScheme": "One Half Dark",
             "fontSize": 10,
-            "fontFace": "Anonymous Pro for Powerline"
+            "fontFace": "Hack"
         },
         "list":
         [
