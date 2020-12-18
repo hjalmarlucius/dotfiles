@@ -1,7 +1,7 @@
 # linux
 * yay stuff
   * AUR `sudo pacman -S yay`
-  * `yay onedrive-abraunegg dropbox slack-desktop ncspot-git rxvt-unicode-truecolor-wide-glyphs`
+  * `yay -S onedrive-abraunegg dropbox slack-desktop ncspot-git rxvt-unicode-truecolor-wide-glyphs chromium`
 * applications
   * helpers `sudo pacman -S zathura-pdf-mupdf trash-cli rofi`
   * base16 shell `git clone https://github.com/chriskempson/base16-shell.git ~/.config/base16-shell`
@@ -54,7 +54,8 @@
 * omf install https://github.com/jethrokuan/fzf
 
 # ROUTER
-* asus merlin - install Diversion, conmon, skynet, scMerlin, uiDivStats
+* asus merlin - install conmon, skynet, scMerlin, FlexQOS
+  + maybe: Diversion + uiDivStats + yazFi
 * wifi adapter: kill bluetooth and background scans. tools:
   * **rfkill** (=interact with wireless devices) see blocked `rfkill`
   * **inxi** (=tool to show stuff) see network drivers `inxi -N`

@@ -16,13 +16,14 @@ let g:coc_global_extensions=[
       \ 'coc-explorer',
       \ 'coc-markmap'
       \ ]
+let g:polyglot_disabled = ['python']
 
 call plug#begin('~/.config/nvim/plugged')
 " tools
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'junegunn/fzf', {'dir': '~/.fzf', 'do': './install --all'}
 Plug 'junegunn/fzf.vim'
-Plug 'antoinemadec/coc-fzf', {'branch': 'release'}
+Plug 'antoinemadec/coc-fzf', {'branch': 'master'}
 Plug 'sheerun/vim-polyglot'           " language syntax
 Plug 'tpope/vim-abolish'              " better search replace
 " git
@@ -39,8 +40,12 @@ Plug 'farmergreg/vim-lastplace'       " When reopen a buffer, puts the cursor wh
 Plug 'haya14busa/vim-asterisk'        " better asterisk motions
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-sensible'
+Plug 'dkarter/bullets.vim'
+" python
+Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
+Plug 'tmhedberg/SimpylFold'
+Plug 'jeetsukumaran/vim-pythonsense'
 " tmux
-Plug 'roxma/vim-tmux-clipboard'
 Plug 'christoomey/vim-tmux-navigator' " integrate movement in tmux and vim
 " aesthetics
 Plug 'chriskempson/base16-vim'        " base16 themes
@@ -51,6 +56,8 @@ Plug 'junegunn/goyo.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'junegunn/seoul256.vim'
+Plug 'sainnhe/gruvbox-material'
+Plug 'skbolton/embark'
 call plug#end()
 
 " -----------------------------------------------------------------------------
@@ -75,6 +82,7 @@ endif
 let g:seoul256_background=233
 " colo seoul256
 " colo base16-tomorrow-night
+colo gruvbox-material
 
 " statusline
 set cmdheight=2
@@ -82,8 +90,9 @@ let g:airline_powerline_fonts=1
 "let g:airline_theme='molokai'
 "let g:airline_theme='qwq'
 "let g:airline_theme='badwolf'
-let g:airline_theme='silver'
+" let g:airline_theme='silver'
 " let g:airline_theme='raven'
+let g:airline_theme='base16_gruvbox_dark_hard'
 let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#tabline#show_splits=0
 let g:airline#extensions#tabline#show_tabs=0
@@ -131,7 +140,11 @@ set smartindent
 
 " folds
 set foldmethod=indent
-set foldlevelstart=20
+set foldlevel=2
+set foldnestmax=10
+set nofoldenable
+let g:SimpylFold_docstring_preview = 1
+let g:SimpylFold_fold_docstring = 1
 " zm/M zr/R increase/increase foldlevel (max)
 " zo/O zc/C open / close fold (max)
 " za zA switch fold (small/full)
@@ -229,6 +242,7 @@ let g:asterisk#keeppos=1
 " stay visual when indenting
 vnoremap <Tab> >gv
 vnoremap <S-Tab> <gv
+noremap - _
 " move between errors
 nmap <M-n> <Plug>(coc-diagnostic-prev)
 nmap <M-m> <Plug>(coc-diagnostic-next)
@@ -249,9 +263,11 @@ nmap <silent> <M-k> :TmuxNavigateUp<cr>
 nmap <silent> <M-l> :TmuxNavigateRight<cr>
 " make splits and tabs
 nnoremap <M-BAR> :vsplit<cr>
-nnoremap <C-BAR> :vnew<cr>
+nnoremap <C-w><BAR> :vsplit<cr>
+nnoremap <C-w>§ :vnew<cr>
 nnoremap <M--> :split<cr>
-nnoremap <C--> :new<cr>
+nnoremap <C-w>- :split<cr>
+nnoremap <C-w>_ :new<cr>
 nnoremap <M-t> :tabe %<cr>
 nnoremap <M-T> :tabnew<cr>
 " buffers and tabs
@@ -318,6 +334,7 @@ nmap <silent> <F7> :CocFzfList symbols --kind Function<cr>
 nmap <silent> <F8> :CocFzfList symbols --kind Class<cr>
 nmap <silent> <F9> :Commits<cr>
 nmap <silent> <F10> :BCommits<cr>
+nmap <silent> <F12> :CocFzfList outline<cr>
 nmap <silent> <M-w> :RG<cr>
 nmap <silent> <M-g> :GFiles?<cr>
 nmap <silent> <M-r> :History<cr>
@@ -359,8 +376,8 @@ endfunction
 " vim-markdown
 nmap <Leader>m <Plug>(coc-markmap-create)
 vmap <Leader>m <Plug>(coc-markmap-create-v)
-let g:vim_markdown_new_list_item_indent=2
-let g:vim_markdown_auto_insert_bullets=1
+let g:vim_markdown_new_list_item_indent=0
+let g:vim_markdown_auto_insert_bullets=0
 let g:vim_markdown_conceal=1
 let g:vim_markdown_conceal_code_blocks=1
 let g:vim_markdown_math=1
