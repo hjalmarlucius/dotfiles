@@ -1,53 +1,39 @@
 # linux
-* yay stuff
+* basics
   * AUR `sudo pacman -S yay`
-  * `yay -S onedrive-abraunegg dropbox slack-desktop ncspot-git rxvt-unicode-truecolor-wide-glyphs chromium`
+* fonts
+  * `yay -S nerd-fonts-source-code-pro powerline-fonts-git libxft-bgra`
 * applications
-  * helpers `sudo pacman -S zathura-pdf-mupdf trash-cli rofi`
-  * base16 shell `git clone https://github.com/chriskempson/base16-shell.git ~/.config/base16-shell`
-  * night colors `sudo pacman -S redshift`
-  * gaming `sudo pacman -S steam-manjaro steam-native`
-  * vlc player `sudo pacman -S libmicrodns protobuf vlc`
+  * `yay -S onedrive-abraunegg dropbox slack-desktop chromium zathura-pdf-mupdf trash-cli rofi redshift flameshot fish pavucontrol thunar`
+* gaming and media
+  + `yay -S steam-manjaro vlc libmicrodns protobuf ncspot-git`
 * hardware
-  * glances
-  * liquidctl
-  * `sudo pacman -S pulseaudio-bluetooth`
+  * `yay -S liquidctl glances pulseaudio-bluetooth asus-fan-control`
 
 # coding
-* dry `yay dry-bin`
-* cuda `sudo pacman -S cuda`
-* cuda-docker `yay nvidia-container-toolkit`
-* core `sudo pacman -S neovim tmux`
+* `yay -S cuda nvidia-container-toolkit`
+  `yay -S docker docker-compose dry-bin neovim tmux diff-so-fancy the_silver_searcher ripgrep bat npm nodejs yarn ninja ctags tig`
 * `git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm`
-* fonts `yay nerd-fonts-source-code-pro powerline-fonts-git libxft-bgra`
-* git addons `sudo pacman -S diff-so-fancy`
-* search `sudo pacman -S the_silver_searcher ripgrep`
-* cat replacement `sudo pacman -S bat`
-* javascript `sudo pacman -S npm nodejs yarn`
-* c++ `sudo pacman -S ninja`
-
-# settings
-* set shell to 'fish' via `bmenu`
-* replace caps with esc `setxkbmap -option 'caps:escape' `
-* ssh setup
-  * enable SSH `sudo systemctl enable --now sshd.service`
-  * enable X11 forwarding in `/etc/ssh/sshd_config`
 
 # python
-* `pip install torch torchvision`
-* `pip install plotly flake8 numpy scipy sympy matplotlib seaborn pytorch-lightning ggplot ptvsd tensorboard torchtext ipython matplotlib-label-lines ipympl pytest qbstyles`
+* `pip install ipython pytest neovim numpy scipy sympy flake8 ptvsd addict dill`
+* matplotlib stuff `pip install matplotlib seaborn matplotlib-label-lines ipympl qbstyles`
+* other plotting `pip install plotly ggplot`
+* install torch from [link](https://pytorch.org/)
+* `pip install tensorboard torchtext pytorch-lightning torchvision`
 
-# enable services
-* `systemctl enable --user onedrive --now`
-* `sudo systemctl enable fstrim.timer --now`
+# settings
+* bmenu for system config incl setting shell
+* replace caps with esc `setxkbmap -option 'caps:escape'`
+* enable docker non-root daemon [link](https://docs.docker.com/engine/install/linux-postinstall)
+* base16 shell `git clone https://github.com/chriskempson/base16-shell.git ~/.config/base16-shell`
+* ssh enable `sudo systemctl enable --now sshd.service`
+* jupyter `openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout ~/.jupyter/mykey.key -out ~/.jupyter/mycert.pem`
+* start onedrive `systemctl enable --user onedrive --now`
+* ssd maintenance `sudo systemctl enable fstrim.timer --now`
+* show log `journalctl --user-unit onedrive -f`
 
-# log services
-* log onedrive `journalctl --user-unit onedrive -f`
-
-# IP
-* hjalmar-droneship 88.89.64.249 10.0.0.2
-
-#OMF
+# OMF
 * curl -L https://get.oh-my.fish | fish
 * omf install https://github.com/FabioAntunes/fish-nvm
 * omf install https://github.com/edc/bass
@@ -61,3 +47,4 @@
   * **inxi** (=tool to show stuff) see network drivers `inxi -N`
   * **iwconfig** (=wireless ifconfig) see signal strength, bit rate etc `iwconfig`
   * **lsusb & lspci**: show info on usb & pci `sudo lsusb -vv -s [device]` and `sudo lspci -vv -s [device]`
+

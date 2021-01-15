@@ -1,4 +1,5 @@
-set shell=bash
+set shell=/usr/bin/bash
+let $SHELL="/usr/bin/bash"
 " -----------------------------------------------------------------------------
 " PLUGINS
 " -----------------------------------------------------------------------------
@@ -31,6 +32,7 @@ Plug 'tpope/vim-fugitive'
 " markdown
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
 Plug 'plasticboy/vim-markdown'        " markdown helper.
+Plug 'godlygeek/tabular'
 " helpers
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-commentary'           " commenting tool
@@ -162,8 +164,6 @@ set lazyredraw
 set updatetime=300
 set timeoutlen=500
 set conceallevel=2
-set shell=/usr/bin/bash
-let $SHELL="/usr/bin/bash"
 let g:BASH_Ctrl_j='off'            " avoid 'C-j' being overridden to newline
 let g:BASH_Ctrl_l='off'            " avoid 'C-l' being overridden to newline
 highlight clear SignColumn         " SignColumn should match background

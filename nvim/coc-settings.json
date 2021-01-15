@@ -9,7 +9,6 @@
     "python.linting.flake8Args": ["--ignore=E221,E226,E231,E241,E501,E701,E704"],
     "python.linting.enabled": true,
     "git.enableGutters": true,
-    "tabnine.shortcut": "TN",
     "yaml.format.enable": true,
     "yaml.format.singleQuote": true,
     "diagnostic-languageserver.filetypes": {
