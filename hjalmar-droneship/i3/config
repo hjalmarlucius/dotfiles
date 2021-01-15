@@ -42,7 +42,6 @@ bindsym $mod+Return exec $term
 bindsym $mod+Shift+q kill
 
 # start program launcher
-# bindsym $mod+d exec --no-startup-id dmenu_recency
 bindsym $mod+d exec --no-startup-id rofi -show combi -combi-modi "run#drun" -lines 10 -eh 2 -width 30
 
 ################################################################################################
@@ -153,56 +152,61 @@ bindsym $mod+Ctrl+Left workspace prev
 set $ws1 "1"
 set $ws2 "2"
 set $ws3 "3"
-set $ws4 "Ins"
-set $ws5 "Home"
-set $ws6 "PgUp"
-set $ws7 "Del"
-set $ws8 "End"
-set $ws9 "PgDn"
+set $ws4 "4"
+set $ws5 "Ins"
+set $ws6 "Home"
+set $ws7 "PgUp"
+set $ws8 "Del"
+set $ws9 "End"
+set $ws0 "PgDn"
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
 bindsym $mod+2 workspace $ws2
 bindsym $mod+3 workspace $ws3
-bindsym $mod+Insert workspace $ws4
-bindsym $mod+Home workspace $ws5
-bindsym $mod+Prior workspace $ws6
-bindsym $mod+Delete workspace $ws7
-bindsym $mod+End workspace $ws8
-bindsym $mod+Next workspace $ws9
+bindsym $mod+4 workspace $ws4
+bindsym $mod+Insert workspace $ws5
+bindsym $mod+Home workspace $ws6
+bindsym $mod+Prior workspace $ws7
+bindsym $mod+Delete workspace $ws8
+bindsym $mod+End workspace $ws9
+bindsym $mod+Next workspace $ws0
 
 # switch to workspace
-workspace $ws1 output HDMI-0
-workspace $ws2 output HDMI-0
-workspace $ws3 output HDMI-0
-workspace $ws4 output HDMI-0
-workspace $ws5 output HDMI-0
-workspace $ws6 output HDMI-0
-workspace $ws7 output HDMI-0
-workspace $ws8 output HDMI-0
-workspace $ws9 output HDMI-0
+workspace $ws1 output DP-2
+workspace $ws2 output DP-0
+workspace $ws3 output DP-2
+workspace $ws4 output DP-0
+workspace $ws5 output DP-2
+workspace $ws6 output DP-2
+workspace $ws7 output DP-2
+workspace $ws8 output DP-0
+workspace $ws9 output DP-0
+workspace $ws0 output DP-0
 
 # Move focused container to workspace
 bindsym $mod+Ctrl+1 move container to workspace $ws1
 bindsym $mod+Ctrl+2 move container to workspace $ws2
 bindsym $mod+Ctrl+3 move container to workspace $ws3
-bindsym $mod+Ctrl+Insert move container to workspace $ws4
-bindsym $mod+Ctrl+Home move container to workspace $ws5
-bindsym $mod+Ctrl+Prior move container to workspace $ws6
-bindsym $mod+Ctrl+Delete move container to workspace $ws7
-bindsym $mod+Ctrl+End move container to workspace $ws8
-bindsym $mod+Ctrl+Next move container to workspace $ws9
+bindsym $mod+Ctrl+4 move container to workspace $ws4
+bindsym $mod+Ctrl+Insert move container to workspace $ws5
+bindsym $mod+Ctrl+Home move container to workspace $ws6
+bindsym $mod+Ctrl+Prior move container to workspace $ws7
+bindsym $mod+Ctrl+Delete move container to workspace $ws8
+bindsym $mod+Ctrl+End move container to workspace $ws9
+bindsym $mod+Ctrl+Next move container to workspace $ws0
 
 # Move to workspace with focused container
 bindsym $mod+Shift+1 move container to workspace $ws1; workspace $ws1
 bindsym $mod+Shift+2 move container to workspace $ws2; workspace $ws2
 bindsym $mod+Shift+3 move container to workspace $ws3; workspace $ws3
-bindsym $mod+Shift+Insert move container to workspace $ws4; workspace $ws4
-bindsym $mod+Shift+Home move container to workspace $ws5; workspace $ws5
-bindsym $mod+Shift+Prior move container to workspace $ws6; workspace $ws6
-bindsym $mod+Shift+Delete move container to workspace $ws7; workspace $ws7
-bindsym $mod+Shift+End move container to workspace $ws8; workspace $ws8
-bindsym $mod+Shift+Next move container to workspace $ws9; workspace $ws9
+bindsym $mod+Shift+4 move container to workspace $ws4; workspace $ws4
+bindsym $mod+Shift+Insert move container to workspace $ws5; workspace $ws5
+bindsym $mod+Shift+Home move container to workspace $ws5; workspace $ws6
+bindsym $mod+Shift+Prior move container to workspace $ws7; workspace $ws7
+bindsym $mod+Shift+Delete move container to workspace $ws8; workspace $ws8
+bindsym $mod+Shift+End move container to workspace $ws9; workspace $ws9
+bindsym $mod+Shift+Next move container to workspace $ws0; workspace $ws0
 
 # Open applications on specific workspaces
 # assign [class="Thunderbird"] $ws1
@@ -311,7 +315,7 @@ exec --no-startup-id setxkbmap -layout no -variant nodeadkeys -option "caps:esca
 exec --no-startup-id redshift-gtk
 exec --no-startup-id dropbox start &
 exec --no-startup-id nvidia-settings -a GPUFanControlState=1 -a GPUTargetFanSpeed=60
-exec --no-startup-id xrandr --output DP-3 --mode 3840x2160 --primary
+exec --no-startup-id xrandr --output DP-2 --mode 3840x2160 --output DP-0 --mode 2560x1440 --right-of DP-2 --primary
 
 # Color palette used for the terminal ( ~/.Xresources file )
 # Colors are gathered based on the documentation:
