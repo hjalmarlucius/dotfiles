@@ -40,27 +40,27 @@ ethernet _first_ {
 
 order += "disk /"
 disk "/" {
-        format = " /  %avail / %percentage_avail "
+        format = " /  %total / %percentage_avail "
 }
 
 order += "disk /mnt/Games/"
 disk "/mnt/Games/" {
-        format = " /mnt/Games/ ⛁ %avail / %percentage_avail "
+        format = " /mnt/Games/  %total / %percentage_avail "
 }
 
 order += "disk /mnt/nuuetHDD/"
 disk "/mnt/nuuetHDD/" {
-        format = " /mnt/nuuetHDD/ ⛁ %avail / %percentage_avail "
+        format = " /mnt/nuuetHDD/ ⛁ %total / %percentage_avail "
 }
 
 order += "disk /mnt/OneDrive/"
 disk "/mnt/OneDrive/" {
-        format = " /mnt/OneDrive/ ⛁ %avail / %percentage_avail "
+        format = " /mnt/OneDrive/ ⛁ %total / %percentage_avail "
 }
 
 order += "disk /mnt/src/"
 disk "/mnt/src/" {
-        format = " /mnt/src/ ⛁ %avail / %percentage_avail "
+        format = " /mnt/src/ ⛁ %total / %percentage_avail "
 }
 
 # order += "battery 0"
