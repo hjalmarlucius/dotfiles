@@ -18,8 +18,7 @@ default_floating_border normal
 hide_edge_borders none
 
 # change borders
-bindsym $mod+u border none
-bindsym $mod+y border pixel 1
+bindsym $mod+m border pixel 1
 bindsym $mod+n border normal
 
 # configure some stuff
@@ -45,15 +44,11 @@ bindsym $mod+d exec --no-startup-id rofi -show combi -combi-modi "run#drun" -lin
 
 exec --no-startup-id start-pulseaudio-x11
 exec --no-startup-id pa-applet
-bindsym $mod+Ctrl+m exec pavucontrol
+bindsym $mod+Shift+m exec pavucontrol
 
 bindsym Pause exec pactl set-sink-volume @DEFAULT_SINK@ +10%
 bindsym Print exec pactl set-sink-volume @DEFAULT_SINK@ -10%
 bindsym Scroll_Lock exec pactl set-sink-mute @DEFAULT_SINK@ toggle
-
-# Screen brightness controls
-# bindsym XF86MonBrightnessUp exec "xbacklight -inc 10; notify-send 'brightness up'"
-# bindsym XF86MonBrightnessDown exec "xbacklight -dec 10; notify-send 'brightness down'"
 
 # enable / disable caps->escape bind
 bindsym $mod+F10 exec "setxkbmap -layout no -model pc105 -variant nodeadkeys -option"
@@ -68,11 +63,31 @@ bindsym $mod+F3 exec thunar
 bindsym $mod+Shift+F3 exec $term -e 'ranger'
 bindsym $mod+F4 exec $term -e 'mocp'
 bindsym $mod++Shift+F4 exec $term -e 'ncspot'
-bindsym $mod+Shift+t exec --no-startup-id pkill picom
-bindsym $mod+t exec --no-startup-id picom -b
-bindsym $mod+Shift+d --release exec "killall dunst; exec notify-send 'restart dunst'"
+bindsym $mod+Shift+F5 exec --no-startup-id pkill picom
+bindsym $mod+F5 exec --no-startup-id picom -b
+bindsym $mod+F6 --release exec "killall dunst; exec notify-send 'restart dunst'"
 bindsym $mod+Shift+s --release exec --no-startup-id flameshot gui
-bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
+bindsym $mod+Shift+x --release exec --no-startup-id xkill
+
+# Autostart applications
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec --no-startup-id nm-applet
+exec --no-startup-id nitrogen --restore
+exec --no-startup-id xfce4-power-manager
+exec --no-startup-id clipit
+exec --no-startup-id pamac-tray
+exec --no-startup-id start_conky_live_green
+exec --no-startup-id xautolock -time 30 -locker blurlock
+exec_always --no-startup-id sbxkb
+exec_always --no-startup-id fix_xcursor
+# exec_always for id in $(xinput list | grep "pointer" | cut -d '=' -f 2 | cut -f 1); do xinput --set-prop $id 'libinput Accel Profile Enabled' 0, 1; done
+
+# HB STARTUP ADDITIONS
+exec --no-startup-id setxkbmap -layout no -model pc105 -variant nodeadkeys -option "caps:escape"
+exec --no-startup-id redshift-gtk
+exec --no-startup-id dropbox start &
+exec --no-startup-id nvidia-settings -a GPUFanControlState=1 -a GPUTargetFanSpeed=60
+exec --no-startup-id xrandr --dpi 108 --output $display2 --primary --output $display3 --auto --rotate left --right-of $display2 --output $display1 --auto --rotate left --left-of $display2
 
 # change focus
 bindsym $mod+h focus left
@@ -86,10 +101,6 @@ bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
 bindsym $mod+Shift+l move right
 
-# workspace back and forth (with/without active container)
-bindsym $mod+b workspace back_and_forth
-bindsym $mod+Shift+b move container to workspace back_and_forth; workspace back_and_forth
-
 # split orientation
 bindsym $mod+q split toggle
 
@@ -101,14 +112,10 @@ bindsym $mod+s layout stacking
 bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
 
-# toggle tiling / floating
-bindsym $mod+Shift+space floating toggle
-
-# change focus between tiling / floating windows
+# tiling / floating
 bindsym $mod+space focus mode_toggle
-
-# toggle sticky
-bindsym $mod+Shift+a sticky toggle
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+Ctrl+space sticky toggle
 
 # focus the parent container
 bindsym $mod+a focus parent
@@ -121,9 +128,6 @@ bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus scratchpad show
 
 # Workspace names
-# to display names or symbols instead of plain workspace numbers you can use
-# something like: set $ws1 1:mail
-#                 set $ws2 2:
 set $ws1 "1"
 set $ws2 "2"
 set $ws3 "3"
@@ -218,9 +222,6 @@ for_window [class="Timeset-gui"] floating enable border normal
 for_window [class="(?i)virtualbox"] floating enable border normal
 for_window [class="Xfburn"] floating enable
 
-# switch to workspace with urgent window automatically
-for_window [urgent=latest] focus
-
 # reload the configuration file
 bindsym $mod+Shift+c reload
 
@@ -260,27 +261,6 @@ mode "resize" {
         bindsym Return mode "default"
         bindsym Escape mode "default"
 }
-
-# Autostart applications
-exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-exec --no-startup-id nm-applet
-exec --no-startup-id nitrogen --restore
-exec --no-startup-id xfce4-power-manager
-#exec --no-startup-id pamac-tray
-#exec --no-startup-id clipit
-#exec --no-startup-id start_conky_live_green
-exec --no-startup-id xautolock -time 30 -locker blurlock
-exec_always --no-startup-id sbxkb
-#exec_always --no-startup-id ff-theme-util
-exec_always --no-startup-id fix_xcursor
-exec --no-startup-id xrandr --dpi 108 --output $display2 --primary --output $display3 --auto --rotate left --right-of $display2 --output $display1 --auto --rotate left --left-of $display2
-exec_always for id in $(xinput list | grep "pointer" | cut -d '=' -f 2 | cut -f 1); do xinput --set-prop $id 'libinput Accel Profile Enabled' 0, 1; done
-
-# HB STARTUP ADDITIONS
-exec --no-startup-id setxkbmap -layout no -model pc105 -variant nodeadkeys -option "caps:escape"
-exec --no-startup-id redshift-gtk
-exec --no-startup-id dropbox start &
-exec --no-startup-id nvidia-settings -a GPUFanControlState=1 -a GPUTargetFanSpeed=60
 
 # Color palette used for the terminal ( ~/.Xresources file )
 set_from_resource $term_background background
@@ -328,9 +308,6 @@ bar {
         urgent_workspace   #16a085 #FDF6E3 #E5201D
     }
 }
-
-# hide/unhide i3status bar
-bindsym $mod+m bar mode toggle
 
 # Theme colors
 # class                   border  backgr. text    indic.   child_border
