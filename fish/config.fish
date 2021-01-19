@@ -1,5 +1,3 @@
-thefuck --alias | source
-
 set -x VISUAL /usr/bin/nvim
 set -x EDITOR /usr/bin/nvim
 set -x BROWSER /usr/bin/chromium
@@ -24,3 +22,9 @@ set -x MKL_DEBUG_CPU_TYPE 5
 
 # fzf bindings
 set -U FZF_LEGACY_KEYBINDINGS 0
+
+function fish_user_key_bindings
+    for mode in insert default visual
+        bind -M $mode \cf forward-char
+    end
+end

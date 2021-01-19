@@ -1,0 +1,31 @@
+[Default Applications]
+
+[Added Associations]
+x-scheme-handler/msteams=teams.desktop;
+x-scheme-handler/http=exo-web-browser.desktop;
+x-scheme-handler/https=exo-web-browser.desktop;
+x-scheme-handler/ftp=exo-web-browser.desktop;
+x-scheme-handler/chrome=exo-web-browser.desktop;
+x-scheme-handler/webcal=exo-web-browser.desktop
+x-scheme-handler/mailto=exo-web-browser.desktop;
+application/x-extension-htm=exo-web-browser.desktop;
+application/x-extension-html=exo-web-browser.desktop;
+application/x-extension-shtml=exo-web-browser.desktop;
+application/x-extension-xhtml=exo-web-browser.desktop;
+application/x-extension-xht=exo-web-browser.desktop;
+application/xhtml+xml=exo-web-browser.desktop;
+application/pdf=exo-web-browser.desktop;org.pwmt.zathura.desktop;
+application/x-bittorrent=deluge.desktop;
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet=freeoffice-planmaker.desktop;
+application/vnd.openxmlformats-officedocument.presentationml.presentation=freeoffice-presentations.desktop;
+image/jpeg=viewnior.desktop;
+image/png=viewnior.desktop;
+image/svg+xml=viewnior.desktop;
+message/rfc822=exo-web-browser.desktop;
+text/csv=freeoffice-planmaker.desktop;
+text/html=nvim.desktop;
+text/plain=nvim.desktop;
+text/markdown=nvim.desktop;markdown_previewer.desktop;
+text/x-python=nvim.desktop;
+application/xml=nvim.desktop;
+application/octet-stream=nvim.desktop;

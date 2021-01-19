@@ -4,15 +4,15 @@
 * fonts
   * `yay -S nerd-fonts-source-code-pro powerline-fonts-git libxft-bgra`
 * applications
-  * `yay -S onedrive-abraunegg dropbox slack-desktop chromium zathura-pdf-mupdf trash-cli rofi redshift flameshot fish pavucontrol thunar`
+  * `yay -S onedrive-abraunegg dropbox slack-desktop chromium zathura-pdf-mupdf trash-cli rofi redshift flameshot fish pavucontrol thunar drawio-desktop`
 * gaming and media
-  + `yay -S steam-manjaro vlc libmicrodns protobuf ncspot-git`
+  + `yay -S steam-manjaro vlc libmicrodns protobuf ncspot-git mkchromecast`
 * hardware
   * `yay -S liquidctl glances pulseaudio-bluetooth asus-fan-control`
 
 # coding
 * `yay -S cuda nvidia-container-toolkit`
-  `yay -S docker docker-compose dry-bin neovim tmux diff-so-fancy the_silver_searcher ripgrep bat npm nodejs yarn ninja ctags tig`
+  `yay -S docker docker-compose dry-bin neovim tmux diff-so-fancy the_silver_searcher ripgrep bat npm nodejs yarn ninja ctags tig git-lfs`
 * `git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm`
 
 # python
@@ -32,6 +32,9 @@
 * start onedrive `systemctl enable --user onedrive --now`
 * ssd maintenance `sudo systemctl enable fstrim.timer --now`
 * show log `journalctl --user-unit onedrive -f`
+* nvim as default editor `xdg-mime default nvim.desktop application/octet-stream`
+* change from alsa to pavu `install_pulse`
+* manage `~/.config.mimeapps.list` associations
 
 # OMF
 * curl -L https://get.oh-my.fish | fish
