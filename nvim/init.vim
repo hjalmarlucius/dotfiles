@@ -189,7 +189,7 @@ nmap <leader>w :cd %:p:h<cr>
 
 " *****************************
 " REMAPPING
-set langmap=å(,¨),Å{,^},Ø\\;,ø:,æ^
+set langmap=å(,¨),Å{,^},Ø\\;,ø:,æ^,+$
 nnoremap æ "
 vnoremap æ "
 nnoremap Æ @
