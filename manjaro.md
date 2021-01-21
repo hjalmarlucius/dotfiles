@@ -36,7 +36,6 @@
 
 # OMF
 * curl -L https://get.oh-my.fish | fish
-* omf install https://github.com/FabioAntunes/fish-nvm
 * omf install https://github.com/edc/bass
 * omf install https://github.com/jethrokuan/fzf
 
