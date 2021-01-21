@@ -17,10 +17,6 @@ default_floating_border normal
 # Hide borders
 hide_edge_borders none
 
-# change borders
-bindsym $mod+m border pixel 1
-bindsym $mod+n border normal
-
 # configure some stuff
 focus_follows_mouse no
 mouse_warping none
@@ -33,43 +29,9 @@ font xft:URWGothic-Book 10
 # Use Mouse+$mod to drag floating windows
 floating_modifier $mod
 
-# start a terminal
-bindsym $mod+Return exec $term
-
-# kill focused window
-bindsym $mod+Shift+q kill
-
-# start program launcher
-bindsym $mod+d exec --no-startup-id rofi -show combi -combi-modi "run#drun" -lines 10 -eh 2 -width 30
-
+# Autostart applications
 exec --no-startup-id start-pulseaudio-x11
 exec --no-startup-id pa-applet
-bindsym $mod+Shift+m exec pavucontrol
-
-bindsym Pause exec pactl set-sink-volume @DEFAULT_SINK@ +10%
-bindsym Print exec pactl set-sink-volume @DEFAULT_SINK@ -10%
-bindsym Scroll_Lock exec pactl set-sink-mute @DEFAULT_SINK@ toggle
-
-# enable / disable caps->escape bind
-bindsym $mod+F10 exec "setxkbmap -layout no -model pc105 -variant nodeadkeys -option"
-bindsym $mod+F11 exec "setxkbmap -layout no -model pc105 -variant nodeadkeys -option 'caps:backspace'"
-bindsym $mod+F12 exec "setxkbmap -layout no -model pc105 -variant nodeadkeys -option 'caps:escape'"
-
-# Start Applications
-bindsym $mod+Ctrl+b exec $term -e 'bmenu'
-bindsym $mod+F1 exec glances -w
-bindsym $mod+F2 exec chromium
-bindsym $mod+F3 exec thunar
-bindsym $mod+Shift+F3 exec $term -e 'ranger'
-bindsym $mod+F4 exec $term -e 'mocp'
-bindsym $mod++Shift+F4 exec $term -e 'ncspot'
-bindsym $mod+Shift+F5 exec --no-startup-id pkill picom
-bindsym $mod+F5 exec --no-startup-id picom -b
-bindsym $mod+F6 --release exec "killall dunst; exec notify-send 'restart dunst'"
-bindsym $mod+Shift+s --release exec --no-startup-id flameshot gui
-bindsym $mod+Shift+x --release exec --no-startup-id xkill
-
-# Autostart applications
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec --no-startup-id nm-applet
 exec --no-startup-id nitrogen --restore
@@ -89,43 +51,67 @@ exec --no-startup-id dropbox start &
 exec --no-startup-id nvidia-settings -a GPUFanControlState=1 -a GPUTargetFanSpeed=60
 exec --no-startup-id xrandr --output DP-2 --mode 3840x2160 --output DP-0 --mode 2560x1440 --right-of DP-2 --primary
 
-# change focus
+# div bindings
+bindsym $mod+Shift+q kill
+bindsym $mod+q split toggle
+bindsym $mod+f fullscreen toggle
+
+bindsym $mod+q split toggle
+bindsym $mod+f fullscreen toggle
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+bindsym $mod+a focus parent
+
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+
+bindsym $mod+m border pixel 1
+bindsym $mod+n border normal
+
+bindsym $mod+space focus mode_toggle
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+Ctrl+space sticky toggle
+
+bindsym $mod+Shift+minus move scratchpad
+bindsym $mod+minus scratchpad show
+
 bindsym $mod+h focus left
 bindsym $mod+j focus down
 bindsym $mod+k focus up
 bindsym $mod+l focus right
 
-# move focused window
 bindsym $mod+Shift+h move left
 bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
 bindsym $mod+Shift+l move right
 
-# split orientation
-bindsym $mod+q split toggle
+bindsym Pause exec pactl set-sink-volume @DEFAULT_SINK@ +10%
+bindsym Print exec pactl set-sink-volume @DEFAULT_SINK@ -10%
+bindsym Scroll_Lock exec pactl set-sink-mute @DEFAULT_SINK@ toggle
 
-# toggle fullscreen mode for the focused container
-bindsym $mod+f fullscreen toggle
+bindsym $mod+Return exec $term
+bindsym $mod+d exec --no-startup-id rofi -show combi -combi-modi "run#drun" -lines 10 -eh 2 -width 30
+bindsym $mod+Shift+s --release exec --no-startup-id flameshot gui
+bindsym $mod+Shift+x --release exec --no-startup-id xkill
 
-# change container layout (stacked, tabbed, toggle split)
-bindsym $mod+s layout stacking
-bindsym $mod+w layout tabbed
-bindsym $mod+e layout toggle split
+bindsym $mod+F1 exec glances -w
+bindsym $mod+F2 exec chromium
+bindsym $mod+F3 exec thunar
+bindsym $mod+Shift+F3 exec $term -e 'ranger'
+bindsym $mod+F4 exec $term -e 'mocp'
+bindsym $mod++Shift+F4 exec $term -e 'ncspot'
+bindsym $mod+F5 exec pavucontrol
+bindsym $mod+F6 exec --no-startup-id picom -b
+bindsym $mod+Shift+F6 exec --no-startup-id pkill picom
+bindsym $mod+Shift+F7 --release exec "killall dunst; exec notify-send 'restart dunst'"
+bindsym $mod+F10 exec "setxkbmap -layout no -model pc105 -variant nodeadkeys -option"
+bindsym $mod+F11 exec "setxkbmap -layout no -model pc105 -variant nodeadkeys -option 'caps:backspace'"
+bindsym $mod+F12 exec "setxkbmap -layout no -model pc105 -variant nodeadkeys -option 'caps:escape'"
 
-# tiling / floating
-bindsym $mod+space focus mode_toggle
-bindsym $mod+Shift+space floating toggle
-bindsym $mod+Ctrl+space sticky toggle
-
-# focus the parent container
-bindsym $mod+a focus parent
-
-# move the currently focused window to the scratchpad
-bindsym $mod+Shift+minus move scratchpad
-
-# Show the next scratchpad window or hide the focused scratchpad window.
-# If there are multiple scratchpad windows, this command cycles through them.
-bindsym $mod+minus scratchpad show
+bindsym $mod+0 mode "$mode_system"
+bindsym $mod+r mode "resize"
+bindsym $mod+g mode "$mode_gaps"
 
 # Workspace names
 set $ws1 "1"
@@ -140,18 +126,6 @@ set $ws9 "End"
 set $ws0 "PgDn"
 
 # switch to workspace
-bindsym $mod+1 workspace $ws1
-bindsym $mod+2 workspace $ws2
-bindsym $mod+3 workspace $ws3
-bindsym $mod+4 workspace $ws4
-bindsym $mod+Insert workspace $ws5
-bindsym $mod+Home workspace $ws6
-bindsym $mod+Prior workspace $ws7
-bindsym $mod+Delete workspace $ws8
-bindsym $mod+End workspace $ws9
-bindsym $mod+Next workspace $ws0
-
-# switch to workspace
 workspace $ws1 output DP-2
 workspace $ws2 output DP-0
 workspace $ws3 output DP-2
@@ -162,6 +136,18 @@ workspace $ws7 output DP-2
 workspace $ws8 output DP-0
 workspace $ws9 output DP-0
 workspace $ws0 output DP-0
+
+# switch to workspace
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+Insert workspace $ws5
+bindsym $mod+Home workspace $ws6
+bindsym $mod+Prior workspace $ws7
+bindsym $mod+Delete workspace $ws8
+bindsym $mod+End workspace $ws9
+bindsym $mod+Next workspace $ws0
 
 # Move focused container to workspace
 bindsym $mod+Ctrl+1 move container to workspace $ws1
@@ -187,52 +173,19 @@ bindsym $mod+Shift+Delete move container to workspace $ws8; workspace $ws8
 bindsym $mod+Shift+End move container to workspace $ws9; workspace $ws9
 bindsym $mod+Shift+Next move container to workspace $ws0; workspace $ws0
 
-# Open applications on specific workspaces
-# assign [class="Thunderbird"] $ws1
-# assign [class="Pale moon"] $ws2
-# assign [class="Pcmanfm"] $ws3
-# assign [class="Skype"] $ws5
-
 # Open specific applications in floating mode
-for_window [title="alsamixer"] floating enable border pixel 1
 for_window [class="calamares"] floating enable border normal
-for_window [class="Clipgrab"] floating enable
-for_window [title="File Transfer*"] floating enable
-for_window [class="fpakman"] floating enable
-for_window [class="Galculator"] floating enable border pixel 1
 for_window [class="GParted"] floating enable border normal
-for_window [title="i3_help"] floating enable sticky enable border normal
 for_window [class="Lightdm-settings"] floating enable
 for_window [class="Lxappearance"] floating enable sticky enable border normal
 for_window [class="Manjaro-hello"] floating enable
 for_window [class="Manjaro Settings Manager"] floating enable border normal
-for_window [title="MuseScore: Play Panel"] floating enable
 for_window [class="Nitrogen"] floating enable sticky enable border normal
-for_window [class="Oblogout"] fullscreen enable
-for_window [class="octopi"] floating enable
-for_window [title="About Pale Moon"] floating enable
 for_window [class="Pamac-manager"] floating enable
 for_window [class="Pavucontrol"] floating enable
 for_window [class="qt5ct"] floating enable sticky enable border normal
-for_window [class="Qtconfig-qt4"] floating enable sticky enable border normal
-for_window [class="Simple-scan"] floating enable border normal
-for_window [class="(?i)System-config-printer.py"] floating enable border normal
-for_window [class="Skype"] floating enable border normal
-for_window [class="Timeset-gui"] floating enable border normal
-for_window [class="(?i)virtualbox"] floating enable border normal
-for_window [class="Xfburn"] floating enable
-
-# reload the configuration file
-bindsym $mod+Shift+c reload
-
-# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
-bindsym $mod+Shift+r restart
-
-# exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
 # Set shut down, restart and locking features
-bindsym $mod+0 mode "$mode_system"
 set $mode_system (l)ock, (e)xit, switch_(u)ser, (s)uspend, (h)ibernate, (r)eboot, (Shift+s)hutdown
 mode "$mode_system" {
     bindsym l exec --no-startup-id i3exit lock, mode "default"
@@ -249,7 +202,6 @@ mode "$mode_system" {
 }
 
 # Resize window (you can also use the mouse for that)
-bindsym $mod+r mode "resize"
 mode "resize" {
         # These bindings trigger as soon as you enter the resize mode
         bindsym l resize shrink width 10 px or 10 ppt
@@ -343,8 +295,6 @@ smart_borders on
 set $mode_gaps Gaps: (o) outer, (i) inner
 set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
 set $mode_gaps_inner Inner Gaps: +|-|0 (local), Shift + +|-|0 (global)
-bindsym $mod+Shift+g mode "$mode_gaps"
-
 mode "$mode_gaps" {
         bindsym o      mode "$mode_gaps_outer"
         bindsym i      mode "$mode_gaps_inner"
