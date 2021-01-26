@@ -2,9 +2,14 @@
 * AUR package manager `sudo pacman -S yay`
 * fonts `yay -S nerd-fonts-source-code-pro powerline-fonts-git libxft-bgra`
 * cloud storage `yay -S onedrive-abraunegg dropbox`
-* multimedia `yay -S ncspot-git pavucontrol manjaro-pulse pa-applet pavucontrol pulseaudio-bluetooth`
+* multimedia `yay -S ncspot-git pavucontrol manjaro-pulse pa-applet pavucontrol pulseaudio-bluetooth xwininfo`
 * web `yay -S slack-desktop chromium`
-* div applications `yay -S zathura-pdf-mupdf fish thunar drawio-desktop steam-manjaro`
+* pdf reader `yay -S zathura zathura-pdf-mupdf zathura zathura-djvu zathura-ps`
+* shell `yay -S fish`
+  * curl -L https://get.oh-my.fish | fish
+  * omf install https://github.com/edc/bass
+  * omf install https://github.com/jethrokuan/fzf
+* div applications `yay -S thunar drawio-desktop steam-manjaro`
 * div utils `yay -S trash-cli rofi redshift flameshot asus-fan-control`
 
 # coding
@@ -19,7 +24,7 @@
 * build `yay -S ninja`
 
 # python
-* `pip install ipython pytest neovim numpy scipy sympy flake8 ptvsd addict dill`
+* `pip install ipython pytest neovim numpy scipy sympy flake8 ptvsd addict dill ipdb`
 * matplotlib stuff `pip install matplotlib seaborn matplotlib-label-lines ipympl qbstyles`
 * other plotting `pip install plotly ggplot`
 * install torch from [link](https://pytorch.org/)
@@ -33,9 +38,3 @@
 * start onedrive `systemctl enable --user onedrive --now`
 * ssd maintenance `sudo systemctl enable fstrim.timer --now`
 * urxvt ext install `https://github.com/simmel/urxvt-resize-font`
-
-# OMF
-* curl -L https://get.oh-my.fish | fish
-* omf install https://github.com/edc/bass
-* omf install https://github.com/jethrokuan/fzf
-

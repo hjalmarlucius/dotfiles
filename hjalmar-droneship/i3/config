@@ -34,15 +34,12 @@ exec --no-startup-id start-pulseaudio-x11
 exec --no-startup-id pa-applet
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec --no-startup-id nm-applet
-exec --no-startup-id nitrogen --restore
+exec --no-startup-id nitrogen --restore; sleep 1; compton -b
 exec --no-startup-id xfce4-power-manager
-exec --no-startup-id clipit
 exec --no-startup-id pamac-tray
-exec --no-startup-id start_conky_live_green
 exec --no-startup-id xautolock -time 30 -locker blurlock
 exec_always --no-startup-id sbxkb
 exec_always --no-startup-id fix_xcursor
-# exec_always for id in $(xinput list | grep "pointer" | cut -d '=' -f 2 | cut -f 1); do xinput --set-prop $id 'libinput Accel Profile Enabled' 0, 1; done
 
 # HB STARTUP ADDITIONS
 exec --no-startup-id setxkbmap -layout no -model pc105 -variant nodeadkeys -option "caps:escape"
@@ -54,10 +51,10 @@ exec --no-startup-id xrandr --output DP-2 --mode 3840x2160 --output DP-0 --mode 
 # div bindings
 bindsym $mod+Shift+q kill
 bindsym $mod+q split toggle
+bindsym $mod+bar split h; exec notify-send 'tile horizontally'
+bindsym $mod+minus split v; exec notify-send 'tile vertically'
 bindsym $mod+f fullscreen toggle
 
-bindsym $mod+q split toggle
-bindsym $mod+f fullscreen toggle
 bindsym $mod+s layout stacking
 bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
@@ -66,15 +63,15 @@ bindsym $mod+a focus parent
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 
-bindsym $mod+m border pixel 1
-bindsym $mod+n border normal
-
 bindsym $mod+space focus mode_toggle
 bindsym $mod+Shift+space floating toggle
 bindsym $mod+Ctrl+space sticky toggle
 
-bindsym $mod+Shift+minus move scratchpad
-bindsym $mod+minus scratchpad show
+bindsym $mod+Shift+comma exec picom-trans -c -10
+bindsym $mod+comma exec picom-trans -c +10
+
+bindsym $mod+period scratchpad show
+bindsym $mod+Shift+period move scratchpad
 
 bindsym $mod+h focus left
 bindsym $mod+j focus down
@@ -96,7 +93,8 @@ bindsym $mod+Shift+s --release exec --no-startup-id flameshot gui
 bindsym $mod+Shift+x --release exec --no-startup-id xkill
 
 bindsym $mod+F1 exec glances -w
-bindsym $mod+F2 exec chromium
+bindsym $mod+F2 exec "chromium --start-fullscreen https://www.inoreader.com"
+bindsym $mod+Shift+F2 exec "chromium --new-window --start-fullscreen https://www.inoreader.com"
 bindsym $mod+F3 exec thunar
 bindsym $mod+Shift+F3 exec $term -e 'ranger'
 bindsym $mod+F4 exec $term -e 'mocp'
@@ -174,7 +172,6 @@ bindsym $mod+Shift+End move container to workspace $ws9; workspace $ws9
 bindsym $mod+Shift+Next move container to workspace $ws0; workspace $ws0
 
 # Open specific applications in floating mode
-for_window [class="calamares"] floating enable border normal
 for_window [class="GParted"] floating enable border normal
 for_window [class="Lightdm-settings"] floating enable
 for_window [class="Lxappearance"] floating enable sticky enable border normal
@@ -186,15 +183,13 @@ for_window [class="Pavucontrol"] floating enable
 for_window [class="qt5ct"] floating enable sticky enable border normal
 
 # Set shut down, restart and locking features
-set $mode_system (l)ock, (e)xit, switch_(u)ser, (s)uspend, (h)ibernate, (r)eboot, (Shift+s)hutdown
+set $mode_system (l)ock, (e)xit, switch_(u)ser, (r)eboot, (Shift+s)hutdown
 mode "$mode_system" {
     bindsym l exec --no-startup-id i3exit lock, mode "default"
-    bindsym s exec --no-startup-id i3exit suspend, mode "default"
     bindsym u exec --no-startup-id i3exit switch_user, mode "default"
     bindsym e exec --no-startup-id i3exit logout, mode "default"
-    bindsym h exec --no-startup-id i3exit hibernate, mode "default"
     bindsym r exec --no-startup-id i3exit reboot, mode "default"
-    bindsym Shift+s exec --no-startup-id i3exit shutdown, mode "default"
+    bindsym s exec --no-startup-id i3exit shutdown, mode "default"
 
     # exit system mode: "Enter" or "Escape"
     bindsym Return mode "default"

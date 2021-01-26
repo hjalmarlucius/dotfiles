@@ -77,14 +77,14 @@ else
 endif
 
 " Transparent Background (For i3 and compton)
-"highlight Normal guibg=NONE ctermbg=NONE
-"highlight LineNr guibg=NONE ctermbg=NONE
+highlight Normal guibg=NONE ctermbg=NONE
+highlight LineNr guibg=NONE ctermbg=NONE
 
 " seoul256 theme config (dark 233-239, light 252-256)
 let g:seoul256_background=233
 " colo seoul256
 " colo base16-tomorrow-night
-colo gruvbox-material
+" colo gruvbox-material
 
 " statusline
 set cmdheight=2
@@ -92,8 +92,8 @@ let g:airline_powerline_fonts=1
 "let g:airline_theme='molokai'
 "let g:airline_theme='qwq'
 "let g:airline_theme='badwolf'
-" let g:airline_theme='silver'
-" let g:airline_theme='raven'
+"let g:airline_theme='silver'
+"let g:airline_theme='raven'
 let g:airline_theme='base16_gruvbox_dark_hard'
 let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#tabline#show_splits=0
@@ -183,7 +183,13 @@ set list
 let mapleader="\<SPACE>"
 set pastetoggle=<F2>
 nmap <leader>R :so ~/.config/nvim/init.vim<cr>
-nmap <leader>E :tabe ~/OneDrive/dotfiles/nvim/init.vim<cr>
+nmap <leader>V :tabe ~/OneDrive/dotfiles/nvim/init.vim<cr>
+nmap <leader>L :tabe ~/OneDrive/Notes/libs.md<cr>
+nmap <leader>U :tabe ~/OneDrive/Notes/urls.md<cr>
+nmap <leader>N :tabe ~/OneDrive/Notes/names.md<cr>
+nmap <leader>Ø :tabe ~/OneDrive/Notes/økonomi.md<cr>
+nmap <leader>C :tabe ~/OneDrive/Notes/cheatsheet.md<cr>
+nmap <leader>T :tabe ~/OneDrive/Notes/todos.md<cr>
 nmap <leader>w :cd %:p:h<cr>
 " vim-surround: visual 'SA' to wrap in A. Surround 'csAB' to change from A to B, 'dsA' to remove A. Word 'ysiwA' to wrap with A
 
@@ -213,7 +219,7 @@ nmap cf <Plug>(coc-format-selected)
 
 " *****************************
 " TERMINAL
-nmap <Leader>T :terminal<cr>
+nmap <Leader>t :terminal<cr>
 tmap <C-x> <C-\><C-n>
 tmap <F2> <C-\><C-n>
 
@@ -263,11 +269,9 @@ nmap <silent> <M-k> :TmuxNavigateUp<cr>
 nmap <silent> <M-l> :TmuxNavigateRight<cr>
 " make splits and tabs
 nnoremap <M-BAR> :vsplit<cr>
-nnoremap <C-w><BAR> :vsplit<cr>
-nnoremap <C-w>§ :vnew<cr>
+nnoremap <C-w><BAR> :vnew<cr>
 nnoremap <M--> :split<cr>
-nnoremap <C-w>- :split<cr>
-nnoremap <C-w>_ :new<cr>
+nnoremap <C-w>- :new<cr>
 nnoremap <M-t> :tabe %<cr>
 nnoremap <M-T> :tabnew<cr>
 " buffers and tabs

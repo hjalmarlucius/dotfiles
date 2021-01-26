@@ -34,30 +34,27 @@ exec --no-startup-id start-pulseaudio-x11
 exec --no-startup-id pa-applet
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec --no-startup-id nm-applet
-exec --no-startup-id nitrogen --restore
+exec --no-startup-id nitrogen --restore; sleep 1; compton -b
 exec --no-startup-id xfce4-power-manager
-exec --no-startup-id clipit
 exec --no-startup-id pamac-tray
-exec --no-startup-id start_conky_live_green
 exec --no-startup-id xautolock -time 30 -locker blurlock
 exec_always --no-startup-id sbxkb
 exec_always --no-startup-id fix_xcursor
-# exec_always for id in $(xinput list | grep "pointer" | cut -d '=' -f 2 | cut -f 1); do xinput --set-prop $id 'libinput Accel Profile Enabled' 0, 1; done
 
 # HB STARTUP ADDITIONS
 exec --no-startup-id setxkbmap -layout no -model pc105 -variant nodeadkeys -option "caps:escape"
 exec --no-startup-id redshift-gtk
 exec --no-startup-id dropbox start &
 exec --no-startup-id nvidia-settings -a GPUFanControlState=1 -a GPUTargetFanSpeed=60
-exec --no-startup-id xrandr --dpi 108 --output $display2 --primary --output $display3 --auto --rotate left --right-of $display2 --output $display1 --auto --rotate left --left-of $display2
+exec --no-startup-id xrandr --output DP-4 --mode 5120x1440 --primary
 
 # div bindings
 bindsym $mod+Shift+q kill
 bindsym $mod+q split toggle
+bindsym $mod+bar split h; exec notify-send 'tile horizontally'
+bindsym $mod+minus split v; exec notify-send 'tile vertically'
 bindsym $mod+f fullscreen toggle
 
-bindsym $mod+q split toggle
-bindsym $mod+f fullscreen toggle
 bindsym $mod+s layout stacking
 bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
@@ -66,15 +63,15 @@ bindsym $mod+a focus parent
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 
-bindsym $mod+m border pixel 1
-bindsym $mod+n border normal
-
 bindsym $mod+space focus mode_toggle
 bindsym $mod+Shift+space floating toggle
 bindsym $mod+Ctrl+space sticky toggle
 
-bindsym $mod+Shift+minus move scratchpad
-bindsym $mod+minus scratchpad show
+bindsym $mod+Shift+comma exec picom-trans -c -10
+bindsym $mod+comma exec picom-trans -c +10
+
+bindsym $mod+period scratchpad show
+bindsym $mod+Shift+period move scratchpad
 
 bindsym $mod+h focus left
 bindsym $mod+j focus down
@@ -96,7 +93,8 @@ bindsym $mod+Shift+s --release exec --no-startup-id flameshot gui
 bindsym $mod+Shift+x --release exec --no-startup-id xkill
 
 bindsym $mod+F1 exec glances -w
-bindsym $mod+F2 exec chromium
+bindsym $mod+F2 exec "chromium --start-fullscreen https://www.inoreader.com"
+bindsym $mod+Shift+F2 exec "chromium --new-window --start-fullscreen https://www.inoreader.com"
 bindsym $mod+F3 exec thunar
 bindsym $mod+Shift+F3 exec $term -e 'ranger'
 bindsym $mod+F4 exec $term -e 'mocp'
@@ -118,63 +116,57 @@ set $ws1 "1"
 set $ws2 "2"
 set $ws3 "3"
 set $ws4 "4"
-set $ws5 "Ins"
-set $ws6 "Home"
-set $ws7 "PgUp"
-set $ws8 "Del"
-set $ws9 "End"
-set $ws0 "PgDn"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
 
 # switch to workspace
-workspace $ws1 output DP-0
+workspace $ws1 output DP-4
 workspace $ws2 output DP-4
-workspace $ws3 output DP-0
+workspace $ws3 output DP-4
 workspace $ws4 output DP-4
-workspace $ws5 output DP-0
-workspace $ws6 output DP-0
-workspace $ws7 output DP-0
+workspace $ws5 output DP-4
+workspace $ws6 output DP-4
+workspace $ws7 output DP-4
 workspace $ws8 output DP-4
 workspace $ws9 output DP-4
-workspace $ws0 output DP-4
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
 bindsym $mod+2 workspace $ws2
 bindsym $mod+3 workspace $ws3
 bindsym $mod+4 workspace $ws4
-bindsym $mod+Insert workspace $ws5
-bindsym $mod+Home workspace $ws6
-bindsym $mod+Prior workspace $ws7
-bindsym $mod+Delete workspace $ws8
-bindsym $mod+End workspace $ws9
-bindsym $mod+Next workspace $ws0
+bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace $ws6
+bindsym $mod+7 workspace $ws7
+bindsym $mod+8 workspace $ws8
+bindsym $mod+9 workspace $ws9
 
 # Move focused container to workspace
 bindsym $mod+Ctrl+1 move container to workspace $ws1
 bindsym $mod+Ctrl+2 move container to workspace $ws2
 bindsym $mod+Ctrl+3 move container to workspace $ws3
 bindsym $mod+Ctrl+4 move container to workspace $ws4
-bindsym $mod+Ctrl+Insert move container to workspace $ws5
-bindsym $mod+Ctrl+Home move container to workspace $ws6
-bindsym $mod+Ctrl+Prior move container to workspace $ws7
-bindsym $mod+Ctrl+Delete move container to workspace $ws8
-bindsym $mod+Ctrl+End move container to workspace $ws9
-bindsym $mod+Ctrl+Next move container to workspace $ws0
+bindsym $mod+Ctrl+5 move container to workspace $ws5
+bindsym $mod+Ctrl+6 move container to workspace $ws6
+bindsym $mod+Ctrl+7 move container to workspace $ws7
+bindsym $mod+Ctrl+8 move container to workspace $ws8
+bindsym $mod+Ctrl+9 move container to workspace $ws9
 
 # Move to workspace with focused container
 bindsym $mod+Shift+1 move container to workspace $ws1; workspace $ws1
 bindsym $mod+Shift+2 move container to workspace $ws2; workspace $ws2
 bindsym $mod+Shift+3 move container to workspace $ws3; workspace $ws3
 bindsym $mod+Shift+4 move container to workspace $ws4; workspace $ws4
-bindsym $mod+Shift+Insert move container to workspace $ws5; workspace $ws5
-bindsym $mod+Shift+Home move container to workspace $ws5; workspace $ws6
-bindsym $mod+Shift+Prior move container to workspace $ws7; workspace $ws7
-bindsym $mod+Shift+Delete move container to workspace $ws8; workspace $ws8
-bindsym $mod+Shift+End move container to workspace $ws9; workspace $ws9
-bindsym $mod+Shift+Next move container to workspace $ws0; workspace $ws0
+bindsym $mod+Shift+5 move container to workspace $ws5; workspace $ws5
+bindsym $mod+Shift+6 move container to workspace $ws5; workspace $ws6
+bindsym $mod+Shift+7 move container to workspace $ws7; workspace $ws7
+bindsym $mod+Shift+8 move container to workspace $ws8; workspace $ws8
+bindsym $mod+Shift+9 move container to workspace $ws9; workspace $ws9
 
 # Open specific applications in floating mode
-for_window [class="calamares"] floating enable border normal
 for_window [class="GParted"] floating enable border normal
 for_window [class="Lightdm-settings"] floating enable
 for_window [class="Lxappearance"] floating enable sticky enable border normal
@@ -186,15 +178,13 @@ for_window [class="Pavucontrol"] floating enable
 for_window [class="qt5ct"] floating enable sticky enable border normal
 
 # Set shut down, restart and locking features
-set $mode_system (l)ock, (e)xit, switch_(u)ser, (s)uspend, (h)ibernate, (r)eboot, (Shift+s)hutdown
+set $mode_system (l)ock, (e)xit, switch_(u)ser, (r)eboot, (Shift+s)hutdown
 mode "$mode_system" {
     bindsym l exec --no-startup-id i3exit lock, mode "default"
-    bindsym s exec --no-startup-id i3exit suspend, mode "default"
     bindsym u exec --no-startup-id i3exit switch_user, mode "default"
     bindsym e exec --no-startup-id i3exit logout, mode "default"
-    bindsym h exec --no-startup-id i3exit hibernate, mode "default"
     bindsym r exec --no-startup-id i3exit reboot, mode "default"
-    bindsym Shift+s exec --no-startup-id i3exit shutdown, mode "default"
+    bindsym s exec --no-startup-id i3exit shutdown, mode "default"
 
     # exit system mode: "Enter" or "Escape"
     bindsym Return mode "default"
