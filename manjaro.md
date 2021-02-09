@@ -9,7 +9,7 @@
   * curl -L https://get.oh-my.fish | fish
   * omf install https://github.com/edc/bass
   * omf install https://github.com/jethrokuan/fzf
-* div applications `yay -S thunar drawio-desktop steam-manjaro`
+* div applications `yay -S thunar ranger drawio-desktop steam-manjaro`
 * div utils `yay -S trash-cli rofi redshift flameshot asus-fan-control`
 
 # coding
@@ -24,7 +24,7 @@
 * build `yay -S ninja`
 
 # python
-* `pip install ipython pytest neovim numpy scipy sympy flake8 ptvsd addict dill ipdb`
+* `pip install ipython pytest neovim numpy scipy sympy flake8 ptvsd addict dill ipdb pudb web-pdb`
 * matplotlib stuff `pip install matplotlib seaborn matplotlib-label-lines ipympl qbstyles`
 * other plotting `pip install plotly ggplot`
 * install torch from [link](https://pytorch.org/)
@@ -38,3 +38,6 @@
 * start onedrive `systemctl enable --user onedrive --now`
 * ssd maintenance `sudo systemctl enable fstrim.timer --now`
 * urxvt ext install `https://github.com/simmel/urxvt-resize-font`
+
+# wsl
+* sudo apt install fish neovim ranger tmux docker docker/compose tig git-lfs ctags ripgrep silversearcher-ag python3-pip
