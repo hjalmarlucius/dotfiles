@@ -6,7 +6,8 @@
 # For explanations of all config options below see docs/USAGE.md or the man page.
 #
 sync_dir="/mnt/OneDrive"
-skip_dir="Programming/logs|Bilder/Camera Roll|Backup|Datasets|Pictures|Videos"
+skip_dir="Programming/logs|Bilder/Camera Roll|Backup|Datasets|Pictures|Videos|Music|Library|Research*|*/__pycache__|*/.ipynb_checkpoints"
+skip_file="*.tmp|.~*|~*"
 # monitor_interval = "45"
 # skip_dir = "Videos"
 # log_dir = "/var/log/onedrive/"
@@ -14,7 +15,7 @@ skip_dir="Programming/logs|Bilder/Camera Roll|Backup|Datasets|Pictures|Videos"
 # upload_only = "false"
 # check_nomount = "false"
 # check_nosync = "false"
-download_only = "true"
+# download_only = "false"
 # disable_notifications = "false"
 # disable_upload_validation = "false"
 # enable_logging = "false"

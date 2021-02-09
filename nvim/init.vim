@@ -15,9 +15,7 @@ let g:coc_global_extensions=[
       \ 'coc-diagnostic',
       \ 'coc-yaml',
       \ 'coc-explorer',
-      \ 'coc-markmap'
       \ ]
-let g:polyglot_disabled = ['python']
 
 call plug#begin('~/.config/nvim/plugged')
 " tools
@@ -44,7 +42,6 @@ Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-sensible'
 Plug 'dkarter/bullets.vim'
 " python
-Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
 Plug 'tmhedberg/SimpylFold'
 Plug 'jeetsukumaran/vim-pythonsense'
 " tmux
@@ -168,7 +165,8 @@ let g:BASH_Ctrl_j='off'            " avoid 'C-j' being overridden to newline
 let g:BASH_Ctrl_l='off'            " avoid 'C-l' being overridden to newline
 highlight clear SignColumn         " SignColumn should match background
 set shortmess=atOI                 " No help Uganda information, and overwrite read messages to avoid PRESS ENTER prompts
-set listchars=tab:→\ ,eol:↵,trail:·,extends:↷,precedes:↶,nbsp:+
+set listchars=tab:→\ ,trail:·,extends:↷,precedes:↶,nbsp:+
+" eol:↵
 set fillchars=vert:│,stl:\ ,stlnc:\
 set clipboard+=unnamedplus
 set list
@@ -182,14 +180,14 @@ set list
 " MAPPING
 let mapleader="\<SPACE>"
 set pastetoggle=<F2>
-nmap <leader>R :so ~/.config/nvim/init.vim<cr>
-nmap <leader>V :tabe ~/OneDrive/dotfiles/nvim/init.vim<cr>
-nmap <leader>L :tabe ~/OneDrive/Notes/libs.md<cr>
-nmap <leader>U :tabe ~/OneDrive/Notes/urls.md<cr>
-nmap <leader>N :tabe ~/OneDrive/Notes/names.md<cr>
-nmap <leader>Ø :tabe ~/OneDrive/Notes/økonomi.md<cr>
-nmap <leader>C :tabe ~/OneDrive/Notes/cheatsheet.md<cr>
-nmap <leader>T :tabe ~/OneDrive/Notes/todos.md<cr>
+nmap <leader>r :so ~/.config/nvim/init.vim<cr>
+nmap <leader>e :tabe ~/OneDrive/dotfiles/nvim/init.vim<cr>
+nmap <leader>l :tabe ~/OneDrive/Notes/libs.md<cr>
+nmap <leader>u :tabe ~/OneDrive/Notes/urls.md<cr>
+nmap <leader>c :tabe ~/OneDrive/Notes/cheatsheet.md<cr>
+nmap <leader>t :tabe ~/OneDrive/Notes/todos.md<cr>
+nmap <leader>n :Explore ~/OneDrive/Notes<cr>
+nmap <leader>d :Explore ~/OneDrive/dotfiles<cr>
 nmap <leader>w :cd %:p:h<cr>
 " vim-surround: visual 'SA' to wrap in A. Surround 'csAB' to change from A to B, 'dsA' to remove A. Word 'ysiwA' to wrap with A
 
@@ -220,7 +218,7 @@ nmap cf <Plug>(coc-format-selected)
 " *****************************
 " TERMINAL
 nmap <Leader>t :terminal<cr>
-tmap <C-x> <C-\><C-n>
+tmap <M-x> <C-\><C-n>
 tmap <F2> <C-\><C-n>
 
 " *****************************
@@ -256,9 +254,10 @@ nmap <M-m> <Plug>(coc-diagnostic-next)
 nmap <M-,> <Plug>(coc-git-prevchunk)
 nmap <M-.> <Plug>(coc-git-nextchunk)
 nmap gd <Plug>(coc-definition)
-nmap gy <Plug>(coc-type-definition)
-nmap gi <Plug>(coc-implementation)
 nmap gr <Plug>(coc-references)
+" nmap gy <Plug>(coc-type-definition)
+" nmap gi <Plug>(coc-implementation)
+" nmap gD <Plug>(coc-declaration)
 
 " *****************************
 " WINDOWS / BUFFERS
@@ -268,15 +267,13 @@ nmap <silent> <M-j> :TmuxNavigateDown<cr>
 nmap <silent> <M-k> :TmuxNavigateUp<cr>
 nmap <silent> <M-l> :TmuxNavigateRight<cr>
 " make splits and tabs
-nnoremap <M-BAR> :vsplit<cr>
-nnoremap <C-w><BAR> :vnew<cr>
-nnoremap <M--> :split<cr>
-nnoremap <C-w>- :new<cr>
+nnoremap <M-v> :vnew<cr>
+nnoremap <M-s> :new<cr>
 nnoremap <M-t> :tabe %<cr>
 nnoremap <M-T> :tabnew<cr>
 " buffers and tabs
-nmap <M-H> :bprev<cr>
-nmap <M-L> :bnext<cr>
+nmap <M-H> :bprev<cr>:call CleanEmptyBuffers()<cr>
+nmap <M-L> :bnext<cr>:call CleanEmptyBuffers()<cr>
 nmap <M-J> :tabprev<cr>
 nmap <M-K> :tabnext<cr>
 " resize windows with hjkl
@@ -288,8 +285,8 @@ nnoremap <C-l> <C-w>>
 nmap <C-n> :cp<cr>
 nmap <C-m> :cn<cr>
 " remove buffer
-nmap <M-d> :bp<bar>bd#<cr>
-nmap <M-D> :bp<bar>bd!#<cr>
+nmap <M-d> :enew<bar>:bd#<cr>
+nmap <M-D> :enew<bar>:bd!#<cr>
 " close window
 nmap <M-q> :q<cr>
 " goyo
@@ -313,6 +310,7 @@ map <C-p> :CocCommand explorer<cr>
 " vim-fugitive
 " g? for fugitive help. :Gdiff, :Gblame, :Gstats '=' expand, '-' add/reset changes, :Gcommit % to commit current file with messag
 map <C-g> :vertical Git<cr>:vertical resize 60<cr>
+map <C-t> :UndotreeToggle<cr>
 
 " *****************************
 " POPUPS
@@ -329,20 +327,20 @@ command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 let g:fzf_preview_command='bat --color=always --plain {-1}' " Installed bat
 let g:fzf_preview_grep_cmd='rg --smart-case --line-number --no-heading --color=never'
 " shortcuts
-nmap <silent> <F2> :Buffers<cr>
 map  <silent> <F3> :Colors<cr>
 nmap <silent> <F4> :CocFzfList<cr>
 nmap <silent> <F5> :CocFzfList symbols<cr>
 nmap <silent> <F6> :CocFzfList symbols --kind Variable<cr>
 nmap <silent> <F7> :CocFzfList symbols --kind Function<cr>
 nmap <silent> <F8> :CocFzfList symbols --kind Class<cr>
-nmap <silent> <F9> :Commits<cr>
-nmap <silent> <F10> :BCommits<cr>
+" F9 reserved for exec in terminal
+nmap <silent> <F10> :Commits<cr>
+nmap <silent> <F11> :BCommits<cr>
 nmap <silent> <F12> :CocFzfList outline<cr>
+nmap <silent> <M-b> :Buffers<cr>
 nmap <silent> <M-w> :RG<cr>
 nmap <silent> <M-g> :GFiles?<cr>
 nmap <silent> <M-r> :History<cr>
-nmap <silent> <M-s> :History/<cr>
 nmap <silent> <M-f> :Files<cr>
 nmap <silent> <M-F> :GFiles<cr>
 map  <silent> <M-y> :Filetypes<cr>
@@ -378,8 +376,6 @@ endfunction
 " *****************************
 " MARKDOWN
 " vim-markdown
-nmap <Leader>m <Plug>(coc-markmap-create)
-vmap <Leader>m <Plug>(coc-markmap-create-v)
 let g:vim_markdown_new_list_item_indent=0
 let g:vim_markdown_auto_insert_bullets=0
 let g:vim_markdown_conceal=1
@@ -402,13 +398,19 @@ let g:mkdp_preview_options={
 
 " *****************************
 " autocmd
+function! CleanEmptyBuffers()
+    let buffers = filter(range(1, bufnr('$')), 'buflisted(v:val) && empty(bufname(v:val)) && bufwinnr(v:val)<0 && !getbufvar(v:val, "&mod")')
+    if !empty(buffers)
+        exe 'bw ' . join(buffers, ' ')
+    endif
+endfunction
 augroup myAu   " A unique name for the group.  DO NOT use the same name twice!
     autocmd!
     autocmd FileType python set        tabstop=4 softtabstop=4 shiftwidth=4
     autocmd FileType markdown,yaml set tabstop=2 softtabstop=2 shiftwidth=2
     autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o   " Disables automatic commenting on newline
     autocmd FileType * RainbowParentheses()
-    autocmd BufEnter * if &filetype == "" | setlocal ft=markdown | endif             " default new file is markdown
+    autocmd BufEnter * if &filetype == "" | setlocal ft=none | endif                 " default new file is none
     autocmd BufWritePre * %s/\s\+$//e                                                " Automatically deletes all trailing whitespace on save.
     autocmd BufReadPost quickfix nmap <buffer> <cr> <cr>                             " quickfix <cr>
     autocmd CompleteDone * if pumvisible() == 0 | pclose | endif                     " bugfix

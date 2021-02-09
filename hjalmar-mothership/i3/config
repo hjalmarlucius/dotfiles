@@ -34,7 +34,7 @@ exec --no-startup-id start-pulseaudio-x11
 exec --no-startup-id pa-applet
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec --no-startup-id nm-applet
-exec --no-startup-id nitrogen --restore; sleep 1; compton -b
+exec --no-startup-id nitrogen --restore; sleep 1; picom -b
 exec --no-startup-id xfce4-power-manager
 exec --no-startup-id pamac-tray
 exec --no-startup-id xautolock -time 30 -locker blurlock
@@ -51,27 +51,27 @@ exec --no-startup-id xrandr --output DP-4 --mode 5120x1440 --primary
 # div bindings
 bindsym $mod+Shift+q kill
 bindsym $mod+q split toggle
-bindsym $mod+bar split h; exec notify-send 'tile horizontally'
-bindsym $mod+minus split v; exec notify-send 'tile vertically'
+bindsym $mod+s split h; exec notify-send 'tile horizontally'
+bindsym $mod+v split v; exec notify-send 'tile vertically'
 bindsym $mod+f fullscreen toggle
 
-bindsym $mod+s layout stacking
-bindsym $mod+w layout tabbed
+bindsym $mod+w layout stacking
+bindsym $mod+t layout tabbed
 bindsym $mod+e layout toggle split
 bindsym $mod+a focus parent
 
-bindsym $mod+Shift+c reload
+bindsym $mod+r reload
 bindsym $mod+Shift+r restart
 
 bindsym $mod+space focus mode_toggle
 bindsym $mod+Shift+space floating toggle
 bindsym $mod+Ctrl+space sticky toggle
 
-bindsym $mod+Shift+comma exec picom-trans -c -10
-bindsym $mod+comma exec picom-trans -c +10
+bindsym $mod+Shift+c exec picom-trans -c -10
+bindsym $mod+c exec picom-trans -c +10
 
-bindsym $mod+period scratchpad show
-bindsym $mod+Shift+period move scratchpad
+bindsym $mod+p scratchpad show
+bindsym $mod+Shift+p move scratchpad
 
 bindsym $mod+h focus left
 bindsym $mod+j focus down
@@ -92,23 +92,25 @@ bindsym $mod+d exec --no-startup-id rofi -show combi -combi-modi "run#drun" -lin
 bindsym $mod+Shift+s --release exec --no-startup-id flameshot gui
 bindsym $mod+Shift+x --release exec --no-startup-id xkill
 
-bindsym $mod+F1 exec glances -w
+bindsym $mod+F1 exec $term -e 'htop'
+bindsym $mod+Shift+F1 exec $term -e 'glances'
 bindsym $mod+F2 exec "chromium --start-fullscreen https://www.inoreader.com"
 bindsym $mod+Shift+F2 exec "chromium --new-window --start-fullscreen https://www.inoreader.com"
-bindsym $mod+F3 exec thunar
-bindsym $mod+Shift+F3 exec $term -e 'ranger'
-bindsym $mod+F4 exec $term -e 'mocp'
-bindsym $mod++Shift+F4 exec $term -e 'ncspot'
+bindsym $mod+F3 exec $term -e 'ranger'
+bindsym $mod+Shift+F3 exec thunar
+bindsym $mod+F4 exec pamac-manager
 bindsym $mod+F5 exec pavucontrol
-bindsym $mod+F6 exec --no-startup-id picom -b
-bindsym $mod+Shift+F6 exec --no-startup-id pkill picom
-bindsym $mod+Shift+F7 --release exec "killall dunst; exec notify-send 'restart dunst'"
-bindsym $mod+F10 exec "setxkbmap -layout no -model pc105 -variant nodeadkeys -option"
-bindsym $mod+F11 exec "setxkbmap -layout no -model pc105 -variant nodeadkeys -option 'caps:backspace'"
-bindsym $mod+F12 exec "setxkbmap -layout no -model pc105 -variant nodeadkeys -option 'caps:escape'"
+bindsym $mod+F6 exec $term -e 'mocp'
+bindsym $mod+Shift+F6 exec $term -e 'ncspot'
+bindsym $mod+F9 exec --no-startup-id picom -b
+bindsym $mod+Shift+F9 exec --no-startup-id pkill picom
+bindsym $mod+Shift+F10 --release exec "killall dunst; exec notify-send 'restart dunst'"
+# bindsym $mod+Shift+F10 exec "setxkbmap -layout no -model pc105 -variant nodeadkeys -option"
+# bindsym $mod+Shift+F11 exec "setxkbmap -layout no -model pc105 -variant nodeadkeys -option 'caps:backspace'"
+# bindsym $mod+Shift+F12 exec "setxkbmap -layout no -model pc105 -variant nodeadkeys -option 'caps:escape'"
 
 bindsym $mod+0 mode "$mode_system"
-bindsym $mod+r mode "resize"
+bindsym $mod+z mode "resize"
 bindsym $mod+g mode "$mode_gaps"
 
 # Workspace names
@@ -178,7 +180,7 @@ for_window [class="Pavucontrol"] floating enable
 for_window [class="qt5ct"] floating enable sticky enable border normal
 
 # Set shut down, restart and locking features
-set $mode_system (l)ock, (e)xit, switch_(u)ser, (r)eboot, (Shift+s)hutdown
+set $mode_system (l)ock, (e)xit, switch_(u)ser, (r)eboot, (s)hutdown
 mode "$mode_system" {
     bindsym l exec --no-startup-id i3exit lock, mode "default"
     bindsym u exec --no-startup-id i3exit switch_user, mode "default"
@@ -230,9 +232,7 @@ bar {
 	status_command i3status
 	position bottom
 
-## please set your primary output first. Example: 'xrandr --output eDP1 --primary'
-
-	tray_output primary
+	tray_output DP-4
 	bindsym button4 nop
 	bindsym button5 nop
 	strip_workspace_numbers yes
