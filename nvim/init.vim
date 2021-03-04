@@ -9,7 +9,7 @@ if ! filereadable(expand('~/.config/nvim/autoload/plug.vim'))
     silent !curl "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" > ~/.config/nvim/autoload/plug.vim
 endif
 let g:coc_global_extensions=[
-      \ 'coc-python',
+      \ 'coc-pyright',
       \ 'coc-git',
       \ 'coc-tsserver',
       \ 'coc-diagnostic',
@@ -79,7 +79,7 @@ highlight LineNr guibg=NONE ctermbg=NONE
 
 " seoul256 theme config (dark 233-239, light 252-256)
 let g:seoul256_background=233
-" colo seoul256
+colo seoul256
 " colo base16-tomorrow-night
 " colo gruvbox-material
 
@@ -209,13 +209,6 @@ nnoremap q: <nop>
 nnoremap Q <nop>
 
 " *****************************
-" EDITING
-nmap cr <Plug>(coc-rename)
-nmap cR <Plug>(coc-refactor)
-xmap cf <Plug>(coc-format-selected)
-nmap cf <Plug>(coc-format-selected)
-
-" *****************************
 " TERMINAL
 nmap <Leader>t :terminal<cr>
 tmap <M-x> <C-\><C-n>
@@ -262,20 +255,20 @@ nmap gr <Plug>(coc-references)
 " *****************************
 " WINDOWS / BUFFERS
 let g:tmux_navigator_no_mappings=1
-nmap <silent> <M-h> :TmuxNavigateLeft<cr>
-nmap <silent> <M-j> :TmuxNavigateDown<cr>
-nmap <silent> <M-k> :TmuxNavigateUp<cr>
-nmap <silent> <M-l> :TmuxNavigateRight<cr>
+nmap <silent> <M-h> :TmuxNavigateLeft<cr>:call CleanEmptyBuffers()<cr>
+nmap <silent> <M-j> :TmuxNavigateDown<cr>:call CleanEmptyBuffers()<cr>
+nmap <silent> <M-k> :TmuxNavigateUp<cr>:call CleanEmptyBuffers()<cr>
+nmap <silent> <M-l> :TmuxNavigateRight<cr>:call CleanEmptyBuffers()<cr>
 " make splits and tabs
 nnoremap <M-v> :vnew<cr>
 nnoremap <M-s> :new<cr>
 nnoremap <M-t> :tabe %<cr>
 nnoremap <M-T> :tabnew<cr>
 " buffers and tabs
-nmap <M-H> :bprev<cr>:call CleanEmptyBuffers()<cr>
-nmap <M-L> :bnext<cr>:call CleanEmptyBuffers()<cr>
-nmap <M-J> :tabprev<cr>
-nmap <M-K> :tabnext<cr>
+nmap <M-J> :bprev<cr>:call CleanEmptyBuffers()<cr>
+nmap <M-K> :bnext<cr>:call CleanEmptyBuffers()<cr>
+nmap <M-H> :tabprev<cr>
+nmap <M-L> :tabnext<cr>
 " resize windows with hjkl
 nnoremap <C-h> <C-w><
 nnoremap <C-j> <C-w>-
@@ -310,7 +303,7 @@ map <C-p> :CocCommand explorer<cr>
 " vim-fugitive
 " g? for fugitive help. :Gdiff, :Gblame, :Gstats '=' expand, '-' add/reset changes, :Gcommit % to commit current file with messag
 map <C-g> :vertical Git<cr>:vertical resize 60<cr>
-map <C-t> :UndotreeToggle<cr>
+map <C-t> :UndotreeToggle<cr>:UndotreeFocus<cr>
 
 " *****************************
 " POPUPS
@@ -327,12 +320,13 @@ command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 let g:fzf_preview_command='bat --color=always --plain {-1}' " Installed bat
 let g:fzf_preview_grep_cmd='rg --smart-case --line-number --no-heading --color=never'
 " shortcuts
-map  <silent> <F3> :Colors<cr>
+nmap <silent> <F3> :Colors<cr>
 nmap <silent> <F4> :CocFzfList<cr>
-nmap <silent> <F5> :CocFzfList symbols<cr>
-nmap <silent> <F6> :CocFzfList symbols --kind Variable<cr>
-nmap <silent> <F7> :CocFzfList symbols --kind Function<cr>
-nmap <silent> <F8> :CocFzfList symbols --kind Class<cr>
+nmap <F5> <Plug>(coc-rename)
+nmap <F6> <Plug>(coc-refactor)
+xmap <F7> <Plug>(coc-format-selected)
+nmap <F7> <Plug>(coc-format-selected)
+nmap <F8> :CocDiagnostics<cr>
 " F9 reserved for exec in terminal
 nmap <silent> <F10> :Commits<cr>
 nmap <silent> <F11> :BCommits<cr>
@@ -343,7 +337,7 @@ nmap <silent> <M-g> :GFiles?<cr>
 nmap <silent> <M-r> :History<cr>
 nmap <silent> <M-f> :Files<cr>
 nmap <silent> <M-F> :GFiles<cr>
-map  <silent> <M-y> :Filetypes<cr>
+nmap <silent> <M-y> :Filetypes<cr>
 
 " *****************************
 " COC CONFIGS
@@ -372,6 +366,12 @@ function! s:show_documentation()
     execute '!' . &keywordprg . " " . expand('<cword>')
   endif
 endfunction
+
+" coc hint scrolling
+nnoremap <nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+nnoremap <nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+inoremap <nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+inoremap <nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
 
 " *****************************
 " MARKDOWN

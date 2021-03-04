@@ -37,13 +37,13 @@ exec --no-startup-id nm-applet
 exec --no-startup-id nitrogen --restore; sleep 1; picom -b
 exec --no-startup-id xfce4-power-manager
 exec --no-startup-id pamac-tray
-exec --no-startup-id xautolock -time 30 -locker blurlock
+exec --no-startup-id xautolock -time 30 -locker ~/OneDrive/dotfiles/root/locker.sh
 exec_always --no-startup-id sbxkb
 exec_always --no-startup-id fix_xcursor
 
 # HB STARTUP ADDITIONS
-exec --no-startup-id setxkbmap -layout no -model pc105 -variant nodeadkeys -option "caps:escape"
-exec --no-startup-id redshift-gtk
+exec --no-startup-id setxkbmap -layout no -model pc105 -variant nodeadkeys
+exec --no-startup-id redshift-gtk -l 59.91:10.75
 exec --no-startup-id dropbox start &
 exec --no-startup-id nvidia-settings -a GPUFanControlState=1 -a GPUTargetFanSpeed=60
 exec --no-startup-id xrandr --output DP-4 --mode 5120x1440 --primary
@@ -51,8 +51,8 @@ exec --no-startup-id xrandr --output DP-4 --mode 5120x1440 --primary
 # div bindings
 bindsym $mod+Shift+q kill
 bindsym $mod+q split toggle
-bindsym $mod+s split h; exec notify-send 'tile horizontally'
-bindsym $mod+v split v; exec notify-send 'tile vertically'
+bindsym $mod+v split h; exec notify-send 'tile horizontally'
+bindsym $mod+s split v; exec notify-send 'tile vertically'
 bindsym $mod+f fullscreen toggle
 
 bindsym $mod+w layout stacking
@@ -70,8 +70,8 @@ bindsym $mod+Ctrl+space sticky toggle
 bindsym $mod+Shift+c exec picom-trans -c -10
 bindsym $mod+c exec picom-trans -c +10
 
-bindsym $mod+p scratchpad show
-bindsym $mod+Shift+p move scratchpad
+bindsym $mod+minus scratchpad show
+bindsym $mod+Shift+minus move scratchpad
 
 bindsym $mod+h focus left
 bindsym $mod+j focus down
@@ -105,9 +105,6 @@ bindsym $mod+Shift+F6 exec $term -e 'ncspot'
 bindsym $mod+F9 exec --no-startup-id picom -b
 bindsym $mod+Shift+F9 exec --no-startup-id pkill picom
 bindsym $mod+Shift+F10 --release exec "killall dunst; exec notify-send 'restart dunst'"
-# bindsym $mod+Shift+F10 exec "setxkbmap -layout no -model pc105 -variant nodeadkeys -option"
-# bindsym $mod+Shift+F11 exec "setxkbmap -layout no -model pc105 -variant nodeadkeys -option 'caps:backspace'"
-# bindsym $mod+Shift+F12 exec "setxkbmap -layout no -model pc105 -variant nodeadkeys -option 'caps:escape'"
 
 bindsym $mod+0 mode "$mode_system"
 bindsym $mod+z mode "resize"
@@ -182,7 +179,7 @@ for_window [class="qt5ct"] floating enable sticky enable border normal
 # Set shut down, restart and locking features
 set $mode_system (l)ock, (e)xit, switch_(u)ser, (r)eboot, (s)hutdown
 mode "$mode_system" {
-    bindsym l exec --no-startup-id i3exit lock, mode "default"
+    bindsym l exec --no-startup-id ~/OneDrive/dotfiles/root/locker.sh, mode "default"
     bindsym u exec --no-startup-id i3exit switch_user, mode "default"
     bindsym e exec --no-startup-id i3exit logout, mode "default"
     bindsym r exec --no-startup-id i3exit reboot, mode "default"
@@ -196,10 +193,10 @@ mode "$mode_system" {
 # Resize window (you can also use the mouse for that)
 mode "resize" {
         # These bindings trigger as soon as you enter the resize mode
-        bindsym l resize shrink width 10 px or 10 ppt
+        bindsym h resize shrink width 10 px or 10 ppt
         bindsym k resize grow height 10 px or 10 ppt
         bindsym j resize shrink height 10 px or 10 ppt
-        bindsym h resize grow width 10 px or 10 ppt
+        bindsym l resize grow width 10 px or 10 ppt
 
         # exit resize mode: Enter or Escape
         bindsym Return mode "default"
@@ -254,8 +251,8 @@ bar {
 # Theme colors
 # class                   border  backgr. text    indic.   child_border
   client.focused          #556064 #f9ce5c #000000 #FDF6E3
-  client.focused_inactive #2F3D44 #2F3D44 #1ABC9C #454948
-  client.unfocused        #2F3D44 #2F3D44 #1ABC9C #454948
+  client.focused_inactive #CB4B16 #2F3D44 #1ABC9C #454948
+  client.unfocused        #556064 #2F3D44 #1ABC9C #454948
   client.urgent           #CB4B16 #FDF6E3 #1ABC9C #268BD2
   client.placeholder      #000000 #0c0c0c #ffffff #000000
 

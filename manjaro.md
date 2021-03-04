@@ -11,6 +11,7 @@
   * omf install https://github.com/jethrokuan/fzf
 * div applications `yay -S thunar ranger drawio-desktop steam-manjaro`
 * div utils `yay -S trash-cli rofi redshift flameshot asus-fan-control`
+* caps2esc `yay -S caps2esc` [install routine](https://askubuntu.com/questions/979359/how-do-i-install-caps2esc) - mode 1
 
 # coding
 * essentials `yay -S neovim tmux`
