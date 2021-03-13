@@ -94,8 +94,8 @@ bindsym $mod+Shift+x --release exec --no-startup-id xkill
 
 bindsym $mod+F1 exec $term -e 'htop'
 bindsym $mod+Shift+F1 exec $term -e 'glances'
-bindsym $mod+F2 exec "chromium --start-fullscreen https://www.inoreader.com"
-bindsym $mod+Shift+F2 exec "chromium --new-window --start-fullscreen https://www.inoreader.com"
+bindsym $mod+F2 exec "xdg-open 'https://www.inoreader.com'"
+bindsym $mod+Shift+F2 exec "xdg-open --new-window 'https://www.inoreader.com'"
 bindsym $mod+F3 exec $term -e 'ranger'
 bindsym $mod+Shift+F3 exec thunar
 bindsym $mod+F4 exec pamac-manager
