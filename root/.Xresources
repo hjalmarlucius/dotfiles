@@ -2,10 +2,10 @@
 
 
 ! font config
-URxvt.font:                       xft:hack:size=12
-URxvt.boldFont:                   xft:hack:size=12:bold
-URxvt.italicFont:                 xft:hack:size=12:italic
-URxvt.boldItalicFont:             xft:hack:size=12:bolditalic
+URxvt.font:                       xft:hack:size=10
+URxvt.boldFont:                   xft:hack:size=10:bold
+URxvt.italicFont:                 xft:hack:size=10:italic
+URxvt.boldItalicFont:             xft:hack:size=10:bolditalic
 ! xft:SauceCodePro Nerd Font
 ! xft:Inconsolata for Powerline
 ! xft:Droid Sans Mono for Powerline
@@ -23,6 +23,7 @@ URxvt.keysym.Shift-Control-V:     eval:paste_clipboard
 URxvt.keysym.Shift-Control-C:     eval:selection_to_clipboard
 
 ! font config
+Xft.dpi:                          108
 Xft.antialias:                    true
 Xft.hinting:                      true
 Xft.rgba:                         rgb
@@ -35,7 +36,7 @@ Xft.lcdfilter:                    lcddefault
 *fadeColor:                       black
 
 ! cursor when hovering
-Xcursor.theme:                    Maia-Cursor
+Xcursor.theme: Maia-Cursor
 Xcursor.size:                     0
 
 ! settings
