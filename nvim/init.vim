@@ -43,7 +43,6 @@ Plug 'tpope/vim-sensible'
 Plug 'dkarter/bullets.vim'
 " python
 Plug 'tmhedberg/SimpylFold'
-Plug 'jeetsukumaran/vim-pythonsense'
 " tmux
 Plug 'christoomey/vim-tmux-navigator' " integrate movement in tmux and vim
 " aesthetics
@@ -210,9 +209,9 @@ nnoremap Q <nop>
 
 " *****************************
 " TERMINAL
-nmap <Leader>t :terminal<cr>
 tmap <M-x> <C-\><C-n>
-tmap <F2> <C-\><C-n>
+tmap <F10> <C-\><C-n>
+nmap <F9> :terminal<cr>
 
 " *****************************
 " SEARCH
@@ -327,10 +326,8 @@ nmap <F6> <Plug>(coc-refactor)
 xmap <F7> <Plug>(coc-format-selected)
 nmap <F7> <Plug>(coc-format-selected)
 nmap <F8> :CocDiagnostics<cr>
-" F9 reserved for exec in terminal
-nmap <silent> <F10> :Commits<cr>
-nmap <silent> <F11> :BCommits<cr>
-nmap <silent> <F12> :CocFzfList outline<cr>
+nmap <silent> <F11> :Commits<cr>
+nmap <silent> <F12> :BCommits<cr>
 nmap <silent> <M-b> :Buffers<cr>
 nmap <silent> <M-w> :RG<cr>
 nmap <silent> <M-g> :GFiles?<cr>
@@ -415,8 +412,6 @@ augroup myAu   " A unique name for the group.  DO NOT use the same name twice!
     autocmd BufReadPost quickfix nmap <buffer> <cr> <cr>                             " quickfix <cr>
     autocmd CompleteDone * if pumvisible() == 0 | pclose | endif                     " bugfix
     autocmd BufNewFile,BufRead *.cfg set syntax=cfg
-    autocmd FileType python map <F9> :CocCommand python.execInTerminal<CR>
-    autocmd FileType python imap <F9> <esc>:CocCommand python.execInTerminal<CR>
 augroup end
 
 " CTRL-A CTRL-Q to select all and build quickfix list
