@@ -180,13 +180,13 @@ set list
 let mapleader="\<SPACE>"
 set pastetoggle=<F2>
 nmap <leader>r :so ~/.config/nvim/init.vim<cr>
-nmap <leader>e :tabe ~/OneDrive/dotfiles/nvim/init.vim<cr>
-nmap <leader>l :tabe ~/OneDrive/Notes/libs.md<cr>
-nmap <leader>u :tabe ~/OneDrive/Notes/urls.md<cr>
-nmap <leader>c :tabe ~/OneDrive/Notes/cheatsheet.md<cr>
-nmap <leader>t :tabe ~/OneDrive/Notes/todos.md<cr>
-nmap <leader>n :Explore ~/OneDrive/Notes<cr>
-nmap <leader>d :Explore ~/OneDrive/dotfiles<cr>
+nmap <leader>e :tabe ~/dotfiles/nvim/init.vim<cr>
+nmap <leader>l :tabe ~/notes/libs.md<cr>
+nmap <leader>u :tabe ~/notes/urls.md<cr>
+nmap <leader>c :tabe ~/notes/cheatsheet.md<cr>
+nmap <leader>t :tabe ~/notes/todos.md<cr>
+nmap <leader>n :Explore ~/notes<cr>
+nmap <leader>d :Explore ~/dotfiles<cr>
 nmap <leader>w :cd %:p:h<cr>
 " vim-surround: visual 'SA' to wrap in A. Surround 'csAB' to change from A to B, 'dsA' to remove A. Word 'ysiwA' to wrap with A
 
@@ -332,8 +332,8 @@ nmap <silent> <M-b> :Buffers<cr>
 nmap <silent> <M-w> :RG<cr>
 nmap <silent> <M-g> :GFiles?<cr>
 nmap <silent> <M-r> :History<cr>
-nmap <silent> <M-f> :Files<cr>
-nmap <silent> <M-F> :GFiles<cr>
+nmap <silent> <M-F> :Files<cr>
+nmap <silent> <M-f> :GFiles<cr>
 nmap <silent> <M-y> :Filetypes<cr>
 
 " *****************************
