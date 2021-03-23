@@ -101,7 +101,7 @@ let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
 " temporary files and undo
 set directory=/tmp//,.
 set backupdir=/tmp//,.
-set undodir=~/.vim/undo/
+set undodir=~/.cache/vim/undo/
 set noswapfile
 set nowritebackup
 set undofile             " Persistent undo
