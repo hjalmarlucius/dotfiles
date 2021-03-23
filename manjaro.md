@@ -32,7 +32,7 @@
 * `pip install tensorboard torchtext pytorch-lightning torchvision`
 
 # settings
-* bmenu for system config incl setting shell
+* set shell to fish via `chsh`
 * enable docker non-root daemon [link](https://docs.docker.com/engine/install/linux-postinstall)
 * ssh enable `sudo systemctl enable --now sshd.service`
 * jupyter `openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout ~/.jupyter/mykey.key -out ~/.jupyter/mycert.pem`
