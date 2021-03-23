@@ -2,4 +2,4 @@
 export TERMINAL=st
 export VISUAL=nvim
 export EDITOR=nvim
-export PAGER=bat
+export PAGER="bat --style=header,rule,snip"
