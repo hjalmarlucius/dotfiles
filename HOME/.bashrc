@@ -70,9 +70,9 @@ if ${use_color} ; then
 	fi
 
 	if [[ ${EUID} == 0 ]] ; then
-		PS1='\[\033[01;31m\]\w\[\033[01;31m\] [\t] \$\[\033[00m\] '
+		PS1='\[\033[01;31m\][\h\[\033[01;36m\] \W\[\033[01;31m\]]\$\[\033[00m\] '
 	else
-		PS1='\[\033[01;32m\]\w\[\033[01;32m\] [\t] \$\[\033[00m\] '
+		PS1='\[\033[01;32m\][\u@\h\[\033[01;37m\] \W\[\033[01;32m\]]\$\[\033[00m\] '
 	fi
 
 	alias ls='ls --color=auto'
@@ -82,9 +82,9 @@ if ${use_color} ; then
 else
 	if [[ ${EUID} == 0 ]] ; then
 		# show root@ when we don't have colors
-		PS1='\u@\h \w [\t] \$ '
+		PS1='\u@\h \W \$ '
 	else
-		PS1='\u@\h \w [\t] \$ '
+		PS1='\u@\h \w \$ '
 	fi
 fi
 
@@ -139,11 +139,3 @@ ex ()
 }
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-
-# Base16 Shell
-BASE16_SHELL="$HOME/.config/base16-shell/"
-[ -n "$PS1" ] && \
-    [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
-        eval "$("$BASE16_SHELL/profile_helper.sh")"
-
-source /usr/share/nvm/init-vnm.sh
