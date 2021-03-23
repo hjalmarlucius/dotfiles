@@ -15,7 +15,7 @@
 
 # coding
 * essentials `yay -S neovim tmux`
-  * tmux plugins `git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm`
+  * tmux plugins `git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm`
   * base16 shell `git clone https://github.com/chriskempson/base16-shell.git ~/.config/base16-shell`
 * cuda `yay -S cuda nvidia-container-toolkit`
 * docker `yay -S docker docker-compose dry-bin`
