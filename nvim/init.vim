@@ -49,7 +49,6 @@ Plug 'christoomey/vim-tmux-navigator' " integrate movement in tmux and vim
 Plug 'chriskempson/base16-vim'        " base16 themes
 Plug 'chrisbra/Colorizer'             " show color codes
 Plug 'junegunn/rainbow_parentheses.vim' " colorize parentheses
-Plug 'junegunn/goyo.vim'
 " themes
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -75,6 +74,7 @@ endif
 " Transparent Background (For i3 and compton)
 highlight Normal guibg=NONE ctermbg=NONE
 highlight LineNr guibg=NONE ctermbg=NONE
+highlight clear SignColumn         " SignColumn should match background
 
 " seoul256 theme config (dark 233-239, light 252-256)
 let g:seoul256_background=233
@@ -162,7 +162,6 @@ set timeoutlen=500
 set conceallevel=2
 let g:BASH_Ctrl_j='off'            " avoid 'C-j' being overridden to newline
 let g:BASH_Ctrl_l='off'            " avoid 'C-l' being overridden to newline
-highlight clear SignColumn         " SignColumn should match background
 set shortmess=atOI                 " No help Uganda information, and overwrite read messages to avoid PRESS ENTER prompts
 set listchars=tab:→\ ,trail:·,extends:↷,precedes:↶,nbsp:+
 " eol:↵
@@ -277,15 +276,10 @@ nnoremap <C-l> <C-w>>
 nmap <C-n> :cp<cr>
 nmap <C-m> :cn<cr>
 " remove buffer
-nmap <M-d> :enew<bar>:bd#<cr>
-nmap <M-D> :enew<bar>:bd!#<cr>
+nmap <M-d> :bnext<bar>:bd#<cr>
+nmap <M-D> :bnext<bar>:bd!#<cr>
 " close window
 nmap <M-q> :q<cr>
-" goyo
-let g:goyo_linenr=1
-let g:goyo_width="140"
-let g:goyo_height="100%"
-nmap <C-q> :Goyo<cr>
 
 " *****************************
 " GIT
@@ -406,8 +400,8 @@ augroup myAu   " A unique name for the group.  DO NOT use the same name twice!
     autocmd FileType python set        tabstop=4 softtabstop=4 shiftwidth=4
     autocmd FileType markdown,yaml set tabstop=2 softtabstop=2 shiftwidth=2
     autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o   " Disables automatic commenting on newline
-    autocmd FileType * RainbowParentheses()
     autocmd BufEnter * if &filetype == "" | setlocal ft=none | endif                 " default new file is none
+    autocmd FileType * RainbowParentheses
     autocmd BufWritePre * %s/\s\+$//e                                                " Automatically deletes all trailing whitespace on save.
     autocmd BufReadPost quickfix nmap <buffer> <cr> <cr>                             " quickfix <cr>
     autocmd CompleteDone * if pumvisible() == 0 | pclose | endif                     " bugfix
