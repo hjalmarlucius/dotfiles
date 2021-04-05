@@ -39,6 +39,7 @@
 * start onedrive `systemctl enable --user onedrive --now`
 * ssd maintenance `sudo systemctl enable fstrim.timer --now`
 * urxvt ext install `https://github.com/simmel/urxvt-resize-font`
+* set nodeadkeys `setxkbmap -layout no -model pc105 -variant nodeadkeys`
 
 # wsl
 * sudo apt install fish neovim ranger tmux docker docker/compose tig git-lfs ctags ripgrep silversearcher-ag python3-pip
