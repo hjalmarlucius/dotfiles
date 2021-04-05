@@ -23,7 +23,6 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'junegunn/fzf', {'dir': '~/.fzf', 'do': './install --all'}
 Plug 'junegunn/fzf.vim'
 Plug 'antoinemadec/coc-fzf', {'branch': 'master'}
-Plug 'sheerun/vim-polyglot'           " language syntax
 Plug 'tpope/vim-abolish'              " better search replace
 " git
 Plug 'tpope/vim-fugitive'
@@ -43,6 +42,8 @@ Plug 'tpope/vim-sensible'
 Plug 'dkarter/bullets.vim'
 " python
 Plug 'tmhedberg/SimpylFold'
+Plug 'Vimjas/vim-python-pep8-indent'
+Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
 " tmux
 Plug 'christoomey/vim-tmux-navigator' " integrate movement in tmux and vim
 " aesthetics
@@ -127,7 +128,6 @@ set number         " Line numbers on
 
 " parentheses
 set showmatch      " Show matching brackets/parentthesis
-set matchtime=5    " Show matching time
 
 " files and encodings
 set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
@@ -138,8 +138,6 @@ set smartindent
 
 " folds
 set foldmethod=indent
-set foldlevel=2
-set foldnestmax=10
 set nofoldenable
 let g:SimpylFold_docstring_preview = 1
 let g:SimpylFold_fold_docstring = 1
@@ -397,8 +395,7 @@ function! CleanEmptyBuffers()
 endfunction
 augroup myAu   " A unique name for the group.  DO NOT use the same name twice!
     autocmd!
-    autocmd FileType python set        tabstop=4 softtabstop=4 shiftwidth=4
-    autocmd FileType markdown,yaml set tabstop=2 softtabstop=2 shiftwidth=2
+    autocmd FileType markdown,yaml setlocal tabstop=2 softtabstop=2 shiftwidth=2
     autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o   " Disables automatic commenting on newline
     autocmd BufEnter * if &filetype == "" | setlocal ft=none | endif                 " default new file is none
     autocmd FileType * RainbowParentheses
