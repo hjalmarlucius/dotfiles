@@ -73,9 +73,9 @@ else
 endif
 
 " Transparent Background (For i3 and compton)
-highlight Normal guibg=NONE ctermbg=NONE
-highlight LineNr guibg=NONE ctermbg=NONE
-highlight clear SignColumn         " SignColumn should match background
+" highlight Normal guibg=NONE ctermbg=NONE
+" highlight LineNr guibg=NONE ctermbg=NONE
+" highlight clear SignColumn         " SignColumn should match background
 
 " seoul256 theme config (dark 233-239, light 252-256)
 let g:seoul256_background=233
@@ -274,8 +274,8 @@ nnoremap <C-l> <C-w>>
 nmap <C-n> :cp<cr>
 nmap <C-m> :cn<cr>
 " remove buffer
-nmap <M-d> :bnext<bar>:bd#<cr>
-nmap <M-D> :bnext<bar>:bd!#<cr>
+nmap <M-d> :bprev<bar>:bd#<cr>
+nmap <M-D> :bprev<bar>:bd!#<cr>
 " close window
 nmap <M-q> :q<cr>
 
