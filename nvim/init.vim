@@ -47,14 +47,14 @@ Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
 " tmux
 Plug 'christoomey/vim-tmux-navigator' " integrate movement in tmux and vim
 " aesthetics
-Plug 'chriskempson/base16-vim'        " base16 themes
 Plug 'chrisbra/Colorizer'             " show color codes
 Plug 'junegunn/rainbow_parentheses.vim' " colorize parentheses
+Plug 'gillyb/stable-windows'
 " themes
+Plug 'chriskempson/base16-vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'junegunn/seoul256.vim'
-Plug 'sainnhe/gruvbox-material'
 Plug 'skbolton/embark'
 call plug#end()
 
@@ -62,26 +62,19 @@ call plug#end()
 " SETTINGS
 " -----------------------------------------------------------------------------
 " colors
-if filereadable(expand("~/.vimrc_background"))
-  let base16colorspace=256
-  source ~/.vimrc_background
+if !&termguicolors
+    set termguicolors
 endif
-if $TERM =~ '^\(rxvt\)\(-.*\)\?$'
-  set notermguicolors
-else
-  set termguicolors
+if !exists('g:colors_name')
+    " let g:seoul256_background=233
+    " silent! colorscheme seoul256
+    silent! colorscheme base16-monokai
+    " silent! colorscheme base16-tomorrow-night
+    " seoul256 theme config: dark 233-239, light 252-256
 endif
-
-" Transparent Background (For i3 and compton)
-" highlight Normal guibg=NONE ctermbg=NONE
-" highlight LineNr guibg=NONE ctermbg=NONE
-" highlight clear SignColumn         " SignColumn should match background
-
-" seoul256 theme config (dark 233-239, light 252-256)
-let g:seoul256_background=233
-colo seoul256
-" colo base16-tomorrow-night
-" colo gruvbox-material
+highlight Normal guibg=NONE ctermbg=NONE
+highlight LineNr guibg=NONE ctermbg=NONE
+highlight clear SignColumn
 
 " statusline
 set cmdheight=2
@@ -91,7 +84,8 @@ let g:airline_powerline_fonts=1
 "let g:airline_theme='badwolf'
 "let g:airline_theme='silver'
 "let g:airline_theme='raven'
-let g:airline_theme='base16_gruvbox_dark_hard'
+" let g:airline_theme='laederon'
+let g:airline_theme='ayu_dark'
 let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#tabline#show_splits=0
 let g:airline#extensions#tabline#show_tabs=0
@@ -109,6 +103,10 @@ set undofile             " Persistent undo
 set undolevels=500       " Maximum number of changes that can be undone
 set undoreload=5000      " Maximum number lines to save for undo on a buffer reload
 
+" line width ruler
+set colorcolumn=80
+highlight ColorColumn ctermbg=0 guibg='#3a3a3a'
+
 " search
 set ignorecase     " Case insensitive search
 set smartcase      " ... but case sensitive when uc present
@@ -120,6 +118,7 @@ set scrolljump=1   " Line to scroll when cursor leaves screen
 set splitright     " Puts new vsplit windows to the right of the current
 set splitbelow     " Puts new split windows to the bottom of the current
 set hidden         " Allow buffer switching without saving
+set switchbuf=useopen
 
 " buffer
 set nowrap         " Do not wrap long lines
@@ -134,7 +133,7 @@ set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
 set fileformats=unix,dos,mac
 
 " indentation
-set smartindent
+set nosmartindent
 
 " folds
 set foldmethod=indent
@@ -235,10 +234,12 @@ let g:asterisk#keeppos=1
 " stay visual when indenting
 vnoremap <Tab> >gv
 vnoremap <S-Tab> <gv
+vnoremap > >gv
+vnoremap < <gv
 noremap - _
 " move between errors
-nmap <M-n> <Plug>(coc-diagnostic-prev)
-nmap <M-m> <Plug>(coc-diagnostic-next)
+nmap <M-n> <Plug>(coc-diagnostic-prev-error)
+nmap <M-m> <Plug>(coc-diagnostic-next-error)
 " GoTo code navigation
 nmap <M-,> <Plug>(coc-git-prevchunk)
 nmap <M-.> <Plug>(coc-git-nextchunk)
@@ -310,6 +311,7 @@ command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 "command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, {'options': '--delimiter : --nth 4..'}, <bang>0)
 let g:fzf_preview_command='bat --color=always --plain {-1}' " Installed bat
 let g:fzf_preview_grep_cmd='rg --smart-case --line-number --no-heading --color=never'
+let g:fzf_buffers_jump = 1
 " shortcuts
 nmap <silent> <F3> :Colors<cr>
 nmap <silent> <F4> :CocFzfList<cr>
@@ -318,6 +320,8 @@ nmap <F6> <Plug>(coc-refactor)
 xmap <F7> <Plug>(coc-format-selected)
 nmap <F7> <Plug>(coc-format-selected)
 nmap <F8> :CocDiagnostics<cr>
+nmap <F9> :copen<cr>
+nmap <F10> :vimgrep TODO **/*<cr>:copen<cr>
 nmap <silent> <F11> :Commits<cr>
 nmap <silent> <F12> :BCommits<cr>
 nmap <silent> <M-b> :Buffers<cr>
@@ -327,6 +331,7 @@ nmap <silent> <M-r> :History<cr>
 nmap <silent> <M-F> :Files<cr>
 nmap <silent> <M-f> :GFiles<cr>
 nmap <silent> <M-y> :Filetypes<cr>
+nmap <silent> <M-M> :Marks<cr>
 
 " *****************************
 " COC CONFIGS

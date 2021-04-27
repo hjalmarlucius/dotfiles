@@ -102,6 +102,8 @@ bindsym $mod+Shift+F6 exec i3-sensible-terminal -e 'ncspot'
 bindsym $mod+F9 exec --no-startup-id picom -b
 bindsym $mod+Shift+F9 exec --no-startup-id pkill picom
 bindsym $mod+Shift+F10 --release exec "killall dunst; exec notify-send 'restart dunst'"
+bindsym $mod+F12 --release exec "xrandr --output DP-4 --mode 5120x1440 --primary"
+bindsym $mod+Shift+F12 --release exec "xrandr --output DP-4 --mode 2560x1440 --primary"
 
 bindsym $mod+0 mode "$mode_system"
 bindsym $mod+z mode "resize"
