@@ -12,6 +12,9 @@
 * div applications `yay -S thunar ranger drawio-desktop steam-manjaro`
 * div utils `yay -S trash-cli rofi redshift flameshot asus-fan-control`
 * caps2esc `yay -S caps2esc` [install routine](https://askubuntu.com/questions/979359/how-do-i-install-caps2esc) - mode 1
+* sysrq lock shutdown https://forum.manjaro.org/t/howto-reboot-turn-off-your-frozen-computer-reisub-reisuo/3855
+  + `echo kernel.sysrq=1 | sudo tee --append /etc/sysctl.d/99-sysctl.conf`
+  + `sudo update-grub`
 
 # coding
 * essentials `yay -S neovim tmux`
