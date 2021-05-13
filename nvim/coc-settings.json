@@ -1,25 +1,19 @@
 {
+    "coc.prefereces.enableMessageDialog": true,
+    "coc.preferences.useQuickfixForLocations": true,
+    "coc.preferences.formatOnType": true,
+    "coc.preferences.formatOnSaveFiletypes": ["python", "markdown"],
+    "coc.preferences.formatOnTypeFiletypes": ["python", "markdown"],
     "signature.target": "echo",
     "suggest.autoTrigger": "always",
+    "python.analysis.diagnosticMode": "workspace",
+    "python.formatting.provider": "black",
     "python.linting.enabled": true,
     "python.linting.flake8Enabled": true,
-    "python.linting.mypyEnabled": false,
+    "python.linting.mypyEnabled": true,
     "python.linting.pylintEnabled": false,
-    "python.analysis.useLibraryCodeForTypes": false,
-    "python.linting.flake8Args": ["--ignore=E731,W503,E501"],
-    "python.linting.mypyArgs": ["--disallow-any-generics","--ignore-missing-imports","--follow-imports=normal","--show-column-numbers"],
-    "diagnostic.showUnused": false,
+    "python.analysis.useLibraryCodeForTypes": true,
     "git.enableGutters": true,
     "yaml.format.enable": true,
-    "yaml.format.singleQuote": true,
-    "diagnostic-languageserver.filetypes": {
-        "vim": "vint",
-        "email": "languagetool",
-        "markdown": [ "write-good", "markdownlint" ],
-        "sh": "shellcheck",
-        "php": ["phpstan", "psalm"]
-    },
-    "diagnostic-languageserver.formatFiletypes": {
-        "sh": "shfmt"
-    }
+    "yaml.format.singleQuote": true
 }

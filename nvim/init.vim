@@ -12,7 +12,6 @@ let g:coc_global_extensions=[
       \ 'coc-pyright',
       \ 'coc-git',
       \ 'coc-tsserver',
-      \ 'coc-diagnostic',
       \ 'coc-yaml',
       \ 'coc-explorer',
       \ ]
@@ -39,11 +38,14 @@ Plug 'farmergreg/vim-lastplace'       " When reopen a buffer, puts the cursor wh
 Plug 'haya14busa/vim-asterisk'        " better asterisk motions
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-eunuch'
 Plug 'dkarter/bullets.vim'
 " python
 Plug 'tmhedberg/SimpylFold'
 Plug 'Vimjas/vim-python-pep8-indent'
 Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
+" syntax
+Plug 'cespare/vim-toml'
 " tmux
 Plug 'christoomey/vim-tmux-navigator' " integrate movement in tmux and vim
 " aesthetics
@@ -92,6 +94,19 @@ let g:airline#extensions#tabline#show_tabs=0
 let g:airline#extensions#tabline#show_buffers=1
 let g:airline#extensions#tabline#switch_buffers_and_tabs=0
 let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+let g:airline#extensions#tabline#buffer_idx_mode = 1
+nmap <leader>1 <Plug>AirlineSelectTab1
+nmap <leader>2 <Plug>AirlineSelectTab2
+nmap <leader>3 <Plug>AirlineSelectTab3
+nmap <leader>4 <Plug>AirlineSelectTab4
+nmap <leader>5 <Plug>AirlineSelectTab5
+nmap <leader>6 <Plug>AirlineSelectTab6
+nmap <leader>7 <Plug>AirlineSelectTab7
+nmap <leader>8 <Plug>AirlineSelectTab8
+nmap <leader>9 <Plug>AirlineSelectTab9
+nmap <leader>0 <Plug>AirlineSelectTab0
+nmap <leader>- <Plug>AirlineSelectPrevTab
+nmap <leader>+ <Plug>AirlineSelectNextTab
 
 " temporary files and undo
 set directory=/tmp//,.
@@ -104,7 +119,7 @@ set undolevels=500       " Maximum number of changes that can be undone
 set undoreload=5000      " Maximum number lines to save for undo on a buffer reload
 
 " line width ruler
-set colorcolumn=80
+set colorcolumn=88
 highlight ColorColumn ctermbg=0 guibg='#3a3a3a'
 
 " search
@@ -238,8 +253,8 @@ vnoremap > >gv
 vnoremap < <gv
 noremap - _
 " move between errors
-nmap <M-n> <Plug>(coc-diagnostic-prev-error)
-nmap <M-m> <Plug>(coc-diagnostic-next-error)
+nmap <M-n> <Plug>(coc-diagnostic-prev)
+nmap <M-m> <Plug>(coc-diagnostic-next)
 " GoTo code navigation
 nmap <M-,> <Plug>(coc-git-prevchunk)
 nmap <M-.> <Plug>(coc-git-nextchunk)
