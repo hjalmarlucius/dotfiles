@@ -33,13 +33,12 @@ Plug 'godlygeek/tabular'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-commentary'           " commenting tool
 Plug 'tpope/vim-surround'             " parentheses helper
-Plug 'mbbill/undotree'                " Persistent undo
-Plug 'farmergreg/vim-lastplace'       " When reopen a buffer, puts the cursor where it was last time
-Plug 'haya14busa/vim-asterisk'        " better asterisk motions
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-eunuch'
-Plug 'dkarter/bullets.vim'
+Plug 'mbbill/undotree'                " Persistent undo
+Plug 'farmergreg/vim-lastplace'       " When reopen a buffer, puts the cursor where it was last time
+Plug 'haya14busa/vim-asterisk'        " better asterisk motions
 " python
 Plug 'tmhedberg/SimpylFold'
 Plug 'Vimjas/vim-python-pep8-indent'
@@ -51,7 +50,6 @@ Plug 'christoomey/vim-tmux-navigator' " integrate movement in tmux and vim
 " aesthetics
 Plug 'chrisbra/Colorizer'             " show color codes
 Plug 'junegunn/rainbow_parentheses.vim' " colorize parentheses
-Plug 'gillyb/stable-windows'
 " themes
 Plug 'chriskempson/base16-vim'
 Plug 'vim-airline/vim-airline'
@@ -292,8 +290,6 @@ nmap <C-m> :cn<cr>
 " remove buffer
 nmap <M-d> :bprev<bar>:bd#<cr>
 nmap <M-D> :bprev<bar>:bd!#<cr>
-" close window
-nmap <M-q> :q<cr>
 
 " *****************************
 " GIT
@@ -328,25 +324,24 @@ let g:fzf_preview_command='bat --color=always --plain {-1}' " Installed bat
 let g:fzf_preview_grep_cmd='rg --smart-case --line-number --no-heading --color=never'
 let g:fzf_buffers_jump = 1
 " shortcuts
-nmap <silent> <F3> :Colors<cr>
-nmap <silent> <F4> :CocFzfList<cr>
-nmap <F5> <Plug>(coc-rename)
-nmap <F6> <Plug>(coc-refactor)
-xmap <F7> <Plug>(coc-format-selected)
-nmap <F7> <Plug>(coc-format-selected)
-nmap <F8> :CocDiagnostics<cr>
-nmap <F9> :copen<cr>
-nmap <F10> :vimgrep TODO **/*<cr>:copen<cr>
-nmap <silent> <F11> :Commits<cr>
-nmap <silent> <F12> :BCommits<cr>
-nmap <silent> <M-b> :Buffers<cr>
-nmap <silent> <M-w> :RG<cr>
-nmap <silent> <M-g> :GFiles?<cr>
-nmap <silent> <M-r> :History<cr>
-nmap <silent> <M-F> :Files<cr>
-nmap <silent> <M-f> :GFiles<cr>
-nmap <silent> <M-y> :Filetypes<cr>
-nmap <silent> <M-M> :Marks<cr>
+nmap <F3> :Colors<cr>
+nmap <F4> :CocDiagnostics<cr>
+nmap <F5> <Plug>(coc-refactor)
+nmap <F6> <Plug>(coc-rename)
+nmap <F7> :copen<cr>
+nmap <F8> :vimgrep TODO **/*<cr>:copen<cr>
+nmap <F9> :checkt<cr>
+nmap <F10> :Commits<cr>
+nmap <F11> :BCommits<cr>
+nmap <F12> :CocFzfList<cr>
+nmap <M-b> :Buffers<cr>
+nmap <M-w> :RG<cr>
+nmap <M-g> :GFiles?<cr>
+nmap <M-r> :History<cr>
+nmap <M-F> :Files<cr>
+nmap <M-f> :GFiles<cr>
+nmap <M-y> :Filetypes<cr>
+nmap <M-M> :Marks<cr>
 
 " *****************************
 " COC CONFIGS
@@ -439,4 +434,4 @@ let g:fzf_action = {
 \ 'ctrl-s': 'split',
 \ 'ctrl-v': 'vsplit' }
 
-let $FZF_DEFAULT_OPTS = '--bind ctrl-a:select-all'
+let $FZF_DEFAULT_OPTS = '--bind alt-q:select-all+accept'

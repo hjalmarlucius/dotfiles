@@ -42,8 +42,8 @@ exec_always --no-startup-id fix_xcursor
 exec --no-startup-id setxkbmap -layout no -model pc105 -variant nodeadkeys
 exec --no-startup-id redshift-gtk -l 59.91:10.75
 # exec --no-startup-id dropbox start &
-exec --no-startup-id nvidia-settings -a GPUFanControlState=1 -a GPUTargetFanSpeed=60
-exec --no-startup-id xrandr --output DP-0 --mode 5120x1440 --primary
+# exec --no-startup-id nvidia-settings -a GPUFanControlState=1 -a GPUTargetFanSpeed=60
+exec --no-startup-id xrandr --output DP-0 --mode 5120x1440 --primary --gamma 0.9:0.9:0.9
 
 # div bindings
 bindsym $mod+Shift+q kill
