@@ -39,6 +39,7 @@ Plug 'tpope/vim-eunuch'
 Plug 'mbbill/undotree'                " Persistent undo
 Plug 'farmergreg/vim-lastplace'       " When reopen a buffer, puts the cursor where it was last time
 Plug 'haya14busa/vim-asterisk'        " better asterisk motions
+Plug 'dkarter/bullets.vim'
 " python
 Plug 'tmhedberg/SimpylFold'
 Plug 'Vimjas/vim-python-pep8-indent'
@@ -381,7 +382,7 @@ inoremap <nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(
 " MARKDOWN
 " vim-markdown
 let g:vim_markdown_new_list_item_indent=0
-let g:vim_markdown_auto_insert_bullets=0
+let g:vim_markdown_auto_insert_bullets=1
 let g:vim_markdown_conceal=1
 let g:vim_markdown_conceal_code_blocks=1
 let g:vim_markdown_math=1
@@ -399,6 +400,15 @@ let g:mkdp_preview_options={
 " disable_sync_scroll: if disable sync scroll, default 0
 " sync_scroll_type: 'middle', 'top' or 'relative'
 " hide_yaml_meta: if hide yaml metadata, default is 1
+
+" *****************************
+" BULLETS
+let g:bullets_enabled_file_types = [
+    \ 'markdown',
+    \ 'text',
+    \ 'gitcommit',
+    \ 'scratch'
+    \]
 
 " *****************************
 " autocmd
