@@ -15,6 +15,7 @@
 * sysrq lock shutdown https://forum.manjaro.org/t/howto-reboot-turn-off-your-frozen-computer-reisub-reisuo/3855
   + `echo kernel.sysrq=1 | sudo tee --append /etc/sysctl.d/99-sysctl.conf`
   + `sudo update-grub`
+* WakeOnLan `yay ethtool`
 
 # coding
 * essentials `yay -S neovim tmux`
