@@ -34,7 +34,7 @@ exec --no-startup-id nm-applet
 exec --no-startup-id nitrogen --restore
 exec --no-startup-id xfce4-power-manager
 exec --no-startup-id pamac-tray
-exec --no-startup-id xautolock -time 30 -locker ~/OneDrive/dotfiles/root/locker.sh
+exec --no-startup-id xautolock -time 30 -locker ~/dotfiles/HOME/locker.sh
 exec_always --no-startup-id sbxkb
 exec_always --no-startup-id fix_xcursor
 
