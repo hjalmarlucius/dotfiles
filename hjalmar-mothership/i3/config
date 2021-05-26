@@ -224,14 +224,14 @@ set_from_resource $term_color15    color15
 
 # Start i3bar to display a workspace bar (plus the system information i3status if available)
 bar {
-	i3bar_command i3bar
-	status_command i3status
-	position bottom
+    i3bar_command i3bar
+    status_command i3status
+    position bottom
 
-	tray_output DP-0
-	bindsym button4 nop
-	bindsym button5 nop
-	strip_workspace_numbers yes
+    tray_output primary
+    bindsym button4 nop
+    bindsym button5 nop
+    strip_workspace_numbers yes
 
     colors {
         background #222D31
