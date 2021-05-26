@@ -3,7 +3,7 @@
 * fonts `yay -S nerd-fonts-source-code-pro powerline-fonts-git libxft-bgra`
 * cloud storage `yay -S onedrive-abraunegg dropbox`
 * multimedia `yay -S ncspot-git pavucontrol manjaro-pulse pa-applet pavucontrol pulseaudio-bluetooth xwininfo`
-* web `yay -S slack-desktop chromium`
+* web `yay -S slack-desktop google-chrome`
 * pdf reader `yay -S zathura zathura-pdf-mupdf zathura zathura-djvu zathura-ps`
 * shell `yay -S fish`
   * curl -L https://get.oh-my.fish | fish
@@ -24,7 +24,7 @@
 * cuda `yay -S cuda nvidia-container-toolkit`
 * docker `yay -S docker docker-compose dry-bin`
 * git `yay -S diff-so-fancy tig git-lfs`
-* indexing `yay -S fsearch the_silver_searcher ripgrep ctags`
+* indexing `yay -S fsearch-git the_silver_searcher ripgrep ctags`
 * java `yay -S npm nodejs`
 * build `yay -S ninja`
 
