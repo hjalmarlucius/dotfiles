@@ -36,6 +36,11 @@
 # settings
 * set shell to fish via `chsh`
 * enable docker non-root daemon [link](https://docs.docker.com/engine/install/linux-postinstall)
+  * `sudo groupadd docker`
+  * `sudo usermod -aG docker $USER`
+  * `newgrp docker`
+  * `sudo systemctl enable docker.service`
+  * `sudo systemctl enable containerd.service`
 * ssh enable `sudo systemctl enable --now sshd.service`
 * jupyter `openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout ~/.jupyter/mykey.key -out ~/.jupyter/mycert.pem`
 * start onedrive `systemctl enable --user onedrive --now`
