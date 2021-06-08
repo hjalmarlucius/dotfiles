@@ -9,7 +9,7 @@
   * `curl -L https://get.oh-my.fish | fish`
   * `omf install https://github.com/edc/bass`
   * `omf install https://github.com/jethrokuan/fzf`
-* div applications `yay -S thunar ranger drawio-desktop steam-manjaro`
+* div applications `yay -S thunar ranger drawio-desktop steam-manjaro vtop nvtop`
 * div utils `yay -S trash-cli rofi redshift flameshot asus-fan-control`
 * sysrq lock shutdown https://forum.manjaro.org/t/howto-reboot-turn-off-your-frozen-computer-reisub-reisuo/3855
   + `echo kernel.sysrq=1 | sudo tee --append /etc/sysctl.d/99-sysctl.conf`
