@@ -69,11 +69,13 @@ endif
 if !exists('g:colors_name')
     " let g:seoul256_background=233
     " silent! colorscheme seoul256
-    silent! colorscheme base16-monokai
+    silent! colorscheme seoul256-light
+    " silent! colorscheme base16-monokai
     " silent! colorscheme base16-tomorrow-night
     " seoul256 theme config: dark 233-239, light 252-256
 endif
-highlight Normal guibg=NONE ctermbg=NONE
+set colorcolumn=88
+highlight ColorColumn ctermbg=0
 highlight LineNr guibg=NONE ctermbg=NONE
 highlight clear SignColumn
 
@@ -116,10 +118,6 @@ set nowritebackup
 set undofile             " Persistent undo
 set undolevels=500       " Maximum number of changes that can be undone
 set undoreload=5000      " Maximum number lines to save for undo on a buffer reload
-
-" line width ruler
-set colorcolumn=88
-highlight ColorColumn ctermbg=0 guibg='#3a3a3a'
 
 " search
 set ignorecase     " Case insensitive search
