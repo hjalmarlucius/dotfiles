@@ -66,10 +66,14 @@ call plug#end()
 if !&termguicolors
     set termguicolors
 endif
+if &term =~ '256color'
+    set t_ut=
+endif
 if !exists('g:colors_name')
-    " let g:seoul256_background=233
-    " silent! colorscheme seoul256
-    silent! colorscheme seoul256-light
+    let g:seoul256_background=236
+    silent! colorscheme seoul256
+    " silent! colorscheme seoul256-light
+    " silent! colorscheme base16-material-lighter
     " silent! colorscheme base16-monokai
     " silent! colorscheme base16-tomorrow-night
     " seoul256 theme config: dark 233-239, light 252-256
@@ -120,8 +124,8 @@ set undolevels=500       " Maximum number of changes that can be undone
 set undoreload=5000      " Maximum number lines to save for undo on a buffer reload
 
 " search
-set ignorecase     " Case insensitive search
-set smartcase      " ... but case sensitive when uc present
+" set ignorecase     " Case insensitive search
+" set smartcase      " ... but case sensitive when uc present
 
 " cursor
 set scrolljump=1   " Line to scroll when cursor leaves screen
@@ -402,12 +406,7 @@ let g:mkdp_preview_options={
 " *****************************
 " BULLETS
 let g:bullets_outline_levels = ['ROM', 'ABC', 'num', 'abc', 'rom', 'std-', 'std*']
-let g:bullets_enabled_file_types = [
-    \ 'markdown',
-    \ 'text',
-    \ 'gitcommit',
-    \ 'scratch'
-    \]
+let g:bullets_enabled_file_types = ['markdown', 'text', 'gitcommit']
 
 " *****************************
 " autocmd
@@ -422,7 +421,7 @@ augroup myAu   " A unique name for the group.  DO NOT use the same name twice!
     autocmd FileType markdown,yaml setlocal tabstop=2 softtabstop=2 shiftwidth=2
     autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o   " Disables automatic commenting on newline
     autocmd BufEnter * if &filetype == "" | setlocal ft=none | endif                 " default new file is none
-    autocmd FileType * RainbowParentheses
+    " autocmd FileType * RainbowParentheses
     autocmd BufWritePre * %s/\s\+$//e                                                " Automatically deletes all trailing whitespace on save.
     autocmd BufReadPost quickfix nmap <buffer> <cr> <cr>                             " quickfix <cr>
     autocmd CompleteDone * if pumvisible() == 0 | pclose | endif                     " bugfix
