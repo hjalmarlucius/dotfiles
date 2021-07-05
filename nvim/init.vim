@@ -70,7 +70,7 @@ if &term =~ '256color'
     set t_ut=
 endif
 if !exists('g:colors_name')
-    let g:seoul256_background=236
+    let g:seoul256_background=235
     silent! colorscheme seoul256
     " silent! colorscheme seoul256-light
     " silent! colorscheme base16-material-lighter

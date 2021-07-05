@@ -42,8 +42,8 @@ go                      = ENTER l
 go_up                   = h
 menu_down               = j DOWN
 menu_up                 = k UP
-menu_page_down          = ^f PAGE_DOWN
-menu_page_up            = ^b PAGE_UP
+menu_page_down          = ^f ^d PAGE_DOWN
+menu_page_up            = ^b ^u PAGE_UP
 menu_first_item         = J HOME
 menu_last_item          = K END
 next                    = L
@@ -88,18 +88,19 @@ go_url                  = o
 go_to_music_directory   = m
 theme_menu              = V
 
+plist_move_up           =
+plist_move_down         =
+plist_add_stream        =
+
 # div crap
 # history_up          = UP
 # history_down        = DOWN
 # toggle_softmixer    = M
 # playlist_full_paths =
-# plist_move_up       = ^p
-# plist_move_down     = ^n
 # remove_dead_entries = Y
 # next_search         = n
 # mark_start          = '
 # mark_end            = "
-# plist_add_stream    = ^u
 # toggle_mixer        = x
 # toggle_equalizer    = E
 # equalizer_refresh   = e
