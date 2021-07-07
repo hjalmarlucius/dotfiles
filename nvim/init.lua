@@ -1,0 +1,636 @@
+local opt = vim.opt
+-- ----------------------------------------
+-- SETTINGS
+-- ----------------------------------------
+
+-- system
+opt.shell = "/usr/bin/bash"
+opt.fileencodings = "utf-8,ucs-bom,gb18030,gbk,gb2312,cp936"
+opt.fileformats = "unix"
+opt.swapfile = false
+opt.backup = false
+opt.updatetime = 300
+opt.timeoutlen = 200
+vim.g.BASH_Ctrl_j = "off"
+vim.g.BASH_Ctrl_l = "off"
+
+-- looks
+opt.termguicolors = true
+opt.cmdheight = 2
+opt.background = "light"
+vim.cmd "colorscheme tokyonight"
+opt.listchars = "tab:→ ,trail:·,extends:↷,precedes:↶,nbsp:+,eol:↵"
+opt.list = true                     -- Show listchars
+opt.showtabline = 2
+
+-- undo
+opt.undodir = "/home/hjalmarlucius/.cache/vim/undo"
+opt.undofile = true
+opt.undolevels = 1000
+opt.undoreload = 10000
+
+-- window
+opt.splitbelow = true               -- Put new windows below current
+opt.splitright = true               -- Put new windows right of current
+
+-- buffer
+opt.hidden = true                   -- Enable background buffers
+opt.wrap = false                    -- Disable line wrap
+opt.number = true                   -- Show line numbers
+opt.relativenumber = false          -- Relative line numbers
+opt.cursorline = false              -- Highlight current line
+opt.switchbuf = "useopen"           -- Use existing window if buffer is already open
+opt.colorcolumn = "88"
+
+-- tabs
+opt.expandtab = true                -- Use spaces instead of tabs
+opt.smartindent = true              -- Insert indents automatically
+opt.shiftround = true               -- Round indent
+opt.tabstop = 2                     -- Number of spaces tabs count for
+opt.shiftwidth = 2                  -- Size of an indent
+
+-- search
+opt.ignorecase = true               -- Ignore case
+opt.smartcase = true                -- Do not ignore case with capitals
+opt.wildmode = {"list", "longest"}  -- Command-line completion mode
+opt.wildignorecase = true
+opt.wildignore = opt.wildignore + {"*swp", "*.class", "*.pyc", "*.png", "*.jpg", "*.gif", "*.zip", "*/tmp/*", "*.o", ".obj", "*.so"}
+
+-- cursor
+opt.scrolloff = 1                   -- Lines of context
+opt.scrolljump = 1                  -- Lines to scroll when cursor leaves screen
+opt.sidescrolloff = 4               -- Columns of context
+opt.showmatch = true                -- Show matching brackets / parentheses
+
+-- editing
+opt.joinspaces = false              -- No double spaces with join
+opt.timeoutlen = 500                -- How long to wait during key combo
+opt.langmap = "å(,¨),Å{,^},Ø\\;,ø:,æ^,+$"
+opt.clipboard = opt.clipboard + {"unnamedplus"}
+
+-- folding (also see treesitter)
+-- zm/M zr/R increase/increase foldlevel (max)
+-- zo/O zc/C open / close fold (max)
+-- za zA switch fold (small/full)
+-- zi toggle folds
+-- zi zj move to next / prev fold
+opt.foldenable = false
+opt.foldmethod = "expr"
+
+-- ----------------------------------------
+-- AUTOCOMMANDS
+-- ----------------------------------------
+-- highlight on yank
+local cmd = vim.cmd
+
+local function create_augroup(autocmds, name)
+    cmd("augroup " .. name)
+    cmd("autocmd!")
+    for _, autocmd in ipairs(autocmds) do
+        cmd("autocmd " .. table.concat(autocmd, " "))
+    end
+    cmd("augroup END")
+end
+
+cmd "au TextYankPost * lua vim.highlight.on_yank {on_visual = false}"
+create_augroup({
+    -- { "FileType", "*", "setlocal formatoptions-=c formatoptions-=r formatoptions-=o" }, -- Disables automatic commenting on newline  TODO await ftplugins
+    { "BufWritePre", "*", [[%s/\s\+$//e]] },                                              -- Delete trailing whitespace
+    { "BufReadPost", "quickfix", "nmap <buffer> <cr> <cr>" },
+    { "TextYankPost", "*", "lua vim.highlight.on_yank {on_visual = false}" },
+}, "myau")
+
+-- ----------------------------------------
+-- MAPS
+-- ----------------------------------------
+-- leader/local leader
+vim.g.mapleader = " "
+vim.g.maplocalleader = ","
+
+local map = vim.api.nvim_set_keymap
+map("n", "Q", "", {noremap = true})
+map("n", "q:", "", {noremap = true})
+
+map("n", "<leader>r", [[:so ~/.config/nvim/init.lua<cr>:PackerCompile<cr>]], { noremap = true })
+map("n", "<leader>e", [[:vnew ~/dotfiles/nvim/init.lua<cr>]], { noremap = true })
+map("n", "<leader>t", [[:vnew ~/notes/todos.md<cr>]], { noremap = true })
+map("n", "<leader>n", [[:Explore ~/notes<cr>]], { noremap = true })
+map("n", "<leader>W", [[:cd %:p:h<cr>]], { noremap = true })
+map("n", "<esc><esc>", ":noh<cr>", { silent = true, noremap = true } )
+
+-- <Tab> to navigate the completion menu
+map("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<Tab>"]], { expr = true, noremap = true })
+map("i", "<Tab>", [[pumvisible() ? "\<C-n>" : "\<S-Tab>"]], { expr = true, noremap = true })
+
+-- CURSOR
+-- stay visual when indenting
+map("n", "-", "_", { noremap = true })
+map("v", "v", "<esc>", { noremap = true })
+map("v", "<Tab>", ">gv", { noremap = true })
+map("v", "<S-Tab>", "<gv", { noremap = true })
+map("n", "<leader>o", "m`o<Esc>``", { noremap = true })  -- Insert a newline in normal mode
+
+-- WINDOWS / BUFFERS
+-- make splits and tabs
+map("n", "<M-v>", ":vnew<cr>", { noremap = true })
+map("n", "<M-s>", ":new<cr>", { noremap = true })
+map("n", "<M-t>", ":tabe %<cr>", { noremap = true })
+map("n", "<M-T>", ":tabnew<cr>", { noremap = true })
+-- buffers and tabs
+map("n", "<M-J>", ":bprev<cr>", { noremap = true })
+map("n", "<M-K>", ":bnext<cr>", { noremap = true })
+map("n", "<M-H>", ":tabprev<cr>", { noremap = true })
+map("n", "<M-L>", ":tabnext<cr>", { noremap = true })
+-- resize windows with hjkl
+map("n", "<C-h>", "<C-w><", { noremap = true })
+map("n", "<C-j>", "<C-w>-", { noremap = true })
+map("n", "<C-k>", "<C-w>+", { noremap = true })
+map("n", "<C-l>", "<C-w>>", { noremap = true })
+-- quickfix window
+-- map("n", "<C-n>", ":cp<cr>", { noremap = true })
+-- map("n", "<C-m>", ":cn<cr>", { noremap = true })
+-- remove buffer
+map("n", "<M-d>", ":bprev<bar>:bd#<cr>", { noremap = true })
+map("n", "<M-D>", ":bprev<bar>:bd!#<cr>", { noremap = true })
+map("n", "<F8>", ":vimgrep TODO **/*<cr>:copen<cr>", { noremap = true })
+map("n", "<F9>", ":checkt", { noremap = true })
+
+-- ----------------------------------------
+-- PACKER
+-- ----------------------------------------
+local install_path = vim.fn.stdpath("data").."/site/pack/packer/start/packer.nvim"
+
+if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
+  vim.fn.system({"git", "clone", "https://github.com/wbthomason/packer.nvim", install_path})
+  vim.api.nvim_command "packadd packer.nvim"
+end
+
+require("packer").startup {function(use)
+  use {"wbthomason/packer.nvim"}
+
+  -- tpope
+  use {"tpope/vim-sensible"}                -- sensible default
+  use {"tpope/vim-commentary"}              -- comment out stuff
+  use {"tpope/vim-repeat"}                  -- repeat vim-surround with .
+  use {"tpope/vim-eunuch"}                  -- Move, Rename etc
+  use {"farmergreg/vim-lastplace"}          -- keep location upon reopening
+
+  -- smooth scrolling
+  use {"psliwka/vim-smoothie"}
+
+  -- git
+  use {"tpope/vim-fugitive",
+    config = function()
+      local map = vim.api.nvim_set_keymap
+      map("", "<C-g>", ":vertical Git<cr>:vertical resize 60<cr>", {})
+    end
+  }
+
+  use {
+    "lewis6991/gitsigns.nvim",
+    requires = {"nvim-lua/plenary.nvim"},
+    config = function()
+      require("gitsigns").setup{
+        numhl = false,
+        linehl = false,
+        keymaps = {
+          -- Default keymap options
+          noremap = true,
+          buffer = true,
+
+          ["n <M-.>"] = { expr = true, [[&diff ? "]c" : "<cmd>lua require("gitsigns.actions").next_hunk()<cr>"]]},
+          ["n <M-,>"] = { expr = true, [[&diff ? "[c" : "<cmd>lua require("gitsigns.actions").prev_hunk()<cr>"]]},
+
+          ["n <leader>s"] = [[<cmd>lua require("gitsigns").stage_hunk()<cr>]],
+          ["v <leader>s"] = [[<cmd>lua require("gitsigns").stage_hunk({vim.fn.line("."), vim.fn.line("v")})<cr>]],
+          ["n <leader>u"] = [[<cmd>lua require("gitsigns").undo_stage_hunk()<cr>]],
+          ["n <leader>x"] = [[<cmd>lua require("gitsigns").reset_hunk()<cr>]],
+          ["v <leader>x"] = [[<cmd>lua require("gitsigns").reset_hunk({vim.fn.line("."), vim.fn.line("v")})<cr>]],
+          ["n <leader>i"] = [[<cmd>lua require("gitsigns").preview_hunk()<cr>]],
+          ["n <leader>b"] = [[<cmd>lua require("gitsigns").blame_line(true)<cr>]],
+
+          -- Text objects
+          ["o ih"] = [[:<C-U>lua require("gitsigns.actions").select_hunk()<cr>]],
+          ["x ih"] = [[:<C-U>lua require("gitsigns.actions").select_hunk()<cr>]]
+        },
+        word_diff = false,
+      }
+    end
+  }
+
+  -- folder tree
+  use {"kyazdani42/nvim-tree.lua",
+    requires = {"kyazdani42/nvim-web-devicons"},
+    config = function()
+      local map = vim.api.nvim_set_keymap
+      map("n", "<M-p>", ":NvimTreeToggle<cr>", {noremap = true})
+      map("n", "<M-P>", ":NvimTreeRefresh<cr>", {noremap = true})
+      map("n", "<M-7>", ":NvimTreeFindFile<cr>", {noremap = true})
+    end
+  }
+
+  -- theme
+  use {"folke/tokyonight.nvim",
+    config = function()
+      vim.g.tokyonight_style = "day"
+    end
+  }
+
+  use {"skbolton/embark",
+    config = function()
+      vim.g.embark_terminal_italics = 1
+    end
+  }
+
+  use {"junegunn/seoul256.vim",
+    config = function()
+      vim.g.seoul256_background = 235
+    end
+  }
+
+  -- coloring of colornames
+  use {"rrethy/vim-hexokinase",
+    run = "cd /home/hjalmarlucius/.local/share/nvim/site/pack/packer/start/vim-hexokinase && make hexokinase",
+    config = function()
+      vim.g.Hexokinase_highlighters = {"backgroundfull"}
+    end
+  }
+
+  -- flashing cursor on move
+  use {"danilamihailov/beacon.nvim",
+    setup = function()
+      vim.api.nvim_exec( [[highlight Beacon guibg=white ctermbg=15]], false)
+    end,
+    config = function()
+      vim.g.beacon_size = 40
+      vim.g.beacon_minimal_jump = 10
+      vim.g.beacon_shrink = 1
+    end
+  }
+
+  -- indentation guides
+  use {"lukas-reineke/indent-blankline.nvim",
+    config = function()
+      vim.g.indent_blankline_char = "|"
+      vim.g.indent_blankline_use_treesitter = true
+    end
+  }
+
+  -- highlight for quick movement f/F
+  use {"unblevable/quick-scope",
+    config = function()
+      -- vim.g.qs_highlight_on_keys = {"f", "F", "t", "T"}
+    end
+  }
+
+  use {"haya14busa/vim-asterisk",
+    config = function()
+      vim.g["asterisk#keeppos"] = 1
+      local map = vim.api.nvim_set_keymap
+      map("", "*", "<Plug>(asterisk-z*)", {})
+      map("", "#", "<Plug>(asterisk-z#)", {})
+      map("", "g*", "<Plug>(asterisk-gz*)", {})
+      map("", "g#", "<Plug>(asterisk-gz#)", {})
+    end
+  }
+
+  use {"christoomey/vim-tmux-navigator",
+    config = function()
+      vim.g.tmux_navigator_no_mappings = 1
+      vim.g.tmux_navigator_disable_when_zoomed = 1
+      local map = vim.api.nvim_set_keymap
+      opts = { silent = true, noremap = true }
+      map("n", "<M-h>", ":TmuxNavigateLeft<cr>", opts)
+      map("n", "<M-j>", ":TmuxNavigateDown<cr>", opts)
+      map("n", "<M-k>", ":TmuxNavigateUp<cr>", opts)
+      map("n", "<M-l>", ":TmuxNavigateRight<cr>", opts)
+    end
+  }
+
+  use {"dkarter/bullets.vim",
+    config = function()
+      vim.g.bullets_outline_levels = {"ROM", "ABC", "num", "abc", "rom", "std-", "std*"}
+      vim.g.bullets_enabled_file_types = {"markdown", "text", "gitcommit"}
+    end
+  }
+
+  use {"mbbill/undotree",
+    config = function()
+      local map = vim.api.nvim_set_keymap
+      map("", "<C-t>", ":UndotreeToggle<cr>:UndotreeFocus<cr>", { noremap = true })
+    end
+}
+
+  use {"iamcco/markdown-preview.nvim", -- requires yarn
+    run = "cd /home/hjalmarlucius/.local/share/nvim/site/pack/packer/start/markdown-preview && yarn install",
+    config = function()
+      vim.g.mkdp_auto_start = 0             -- auto start on moving into
+      vim.g.mkdp_auto_close = 0             -- auto close on moving away
+      vim.g.mkdp_open_to_the_world = 0      -- available to others
+      vim.g.mkdp_open_ip = ""               -- use custom IP to open preview page
+    end
+  }
+
+  use {"hoob3rt/lualine.nvim",
+    requires = {"kyazdani42/nvim-web-devicons"},
+    config = function()
+      require("lualine").setup {
+        options = { theme = "tokyonight" },
+        extensions = {
+          "fugitive",
+        },
+        sections = {
+          lualine_a = {"mode"},
+          lualine_b = {"branch"},
+          lualine_c = {{"filename", file_status = true, path = 1}},
+          lualine_x = {"encoding", "fileformat", "filetype"},
+          lualine_y = {"progress"},
+          lualine_z = {"location"}
+        },
+        inactive_sections = {
+          lualine_a = {},
+          lualine_b = {},
+          lualine_c = {{"filename", file_status = true, path = 1}},
+          lualine_x = {"location"},
+          lualine_y = {"progress"},
+          lualine_z = {}
+        },
+        -- TODO tabline func https://blog.inkdrop.info/how-to-set-up-neovim-0-5-modern-plugins-lsp-treesitter-etc-542c3d9c9887
+        tabline = {
+          lualine_a = {"filename"},
+          lualine_b = {{ "diagnostics", sources = {"nvim_lsp"}}},
+          lualine_c = {{"diff", colored=false}},
+          lualine_x = {},
+          lualine_y = {},
+          lualine_z = {{"filename", file_status = true, path = 2}}
+        }
+      }
+    end
+  }
+
+  use {"numtostr/FTerm.nvim",
+    config = function()
+      require("FTerm").setup{}
+      local map = vim.api.nvim_set_keymap
+      local opts = { noremap = true, silent = true }
+      map("n", "<F2>", [[<cmd>lua require("FTerm").toggle()<cr>]], opts)
+      map("t", "<F2>", [[<C-\><C-n><cmd>lua require("FTerm").toggle()<cr>]], opts)
+    end
+  }
+
+  -- treesitter
+  use {"nvim-treesitter/nvim-treesitter",
+    run = ":TSUpdate",
+    config = function()
+      require("nvim-treesitter.configs").setup {
+        ensure_installed = "all",
+        highlight = {
+          enable = true,
+        }
+      }
+      vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+    end
+  }
+
+  use {"nvim-telescope/telescope.nvim",
+    requires = {"nvim-lua/popup.nvim", "nvim-lua/plenary.nvim"},
+    config = function()
+      local map = vim.api.nvim_set_keymap
+      local opts = { noremap = true }
+      local actions = require("telescope.actions")
+      map("n", "<M-F>", "<cmd>Telescope find_files<cr>", opts )
+      map("n", "<M-f>", "<cmd>Telescope git_files<cr>", opts )
+      map("n", "<M-w>", "<cmd>Telescope live_grep<cr>", opts )
+      map("n", "<M-b>", "<cmd>Telescope buffers<cr>", opts )
+      map("n", "<M-y>", "<cmd>Telescope filetypes<cr>", opts )
+      map("n", "<F3>", "<cmd>Telescope colorscheme<cr>", opts )
+      map("n", "<leader>a", "<cmd>Telescope lsp_code_actions<cr>", opts )
+      map("v", "<leader>a", "<cmd>Telescope lsp_range_code_actions<cr>", opts )
+      map("n", "<leader>d", "<cmd>Telescope lsp_document_diagnostics<cr>", opts )
+      map("n", "<leader>D", "<cmd>Telescope lsp_workspace_diagnostics<cr>", opts )
+      map("n", "<leader>g", "<cmd>Telescope git_status<cr>", opts )
+      map("n", "<leader>c", "<cmd>Telescope git_commits<cr>", opts )
+      map("n", "<leader>C", "<cmd>Telescope git_bcommits<cr>", opts )
+      map("n", "<F12>", "<cmd>Telescope<cr>", opts )
+      require("telescope").setup{
+        defaults = {
+          vimgrep_arguments = {
+            "rg",
+            "--color=never",
+            "--no-heading",
+            -- "--with-filename",
+            "--line-number",
+            "--column",
+            "--smart-case"
+          },
+          mappings = {
+            i = {
+              ["<esc>"] = actions.close,
+              ["<C-j>"] = actions.move_selection_next,
+              ["<C-k>"] = actions.move_selection_previous,
+              ["<C-b>"] = actions.preview_scrolling_up,
+              ["<C-f>"] = actions.preview_scrolling_down,
+              ["<cr>"] = actions.select_default + actions.center,
+              ["<C-s>"] = actions.select_horizontal,
+              ["<C-v>"] = actions.select_vertical,
+              ["<C-t>"] = actions.select_tab,
+              ["<Tab>"] = actions.toggle_selection + actions.move_selection_worse,
+              ["<S-Tab>"] = actions.toggle_selection + actions.move_selection_better,
+              ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
+              ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+              ["<C-l>"] = actions.complete_tag
+            },
+          },
+          file_ignore_patterns = {},
+          set_env = { ["COLORTERM"] = "truecolor" },
+        },
+      }
+    end }
+
+  -- debugging
+  -- use {"mfussenegger/nvim-dap-python",
+  --   requires = {"mfussenegger/nvim-dap"},
+  --   config = function()
+  --     require("dap-python").setup("/usr/bin/python")
+  --     local map = vim.api.nvim_set_keymap
+  --     local opts = { noremap = true, silent = true }
+  --     map("n", "<F5>", [[:lua require("dap").continue()<cr>]], opts)
+  --     map("n", "<F10>", [[:lua require("dap").step_over()<cr>]], opts)
+  --     map("n", "<F11>", [[:lua require("dap").step_into()<cr>]], opts)
+  --     map("n", "<F12>", [[:lua require("dap").step_out()<cr>]], opts)
+  --     map("n", "<F6>", [[:lua require("dap").toggle_breakpoint()<cr>]], opts)
+  --     map("n", "<F7>", [[:lua require("dap").set_breakpoint(vim.fn.input('Breakpoint condition: '))<cr>]], opts)
+  --     map("n", "<S-F7>", [[:lua require("dap").set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<cr>]], opts)
+  --     map("n", "<F4>", [[:lua require("dap").repl.open()<cr>]], opts)
+  --     map("n", "<leader>vl", [[:lua require("dap").repl.run_last()<cr>`]], opts)
+  --     map("n", "<leader>vt", [[:lua require('dap-python').test_method()<cr>]], opts)
+  --     map("v", "<leader>vs", [[<ESC>:lua require('dap-python').debug_selection()<cr>]], opts)
+  --   end
+  -- }
+
+  -- use {"nvim-telescope/telescope-dap.nvim",
+  --   requires = {"mfussenegger/nvim-dap", "nvim-telescope/telescope.nvim"},
+  --   config = function()
+  --     require("telescope").load_extension("dap")
+  --     local map = vim.api.nvim_set_keymap
+  --     local opts = { noremap = true, silent = true }
+  --     map("n", "<M-1>", [[:lua require("telescope").extensions.dap.commands{}<cr>]], opts)
+  --     map("n", "<M-2>", [[:lua require("telescope").extensions.dap.configurations{}<cr>]], opts)
+  --     map("n", "<M-3>", [[:lua require("telescope").extensions.dap.list_breakpoints{}<cr>]], opts)
+  --     map("n", "<M-4>", [[:lua require("telescope").extensions.dap.variables{}<cr>]], opts)
+  --   end
+  -- }
+
+  -- autocompletion
+  use {"hrsh7th/nvim-compe",
+    config = function()
+      vim.opt.completeopt = "menuone,noselect"
+      require("compe").setup {
+        source = {
+          nvim_lsp = true,
+          path = true,
+          buffer = true,
+          calc = true,
+          nvim_lua = true,
+        },
+      }
+      local map = vim.api.nvim_set_keymap
+      local opts = { noremap = true, silent = true, expr = true }
+      map("i", "<C-space>", [[compe#complete()]], opts)
+      map("i", "<cr>", [[compe#confirm("<cr>")]], opts)
+      map("i", "<C-e>", [[compe#close("<C-e>")]], opts)
+      -- TODO don't seem useful?
+      -- map("i", "<C-f>", [[compe#scroll({ "delta": +4 })]], opts)
+      -- map("i", "<C-b>", [[compe#scroll({ "delta": -4 })]], opts)
+    end
+  }
+
+  use {"glepnir/lspsaga.nvim",
+    requires = {"neovim/nvim-lspconfig"},
+    run = ":TSUpdate",
+    config = function()
+        -- see https://github.com/lukas-reineke/dotfiles/blob/master/vim/lua/lsp/init.lua
+        on_attach = function (client, bufnr)
+          local bmap = vim.api.nvim_buf_set_keymap
+          local opts = { noremap = true }
+          vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
+          -- workspaces
+          bmap(bufnr, "n", "<leader>wa", "<cmd>lua vim.lsp.buf.add_workspace_folder()<cr>", opts)
+          bmap(bufnr, "n", "<leader>wr", "<cmd>lua vim.lsp.buf.remove_workspace_folder()<cr>", opts)
+          bmap(bufnr, "n", "<leader>wl", "<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<cr>", opts)
+          -- jump
+          bmap(bufnr, "n", "gl", "<cmd>lua vim.lsp.diagnostic.set_loclist()<cr>", opts)
+          bmap(bufnr, "n", "<M-i>", ":Lspsaga show_line_diagnostics<cr>", opts)
+          bmap(bufnr, "n", "<M-m>", ":Lspsaga diagnostic_jump_next<cr>", opts)
+          bmap(bufnr, "n", "<M-n>", ":Lspsaga diagnostic_jump_prev<cr>", opts)
+          -- popups
+          bmap(bufnr, "n", "<M-a>", ":Lspsaga signature_help<cr>", opts)
+          bmap(bufnr, "i", "<M-a>", "<cmd>:Lspsaga signature_help<cr>", opts)
+          bmap(bufnr, "n", "<C-f>", "<cmd>lua require('lspsaga.action').smart_scroll_with_saga(1)<cr>", opts)
+          bmap(bufnr, "n", "<C-b>", "<cmd>lua require('lspsaga.action').smart_scroll_with_saga(-1)<cr>", opts)
+          -- actions
+          bmap(bufnr, "n", "<leader><cr>", ":Lspsaga range_code_action<cr>", opts)
+          bmap(bufnr, "v", "<leader><cr>", ":<C-U>Lspsaga range_code_action<cr>", opts)
+          -- other
+          if client.resolved_capabilities.goto_definition then
+            bmap(bufnr, "n", "gd", ":Lspsaga preview_definition<cr>", opts)
+          end
+          if client.resolved_capabilities.find_references then
+            bmap(bufnr, "n", "gh", ":Lspsaga lsp_finder<cr>", opts)
+          end
+          if client.resolved_capabilities.hover then
+            bmap(bufnr, "n", "K", ":Lspsaga hover_doc<cr>", opts)
+          end
+          if client.resolved_capabilities.rename then
+            bmap(bufnr, "n", "gr", ":Lspsaga rename<cr>", opts)
+          end
+          if client.resolved_capabilities.document_formatting or client.resolved_capabilities.document_range_formatting then
+            vim.api.nvim_command [[augroup Format]]
+            vim.api.nvim_command [[autocmd! * <buffer>]]
+            vim.api.nvim_command [[autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting_seq_sync()]]
+            vim.api.nvim_command [[augroup END]]
+          end
+        end
+      use_saga_diagnostic_sign = true
+      require("lspsaga").init_lsp_saga {
+        max_preview_lines = 20,
+        finder_action_keys = {
+          quit = {"<esc>", "C-c"},
+          open = "<cr>",
+          vsplit = "v",
+          split = "s",
+          scroll_down = "<C-f>",
+          scroll_up = "<C-b>"
+        },
+        code_action_keys = {
+          quit = {"<esc>", "C-c"},
+          exec = "<cr>"
+        },
+        rename_action_keys = {
+          quit = {"<esc>", "C-c"},
+          exec = "<cr>"
+        },
+      }
+      -- terminal TODO fix and replace with Fterm
+      -- map("n", "<F2>", ":Lspsaga open_floaterm<cr>", opts)
+      -- map("i", "<F2>", [[<C-\><C-n>:lua require('lspsaga.floaterm').close_float_terminal()]], opts)
+      local nvim_lsp = require("lspconfig")
+      -- sudo npm install -g yaml-language-server
+      nvim_lsp.yamlls.setup{
+        on_attach = on_attach
+      }
+      -- sudo npm install -g pyright
+      nvim_lsp.pyright.setup{
+        on_attach = on_attach,
+        settings = {
+          python = {
+            analysis = {
+              diagnosticMode = "workspace",
+              logLevel = "Error",
+              typeCheckingMode = "strict",
+            }
+          }
+        }
+      }
+      local prettier = {
+        formatCommand = ([[prettier ${--config-precedence:configPrecedence} ${--tab-width:tabWidth} ${--single-quote:singleQuote} ${--trailing-comma:trailingComma}]])
+      }
+      nvim_lsp.efm.setup{
+        on_attach = on_attach,
+        init_options = {documentFormatting = true},
+        filetypes = { "python", "markdown", "yaml", "lua" },
+        root_dir = vim.loop.cwd,
+        settings = {
+          rootMarkers = {".git/"},
+          languages = {
+            python = {
+              {
+                lintCommand = "flake8 --max-line-length 88 --format '%(path)s:%(row)d:%(col)d: %(code)s %(code)s %(text)s' --stdin-display-name ${INPUT} -",
+                lintStdin = true,
+                lintIgnoreExitCode = true,
+                lintFormats = {"%f:%l:%c: %t%n%n%n %m"},
+                lintSource = "flake8"
+              },
+              {
+                formatCommand = "isort --stdout --profile black --force-single-line-imports -",
+                formatStdin = true
+              },
+              {
+                lintCommand = "mypy --show-column-numbers --ignore-missing-imports",
+                lintFormats = { "%f:%l:%c: %trror: %m", "%f:%l:%c: %tarning: %m", "%f:%l:%c: %tote: %m" },
+                lintSource = "mypy"
+              },
+              {
+                formatCommand = "black --fast -",
+                formatStdin = true
+              }
+            },
+            yaml = {prettier},
+            markdown = {prettier},
+          },
+        },
+      }
+    end
+  }
+end
+}

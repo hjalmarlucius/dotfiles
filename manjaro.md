@@ -25,10 +25,14 @@
 * indexing `yay -S fsearch-git the_silver_searcher ripgrep ctags`
 * java `yay -S npm nodejs`
 * build `yay -S ninja`
+* language servers and linting
+  * `yay prettier efm-langserver`
+  * `npm install -g yaml-language-server`
+  * `npm install -g pyright`
 
 # python
 * pytorch `yay python-pytorch-opt-cuda`
-* `pip install ipython pytest neovim numpy scipy sympy flake8 ptvsd addict dill ipdb pudb web-pdb`
+* `pip install ipython pytest neovim numpy scipy sympy flake8 ptvsd addict dill ipdb pudb web-pdb isort`
 * matplotlib stuff `pip install matplotlib seaborn matplotlib-label-lines ipympl qbstyles`
 * other plotting `pip install plotly ggplot`
 * `pip install tensorboard torchtext pytorch-lightning torchvision`
