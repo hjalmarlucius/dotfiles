@@ -17,8 +17,8 @@ vim.g.BASH_Ctrl_l = "off"
 -- looks
 opt.termguicolors = true
 opt.cmdheight = 2
-opt.background = "light"
-vim.cmd "colorscheme tokyonight"
+opt.background = "dark"
+vim.cmd "colorscheme embark"
 opt.listchars = "tab:→ ,trail:·,extends:↷,precedes:↶,nbsp:+,eol:↵"
 opt.list = true                     -- Show listchars
 opt.showtabline = 2
@@ -37,14 +37,14 @@ opt.splitright = true               -- Put new windows right of current
 opt.hidden = true                   -- Enable background buffers
 opt.wrap = false                    -- Disable line wrap
 opt.number = true                   -- Show line numbers
-opt.relativenumber = false          -- Relative line numbers
+opt.relativenumber = true           -- Relative line numbers
 opt.cursorline = false              -- Highlight current line
 opt.switchbuf = "useopen"           -- Use existing window if buffer is already open
 opt.colorcolumn = "88"
 
 -- tabs
 opt.expandtab = true                -- Use spaces instead of tabs
-opt.smartindent = true              -- Insert indents automatically
+opt.smartindent = false             -- Avoid fucking with comment indents
 opt.shiftround = true               -- Round indent
 opt.tabstop = 2                     -- Number of spaces tabs count for
 opt.shiftwidth = 2                  -- Size of an indent
@@ -198,8 +198,8 @@ require("packer").startup {function(use)
           noremap = true,
           buffer = true,
 
-          ["n <M-.>"] = { expr = true, [[&diff ? "]c" : "<cmd>lua require("gitsigns.actions").next_hunk()<cr>"]]},
-          ["n <M-,>"] = { expr = true, [[&diff ? "[c" : "<cmd>lua require("gitsigns.actions").prev_hunk()<cr>"]]},
+          ["n <M-.>"] = { expr = true, [[&diff ? "]c" : "<cmd>lua require('gitsigns.actions').next_hunk()<cr>"]]},
+          ["n <M-,>"] = { expr = true, [[&diff ? "[c" : "<cmd>lua require('gitsigns.actions').prev_hunk()<cr>"]]},
 
           ["n <leader>s"] = [[<cmd>lua require("gitsigns").stage_hunk()<cr>]],
           ["v <leader>s"] = [[<cmd>lua require("gitsigns").stage_hunk({vim.fn.line("."), vim.fn.line("v")})<cr>]],
@@ -232,7 +232,7 @@ require("packer").startup {function(use)
   -- theme
   use {"folke/tokyonight.nvim",
     config = function()
-      vim.g.tokyonight_style = "day"
+      vim.g.tokyonight_style = "night"
     end
   }
 
@@ -335,7 +335,7 @@ require("packer").startup {function(use)
     requires = {"kyazdani42/nvim-web-devicons"},
     config = function()
       require("lualine").setup {
-        options = { theme = "tokyonight" },
+        options = { theme = "molokai" },
         extensions = {
           "fugitive",
         },
@@ -534,6 +534,7 @@ require("packer").startup {function(use)
           -- other
           if client.resolved_capabilities.goto_definition then
             bmap(bufnr, "n", "gd", ":Lspsaga preview_definition<cr>", opts)
+            bmap(bufnr, "n", "gD", ":lua vim.lsp.buf.definition()<cr>", opts)
           end
           if client.resolved_capabilities.find_references then
             bmap(bufnr, "n", "gh", ":Lspsaga lsp_finder<cr>", opts)
@@ -547,7 +548,9 @@ require("packer").startup {function(use)
           if client.resolved_capabilities.document_formatting or client.resolved_capabilities.document_range_formatting then
             vim.api.nvim_command [[augroup Format]]
             vim.api.nvim_command [[autocmd! * <buffer>]]
-            vim.api.nvim_command [[autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting_seq_sync()]]
+            vim.api.nvim_command [[autocmd BufWritePost python lua vim.lsp.buf.formatting_seq_sync()]]
+            vim.api.nvim_command [[autocmd BufWritePost markdown lua vim.lsp.buf.formatting_seq_sync()]]
+            vim.api.nvim_command [[autocmd BufWritePost yaml lua vim.lsp.buf.formatting_seq_sync()]]
             vim.api.nvim_command [[augroup END]]
           end
         end
@@ -571,9 +574,6 @@ require("packer").startup {function(use)
           exec = "<cr>"
         },
       }
-      -- terminal TODO fix and replace with Fterm
-      -- map("n", "<F2>", ":Lspsaga open_floaterm<cr>", opts)
-      -- map("i", "<F2>", [[<C-\><C-n>:lua require('lspsaga.floaterm').close_float_terminal()]], opts)
       local nvim_lsp = require("lspconfig")
       -- sudo npm install -g yaml-language-server
       nvim_lsp.yamlls.setup{
