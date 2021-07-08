@@ -104,8 +104,10 @@ bindsym $mod+Shift+F6 exec i3-sensible-terminal -e 'ncspot'
 bindsym $mod+F9 exec --no-startup-id picom -b
 bindsym $mod+Shift+F9 exec --no-startup-id pkill picom
 bindsym $mod+Shift+F10 --release exec "killall dunst; exec notify-send 'restart dunst'"
-bindsym $mod+F12 --release exec "xrandr --output DP-0 --mode 5120x1440 --primary"
-bindsym $mod+Shift+F12 --release exec "xrandr --output DP-0 --mode 2560x1440 --primary"
+bindsym $mod+F11 exec "setxkbmap -layout no -model pc105 -variant nodeadkeys -option && setxkbmap -layout no -model pc105 -variant nodeadkeys -option caps:escape"
+bindsym $mod+Shift+F11 exec "setxkbmap -layout no -model pc105 -variant nodeadkeys -option && setxkbmap -layout no -model pc105 -variant nodeadkeys -option caps:backspace"
+bindsym $mod+F12 exec "xrandr --output DP-0 --mode 5120x1440 --primary"
+bindsym $mod+Shift+F12 exec "xrandr --output DP-0 --mode 2560x1440 --primary"
 
 bindsym $mod+0 mode "$mode_system"
 bindsym $mod+z mode "resize"
