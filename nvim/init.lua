@@ -18,7 +18,7 @@ vim.g.BASH_Ctrl_l = "off"
 opt.termguicolors = true
 opt.cmdheight = 2
 opt.background = "dark"
-vim.cmd "colorscheme embark"
+vim.cmd "colorscheme nord"
 opt.listchars = "tab:→ ,trail:·,extends:↷,precedes:↶,nbsp:+,eol:↵"
 opt.list = true                     -- Show listchars
 opt.showtabline = 2
@@ -52,7 +52,7 @@ opt.shiftwidth = 2                  -- Size of an indent
 -- search
 opt.ignorecase = true               -- Ignore case
 opt.smartcase = true                -- Do not ignore case with capitals
-opt.wildmode = {"list", "longest"}  -- Command-line completion mode
+opt.wildmode = {"list:longest"}     -- Command-line completion mode
 opt.wildignorecase = true
 opt.wildignore = opt.wildignore + {"*swp", "*.class", "*.pyc", "*.png", "*.jpg", "*.gif", "*.zip", "*/tmp/*", "*.o", ".obj", "*.so"}
 
@@ -74,7 +74,7 @@ opt.clipboard = opt.clipboard + {"unnamedplus"}
 -- za zA switch fold (small/full)
 -- zi toggle folds
 -- zi zj move to next / prev fold
-opt.foldenable = false
+opt.foldenable = true
 opt.foldmethod = "expr"
 
 -- ----------------------------------------
@@ -94,7 +94,6 @@ end
 
 cmd "au TextYankPost * lua vim.highlight.on_yank {on_visual = false}"
 create_augroup({
-    -- { "FileType", "*", "setlocal formatoptions-=c formatoptions-=r formatoptions-=o" }, -- Disables automatic commenting on newline  TODO await ftplugins
     { "BufWritePre", "*", [[%s/\s\+$//e]] },                                              -- Delete trailing whitespace
     { "BufReadPost", "quickfix", "nmap <buffer> <cr> <cr>" },
     { "TextYankPost", "*", "lua vim.highlight.on_yank {on_visual = false}" },
@@ -111,11 +110,14 @@ local map = vim.api.nvim_set_keymap
 map("n", "Q", "", {noremap = true})
 map("n", "q:", "", {noremap = true})
 
-map("n", "<leader>r", [[:so ~/.config/nvim/init.lua<cr>:PackerCompile<cr>]], { noremap = true })
+map("n", "<leader>E", [[:so ~/.config/nvim/init.lua<cr>:PackerCompile<cr>]], { noremap = true })
 map("n", "<leader>e", [[:vnew ~/dotfiles/nvim/init.lua<cr>]], { noremap = true })
-map("n", "<leader>t", [[:vnew ~/notes/todos.md<cr>]], { noremap = true })
-map("n", "<leader>n", [[:Explore ~/notes<cr>]], { noremap = true })
-map("n", "<leader>W", [[:cd %:p:h<cr>]], { noremap = true })
+map("n", "<leader>nt", [[:vnew ~/notes/todos.md<cr>]], { noremap = true })
+map("n", "<leader>nc", [[:vnew ~/notes/cheatsheet.md<cr>]], { noremap = true })
+map("n", "<leader>nl", [[:vnew ~/notes/libs.md<cr>]], { noremap = true })
+map("n", "<leader>nu", [[:vnew ~/notes/urls.md<cr>]], { noremap = true })
+map("n", "<leader>nn", [[:Explore ~/notes<cr>]], { noremap = true })
+map("n", "<leader>ww", [[:cd %:p:h<cr>]], { noremap = true })
 map("n", "<esc><esc>", ":noh<cr>", { silent = true, noremap = true } )
 
 -- <Tab> to navigate the completion menu
@@ -178,6 +180,9 @@ require("packer").startup {function(use)
   -- smooth scrolling
   use {"psliwka/vim-smoothie"}
 
+  -- tables
+  use {"dhruvasagar/vim-table-mode"}
+
   -- git
   use {"tpope/vim-fugitive",
     config = function()
@@ -201,13 +206,13 @@ require("packer").startup {function(use)
           ["n <M-.>"] = { expr = true, [[&diff ? "]c" : "<cmd>lua require('gitsigns.actions').next_hunk()<cr>"]]},
           ["n <M-,>"] = { expr = true, [[&diff ? "[c" : "<cmd>lua require('gitsigns.actions').prev_hunk()<cr>"]]},
 
-          ["n <leader>s"] = [[<cmd>lua require("gitsigns").stage_hunk()<cr>]],
-          ["v <leader>s"] = [[<cmd>lua require("gitsigns").stage_hunk({vim.fn.line("."), vim.fn.line("v")})<cr>]],
-          ["n <leader>u"] = [[<cmd>lua require("gitsigns").undo_stage_hunk()<cr>]],
-          ["n <leader>x"] = [[<cmd>lua require("gitsigns").reset_hunk()<cr>]],
-          ["v <leader>x"] = [[<cmd>lua require("gitsigns").reset_hunk({vim.fn.line("."), vim.fn.line("v")})<cr>]],
-          ["n <leader>i"] = [[<cmd>lua require("gitsigns").preview_hunk()<cr>]],
-          ["n <leader>b"] = [[<cmd>lua require("gitsigns").blame_line(true)<cr>]],
+          ["n <leader>gs"] = [[<cmd>lua require("gitsigns").stage_hunk()<cr>]],
+          ["v <leader>gs"] = [[<cmd>lua require("gitsigns").stage_hunk({vim.fn.line("."), vim.fn.line("v")})<cr>]],
+          ["n <leader>gu"] = [[<cmd>lua require("gitsigns").undo_stage_hunk()<cr>]],
+          ["n <leader>gx"] = [[<cmd>lua require("gitsigns").reset_hunk()<cr>]],
+          ["v <leader>gx"] = [[<cmd>lua require("gitsigns").reset_hunk({vim.fn.line("."), vim.fn.line("v")})<cr>]],
+          ["n <leader>gp"] = [[<cmd>lua require("gitsigns").preview_hunk()<cr>]],
+          ["n <leader>gb"] = [[<cmd>lua require("gitsigns").blame_line(true)<cr>]],
 
           -- Text objects
           ["o ih"] = [[:<C-U>lua require("gitsigns.actions").select_hunk()<cr>]],
@@ -239,6 +244,11 @@ require("packer").startup {function(use)
   use {"skbolton/embark",
     config = function()
       vim.g.embark_terminal_italics = 1
+    end
+  }
+
+  use {"arcticicestudio/nord-vim",
+    config = function()
     end
   }
 
@@ -335,7 +345,10 @@ require("packer").startup {function(use)
     requires = {"kyazdani42/nvim-web-devicons"},
     config = function()
       require("lualine").setup {
-        options = { theme = "molokai" },
+        options = {
+          -- theme = "everforest",
+          theme = "nord",
+        },
         extensions = {
           "fugitive",
         },
@@ -395,6 +408,7 @@ require("packer").startup {function(use)
   use {"nvim-telescope/telescope.nvim",
     requires = {"nvim-lua/popup.nvim", "nvim-lua/plenary.nvim"},
     config = function()
+      -- TODO grep with regex
       local map = vim.api.nvim_set_keymap
       local opts = { noremap = true }
       local actions = require("telescope.actions")
@@ -402,15 +416,15 @@ require("packer").startup {function(use)
       map("n", "<M-f>", "<cmd>Telescope git_files<cr>", opts )
       map("n", "<M-w>", "<cmd>Telescope live_grep<cr>", opts )
       map("n", "<M-b>", "<cmd>Telescope buffers<cr>", opts )
-      map("n", "<M-y>", "<cmd>Telescope filetypes<cr>", opts )
+      -- map("n", "<M-y>", "<cmd>Telescope filetypes<cr>", opts )
       map("n", "<F3>", "<cmd>Telescope colorscheme<cr>", opts )
-      map("n", "<leader>a", "<cmd>Telescope lsp_code_actions<cr>", opts )
-      map("v", "<leader>a", "<cmd>Telescope lsp_range_code_actions<cr>", opts )
-      map("n", "<leader>d", "<cmd>Telescope lsp_document_diagnostics<cr>", opts )
-      map("n", "<leader>D", "<cmd>Telescope lsp_workspace_diagnostics<cr>", opts )
-      map("n", "<leader>g", "<cmd>Telescope git_status<cr>", opts )
-      map("n", "<leader>c", "<cmd>Telescope git_commits<cr>", opts )
-      map("n", "<leader>C", "<cmd>Telescope git_bcommits<cr>", opts )
+      map("n", "<leader>la", "<cmd>Telescope lsp_code_actions<cr>", opts )
+      map("v", "<leader>la", "<cmd>Telescope lsp_range_code_actions<cr>", opts )
+      map("n", "<leader>ld", "<cmd>Telescope lsp_document_diagnostics<cr>", opts )
+      map("n", "<leader>lD", "<cmd>Telescope lsp_workspace_diagnostics<cr>", opts )
+      map("n", "<leader>gg", "<cmd>Telescope git_status<cr>", opts )
+      map("n", "<leader>gc", "<cmd>Telescope git_commits<cr>", opts )
+      map("n", "<leader>gC", "<cmd>Telescope git_bcommits<cr>", opts )
       map("n", "<F12>", "<cmd>Telescope<cr>", opts )
       require("telescope").setup{
         defaults = {
@@ -524,13 +538,13 @@ require("packer").startup {function(use)
           bmap(bufnr, "n", "<M-m>", ":Lspsaga diagnostic_jump_next<cr>", opts)
           bmap(bufnr, "n", "<M-n>", ":Lspsaga diagnostic_jump_prev<cr>", opts)
           -- popups
-          bmap(bufnr, "n", "<M-a>", ":Lspsaga signature_help<cr>", opts)
-          bmap(bufnr, "i", "<M-a>", "<cmd>:Lspsaga signature_help<cr>", opts)
+          bmap(bufnr, "n", "<M-x>", ":Lspsaga signature_help<cr>", opts)
+          bmap(bufnr, "i", "<M-x>", "<cmd>lua require('lspsaga.signaturehelp').signature_help()<cr>", opts)
           bmap(bufnr, "n", "<C-f>", "<cmd>lua require('lspsaga.action').smart_scroll_with_saga(1)<cr>", opts)
           bmap(bufnr, "n", "<C-b>", "<cmd>lua require('lspsaga.action').smart_scroll_with_saga(-1)<cr>", opts)
           -- actions
-          bmap(bufnr, "n", "<leader><cr>", ":Lspsaga range_code_action<cr>", opts)
-          bmap(bufnr, "v", "<leader><cr>", ":<C-U>Lspsaga range_code_action<cr>", opts)
+          bmap(bufnr, "n", "<leader>ll", ":Lspsaga range_code_action<cr>", opts)
+          bmap(bufnr, "v", "<leader>ll", ":<C-U>Lspsaga range_code_action<cr>", opts)
           -- other
           if client.resolved_capabilities.goto_definition then
             bmap(bufnr, "n", "gd", ":Lspsaga preview_definition<cr>", opts)
@@ -548,9 +562,9 @@ require("packer").startup {function(use)
           if client.resolved_capabilities.document_formatting or client.resolved_capabilities.document_range_formatting then
             vim.api.nvim_command [[augroup Format]]
             vim.api.nvim_command [[autocmd! * <buffer>]]
-            vim.api.nvim_command [[autocmd BufWritePost python lua vim.lsp.buf.formatting_seq_sync()]]
-            vim.api.nvim_command [[autocmd BufWritePost markdown lua vim.lsp.buf.formatting_seq_sync()]]
-            vim.api.nvim_command [[autocmd BufWritePost yaml lua vim.lsp.buf.formatting_seq_sync()]]
+            vim.api.nvim_command [[autocmd BufWritePost *.py lua vim.lsp.buf.formatting_seq_sync()]]
+            vim.api.nvim_command [[autocmd BufWritePost *.md lua vim.lsp.buf.formatting_seq_sync()]]
+            vim.api.nvim_command [[autocmd BufWritePost *.yaml lua vim.lsp.buf.formatting_seq_sync()]]
             vim.api.nvim_command [[augroup END]]
           end
         end
@@ -597,11 +611,11 @@ require("packer").startup {function(use)
       }
       nvim_lsp.efm.setup{
         on_attach = on_attach,
-        init_options = {documentFormatting = true},
+        init_options = { documentFormatting = true },
         filetypes = { "python", "markdown", "yaml", "lua" },
         root_dir = vim.loop.cwd,
         settings = {
-          rootMarkers = {".git/"},
+          rootMarkers = { ".git/" },
           languages = {
             python = {
               {
