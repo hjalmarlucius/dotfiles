@@ -241,6 +241,14 @@ require("packer").startup {function(use)
     end
   }
 
+  use {"ayu-theme/ayu-vim",
+    config = function()
+      vim.g.ayucolor = "light"
+      -- vim.g.ayucolor = "mirage"
+      -- vim.g.ayucolor = "dark"
+    end
+  }
+
   use {"skbolton/embark",
     config = function()
       vim.g.embark_terminal_italics = 1
