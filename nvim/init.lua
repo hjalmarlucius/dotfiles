@@ -18,7 +18,7 @@ vim.g.BASH_Ctrl_l = "off"
 opt.termguicolors = true
 opt.cmdheight = 2
 opt.background = "dark"
-vim.cmd "colorscheme nord"
+vim.cmd "colorscheme ayu"
 opt.listchars = "tab:→ ,trail:·,extends:↷,precedes:↶,nbsp:+,eol:↵"
 opt.list = true                     -- Show listchars
 opt.showtabline = 2
@@ -241,11 +241,24 @@ require("packer").startup {function(use)
     end
   }
 
+  use {"kyoz/purify", rtp = "vim", }
+  use {"sonph/onehalf", rtp = "vim", }
+  use {"rakr/vim-one", }
+  use {"tomasr/molokai", }
+  use {"morhetz/gruvbox", }
+  use {"jnurmine/Zenburn", }
+  use {"jacoborus/tender.vim", }
+  use {"nanotech/jellybeans.vim", }
+  use {"mhartington/oceanic-next", }
+  use {"NLKNguyen/papercolor-theme", }
+  use {"drewtempelmeyer/palenight.vim", }
+  use {"altercation/vim-colors-solarized", }
+
   use {"ayu-theme/ayu-vim",
     config = function()
-      vim.g.ayucolor = "light"
+      -- vim.g.ayucolor = "light"
       -- vim.g.ayucolor = "mirage"
-      -- vim.g.ayucolor = "dark"
+      vim.g.ayucolor = "dark"
     end
   }
 
@@ -354,8 +367,7 @@ require("packer").startup {function(use)
     config = function()
       require("lualine").setup {
         options = {
-          -- theme = "everforest",
-          theme = "nord",
+          theme = "auto",
         },
         extensions = {
           "fugitive",
