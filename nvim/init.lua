@@ -121,8 +121,8 @@ map("n", "<leader>ww", [[:cd %:p:h<cr>]], { noremap = true })
 map("n", "<esc><esc>", ":noh<cr>", { silent = true, noremap = true } )
 
 -- <Tab> to navigate the completion menu
-map("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<Tab>"]], { expr = true, noremap = true })
-map("i", "<Tab>", [[pumvisible() ? "\<C-n>" : "\<S-Tab>"]], { expr = true, noremap = true })
+map("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], { expr = true, noremap = true })
+map("i", "<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]], { expr = true, noremap = true })
 
 -- CURSOR
 -- stay visual when indenting
@@ -448,8 +448,8 @@ require("packer").startup {function(use)
               ["<C-s>"] = actions.select_horizontal,
               ["<C-v>"] = actions.select_vertical,
               ["<C-t>"] = actions.select_tab,
-              ["<Tab>"] = actions.toggle_selection + actions.move_selection_worse,
-              ["<S-Tab>"] = actions.toggle_selection + actions.move_selection_better,
+              ["<S-Tab>"] = actions.toggle_selection + actions.move_selection_worse,
+              ["<Tab>"] = actions.toggle_selection + actions.move_selection_better,
               ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
               ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
               ["<C-l>"] = actions.complete_tag
