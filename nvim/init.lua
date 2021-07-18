@@ -18,7 +18,6 @@ vim.g.BASH_Ctrl_l = "off"
 opt.termguicolors = true
 opt.cmdheight = 2
 opt.background = "dark"
-vim.cmd "colorscheme ayu"
 opt.listchars = "tab:→ ,trail:·,extends:↷,precedes:↶,nbsp:+,eol:↵"
 opt.list = true                     -- Show listchars
 opt.showtabline = 2
@@ -110,7 +109,7 @@ local map = vim.api.nvim_set_keymap
 map("n", "Q", "", {noremap = true})
 map("n", "q:", "", {noremap = true})
 
-map("n", "<leader>E", [[:so ~/.config/nvim/init.lua<cr>:PackerCompile<cr>]], { noremap = true })
+map("n", "<leader>E", [[:so ~/.config/nvim/init.lua<cr>:PackerInstall<cr>:PackerCompile<cr>]], { noremap = true })
 map("n", "<leader>e", [[:vnew ~/dotfiles/nvim/init.lua<cr>]], { noremap = true })
 map("n", "<leader>nt", [[:vnew ~/notes/todos.md<cr>]], { noremap = true })
 map("n", "<leader>nc", [[:vnew ~/notes/cheatsheet.md<cr>]], { noremap = true })
@@ -227,6 +226,8 @@ require("packer").startup {function(use)
   use {"kyazdani42/nvim-tree.lua",
     requires = {"kyazdani42/nvim-web-devicons"},
     config = function()
+      vim.g.nvim_tree_auto_open = 1
+      vim.g.nvim_tree_disable_netrw = 0
       local map = vim.api.nvim_set_keymap
       map("n", "<M-p>", ":NvimTreeToggle<cr>", {noremap = true})
       map("n", "<M-P>", ":NvimTreeRefresh<cr>", {noremap = true})
@@ -259,6 +260,7 @@ require("packer").startup {function(use)
       -- vim.g.ayucolor = "light"
       -- vim.g.ayucolor = "mirage"
       vim.g.ayucolor = "dark"
+      vim.cmd "colorscheme ayu"
     end
   }
 
