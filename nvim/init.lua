@@ -148,8 +148,8 @@ map("n", "<C-j>", "<C-w>-", { noremap = true })
 map("n", "<C-k>", "<C-w>+", { noremap = true })
 map("n", "<C-l>", "<C-w>>", { noremap = true })
 -- quickfix window
--- map("n", "<C-n>", ":cp<cr>", { noremap = true })
--- map("n", "<C-m>", ":cn<cr>", { noremap = true })
+map("n", "<C-n>", ":cp<cr>", { noremap = true })
+map("n", "<C-m>", ":cn<cr>", { noremap = true })
 -- remove buffer
 map("n", "<M-d>", ":bprev<bar>:bd#<cr>", { noremap = true })
 map("n", "<M-D>", ":bprev<bar>:bd!#<cr>", { noremap = true })
@@ -172,6 +172,7 @@ require("packer").startup {function(use)
   -- tpope
   use {"tpope/vim-sensible"}                -- sensible default
   use {"tpope/vim-commentary"}              -- comment out stuff
+  use {"tpope/vim-surround"}
   use {"tpope/vim-repeat"}                  -- repeat vim-surround with .
   use {"tpope/vim-eunuch"}                  -- Move, Rename etc
   use {"farmergreg/vim-lastplace"}          -- keep location upon reopening
@@ -210,7 +211,7 @@ require("packer").startup {function(use)
           ["n <leader>gu"] = [[<cmd>lua require("gitsigns").undo_stage_hunk()<cr>]],
           ["n <leader>gx"] = [[<cmd>lua require("gitsigns").reset_hunk()<cr>]],
           ["v <leader>gx"] = [[<cmd>lua require("gitsigns").reset_hunk({vim.fn.line("."), vim.fn.line("v")})<cr>]],
-          ["n <leader>gp"] = [[<cmd>lua require("gitsigns").preview_hunk()<cr>]],
+          ["n <leader>gi"] = [[<cmd>lua require("gitsigns").preview_hunk()<cr>]],
           ["n <leader>gb"] = [[<cmd>lua require("gitsigns").blame_line(true)<cr>]],
 
           -- Text objects
@@ -242,25 +243,26 @@ require("packer").startup {function(use)
     end
   }
 
-  use {"kyoz/purify", rtp = "vim", }
   use {"sonph/onehalf", rtp = "vim", }
-  use {"rakr/vim-one", }
   use {"tomasr/molokai", }
   use {"morhetz/gruvbox", }
   use {"jnurmine/Zenburn", }
-  use {"jacoborus/tender.vim", }
   use {"nanotech/jellybeans.vim", }
   use {"mhartington/oceanic-next", }
   use {"NLKNguyen/papercolor-theme", }
   use {"drewtempelmeyer/palenight.vim", }
   use {"altercation/vim-colors-solarized", }
+  use {"rakr/vim-one",
+    config = function()
+      vim.g.one_allow_italics = 1
+    end
+  }
 
   use {"ayu-theme/ayu-vim",
     config = function()
       -- vim.g.ayucolor = "light"
       -- vim.g.ayucolor = "mirage"
       vim.g.ayucolor = "dark"
-      vim.cmd "colorscheme ayu"
     end
   }
 
@@ -280,6 +282,7 @@ require("packer").startup {function(use)
       vim.g.seoul256_background = 235
     end
   }
+  vim.cmd "colorscheme zenburn"
 
   -- coloring of colornames
   use {"rrethy/vim-hexokinase",
@@ -377,7 +380,7 @@ require("packer").startup {function(use)
         sections = {
           lualine_a = {"mode"},
           lualine_b = {"branch"},
-          lualine_c = {{"filename", file_status = true, path = 1}},
+          lualine_c = {{"filename", file_status = true, path = 1}, {"diff", colored=false}, { "diagnostics", sources = {"nvim_lsp"}}},
           lualine_x = {"encoding", "fileformat", "filetype"},
           lualine_y = {"progress"},
           lualine_z = {"location"}
@@ -390,16 +393,23 @@ require("packer").startup {function(use)
           lualine_y = {"progress"},
           lualine_z = {}
         },
-        -- TODO tabline func https://blog.inkdrop.info/how-to-set-up-neovim-0-5-modern-plugins-lsp-treesitter-etc-542c3d9c9887
-        tabline = {
-          lualine_a = {"filename"},
-          lualine_b = {{ "diagnostics", sources = {"nvim_lsp"}}},
-          lualine_c = {{"diff", colored=false}},
-          lualine_x = {},
-          lualine_y = {},
-          lualine_z = {{"filename", file_status = true, path = 2}}
+      }
+    end
+  }
+
+  use {"akinsho/nvim-bufferline.lua",
+    requires = {"kyazdani42/nvim-web-devicons"},
+    config = function()
+      require("bufferline").setup{
+        options = {
+          diagnostics = "nvim_lsp",
         }
       }
+      local map = vim.api.nvim_set_keymap
+      map("n", "<M-J>", ":BufferLineCyclePrev<cr>", { noremap = true, silent=true })
+      map("n", "<M-K>", ":BufferLineCycleNext<cr>", { noremap = true, silent=true })
+      map("n", "<M-N>", ":BufferLineMovePrev<cr>", { noremap = true, silent=true })
+      map("n", "<M-M>", ":BufferLineMoveNext<cr>", { noremap = true, silent=true })
     end
   }
 
@@ -419,9 +429,6 @@ require("packer").startup {function(use)
     config = function()
       require("nvim-treesitter.configs").setup {
         ensure_installed = "all",
-        highlight = {
-          enable = true,
-        }
       }
       vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
     end
@@ -550,36 +557,34 @@ require("packer").startup {function(use)
           local bmap = vim.api.nvim_buf_set_keymap
           local opts = { noremap = true }
           vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
+          vim.lsp.set_log_level("error")
           -- workspaces
           bmap(bufnr, "n", "<leader>wa", "<cmd>lua vim.lsp.buf.add_workspace_folder()<cr>", opts)
           bmap(bufnr, "n", "<leader>wr", "<cmd>lua vim.lsp.buf.remove_workspace_folder()<cr>", opts)
           bmap(bufnr, "n", "<leader>wl", "<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<cr>", opts)
           -- jump
-          bmap(bufnr, "n", "gl", "<cmd>lua vim.lsp.diagnostic.set_loclist()<cr>", opts)
-          bmap(bufnr, "n", "<M-i>", ":Lspsaga show_line_diagnostics<cr>", opts)
-          bmap(bufnr, "n", "<M-m>", ":Lspsaga diagnostic_jump_next<cr>", opts)
-          bmap(bufnr, "n", "<M-n>", ":Lspsaga diagnostic_jump_prev<cr>", opts)
+          bmap(bufnr, "n", "gl", "<cmd>lua vim.lsp.diagnostic.set_loclist({severity_limit='Warning'})<cr>", opts)
+          bmap(bufnr, "n", "<M-i>", "<cmd>lua vim.lsp.diagnostic.show_line_diagnostics({show_header=false})<cr>", opts)
+          bmap(bufnr, "n", "<M-m>", "<cmd>lua vim.lsp.diagnostic.goto_next({severity_limit='Warning', popup_opts={show_header=false}})<cr>", opts)
+          bmap(bufnr, "n", "<M-n>", "<cmd>lua vim.lsp.diagnostic.goto_prev({severity_limit='Warning', popup_opts={show_header=false}})<cr>", opts)
           -- popups
-          bmap(bufnr, "n", "<M-x>", ":Lspsaga signature_help<cr>", opts)
-          bmap(bufnr, "i", "<M-x>", "<cmd>lua require('lspsaga.signaturehelp').signature_help()<cr>", opts)
+          bmap(bufnr, "n", "<M-x>", "<cmd>lua vim.lsp.buf.signature_help()<cr>", opts)
+          bmap(bufnr, "i", "<M-x>", "<cmd>lua vim.lsp.buf.signature_help()<cr>", opts)
           bmap(bufnr, "n", "<C-f>", "<cmd>lua require('lspsaga.action').smart_scroll_with_saga(1)<cr>", opts)
           bmap(bufnr, "n", "<C-b>", "<cmd>lua require('lspsaga.action').smart_scroll_with_saga(-1)<cr>", opts)
-          -- actions
-          bmap(bufnr, "n", "<leader>ll", ":Lspsaga range_code_action<cr>", opts)
-          bmap(bufnr, "v", "<leader>ll", ":<C-U>Lspsaga range_code_action<cr>", opts)
           -- other
           if client.resolved_capabilities.goto_definition then
             bmap(bufnr, "n", "gd", ":Lspsaga preview_definition<cr>", opts)
             bmap(bufnr, "n", "gD", ":lua vim.lsp.buf.definition()<cr>", opts)
           end
           if client.resolved_capabilities.find_references then
-            bmap(bufnr, "n", "gh", ":Lspsaga lsp_finder<cr>", opts)
+            bmap(bufnr, "n", "gr", ":Lspsaga lsp_finder<cr>", opts)
           end
           if client.resolved_capabilities.hover then
             bmap(bufnr, "n", "K", ":Lspsaga hover_doc<cr>", opts)
           end
           if client.resolved_capabilities.rename then
-            bmap(bufnr, "n", "gr", ":Lspsaga rename<cr>", opts)
+            bmap(bufnr, "n", "<M-r>", ":Lspsaga rename<cr>", opts)
           end
           if client.resolved_capabilities.document_formatting or client.resolved_capabilities.document_range_formatting then
             vim.api.nvim_command [[augroup Format]]
@@ -622,7 +627,7 @@ require("packer").startup {function(use)
           python = {
             analysis = {
               diagnosticMode = "workspace",
-              logLevel = "Error",
+              logLevel = "Warning",
               typeCheckingMode = "strict",
             }
           }
@@ -650,11 +655,6 @@ require("packer").startup {function(use)
               {
                 formatCommand = "isort --stdout --profile black --force-single-line-imports -",
                 formatStdin = true
-              },
-              {
-                lintCommand = "mypy --show-column-numbers --ignore-missing-imports",
-                lintFormats = { "%f:%l:%c: %trror: %m", "%f:%l:%c: %tarning: %m", "%f:%l:%c: %tote: %m" },
-                lintSource = "mypy"
               },
               {
                 formatCommand = "black --fast -",
