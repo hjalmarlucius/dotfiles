@@ -56,7 +56,7 @@ opt.wildignorecase = true
 opt.wildignore = opt.wildignore + {"*swp", "*.class", "*.pyc", "*.png", "*.jpg", "*.gif", "*.zip", "*/tmp/*", "*.o", ".obj", "*.so"}
 
 -- cursor
-opt.scrolloff = 1                   -- Lines of context
+opt.scrolloff = 5                   -- Lines of context
 opt.scrolljump = 1                  -- Lines to scroll when cursor leaves screen
 opt.sidescrolloff = 4               -- Columns of context
 opt.showmatch = true                -- Show matching brackets / parentheses
@@ -133,8 +133,10 @@ map("n", "<leader>o", "m`o<Esc>``", { noremap = true })  -- Insert a newline in 
 
 -- WINDOWS / BUFFERS
 -- make splits and tabs
-map("n", "<M-v>", ":vnew<cr>", { noremap = true })
-map("n", "<M-s>", ":new<cr>", { noremap = true })
+map("n", "<M-V>", ":vnew<cr>", { noremap = true })
+map("n", "<M-S>", ":new<cr>", { noremap = true })
+map("n", "<M-v>", ":vsplit<cr>", { noremap = true })
+map("n", "<M-s>", ":split<cr>", { noremap = true })
 map("n", "<M-t>", ":tabe %<cr>", { noremap = true })
 map("n", "<M-T>", ":tabnew<cr>", { noremap = true })
 -- buffers and tabs
@@ -227,7 +229,7 @@ require("packer").startup {function(use)
   use {"kyazdani42/nvim-tree.lua",
     requires = {"kyazdani42/nvim-web-devicons"},
     config = function()
-      vim.g.nvim_tree_auto_open = 1
+      vim.g.nvim_tree_auto_open = 0
       vim.g.nvim_tree_disable_netrw = 0
       local map = vim.api.nvim_set_keymap
       map("n", "<M-p>", ":NvimTreeToggle<cr>", {noremap = true})
