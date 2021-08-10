@@ -73,7 +73,7 @@ opt.clipboard = opt.clipboard + {"unnamedplus"}
 -- za zA switch fold (small/full)
 -- zi toggle folds
 -- zi zj move to next / prev fold
-opt.foldenable = true
+opt.foldenable = false
 opt.foldmethod = "expr"
 
 -- ----------------------------------------
@@ -314,13 +314,6 @@ require("packer").startup {function(use)
     end
   }
 
-  -- highlight for quick movement f/F
-  use {"unblevable/quick-scope",
-    config = function()
-      -- vim.g.qs_highlight_on_keys = {"f", "F", "t", "T"}
-    end
-  }
-
   use {"haya14busa/vim-asterisk",
     config = function()
       vim.g["asterisk#keeppos"] = 1
@@ -550,6 +543,76 @@ require("packer").startup {function(use)
     end
   }
 
+  use {
+  "folke/trouble.nvim",
+  requires = "kyazdani42/nvim-web-devicons",
+  config = function()
+    require("trouble").setup {
+      position = "right", -- position of the list can be: bottom, top, left, right
+      height = 10, -- height of the trouble list when position is top or bottom
+      width = 60, -- width of the list when position is left or right
+      icons = true, -- use devicons for filenames
+      mode = "lsp_workspace_diagnostics", -- "lsp_workspace_diagnostics", "lsp_document_diagnostics", "quickfix", "lsp_references", "loclist"
+      fold_open = "", -- icon used for open folds
+      fold_closed = "", -- icon used for closed folds
+      action_keys = { -- key mappings for actions in the trouble list
+          close = "q", -- close the list
+          cancel = "<esc>", -- cancel the preview and get back to your last window / buffer / cursor
+          refresh = "r", -- manually refresh
+          jump = {"<cr>", "<tab>"}, -- jump to the diagnostic or open / close folds
+          open_split = { "<c-s>" }, -- open buffer in new split
+          open_vsplit = { "<c-v>" }, -- open buffer in new vsplit
+          open_tab = { "<c-t>" }, -- open buffer in new tab
+          jump_close = {"o"}, -- jump to the diagnostic and close the list
+          toggle_mode = "m", -- toggle between "workspace" and "document" diagnostics mode
+          toggle_preview = "P", -- toggle auto_preview
+          hover = "K", -- opens a small popup with the full multiline message
+          preview = "p", -- preview the diagnostic location
+          close_folds = {"zM", "zm"}, -- close all folds
+          open_folds = {"zR", "zr"}, -- open all folds
+          toggle_fold = {"zA", "za"}, -- toggle fold of current file
+          previous = "k", -- preview item
+          next = "j" -- next item
+      },
+      indent_lines = true, -- add an indent guide below the fold icons
+      auto_open = false, -- automatically open the list when you have diagnostics
+      auto_close = false, -- automatically close the list when you have no diagnostics
+      auto_preview = true, -- automatically preview the location of the diagnostic. <esc> to close preview and go back to last window
+      auto_fold = false, -- automatically fold a file trouble list at creation
+    }
+  end
+  }
+
+  use {"folke/todo-comments.nvim",
+    requires = {"nvim-lua/plenary.nvim"},
+    config = function()
+      require("todo-comments").setup {
+        signs = true, -- show icons in the signs column
+        sign_priority = 8, -- sign priority
+        -- keywords recognized as todo comments
+        keywords = {
+          FIX = { icon = " ", color = "error", alt = { "FIXME", "BUG", "FIXIT", "ISSUE" } },
+          TODO = { icon = " ", color = "info" },
+          HACK = { icon = " ", color = "warning" },
+          WARN = { icon = " ", color = "warning", alt = { "WARNING", "XXX" } },
+          PERF = { icon = " ", alt = { "OPTIM", "PERFORMANCE", "OPTIMIZE" } },
+          NOTE = { icon = " ", color = "hint", alt = { "INFO" } },
+        },
+        merge_keywords = true, -- when true, custom keywords will be merged with the defaults
+        colors = {
+          error = { "LspDiagnosticsDefaultError", "ErrorMsg", "#DC2626" },
+          warning = { "LspDiagnosticsDefaultWarning", "WarningMsg", "#FBBF24" },
+          info = { "LspDiagnosticsDefaultInformation", "#10B981" },
+          hint = { "LspDiagnosticsDefaultHint", "#7C3AED" },
+          default = { "Identifier", "#2563EB" },
+        },
+      }
+      local map = vim.api.nvim_set_keymap
+      local opts = { noremap = true }
+      map("n", "<F4>", ":TodoTrouble<cr>", opts)
+    end
+  }
+
   use {"glepnir/lspsaga.nvim",
     requires = {"neovim/nvim-lspconfig"},
     run = ":TSUpdate",
@@ -618,6 +681,8 @@ require("packer").startup {function(use)
         },
       }
       local nvim_lsp = require("lspconfig")
+      -- sudo npm install -g typescript typescript-language-server
+      nvim_lsp.tsserver.setup{}
       -- sudo npm install -g yaml-language-server
       nvim_lsp.yamlls.setup{
         on_attach = on_attach
@@ -641,7 +706,7 @@ require("packer").startup {function(use)
       nvim_lsp.efm.setup{
         on_attach = on_attach,
         init_options = { documentFormatting = true },
-        filetypes = { "python", "markdown", "yaml", "lua" },
+        filetypes = { "python", "markdown", "yaml", "lua", "javascript" },
         root_dir = vim.loop.cwd,
         settings = {
           rootMarkers = { ".git/" },
@@ -663,6 +728,7 @@ require("packer").startup {function(use)
                 formatStdin = true
               }
             },
+            javascript = {prettier, eslint},
             yaml = {prettier},
             markdown = {prettier},
           },
