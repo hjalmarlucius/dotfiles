@@ -82,21 +82,13 @@ opt.foldmethod = "expr"
 -- highlight on yank
 local cmd = vim.cmd
 
-local function create_augroup(autocmds, name)
-    cmd("augroup " .. name)
-    cmd("autocmd!")
-    for _, autocmd in ipairs(autocmds) do
-        cmd("autocmd " .. table.concat(autocmd, " "))
-    end
-    cmd("augroup END")
-end
-
-cmd "au TextYankPost * lua vim.highlight.on_yank {on_visual = false}"
-create_augroup({
-    { "BufWritePre", "*", [[%s/\s\+$//e]] },                                              -- Delete trailing whitespace
-    { "BufReadPost", "quickfix", "nmap <buffer> <cr> <cr>" },
-    { "TextYankPost", "*", "lua vim.highlight.on_yank {on_visual = false}" },
-}, "myau")
+vim.api.nvim_command [[augroup MYAU]]
+vim.api.nvim_command [[autocmd!]]
+vim.api.nvim_command [[autocmd BufWritePre * %s/\s\+$//e]]
+vim.api.nvim_command [[autocmd BufWritePre *.py execute ":Black"]]
+vim.api.nvim_command [[autocmd BufReadPost quickfix nmap <buffer> <cr> <cr>]]
+vim.api.nvim_command [[autocmd TextYankPost * "lua vim.highlight.on_yank {on_visual = false}"]]
+vim.api.nvim_command [[augroup END]]
 
 -- ----------------------------------------
 -- MAPS
@@ -418,13 +410,11 @@ require("packer").startup {function(use)
     end
   }
 
-  use {"psf/black",
-      vim.api.nvim_command [[autocmd BufWritePre *.py execute ':Black']]
-  }
+  use {"psf/black"}
 
-  -- treesitter
-  use {"nvim-treesitter/nvim-treesitter",
-    run = ":TSUpdate",
+-- treesitter
+use {"nvim-treesitter/nvim-treesitter",
+  run = ":TSUpdate",
     config = function()
       require("nvim-treesitter.configs").setup {
         ensure_installed = "all",
@@ -657,14 +647,6 @@ require("packer").startup {function(use)
           end
           if client.resolved_capabilities.rename then
             bmap(bufnr, "n", "<M-r>", ":Lspsaga rename<cr>", opts)
-          end
-          if client.resolved_capabilities.document_formatting or client.resolved_capabilities.document_range_formatting then
-            vim.api.nvim_command [[augroup Format]]
-            vim.api.nvim_command [[autocmd! * <buffer>]]
-            vim.api.nvim_command [[autocmd BufWritePost *.py lua vim.lsp.buf.formatting_seq_sync()]]
-            vim.api.nvim_command [[autocmd BufWritePost *.md lua vim.lsp.buf.formatting_seq_sync()]]
-            vim.api.nvim_command [[autocmd BufWritePost *.yaml lua vim.lsp.buf.formatting_seq_sync()]]
-            vim.api.nvim_command [[augroup END]]
           end
         end
       use_saga_diagnostic_sign = true
