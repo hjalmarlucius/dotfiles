@@ -418,6 +418,10 @@ require("packer").startup {function(use)
     end
   }
 
+  use {"psf/black",
+      vim.api.nvim_command [[autocmd BufWritePre *.py execute ':Black']]
+  }
+
   -- treesitter
   use {"nvim-treesitter/nvim-treesitter",
     run = ":TSUpdate",
@@ -580,6 +584,9 @@ require("packer").startup {function(use)
       auto_preview = true, -- automatically preview the location of the diagnostic. <esc> to close preview and go back to last window
       auto_fold = false, -- automatically fold a file trouble list at creation
     }
+      local map = vim.api.nvim_set_keymap
+      local opts = { noremap = true }
+      map("n", "<F5>", ":Trouble<cr>", opts)
   end
   }
 
@@ -712,21 +719,17 @@ require("packer").startup {function(use)
           rootMarkers = { ".git/" },
           languages = {
             python = {
-              {
-                lintCommand = "flake8 --max-line-length 88 --format '%(path)s:%(row)d:%(col)d: %(code)s %(code)s %(text)s' --stdin-display-name ${INPUT} -",
-                lintStdin = true,
-                lintIgnoreExitCode = true,
-                lintFormats = {"%f:%l:%c: %t%n%n%n %m"},
-                lintSource = "flake8"
-              },
+              -- {
+              --   lintCommand = "flake8 --max-line-length 88 --format '%(path)s:%(row)d:%(col)d: %(code)s %(code)s %(text)s' --stdin-display-name ${INPUT} -",
+              --   lintStdin = true,
+              --   lintIgnoreExitCode = true,
+              --   lintFormats = {"%f:%l:%c: %t%n%n%n %m"},
+              --   lintSource = "flake8"
+              -- },
               {
                 formatCommand = "isort --stdout --profile black --force-single-line-imports -",
                 formatStdin = true
               },
-              {
-                formatCommand = "black --fast -",
-                formatStdin = true
-              }
             },
             javascript = {prettier, eslint},
             yaml = {prettier},
