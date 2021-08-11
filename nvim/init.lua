@@ -85,7 +85,7 @@ local cmd = vim.cmd
 vim.api.nvim_command [[augroup MYAU]]
 vim.api.nvim_command [[autocmd!]]
 vim.api.nvim_command [[autocmd BufWritePre * %s/\s\+$//e]]
-vim.api.nvim_command [[autocmd BufWritePre *.py execute ":Black"]]
+vim.api.nvim_command [[autocmd BufWritePre *.py silent! execute ':Black']]
 vim.api.nvim_command [[autocmd BufReadPost quickfix nmap <buffer> <cr> <cr>]]
 vim.api.nvim_command [[autocmd TextYankPost * "lua vim.highlight.on_yank {on_visual = false}"]]
 vim.api.nvim_command [[augroup END]]
@@ -147,8 +147,6 @@ map("n", "<C-m>", ":cn<cr>", { noremap = true })
 -- remove buffer
 map("n", "<M-d>", ":bprev<bar>:bd#<cr>", { noremap = true })
 map("n", "<M-D>", ":bprev<bar>:bd!#<cr>", { noremap = true })
-map("n", "<F8>", ":vimgrep TODO **/*<cr>:copen<cr>", { noremap = true })
-map("n", "<F9>", ":checkt", { noremap = true })
 
 -- ----------------------------------------
 -- PACKER
