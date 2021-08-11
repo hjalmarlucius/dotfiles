@@ -338,7 +338,7 @@ require("packer").startup {function(use)
   use {"mbbill/undotree",
     config = function()
       local map = vim.api.nvim_set_keymap
-      map("", "<C-t>", ":UndotreeToggle<cr>:UndotreeFocus<cr>", { noremap = true })
+      map("", "<F11>", ":UndotreeToggle<cr>:UndotreeFocus<cr>", { noremap = true })
     end
 }
 
@@ -586,25 +586,28 @@ use {"nvim-treesitter/nvim-treesitter",
         sign_priority = 8, -- sign priority
         -- keywords recognized as todo comments
         keywords = {
-          FIX = { icon = " ", color = "error", alt = { "FIXME", "BUG", "FIXIT", "ISSUE" } },
-          TODO = { icon = " ", color = "info" },
-          HACK = { icon = " ", color = "warning" },
-          WARN = { icon = " ", color = "warning", alt = { "WARNING", "XXX" } },
-          PERF = { icon = " ", alt = { "OPTIM", "PERFORMANCE", "OPTIMIZE" } },
-          NOTE = { icon = " ", color = "hint", alt = { "INFO" } },
+          ERROR = { icon = " ", color = "error" },
+          FIX = { icon = " ", color = "warning" },
+          TODO = { icon = " ", color = "warning" },
+          FEAT = { icon = " ", color = "info" },
+          PERF = { icon = " ", color = "info" },
+          MAYBE = { icon = " ", color = "default" },
+          IDEA = { icon = " ", color = "hint" },
         },
         merge_keywords = true, -- when true, custom keywords will be merged with the defaults
+        highlight = { keyword = "bg", pattern = [[<(KEYWORDS)\s*]], },
+        search = { pattern = [[\b(KEYWORDS)\b]], },
         colors = {
-          error = { "LspDiagnosticsDefaultError", "ErrorMsg", "#DC2626" },
-          warning = { "LspDiagnosticsDefaultWarning", "WarningMsg", "#FBBF24" },
-          info = { "LspDiagnosticsDefaultInformation", "#10B981" },
-          hint = { "LspDiagnosticsDefaultHint", "#7C3AED" },
-          default = { "Identifier", "#2563EB" },
+          error = { "#E15030" },
+          warning = { "#FBBF24" },
+          info = { "#91BED0" },
+          hint = { "#10B981" },
+          default = { "#91D0C1" },
         },
       }
       local map = vim.api.nvim_set_keymap
       local opts = { noremap = true }
-      map("n", "<F4>", ":TodoTrouble<cr>", opts)
+      map("n", "<C-t>", ":TodoTrouble<cr>", opts)
     end
   }
 
