@@ -1,12 +1,12 @@
 [core]
-    filemode = false
-	pager = diff-so-fancy | less --tabs=4 -RFX
-	autorcrlf = true
+  filemode = false
+  pager = diff-so-fancy | less --tabs=4 -RFX
+  autorcrlf = true
 [user]
-	name = Henrik Bakken
-	email = bakken.henrik@gmail.com
+  name = Henrik Bakken
+  email = bakken.henrik@gmail.com
 [filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+  required = true

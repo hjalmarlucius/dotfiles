@@ -147,6 +147,7 @@ map("n", "<C-m>", ":cn<cr>", { noremap = true })
 -- remove buffer
 map("n", "<M-d>", ":bprev<bar>:bd#<cr>", { noremap = true })
 map("n", "<M-D>", ":bprev<bar>:bd!#<cr>", { noremap = true })
+map("n", "<F9>", ":checkt", { noremap = true })
 
 -- ----------------------------------------
 -- PACKER
@@ -222,9 +223,7 @@ require("packer").startup {function(use)
       vim.g.nvim_tree_auto_open = 0
       vim.g.nvim_tree_disable_netrw = 0
       local map = vim.api.nvim_set_keymap
-      map("n", "<M-p>", ":NvimTreeToggle<cr>", {noremap = true})
-      map("n", "<M-P>", ":NvimTreeRefresh<cr>", {noremap = true})
-      map("n", "<M-7>", ":NvimTreeFindFile<cr>", {noremap = true})
+      map("n", "<C-p>", ":NvimTreeToggle<cr>", {noremap = true})
     end
   }
 
@@ -274,7 +273,7 @@ require("packer").startup {function(use)
       vim.g.seoul256_background = 235
     end
   }
-  vim.cmd "colorscheme zenburn"
+  vim.cmd "colorscheme seoul256"
 
   -- coloring of colornames
   use {"rrethy/vim-hexokinase",
@@ -432,7 +431,7 @@ use {"nvim-treesitter/nvim-treesitter",
       map("n", "<M-f>", "<cmd>Telescope git_files<cr>", opts )
       map("n", "<M-w>", "<cmd>Telescope live_grep<cr>", opts )
       map("n", "<M-b>", "<cmd>Telescope buffers<cr>", opts )
-      -- map("n", "<M-y>", "<cmd>Telescope filetypes<cr>", opts )
+      map("n", "<M-y>", "<cmd>Telescope filetypes<cr>", opts )
       map("n", "<F3>", "<cmd>Telescope colorscheme<cr>", opts )
       map("n", "<leader>la", "<cmd>Telescope lsp_code_actions<cr>", opts )
       map("v", "<leader>la", "<cmd>Telescope lsp_range_code_actions<cr>", opts )
@@ -574,7 +573,7 @@ use {"nvim-treesitter/nvim-treesitter",
     }
       local map = vim.api.nvim_set_keymap
       local opts = { noremap = true }
-      map("n", "<F5>", ":Trouble<cr>", opts)
+      map("n", "<C-t>", ":Trouble<cr>", opts)
   end
   }
 
@@ -587,9 +586,8 @@ use {"nvim-treesitter/nvim-treesitter",
         -- keywords recognized as todo comments
         keywords = {
           ERROR = { icon = " ", color = "error" },
-          FIX = { icon = " ", color = "warning" },
+          WIP = { icon = " ", color = "warning" },
           TODO = { icon = " ", color = "warning" },
-          FEAT = { icon = " ", color = "info" },
           PERF = { icon = " ", color = "info" },
           MAYBE = { icon = " ", color = "default" },
           IDEA = { icon = " ", color = "hint" },
@@ -607,7 +605,7 @@ use {"nvim-treesitter/nvim-treesitter",
       }
       local map = vim.api.nvim_set_keymap
       local opts = { noremap = true }
-      map("n", "<C-t>", ":TodoTrouble<cr>", opts)
+      map("n", "<F5>", ":TodoTrouble<cr>", opts)
     end
   }
 
@@ -702,13 +700,13 @@ use {"nvim-treesitter/nvim-treesitter",
           rootMarkers = { ".git/" },
           languages = {
             python = {
-              -- {
-              --   lintCommand = "flake8 --max-line-length 88 --format '%(path)s:%(row)d:%(col)d: %(code)s %(code)s %(text)s' --stdin-display-name ${INPUT} -",
-              --   lintStdin = true,
-              --   lintIgnoreExitCode = true,
-              --   lintFormats = {"%f:%l:%c: %t%n%n%n %m"},
-              --   lintSource = "flake8"
-              -- },
+              {
+                lintCommand = "flake8 --max-line-length 88 --format '%(path)s:%(row)d:%(col)d: %(code)s %(code)s %(text)s' --stdin-display-name ${INPUT} -",
+                lintStdin = true,
+                lintIgnoreExitCode = true,
+                lintFormats = {"%f:%l:%c: %t%n%n%n %m"},
+                lintSource = "flake8"
+              },
               {
                 formatCommand = "isort --stdout --profile black --force-single-line-imports -",
                 formatStdin = true
