@@ -137,10 +137,10 @@ map("n", "<M-K>", ":bnext<cr>", { noremap = true })
 map("n", "<M-H>", ":tabprev<cr>", { noremap = true })
 map("n", "<M-L>", ":tabnext<cr>", { noremap = true })
 -- resize windows with hjkl
-map("n", "<C-h>", "<C-w><", { noremap = true })
-map("n", "<C-j>", "<C-w>-", { noremap = true })
-map("n", "<C-k>", "<C-w>+", { noremap = true })
-map("n", "<C-l>", "<C-w>>", { noremap = true })
+map("n", "<C-h>", "5<C-w><", { noremap = true })
+map("n", "<C-j>", "5<C-w>-", { noremap = true })
+map("n", "<C-k>", "5<C-w>+", { noremap = true })
+map("n", "<C-l>", "5<C-w>>", { noremap = true })
 -- quickfix window
 map("n", "<C-n>", ":cp<cr>", { noremap = true })
 map("n", "<C-m>", ":cn<cr>", { noremap = true })
@@ -181,6 +181,8 @@ require("packer").startup {function(use)
     config = function()
       local map = vim.api.nvim_set_keymap
       map("", "<C-g>", ":vertical Git<cr>:vertical resize 60<cr>", {})
+      map("", "<leader>gg", ":vertical Gclog!<cr>:vertical resize 60<cr>", {})
+      map("", "<leader>gc", ":vertical 0Gclog!<cr>:vertical resize 60<cr>", {})
     end
   }
 
@@ -273,7 +275,7 @@ require("packer").startup {function(use)
       vim.g.seoul256_background = 235
     end
   }
-  vim.cmd "colorscheme seoul256"
+  vim.cmd "colorscheme jellybeans"
 
   -- coloring of colornames
   use {"rrethy/vim-hexokinase",
@@ -324,13 +326,6 @@ require("packer").startup {function(use)
       map("n", "<M-j>", ":TmuxNavigateDown<cr>", opts)
       map("n", "<M-k>", ":TmuxNavigateUp<cr>", opts)
       map("n", "<M-l>", ":TmuxNavigateRight<cr>", opts)
-    end
-  }
-
-  use {"dkarter/bullets.vim",
-    config = function()
-      vim.g.bullets_outline_levels = {"ROM", "ABC", "num", "abc", "rom", "std-", "std*"}
-      vim.g.bullets_enabled_file_types = {"markdown", "text", "gitcommit"}
     end
   }
 
@@ -430,6 +425,7 @@ use {"nvim-treesitter/nvim-treesitter",
       map("n", "<M-F>", "<cmd>Telescope find_files<cr>", opts )
       map("n", "<M-f>", "<cmd>Telescope git_files<cr>", opts )
       map("n", "<M-w>", "<cmd>Telescope live_grep<cr>", opts )
+      map("n", "<M-W>", "<cmd>Telescope grep_string<cr>", opts )
       map("n", "<M-b>", "<cmd>Telescope buffers<cr>", opts )
       map("n", "<M-y>", "<cmd>Telescope filetypes<cr>", opts )
       map("n", "<F3>", "<cmd>Telescope colorscheme<cr>", opts )
@@ -437,9 +433,6 @@ use {"nvim-treesitter/nvim-treesitter",
       map("v", "<leader>la", "<cmd>Telescope lsp_range_code_actions<cr>", opts )
       map("n", "<leader>ld", "<cmd>Telescope lsp_document_diagnostics<cr>", opts )
       map("n", "<leader>lD", "<cmd>Telescope lsp_workspace_diagnostics<cr>", opts )
-      map("n", "<leader>gg", "<cmd>Telescope git_status<cr>", opts )
-      map("n", "<leader>gc", "<cmd>Telescope git_commits<cr>", opts )
-      map("n", "<leader>gC", "<cmd>Telescope git_bcommits<cr>", opts )
       map("n", "<F12>", "<cmd>Telescope<cr>", opts )
       require("telescope").setup{
         defaults = {
@@ -573,7 +566,7 @@ use {"nvim-treesitter/nvim-treesitter",
     }
       local map = vim.api.nvim_set_keymap
       local opts = { noremap = true }
-      map("n", "<C-t>", ":Trouble<cr>", opts)
+      map("n", "<C-t>", ":Trouble lsp_workspace_diagnostics<cr>", opts)
   end
   }
 
@@ -589,6 +582,7 @@ use {"nvim-treesitter/nvim-treesitter",
           WIP = { icon = " ", color = "warning" },
           TODO = { icon = " ", color = "warning" },
           PERF = { icon = " ", color = "info" },
+          TEST = { icon = " ", color = "info" },
           MAYBE = { icon = " ", color = "default" },
           IDEA = { icon = " ", color = "hint" },
         },
