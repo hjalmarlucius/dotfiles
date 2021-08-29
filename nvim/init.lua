@@ -51,7 +51,7 @@ opt.shiftwidth = 2                  -- Size of an indent
 -- search
 opt.ignorecase = true               -- Ignore case
 opt.smartcase = true                -- Do not ignore case with capitals
-opt.wildmode = {"list:longest"}     -- Command-line completion mode
+opt.wildmode = {"full"}     -- Command-line completion mode
 opt.wildignorecase = true
 opt.wildignore = opt.wildignore + {"*swp", "*.class", "*.pyc", "*.png", "*.jpg", "*.gif", "*.zip", "*/tmp/*", "*.o", ".obj", "*.so"}
 
@@ -84,8 +84,8 @@ local cmd = vim.cmd
 
 vim.api.nvim_command [[augroup MYAU]]
 vim.api.nvim_command [[autocmd!]]
-vim.api.nvim_command [[autocmd BufWritePre * %s/\s\+$//e]]
-vim.api.nvim_command [[autocmd BufWritePre *.py silent! execute ':Black']]
+vim.api.nvim_command [[autocmd BufWritePost * %s/\s\+$//e]]
+vim.api.nvim_command [[autocmd BufWritePost *.py silent! execute ':Black']]
 vim.api.nvim_command [[autocmd BufReadPost quickfix nmap <buffer> <cr> <cr>]]
 vim.api.nvim_command [[autocmd TextYankPost * "lua vim.highlight.on_yank {on_visual = false}"]]
 vim.api.nvim_command [[augroup END]]
@@ -147,7 +147,7 @@ map("n", "<C-m>", ":cn<cr>", { noremap = true })
 -- remove buffer
 map("n", "<M-d>", ":bprev<bar>:bd#<cr>", { noremap = true })
 map("n", "<M-D>", ":bprev<bar>:bd!#<cr>", { noremap = true })
-map("n", "<F9>", ":checkt", { noremap = true })
+map("n", "<F9>", ":checkt<cr>", { noremap = true })
 
 -- ----------------------------------------
 -- PACKER
@@ -181,8 +181,8 @@ require("packer").startup {function(use)
     config = function()
       local map = vim.api.nvim_set_keymap
       map("", "<C-g>", ":vertical Git<cr>:vertical resize 60<cr>", {})
-      map("", "<leader>gg", ":vertical Gclog!<cr>:vertical resize 60<cr>", {})
-      map("", "<leader>gc", ":vertical 0Gclog!<cr>:vertical resize 60<cr>", {})
+      map("", "<leader>gg", ":vertical Gclog!<cr>", {})
+      map("", "<leader>gc", ":vertical 0Gclog!<cr>", {})
     end
   }
 
@@ -640,6 +640,14 @@ use {"nvim-treesitter/nvim-treesitter",
           end
           if client.resolved_capabilities.rename then
             bmap(bufnr, "n", "<M-r>", ":Lspsaga rename<cr>", opts)
+          end
+          if client.resolved_capabilities.document_formatting or client.resolved_capabilities.document_range_formatting then
+            vim.api.nvim_command [[augroup Format]]
+            vim.api.nvim_command [[autocmd! * <buffer>]]
+            vim.api.nvim_command [[autocmd BufWritePost *.py lua vim.lsp.buf.formatting_seq_sync()]]
+            vim.api.nvim_command [[autocmd BufWritePost *.md lua vim.lsp.buf.formatting_seq_sync()]]
+            vim.api.nvim_command [[autocmd BufWritePost *.yaml lua vim.lsp.buf.formatting_seq_sync()]]
+            vim.api.nvim_command [[augroup END]]
           end
         end
       use_saga_diagnostic_sign = true
