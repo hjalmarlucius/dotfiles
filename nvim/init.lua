@@ -402,7 +402,11 @@ require("packer").startup {function(use)
     end
   }
 
-  use {"psf/black"}
+  use {"psf/black",
+    config = function()
+      vim.g.black_fast = 1
+    end
+    }
 
 -- treesitter
 use {"nvim-treesitter/nvim-treesitter",
@@ -536,7 +540,7 @@ use {"nvim-treesitter/nvim-treesitter",
       height = 10, -- height of the trouble list when position is top or bottom
       width = 60, -- width of the list when position is left or right
       icons = true, -- use devicons for filenames
-      mode = "lsp_workspace_diagnostics", -- "lsp_workspace_diagnostics", "lsp_document_diagnostics", "quickfix", "lsp_references", "loclist"
+      mode = "quickfix", -- "lsp_workspace_diagnostics", "lsp_document_diagnostics", "quickfix", "lsp_references", "loclist"
       fold_open = "", -- icon used for open folds
       fold_closed = "", -- icon used for closed folds
       action_keys = { -- key mappings for actions in the trouble list
@@ -567,6 +571,9 @@ use {"nvim-treesitter/nvim-treesitter",
       local map = vim.api.nvim_set_keymap
       local opts = { noremap = true }
       map("n", "<C-t>", ":Trouble lsp_workspace_diagnostics<cr>", opts)
+      map("n", "<F6>", ":Trouble quickfix<cr>", opts)
+      map("n", "<F7>", ":Trouble loclist<cr>", opts)
+      map("n", "<F8>", ":Trouble lsp_references<cr>", opts)
   end
   }
 

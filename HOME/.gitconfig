@@ -2,6 +2,7 @@
   filemode = false
   pager = diff-so-fancy | less --tabs=4 -RFX
   autorcrlf = true
+  editor = nvim
 [user]
   name = Henrik Bakken
   email = bakken.henrik@gmail.com
