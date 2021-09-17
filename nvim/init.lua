@@ -275,7 +275,7 @@ require("packer").startup {function(use)
       vim.g.seoul256_background = 235
     end
   }
-  vim.cmd "colorscheme jellybeans"
+  vim.cmd "colorscheme OceanicNext"
 
   -- coloring of colornames
   use {"rrethy/vim-hexokinase",
@@ -682,7 +682,35 @@ use {"nvim-treesitter/nvim-treesitter",
       nvim_lsp.tsserver.setup{}
       -- sudo npm install -g yaml-language-server
       nvim_lsp.yamlls.setup{
-        on_attach = on_attach
+        on_attach = on_attach,
+        settings = {
+          yaml = {
+            customTags = {
+              "!ChildContainer mapping",
+              "!ChildLink mapping",
+              "!ConstantTensor mapping",
+              "!ConstantValue mapping",
+              "!Dtype scalar",
+              "!DtypeTensor scalar",
+              "!ImportClass scalar",
+              "!MarkovArray mapping",
+              "!MarkovTensor mapping",
+              "!ReferenceContainer mapping",
+              "!ReferenceLink mapping",
+              "!SeriesArray mapping",
+              "!SeriesArrayRaw mapping",
+              "!SeriesTensor mapping",
+              "!SeriesTensorRaw mapping",
+              "!UDFfactory scalar",
+              "!UDFnu scalar",
+              "!UDFvalidator scalar",
+              "!Unit scalar",
+              "!UserClass mapping",
+              "!UserInstance mapping",
+              "!getattr mapping",
+            }
+          }
+        }
       }
       -- sudo npm install -g pyright
       nvim_lsp.pyright.setup{
@@ -711,10 +739,10 @@ use {"nvim-treesitter/nvim-treesitter",
             python = {
               {
                 lintCommand = "flake8 --max-line-length 88 --format '%(path)s:%(row)d:%(col)d: %(code)s %(code)s %(text)s' --stdin-display-name ${INPUT} -",
+                lintFormats = {"%f:%l:%c: %t%n%n%n %m"},
+                lintSource = "flake8",
                 lintStdin = true,
                 lintIgnoreExitCode = true,
-                lintFormats = {"%f:%l:%c: %t%n%n%n %m"},
-                lintSource = "flake8"
               },
               {
                 formatCommand = "isort --stdout --profile black --force-single-line-imports -",

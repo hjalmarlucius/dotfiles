@@ -24,3 +24,6 @@ text/x-python=nvim.desktop
 application/xml=nvim.desktop
 application/octet-stream=nvim.desktop
 x-scheme-handler/msteams=teams.desktop
+
+[Added Associations]
+application/pdf=vivaldi-stable.desktop;

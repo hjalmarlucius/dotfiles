@@ -36,6 +36,7 @@
 * matplotlib stuff `pip install matplotlib seaborn matplotlib-label-lines ipympl qbstyles`
 * other plotting `pip install plotly ggplot`
 * `pip install tensorboard torchtext pytorch-lightning torchvision`
+* `poetry completions fish > ~/.config/fish/completions/poetry.fish`
 
 # settings
 * set shell to fish via `chsh`
