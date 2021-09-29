@@ -76,6 +76,8 @@ opt.clipboard = opt.clipboard + {"unnamedplus"}
 opt.foldenable = false
 opt.foldmethod = "expr"
 
+opt.completeopt = "menu,menuone,noselect"
+
 -- ----------------------------------------
 -- AUTOCOMMANDS
 -- ----------------------------------------
@@ -221,9 +223,11 @@ require("packer").startup {function(use)
   -- folder tree
   use {"kyazdani42/nvim-tree.lua",
     requires = {"kyazdani42/nvim-web-devicons"},
+    require("nvim-tree").setup{
+      disable_netrw = false,
+      auto_close=true,
+    },
     config = function()
-      vim.g.nvim_tree_auto_open = 0
-      vim.g.nvim_tree_disable_netrw = 0
       local map = vim.api.nvim_set_keymap
       map("n", "<C-p>", ":NvimTreeToggle<cr>", {noremap = true})
     end
@@ -473,61 +477,42 @@ use {"nvim-treesitter/nvim-treesitter",
       }
     end }
 
-  -- debugging
-  -- use {"mfussenegger/nvim-dap-python",
-  --   requires = {"mfussenegger/nvim-dap"},
-  --   config = function()
-  --     require("dap-python").setup("/usr/bin/python")
-  --     local map = vim.api.nvim_set_keymap
-  --     local opts = { noremap = true, silent = true }
-  --     map("n", "<F5>", [[:lua require("dap").continue()<cr>]], opts)
-  --     map("n", "<F10>", [[:lua require("dap").step_over()<cr>]], opts)
-  --     map("n", "<F11>", [[:lua require("dap").step_into()<cr>]], opts)
-  --     map("n", "<F12>", [[:lua require("dap").step_out()<cr>]], opts)
-  --     map("n", "<F6>", [[:lua require("dap").toggle_breakpoint()<cr>]], opts)
-  --     map("n", "<F7>", [[:lua require("dap").set_breakpoint(vim.fn.input('Breakpoint condition: '))<cr>]], opts)
-  --     map("n", "<S-F7>", [[:lua require("dap").set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<cr>]], opts)
-  --     map("n", "<F4>", [[:lua require("dap").repl.open()<cr>]], opts)
-  --     map("n", "<leader>vl", [[:lua require("dap").repl.run_last()<cr>`]], opts)
-  --     map("n", "<leader>vt", [[:lua require('dap-python').test_method()<cr>]], opts)
-  --     map("v", "<leader>vs", [[<ESC>:lua require('dap-python').debug_selection()<cr>]], opts)
-  --   end
-  -- }
-
-  -- use {"nvim-telescope/telescope-dap.nvim",
-  --   requires = {"mfussenegger/nvim-dap", "nvim-telescope/telescope.nvim"},
-  --   config = function()
-  --     require("telescope").load_extension("dap")
-  --     local map = vim.api.nvim_set_keymap
-  --     local opts = { noremap = true, silent = true }
-  --     map("n", "<M-1>", [[:lua require("telescope").extensions.dap.commands{}<cr>]], opts)
-  --     map("n", "<M-2>", [[:lua require("telescope").extensions.dap.configurations{}<cr>]], opts)
-  --     map("n", "<M-3>", [[:lua require("telescope").extensions.dap.list_breakpoints{}<cr>]], opts)
-  --     map("n", "<M-4>", [[:lua require("telescope").extensions.dap.variables{}<cr>]], opts)
-  --   end
-  -- }
-
   -- autocompletion
-  use {"hrsh7th/nvim-compe",
+  use {"hrsh7th/nvim-cmp",
+    requires = {
+      { "hrsh7th/cmp-nvim-lsp", after = "nvim-cmp" },
+      { "hrsh7th/cmp-path", after = "nvim-cmp" },
+      { "hrsh7th/cmp-buffer", after = "nvim-cmp" },
+      { "hrsh7th/cmp-calc", after = "nvim-cmp" },
+    },
     config = function()
-      vim.opt.completeopt = "menuone,noselect"
-      require("compe").setup {
-        source = {
-          nvim_lsp = true,
-          path = true,
-          buffer = true,
-          calc = true,
-          nvim_lua = true,
+      local cmp = require("cmp")
+      cmp.setup({
+        mapping = {
+          ["<C-d>"] = cmp.mapping.scroll_docs(-4),
+          ["<C-f>"] = cmp.mapping.scroll_docs(4),
+          ["<C-Space>"] = cmp.mapping.complete(),
+          ["<C-e>"] = cmp.mapping.close(),
+          ["<cr>"] = cmp.mapping.confirm({ select = true }),
         },
-      }
-      local map = vim.api.nvim_set_keymap
-      local opts = { noremap = true, silent = true, expr = true }
-      map("i", "<C-space>", [[compe#complete()]], opts)
-      map("i", "<cr>", [[compe#confirm("<cr>")]], opts)
-      map("i", "<C-e>", [[compe#close("<C-e>")]], opts)
-      -- TODO don't seem useful?
-      -- map("i", "<C-f>", [[compe#scroll({ "delta": +4 })]], opts)
-      -- map("i", "<C-b>", [[compe#scroll({ "delta": -4 })]], opts)
+        sources = {
+          { name = "nvim_lsp" },
+          { name = "buffer" },
+          { name = "path" },
+          -- { name = "nvim_lua" },
+        },
+        sorting = {
+          comparators = {
+            cmp.config.compare.exact,
+            cmp.config.compare.offset,
+            cmp.config.compare.score,
+            cmp.config.compare.sort_text,
+            cmp.config.compare.length,
+            cmp.config.compare.order,
+            cmp.config.compare.kind,
+          }
+        },
+      })
     end
   }
 
@@ -718,7 +703,7 @@ use {"nvim-treesitter/nvim-treesitter",
             analysis = {
               diagnosticMode = "workspace",
               logLevel = "Warning",
-              typeCheckingMode = "strict",
+              typeCheckingMode = "basic",
             }
           }
         }
