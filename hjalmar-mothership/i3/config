@@ -66,8 +66,8 @@ bindsym $mod+space focus mode_toggle
 bindsym $mod+Shift+space floating toggle
 bindsym $mod+Ctrl+space sticky toggle
 
-bindsym $mod+Shift+c exec picom-trans -c -10
-bindsym $mod+c exec picom-trans -c +10
+bindsym $mod+Shift+p exec picom-trans -c -10
+bindsym $mod+p exec picom-trans -c +10
 
 bindsym $mod+minus scratchpad show
 bindsym $mod+Shift+minus move scratchpad
@@ -112,6 +112,8 @@ bindsym $mod+Shift+F12 exec "xrandr --output DP-0 --mode 2560x1440 --primary"
 bindsym $mod+0 mode "$mode_system"
 bindsym $mod+z mode "resize"
 bindsym $mod+g mode "$mode_gaps"
+bindsym $mod+c exec qalculate-gtk
+bindsym $mod+u exec zulip
 
 # Workspace names
 set $ws1 "1"
@@ -172,6 +174,8 @@ bindsym $mod+Shift+9 move container to workspace $ws9; workspace $ws9
 for_window [class=".*"] border pixel 3
 for_window [class="GParted"] floating enable border normal
 for_window [class="Lightdm-settings"] floating enable
+for_window [class="Qalculate-gtk"] floating enable sticky enable border normal
+for_window [class="Zulip"] floating enable sticky enable border normal
 for_window [class="Lxappearance"] floating enable sticky enable border normal
 for_window [class="Manjaro-hello"] floating enable
 for_window [class="Manjaro Settings Manager"] floating enable border normal
