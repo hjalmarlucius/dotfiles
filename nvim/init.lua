@@ -124,6 +124,8 @@ map("v", "v", "<esc>", { noremap = true })
 map("v", "<Tab>", ">gv", { noremap = true })
 map("v", "<S-Tab>", "<gv", { noremap = true })
 map("n", "<leader>o", "m`o<Esc>``", { noremap = true })  -- Insert a newline in normal mode
+-- repeat and next
+map("n", "\\", "n.", { noremap = true })
 
 -- WINDOWS / BUFFERS
 -- make splits and tabs
@@ -507,9 +509,9 @@ use {"nvim-treesitter/nvim-treesitter",
             cmp.config.compare.offset,
             cmp.config.compare.score,
             cmp.config.compare.sort_text,
+            cmp.config.compare.kind,
             cmp.config.compare.length,
             cmp.config.compare.order,
-            cmp.config.compare.kind,
           }
         },
       })
