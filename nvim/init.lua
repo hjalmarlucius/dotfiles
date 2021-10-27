@@ -76,7 +76,7 @@ opt.clipboard = opt.clipboard + {"unnamedplus"}
 opt.foldenable = false
 opt.foldmethod = "expr"
 
-opt.completeopt = "menu,menuone,noselect"
+opt.completeopt = "menu,menuone,noinsert"
 
 -- ----------------------------------------
 -- AUTOCOMMANDS
@@ -175,7 +175,7 @@ require("packer").startup {function(use)
   use {"farmergreg/vim-lastplace"}          -- keep location upon reopening
 
   -- smooth scrolling
-  use {"psliwka/vim-smoothie"}
+  -- use {"psliwka/vim-smoothie"}
 
   -- tables
   use {"dhruvasagar/vim-table-mode"}
@@ -491,16 +491,22 @@ use {"nvim-treesitter/nvim-treesitter",
       local cmp = require("cmp")
       cmp.setup({
         mapping = {
-          ["<C-d>"] = cmp.mapping.scroll_docs(-4),
-          ["<C-f>"] = cmp.mapping.scroll_docs(4),
-          ["<C-Space>"] = cmp.mapping.complete(),
-          ["<C-e>"] = cmp.mapping.close(),
-          ["<cr>"] = cmp.mapping.confirm({ select = true }),
+          ['<C-n>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+          ['<C-p>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+          ['<tab>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+          ['<S-tab>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+          ['<Down>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
+          ['<Up>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
+          ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+          ['<C-f>'] = cmp.mapping.scroll_docs(4),
+          ['<C-Space>'] = cmp.mapping.complete(),
+          ['<esc>'] = cmp.mapping.close(),
+          ['<cr>'] = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true, })
         },
         sources = {
           { name = "nvim_lsp" },
           { name = "buffer" },
-          { name = "path" },
+          -- { name = "path" },
           -- { name = "nvim_lua" },
         },
         sorting = {
@@ -597,8 +603,7 @@ use {"nvim-treesitter/nvim-treesitter",
     end
   }
 
-  use {"glepnir/lspsaga.nvim",
-    requires = {"neovim/nvim-lspconfig"},
+  use {"neovim/nvim-lspconfig",
     run = ":TSUpdate",
     config = function()
         -- see https://github.com/lukas-reineke/dotfiles/blob/master/vim/lua/lsp/init.lua
@@ -619,21 +624,18 @@ use {"nvim-treesitter/nvim-treesitter",
           -- popups
           bmap(bufnr, "n", "<M-x>", "<cmd>lua vim.lsp.buf.signature_help()<cr>", opts)
           bmap(bufnr, "i", "<M-x>", "<cmd>lua vim.lsp.buf.signature_help()<cr>", opts)
-          bmap(bufnr, "n", "<C-f>", "<cmd>lua require('lspsaga.action').smart_scroll_with_saga(1)<cr>", opts)
-          bmap(bufnr, "n", "<C-b>", "<cmd>lua require('lspsaga.action').smart_scroll_with_saga(-1)<cr>", opts)
           -- other
           if client.resolved_capabilities.goto_definition then
-            bmap(bufnr, "n", "gd", ":Lspsaga preview_definition<cr>", opts)
-            bmap(bufnr, "n", "gD", ":lua vim.lsp.buf.definition()<cr>", opts)
+            bmap(bufnr, "n", "gd", ":lua vim.lsp.buf.definition()<cr>", opts)
           end
           if client.resolved_capabilities.find_references then
-            bmap(bufnr, "n", "gr", ":Lspsaga lsp_finder<cr>", opts)
+            bmap(bufnr, "n", "gr", "<cmd>lua vim.lsp.buf.references()<cr>", opts)
           end
           if client.resolved_capabilities.hover then
-            bmap(bufnr, "n", "K", ":Lspsaga hover_doc<cr>", opts)
+            bmap(bufnr, "n", "K", "<cmd>lua vim.lsp.buf.hover()<cr>", opts)
           end
           if client.resolved_capabilities.rename then
-            bmap(bufnr, "n", "<M-r>", ":Lspsaga rename<cr>", opts)
+            bmap(bufnr, "n", "<M-r>", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
           end
           if client.resolved_capabilities.document_formatting or client.resolved_capabilities.document_range_formatting then
             vim.api.nvim_command [[augroup Format]]
@@ -644,26 +646,6 @@ use {"nvim-treesitter/nvim-treesitter",
             vim.api.nvim_command [[augroup END]]
           end
         end
-      use_saga_diagnostic_sign = true
-      require("lspsaga").init_lsp_saga {
-        max_preview_lines = 20,
-        finder_action_keys = {
-          quit = {"<esc>", "C-c"},
-          open = "<cr>",
-          vsplit = "v",
-          split = "s",
-          scroll_down = "<C-f>",
-          scroll_up = "<C-b>"
-        },
-        code_action_keys = {
-          quit = {"<esc>", "C-c"},
-          exec = "<cr>"
-        },
-        rename_action_keys = {
-          quit = {"<esc>", "C-c"},
-          exec = "<cr>"
-        },
-      }
       local nvim_lsp = require("lspconfig")
       -- sudo npm install -g typescript typescript-language-server
       nvim_lsp.tsserver.setup{}
