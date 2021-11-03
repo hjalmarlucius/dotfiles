@@ -225,11 +225,11 @@ require("packer").startup {function(use)
   -- folder tree
   use {"kyazdani42/nvim-tree.lua",
     requires = {"kyazdani42/nvim-web-devicons"},
-    require("nvim-tree").setup{
-      disable_netrw = false,
-      auto_close=true,
-    },
     config = function()
+      require("nvim-tree").setup{
+        disable_netrw = false,
+        auto_close=true,
+      }
       local map = vim.api.nvim_set_keymap
       map("n", "<C-p>", ":NvimTreeToggle<cr>", {noremap = true})
     end
