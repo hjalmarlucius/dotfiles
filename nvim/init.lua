@@ -451,7 +451,10 @@ require("packer").startup {
 
         use {
             "nvim-telescope/telescope.nvim",
-            requires = {"nvim-lua/popup.nvim", "nvim-lua/plenary.nvim"},
+            requires = {
+                "nvim-lua/popup.nvim", "nvim-lua/plenary.nvim",
+                "nvim-telescope/telescope-live-grep-raw.nvim"
+            },
             config = function()
                 -- TODO grep with regex
                 local map = vim.api.nvim_set_keymap
@@ -459,8 +462,9 @@ require("packer").startup {
                 local actions = require("telescope.actions")
                 map("n", "<M-F>", "<cmd>Telescope find_files<cr>", opts)
                 map("n", "<M-f>", "<cmd>Telescope git_files<cr>", opts)
-                map("n", "<M-w>", "<cmd>Telescope live_grep<cr>", opts)
-                map("n", "<M-W>", "<cmd>Telescope grep_string<cr>", opts)
+                map("n", "<M-w>",
+                    ":lua require('telescope').extensions.live_grep_raw.live_grep_raw()<cr>",
+                    opts)
                 map("n", "<M-b>", "<cmd>Telescope buffers<cr>", opts)
                 map("n", "<M-y>", "<cmd>Telescope filetypes<cr>", opts)
                 map("n", "<F3>", "<cmd>Telescope colorscheme<cr>", opts)
@@ -778,13 +782,13 @@ require("packer").startup {
                                 }, {
                                     formatCommand = "isort --stdout --profile black --force-single-line-imports -",
                                     formatStdin = true
-                                -- }, {
-                                --     lintCommand = "mypy --show-column-numbers --ignore-missing-imports",
-                                --     lintFormats = {
-                                --         "%f=%l:%c: %trror: %m",
-                                --         "%f=%l:%c: %tarning: %m",
-                                --         "%f=%l:%c: %tote: %m"
-                                --     }
+                                    -- }, {
+                                    --     lintCommand = "mypy --show-column-numbers --ignore-missing-imports",
+                                    --     lintFormats = {
+                                    --         "%f=%l:%c: %trror: %m",
+                                    --         "%f=%l:%c: %tarning: %m",
+                                    --         "%f=%l:%c: %tote: %m"
+                                    --     }
                                 }
                             },
                             javascript = {prettier, eslint},
