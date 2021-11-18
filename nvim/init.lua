@@ -296,7 +296,7 @@ require("packer").startup {
             "junegunn/seoul256.vim",
             config = function() vim.g.seoul256_background = 235 end
         }
-        vim.cmd "colorscheme OceanicNext"
+        vim.cmd "colorscheme nord"
 
         -- coloring of colornames
         use {
@@ -526,6 +526,7 @@ require("packer").startup {
             config = function()
                 local cmp = require("cmp")
                 cmp.setup({
+                  experimental = {native_menu = true},
                     mapping = {
                         ['<C-n>'] = cmp.mapping.select_next_item({
                             behavior = cmp.SelectBehavior.Insert
@@ -571,6 +572,8 @@ require("packer").startup {
                 })
             end
         }
+
+        use {"itchyny/vim-qfedit"}
 
         use {
             "folke/trouble.nvim",
@@ -730,15 +733,15 @@ require("packer").startup {
                     settings = {
                         yaml = {
                             customTags = {
+                                "!ChildAccessor mapping",
                                 "!ChildContainer mapping",
-                                "!ChildClassVar mapping",
-                                "!ConstantTensorClassVar mapping",
-                                "!ConstantClassVar mapping", "!Dtype scalar",
+                                "!ConstantAccessor mapping", "!Dtype scalar",
+                                "!ConstantTensorAccessor mapping",
                                 "!DtypeTensor scalar", "!ImportClass scalar",
-                                "!SeriesTensor mapping",
                                 "!ReferenceContainer mapping",
                                 "!ReferenceLink mapping",
-                                "!SeriesTensorClassVar mapping",
+                                "!SeriesTensor mapping",
+                                "!SeriesTensorAccessor mapping",
                                 "!UDFfactory scalar", "!UDFnu scalar",
                                 "!UDFvalidator scalar", "!Unit scalar",
                                 "!UserClass mapping", "!UserInstance mapping",
