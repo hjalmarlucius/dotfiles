@@ -479,11 +479,6 @@ require("packer").startup {
                 map("n", "<F12>", "<cmd>Telescope<cr>", opts)
                 require("telescope").setup {
                     defaults = {
-                        vimgrep_arguments = {
-                            "rg", "--color=never", "--no-heading",
-                            -- "--with-filename",
-                            "--line-number", "--column", "--smart-case"
-                        },
                         mappings = {
                             i = {
                                 ["<esc>"] = actions.close,
@@ -512,6 +507,35 @@ require("packer").startup {
                     }
                 }
             end
+        }
+        -- context
+        use {
+          "romgrk/nvim-treesitter-context",
+          requires = {"nvim-treesitter/nvim-treesitter"},
+          config = function()
+            require("treesitter-context").setup{
+                enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+                throttle = true, -- Throttles plugin updates (may improve performance)
+                max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
+                patterns = {
+                    default = {
+                        "class",
+                        "function",
+                        "method",
+                        -- 'for', -- These won't appear in the context
+                        -- 'while',
+                        -- 'if',
+                        -- 'switch',
+                        -- 'case',
+                    },
+                    -- Example for a specific filetype.
+                    -- If a pattern is missing, *open a PR* so everyone can benefit.
+                    --   rust = {
+                    --       'impl_item',
+                    --   },
+                },
+            }
+          end
         }
 
         -- autocompletion
@@ -742,7 +766,7 @@ require("packer").startup {
                                 "!ReferenceLink mapping",
                                 "!SeriesTensor mapping",
                                 "!SeriesTensorAccessor mapping",
-                                "!UDFfactory scalar", "!UDFnu scalar",
+                                "!UDFtensorfactory scalar", "!UDFnu scalar",
                                 "!UDFvalidator scalar", "!Unit scalar",
                                 "!UserClass mapping", "!UserInstance mapping",
                                 "!getattr mapping"
