@@ -580,19 +580,11 @@ require("packer").startup {
                         })
                     },
                     sources = {
-                        {name = "nvim_lsp"}, {name = "buffer"}
-                        -- { name = "path" },
-                        -- { name = "nvim_lua" },
+                        {name = "nvim_lsp"},
+                        {name = "buffer"},
+                        {name = "path"},
+                        {name = "nvim_lua"},
                     },
-                    sorting = {
-                        comparators = {
-                            cmp.config.compare.exact, cmp.config.compare.offset,
-                            cmp.config.compare.score,
-                            cmp.config.compare.sort_text,
-                            cmp.config.compare.kind, cmp.config.compare.length,
-                            cmp.config.compare.order
-                        }
-                    }
                 })
             end
         }
@@ -781,7 +773,8 @@ require("packer").startup {
                             analysis = {
                                 diagnosticMode = "workspace",
                                 logLevel = "Warning",
-                                typeCheckingMode = "basic"
+                                typeCheckingMode = "basic",
+                                autoImportCompletions = false,
                             }
                         }
                     }
