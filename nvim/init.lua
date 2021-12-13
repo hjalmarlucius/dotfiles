@@ -307,6 +307,9 @@ require("packer").startup {
             end
         }
 
+        -- edgedb syntax highlighting
+        use {"edgedb/edgedb-vim"}
+
         -- flashing cursor on move
         use {
             "danilamihailov/beacon.nvim",
@@ -550,7 +553,7 @@ require("packer").startup {
             config = function()
                 local cmp = require("cmp")
                 cmp.setup({
-                  experimental = {native_menu = true},
+                    experimental = {native_menu = true},
                     mapping = {
                         ['<C-n>'] = cmp.mapping.select_next_item({
                             behavior = cmp.SelectBehavior.Insert
@@ -558,26 +561,32 @@ require("packer").startup {
                         ['<C-p>'] = cmp.mapping.select_prev_item({
                             behavior = cmp.SelectBehavior.Insert
                         }),
-                        ['<tab>'] = cmp.mapping.select_next_item({
-                            behavior = cmp.SelectBehavior.Insert
+                        ['<TAB>'] = cmp.mapping({
+                          c = function(fallback)
+                            if #cmp.core:get_sources() > 0 and not cmp.get_config().experimental.native_menu then
+                              if cmp.visible() then
+                                cmp.select_next_item()
+                              else
+                                cmp.complete()
+                              end
+                            else
+                              fallback()
+                            end
+                          end,
                         }),
-                        ['<S-tab>'] = cmp.mapping.select_prev_item({
-                            behavior = cmp.SelectBehavior.Insert
+                        ['<S-TAB>'] = cmp.mapping({
+                          c = function(fallback)
+                            if #cmp.core:get_sources() > 0 and not cmp.get_config().experimental.native_menu then
+                              if cmp.visible() then
+                                cmp.select_prev_item()
+                              else
+                                cmp.complete()
+                              end
+                            else
+                              fallback()
+                            end
+                          end,
                         }),
-                        ['<Down>'] = cmp.mapping.select_next_item({
-                            behavior = cmp.SelectBehavior.Select
-                        }),
-                        ['<Up>'] = cmp.mapping.select_prev_item({
-                            behavior = cmp.SelectBehavior.Select
-                        }),
-                        ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-                        ['<C-f>'] = cmp.mapping.scroll_docs(4),
-                        ['<C-Space>'] = cmp.mapping.complete(),
-                        ['<esc>'] = cmp.mapping.close(),
-                        ['<cr>'] = cmp.mapping.confirm({
-                            behavior = cmp.ConfirmBehavior.Replace,
-                            select = true
-                        })
                     },
                     sources = {
                         {name = "nvim_lsp"},
