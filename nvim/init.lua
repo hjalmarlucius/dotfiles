@@ -65,7 +65,6 @@ opt.sidescrolloff = 4 -- Columns of context
 opt.showmatch = true -- Show matching brackets / parentheses
 
 -- editing
-opt.joinspaces = false -- No double spaces with join
 opt.timeoutlen = 500 -- How long to wait during key combo
 opt.langmap = "å(,¨),Å{,^},Ø\\;,ø:,æ^,+$"
 opt.clipboard = opt.clipboard + {"unnamedplus"}
@@ -682,16 +681,16 @@ require("packer").startup {
                opts)
           -- jump
           bmap(bufnr, "n", "gl",
-               "<cmd>lua vim.lsp.diagnostic.set_loclist({severity_limit='Warning'})<cr>",
+               "<cmd>lua vim.diagnostic.set_loclist({severity_limit='Warning'})<cr>",
                opts)
           bmap(bufnr, "n", "<M-i>",
-               "<cmd>lua vim.lsp.diagnostic.show_line_diagnostics({show_header=false})<cr>",
+               "<cmd>lua vim.diagnostic.show_line_diagnostics({show_header=false})<cr>",
                opts)
           bmap(bufnr, "n", "<M-m>",
-               "<cmd>lua vim.lsp.diagnostic.goto_next({severity_limit='Warning', popup_opts={show_header=false}})<cr>",
+               "<cmd>lua vim.diagnostic.goto_next({severity_limit='Warning', popup_opts={show_header=false}})<cr>",
                opts)
           bmap(bufnr, "n", "<M-n>",
-               "<cmd>lua vim.lsp.diagnostic.goto_prev({severity_limit='Warning', popup_opts={show_header=false}})<cr>",
+               "<cmd>lua vim.diagnostic.goto_prev({severity_limit='Warning', popup_opts={show_header=false}})<cr>",
                opts)
           -- popups
           bmap(bufnr, "n", "<M-x>", "<cmd>lua vim.lsp.buf.signature_help()<cr>",
