@@ -788,9 +788,6 @@ require("packer").startup {
                         }
                     }
                 }
-                local prettier = {
-                    formatCommand = ([[prettier ${--config-precedence:configPrecedence} ${--tab-width:tabWidth} ${--single-quote:singleQuote} ${--trailing-comma:trailingComma}]])
-                }
                 nvim_lsp.efm.setup {
                     on_attach = on_attach,
                     init_options = {documentFormatting = true},
@@ -820,12 +817,12 @@ require("packer").startup {
                                     --     }
                                 }
                             },
-                            javascript = {prettier, eslint},
-                            yaml = {prettier},
-                            markdown = {prettier},
+                            javascript = {{formatCommand = "prettier"}},
+                            yaml = {{formatCommand = "prettier"}},
+                            markdown = {{formatCommand = "prettier"}},
                             lua = {
                                 {
-                                    formatCommand = "lua-format -i",
+                                    formatCommand = "lua-format -i --tab-width=2 --indent-width=2",
                                     formatStdin = true
                                 }
                             }
