@@ -433,7 +433,7 @@ require("packer").startup {
       "nvim-treesitter/nvim-treesitter",
       run = ":TSUpdate",
       config = function()
-        require("nvim-treesitter.configs").setup {ensure_installed = "all"}
+        require("nvim-treesitter.configs").setup {ensure_installed = "maintained"}
         vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
       end
     }
