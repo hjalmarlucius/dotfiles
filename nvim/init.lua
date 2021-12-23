@@ -433,7 +433,9 @@ require("packer").startup {
       "nvim-treesitter/nvim-treesitter",
       run = ":TSUpdate",
       config = function()
-        require("nvim-treesitter.configs").setup {ensure_installed = "maintained"}
+        require("nvim-treesitter.configs").setup {
+          ensure_installed = "maintained"
+        }
         vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
       end
     }
@@ -459,10 +461,9 @@ require("packer").startup {
         map("n", "<F3>", "<cmd>Telescope colorscheme<cr>", opts)
         map("n", "<leader>la", "<cmd>Telescope lsp_code_actions<cr>", opts)
         map("v", "<leader>la", "<cmd>Telescope lsp_range_code_actions<cr>", opts)
-        map("n", "<leader>ld", "<cmd>Telescope lsp_document_diagnostics<cr>",
+        map("n", "<leader>ld", "<cmd>Telescope document_diagnostics<cr>",
             opts)
-        map("n", "<leader>lD", "<cmd>Telescope lsp_workspace_diagnostics<cr>",
-            opts)
+        map("n", "<leader>lD", "<cmd>Telescope workspace_diagnostics<cr>", opts)
         map("n", "<F12>", "<cmd>Telescope<cr>", opts)
         require("telescope").setup {
           defaults = {
@@ -619,7 +620,7 @@ require("packer").startup {
         }
         local map = vim.api.nvim_set_keymap
         local opts = {noremap = true}
-        map("n", "<C-t>", ":Trouble lsp_workspace_diagnostics<cr>", opts)
+        map("n", "<C-t>", ":Trouble workspace_diagnostics<cr>", opts)
         map("n", "<F6>", ":Trouble quickfix<cr>", opts)
         map("n", "<F7>", ":Trouble loclist<cr>", opts)
         map("n", "<F8>", ":Trouble lsp_references<cr>", opts)
