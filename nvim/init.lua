@@ -461,8 +461,7 @@ require("packer").startup {
         map("n", "<F3>", "<cmd>Telescope colorscheme<cr>", opts)
         map("n", "<leader>la", "<cmd>Telescope lsp_code_actions<cr>", opts)
         map("v", "<leader>la", "<cmd>Telescope lsp_range_code_actions<cr>", opts)
-        map("n", "<leader>ld", "<cmd>Telescope document_diagnostics<cr>",
-            opts)
+        map("n", "<leader>ld", "<cmd>Telescope document_diagnostics<cr>", opts)
         map("n", "<leader>lD", "<cmd>Telescope workspace_diagnostics<cr>", opts)
         map("n", "<F12>", "<cmd>Telescope<cr>", opts)
         require("telescope").setup {
@@ -755,7 +754,8 @@ require("packer").startup {
                 diagnosticMode = "workspace",
                 logLevel = "Warning",
                 typeCheckingMode = "basic",
-                autoImportCompletions = false
+                autoImportCompletions = false,
+                venvPath = ".",
               }
             }
           }
