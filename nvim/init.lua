@@ -13,6 +13,7 @@ opt.updatetime = 300
 opt.timeoutlen = 200
 vim.g.BASH_Ctrl_j = "off"
 vim.g.BASH_Ctrl_l = "off"
+vim.g.python3_host_prog = "/usr/bin/python3.9"
 
 -- looks
 opt.termguicolors = true
@@ -197,8 +198,11 @@ require("packer").startup {
       config = function()
         local map = vim.api.nvim_set_keymap
         map("", "<C-g>", ":vertical Git<cr>:vertical resize 60<cr>", {})
-        map("", "<leader>gg", ":vertical Gclog!<cr>", {})
+        map("", "<leader>gg",
+            ":vertical Git log --oneline --all --graph<cr>:vertical resize 60<cr>",
+            {})
         map("", "<leader>gc", ":vertical 0Gclog!<cr>", {})
+        map("", "<leader>gB", ":Git blame<cr>", {})
       end
     }
 
@@ -755,7 +759,7 @@ require("packer").startup {
                 logLevel = "Warning",
                 typeCheckingMode = "basic",
                 autoImportCompletions = false,
-                venvPath = ".",
+                venvPath = "."
               }
             }
           }
