@@ -198,11 +198,10 @@ require("packer").startup {
       config = function()
         local map = vim.api.nvim_set_keymap
         map("", "<C-g>", ":vertical Git<cr>:vertical resize 60<cr>", {})
-        map("", "<leader>gg",
-            ":vertical Git log --oneline --all --graph<cr>:vertical resize 60<cr>",
+        map("", "<leader>gg", ":vertical Gclog!<cr>:vertical resize -40<cr>", {})
+        map("", "<leader>gG", ":vertical 0Gclog!<cr>:vertical resize -40<cr>",
             {})
-        map("", "<leader>gc", ":vertical 0Gclog!<cr>", {})
-        map("", "<leader>gB", ":Git blame<cr>", {})
+        map("", "<leader>gb", ":Git blame<cr>", {})
       end
     }
 
@@ -233,7 +232,7 @@ require("packer").startup {
             ["n <leader>gx"] = [[<cmd>lua require("gitsigns").reset_hunk()<cr>]],
             ["v <leader>gx"] = [[<cmd>lua require("gitsigns").reset_hunk({vim.fn.line("."), vim.fn.line("v")})<cr>]],
             ["n <leader>gi"] = [[<cmd>lua require("gitsigns").preview_hunk()<cr>]],
-            ["n <leader>gb"] = [[<cmd>lua require("gitsigns").blame_line(true)<cr>]],
+            -- ["n <leader>gb"] = [[<cmd>lua require("gitsigns").blame_line(true)<cr>]],
 
             -- Text objects
             ["o ih"] = [[:<C-U>lua require("gitsigns.actions").select_hunk()<cr>]],
@@ -448,7 +447,7 @@ require("packer").startup {
       "nvim-telescope/telescope.nvim",
       requires = {
         "nvim-lua/popup.nvim", "nvim-lua/plenary.nvim",
-        "nvim-telescope/telescope-live-grep-raw.nvim"
+        "nvim-telescope/telescope-rg.nvim"
       },
       config = function()
         -- TODO grep with regex
@@ -739,17 +738,22 @@ require("packer").startup {
               customTags = {
                 "!ChildAccessor mapping", "!ChildContainer mapping",
                 "!ConstantAccessor mapping", "!Dtype scalar",
-                "!ConstantTensorAccessor mapping", "!DtypeTensor scalar",
+                "!ParameterAccessor mapping", "!DtypeTensor scalar",
                 "!ImportClass scalar", "!ReferenceContainer mapping",
                 "!ReferenceLink mapping", "!SeriesTensor mapping",
-                "!SeriesTensorAccessor mapping", "!UDFtensorfactory scalar",
+                "!SeriesAccessor mapping", "!UDFtensorfactory scalar",
                 "!UDFnu scalar", "!UDFvalidator scalar", "!Unit scalar",
                 "!UserClass mapping", "!UserInstance mapping",
-                "!getattr mapping"
+                "!getattr mapping",
+                "!timedelta mapping"
               }
             }
           }
         }
+        nvim_lsp.html.setup {on_attach = on_attach }
+        nvim_lsp.jsonls.setup {on_attach = on_attach }
+        nvim_lsp.cssls.setup {on_attach = on_attach }
+        nvim_lsp.eslint.setup {on_attach = on_attach }
         nvim_lsp.pyright.setup {
           on_attach = on_attach,
           settings = {
