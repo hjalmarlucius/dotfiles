@@ -198,10 +198,21 @@ require("packer").startup {
       config = function()
         local map = vim.api.nvim_set_keymap
         map("", "<C-g>", ":vertical Git<cr>:vertical resize 60<cr>", {})
-        map("", "<leader>gg", ":vertical Gclog!<cr>:vertical resize -40<cr>", {})
-        map("", "<leader>gG", ":vertical 0Gclog!<cr>:vertical resize -40<cr>",
-            {})
         map("", "<leader>gb", ":Git blame<cr>", {})
+        map("", "<leader>gp", ":Git push<cr>", {})
+        map("", "<leader>gP", ":Git push -f<cr>", {})
+      end
+    }
+
+    -- tig
+    use {
+      "iberianpig/tig-explorer.vim",
+      requires = {"rbgrouleff/bclose.vim"},
+      config = function()
+        vim.g.tig_explorer_use_builtin_term = 0
+        local map = vim.api.nvim_set_keymap
+        map("", "<leader>gg", ":TigOpenProjectRootDir<cr><cr>", {})
+        map("", "<leader>gG", ":TigOpenCurrentFile<cr>", {})
       end
     }
 
@@ -232,7 +243,7 @@ require("packer").startup {
             ["n <leader>gx"] = [[<cmd>lua require("gitsigns").reset_hunk()<cr>]],
             ["v <leader>gx"] = [[<cmd>lua require("gitsigns").reset_hunk({vim.fn.line("."), vim.fn.line("v")})<cr>]],
             ["n <leader>gi"] = [[<cmd>lua require("gitsigns").preview_hunk()<cr>]],
-            -- ["n <leader>gb"] = [[<cmd>lua require("gitsigns").blame_line(true)<cr>]],
+            ["n <leader>gB"] = [[<cmd>lua require("gitsigns").blame_line(true)<cr>]],
 
             -- Text objects
             ["o ih"] = [[:<C-U>lua require("gitsigns.actions").select_hunk()<cr>]],
@@ -297,9 +308,7 @@ require("packer").startup {
     use {
       "rrethy/vim-hexokinase",
       run = "cd /home/hjalmarlucius/.local/share/nvim/site/pack/packer/start/vim-hexokinase && make hexokinase",
-      config = function()
-        vim.g.Hexokinase_highlighters = {"backgroundfull"}
-      end
+      config = function() vim.g.Hexokinase_highlighters = {"virtual"} end
     }
 
     -- edgedb syntax highlighting
@@ -528,6 +537,7 @@ require("packer").startup {
     use {
       "hrsh7th/nvim-cmp",
       requires = {
+        {"L3MON4D3/LuaSnip", after = "nvim-cmp"},
         {"hrsh7th/cmp-nvim-lsp", after = "nvim-cmp"},
         {"hrsh7th/cmp-path", after = "nvim-cmp"},
         {"hrsh7th/cmp-buffer", after = "nvim-cmp"},
@@ -536,6 +546,11 @@ require("packer").startup {
       config = function()
         local cmp = require("cmp")
         cmp.setup({
+          snippet = {
+            expand = function(args)
+              require('luasnip').lsp_expand(args.body)
+            end
+          },
           experimental = {native_menu = true},
           mapping = {
             ['<C-n>'] = cmp.mapping.select_next_item({
@@ -574,8 +589,8 @@ require("packer").startup {
             })
           },
           sources = {
-            {name = "nvim_lsp"}, {name = "buffer"}, {name = "path"},
-            {name = "nvim_lua"}
+            {name = "luasnip"}, {name = "nvim_lsp"}, {name = "buffer"},
+            {name = "path"}, {name = "nvim_lua"}
           }
         })
       end
@@ -715,6 +730,8 @@ require("packer").startup {
           end
           if client.resolved_capabilities.document_formatting or
               client.resolved_capabilities.document_range_formatting then
+            bmap(bufnr, "n", "<leader>f",
+                 "<cmd>lua vim.lsp.buf.formatting()<cr>", opts)
             vim.api.nvim_command [[augroup Format]]
             vim.api.nvim_command [[autocmd! * <buffer>]]
             vim.api
@@ -744,16 +761,20 @@ require("packer").startup {
                 "!SeriesAccessor mapping", "!UDFtensorfactory scalar",
                 "!UDFnu scalar", "!UDFvalidator scalar", "!Unit scalar",
                 "!UserClass mapping", "!UserInstance mapping",
-                "!getattr mapping",
-                "!timedelta mapping"
+                "!getattr mapping", "!timedelta mapping"
               }
             }
           }
         }
-        nvim_lsp.html.setup {on_attach = on_attach }
-        nvim_lsp.jsonls.setup {on_attach = on_attach }
-        nvim_lsp.cssls.setup {on_attach = on_attach }
-        nvim_lsp.eslint.setup {on_attach = on_attach }
+        local capabilities = vim.lsp.protocol.make_client_capabilities()
+        capabilities.textDocument.completion.completionItem.snippetSupport = true
+        nvim_lsp.html.setup {on_attach = on_attach, capabilities = capabilities}
+        nvim_lsp.jsonls.setup {
+          on_attach = on_attach,
+          capabilities = capabilities
+        }
+        nvim_lsp.cssls.setup {on_attach = on_attach, capbilities = capabilities}
+        nvim_lsp.eslint.setup {on_attach = on_attach}
         nvim_lsp.pyright.setup {
           on_attach = on_attach,
           settings = {
