@@ -155,7 +155,7 @@ map("n", "<C-k>", "5<C-w>+", {noremap = true})
 map("n", "<C-l>", "5<C-w>>", {noremap = true})
 -- quickfix window
 map("n", "<C-n>", ":cp<cr>", {noremap = true})
-map("n", "<C-m>", ":cn<cr>", {noremap = true})
+map("n", "<C-p>", ":cn<cr>", {noremap = true})
 -- remove buffer
 map("n", "<M-d>", ":bprev<bar>:bd#<cr>", {noremap = true})
 map("n", "<M-D>", ":bprev<bar>:bd!#<cr>", {noremap = true})
@@ -261,7 +261,7 @@ require("packer").startup {
       config = function()
         require("nvim-tree").setup {disable_netrw = false, auto_close = true}
         local map = vim.api.nvim_set_keymap
-        map("n", "<C-p>", ":NvimTreeToggle<cr>", {noremap = true})
+        map("n", "<C-t>", ":NvimTreeToggle<cr>", {noremap = true})
       end
     }
 
@@ -533,13 +533,13 @@ require("packer").startup {
       end
     }
 
+    use {"L3MON4D3/LuaSnip"}
+
     -- autocompletion
     use {
       "hrsh7th/nvim-cmp",
       requires = {
-        {"L3MON4D3/LuaSnip", after = "nvim-cmp"},
-        {"hrsh7th/cmp-nvim-lsp", after = "nvim-cmp"},
-        {"hrsh7th/cmp-path", after = "nvim-cmp"},
+        {"L3MON4D3/LuaSnip"}, {"hrsh7th/cmp-path", after = "nvim-cmp"},
         {"hrsh7th/cmp-buffer", after = "nvim-cmp"},
         {"hrsh7th/cmp-calc", after = "nvim-cmp"}
       },
@@ -551,45 +551,8 @@ require("packer").startup {
               require('luasnip').lsp_expand(args.body)
             end
           },
-          experimental = {native_menu = true},
-          mapping = {
-            ['<C-n>'] = cmp.mapping.select_next_item({
-              behavior = cmp.SelectBehavior.Insert
-            }),
-            ['<C-p>'] = cmp.mapping.select_prev_item({
-              behavior = cmp.SelectBehavior.Insert
-            }),
-            ['<TAB>'] = cmp.mapping({
-              c = function(fallback)
-                if #cmp.core:get_sources() > 0 and
-                    not cmp.get_config().experimental.native_menu then
-                  if cmp.visible() then
-                    cmp.select_next_item()
-                  else
-                    cmp.complete()
-                  end
-                else
-                  fallback()
-                end
-              end
-            }),
-            ['<S-TAB>'] = cmp.mapping({
-              c = function(fallback)
-                if #cmp.core:get_sources() > 0 and
-                    not cmp.get_config().experimental.native_menu then
-                  if cmp.visible() then
-                    cmp.select_prev_item()
-                  else
-                    cmp.complete()
-                  end
-                else
-                  fallback()
-                end
-              end
-            })
-          },
           sources = {
-            {name = "luasnip"}, {name = "nvim_lsp"}, {name = "buffer"},
+            {name = "nvim_lsp"}, {name = "luasnip"}, {name = "buffer"},
             {name = "path"}, {name = "nvim_lua"}
           }
         })
@@ -637,7 +600,7 @@ require("packer").startup {
         }
         local map = vim.api.nvim_set_keymap
         local opts = {noremap = true}
-        map("n", "<C-t>", ":Trouble workspace_diagnostics<cr>", opts)
+        map("n", "<F4>", ":Trouble workspace_diagnostics<cr>", opts)
         map("n", "<F6>", ":Trouble quickfix<cr>", opts)
         map("n", "<F7>", ":Trouble loclist<cr>", opts)
         map("n", "<F8>", ":Trouble lsp_references<cr>", opts)
@@ -680,6 +643,7 @@ require("packer").startup {
 
     use {
       "neovim/nvim-lspconfig",
+      requires = {"hrsh7th/cmp-nvim-lsp"},
       run = ":TSUpdate",
       config = function()
         -- see https://github.com/lukas-reineke/dotfiles/blob/master/vim/lua/lsp/init.lua
@@ -704,7 +668,7 @@ require("packer").startup {
           bmap(bufnr, "n", "<M-i>",
                "<cmd>lua vim.diagnostic.show_line_diagnostics({show_header=false})<cr>",
                opts)
-          bmap(bufnr, "n", "<M-m>",
+          bmap(bufnr, "n", "<M-p>",
                "<cmd>lua vim.diagnostic.goto_next({severity_limit='Warning', popup_opts={show_header=false}})<cr>",
                opts)
           bmap(bufnr, "n", "<M-n>",
@@ -766,14 +730,23 @@ require("packer").startup {
             }
           }
         }
-        local capabilities = vim.lsp.protocol.make_client_capabilities()
-        capabilities.textDocument.completion.completionItem.snippetSupport = true
-        nvim_lsp.html.setup {on_attach = on_attach, capabilities = capabilities}
+        local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp
+                                                                             .protocol
+                                                                             .make_client_capabilities())
+        nvim_lsp.html.setup {
+          on_attach = on_attach,
+          capabilities = capabilities,
+          provideFormatter = false
+        }
         nvim_lsp.jsonls.setup {
           on_attach = on_attach,
           capabilities = capabilities
         }
-        nvim_lsp.cssls.setup {on_attach = on_attach, capbilities = capabilities}
+        nvim_lsp.cssls.setup {
+          on_attach = on_attach,
+          capbilities = capabilities,
+          provideFormatter = false
+        }
         nvim_lsp.eslint.setup {on_attach = on_attach}
         nvim_lsp.pyright.setup {
           on_attach = on_attach,
@@ -792,7 +765,9 @@ require("packer").startup {
         nvim_lsp.efm.setup {
           on_attach = on_attach,
           init_options = {documentFormatting = true},
-          filetypes = {"python", "markdown", "yaml", "lua", "javascript"},
+          filetypes = {
+            "python", "markdown", "yaml", "lua", "javascript", "html", "css"
+          },
           root_dir = vim.loop.cwd,
           settings = {
             rootMarkers = {".git/"},
@@ -805,7 +780,7 @@ require("packer").startup {
                   lintStdin = true,
                   lintIgnoreExitCode = true
                 }, {
-                  formatCommand = "isort --stdout --profile black --force-single-line-imports -",
+                  formatCommand = "isort --stdout -e -",
                   formatStdin = true
                   -- }, {
                   --     lintCommand = "mypy --show-column-numbers --ignore-missing-imports",
@@ -816,6 +791,8 @@ require("packer").startup {
                   --     }
                 }
               },
+              css = {{formatCommand = "prettier"}},
+              html = {{formatCommand = "prettier"}},
               javascript = {{formatCommand = "prettier"}},
               yaml = {{formatCommand = "prettier"}},
               markdown = {{formatCommand = "prettier"}},
