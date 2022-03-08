@@ -154,8 +154,8 @@ map("n", "<C-j>", "5<C-w>-", {noremap = true})
 map("n", "<C-k>", "5<C-w>+", {noremap = true})
 map("n", "<C-l>", "5<C-w>>", {noremap = true})
 -- quickfix window
-map("n", "<C-n>", ":cp<cr>", {noremap = true})
-map("n", "<C-p>", ":cn<cr>", {noremap = true})
+map("n", "<C-p>", ":cp<cr>", {noremap = true})
+map("n", "<C-n>", ":cn<cr>", {noremap = true})
 -- remove buffer
 map("n", "<M-d>", ":bprev<bar>:bd#<cr>", {noremap = true})
 map("n", "<M-D>", ":bprev<bar>:bd!#<cr>", {noremap = true})
@@ -302,7 +302,7 @@ require("packer").startup {
       "junegunn/seoul256.vim",
       config = function() vim.g.seoul256_background = 235 end
     }
-    vim.cmd "colorscheme nord"
+    vim.cmd "colorscheme one"
 
     -- coloring of colornames
     use {
@@ -363,15 +363,6 @@ require("packer").startup {
     }
 
     use {
-      "mbbill/undotree",
-      config = function()
-        local map = vim.api.nvim_set_keymap
-        map("", "<F11>", ":UndotreeToggle<cr>:UndotreeFocus<cr>",
-            {noremap = true})
-      end
-    }
-
-    use {
       "iamcco/markdown-preview.nvim", -- requires yarn
       run = "cd /home/hjalmarlucius/.local/share/nvim/site/pack/packer/start/markdown-preview && yarn install",
       config = function()
@@ -419,9 +410,9 @@ require("packer").startup {
             {noremap = true, silent = true})
         map("n", "<M-K>", ":BufferLineCycleNext<cr>",
             {noremap = true, silent = true})
-        map("n", "<M-N>", ":BufferLineMovePrev<cr>",
+        map("n", "<M-P>", ":BufferLineMovePrev<cr>",
             {noremap = true, silent = true})
-        map("n", "<M-M>", ":BufferLineMoveNext<cr>",
+        map("n", "<M-N>", ":BufferLineMoveNext<cr>",
             {noremap = true, silent = true})
       end
     }
@@ -624,7 +615,7 @@ require("packer").startup {
             MAYBE = {icon = " ", color = "default"},
             IDEA = {icon = " ", color = "hint"}
           },
-          merge_keywords = true, -- when true, custom keywords will be merged with the defaults
+          merge_keywords = false, -- when true, custom keywords will be merged with the defaults
           highlight = {keyword = "bg", pattern = [[<(KEYWORDS)\s*]]},
           search = {pattern = [[\b(KEYWORDS)\b]]},
           colors = {
@@ -668,10 +659,10 @@ require("packer").startup {
           bmap(bufnr, "n", "<M-i>",
                "<cmd>lua vim.diagnostic.show_line_diagnostics({show_header=false})<cr>",
                opts)
-          bmap(bufnr, "n", "<M-p>",
+          bmap(bufnr, "n", "<M-n>",
                "<cmd>lua vim.diagnostic.goto_next({severity_limit='Warning', popup_opts={show_header=false}})<cr>",
                opts)
-          bmap(bufnr, "n", "<M-n>",
+          bmap(bufnr, "n", "<M-p>",
                "<cmd>lua vim.diagnostic.goto_prev({severity_limit='Warning', popup_opts={show_header=false}})<cr>",
                opts)
           -- popups
