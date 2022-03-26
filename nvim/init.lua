@@ -431,6 +431,8 @@ require("packer").startup {
 
     use {"psf/black", config = function() vim.g.black_fast = 1 end}
 
+    use {"numirias/semshi", config = function() end}
+
     -- treesitter
     use {
       "nvim-treesitter/nvim-treesitter",
@@ -472,11 +474,11 @@ require("packer").startup {
             mappings = {
               i = {
                 ["<esc>"] = actions.close,
+                ["<CR>"] = actions.select_default,
                 ["<C-j>"] = actions.move_selection_next,
                 ["<C-k>"] = actions.move_selection_previous,
                 ["<C-b>"] = actions.preview_scrolling_up,
                 ["<C-f>"] = actions.preview_scrolling_down,
-                ["<cr>"] = actions.select_default + actions.center,
                 ["<C-s>"] = actions.select_horizontal,
                 ["<C-v>"] = actions.select_vertical,
                 ["<C-t>"] = actions.select_tab,
@@ -485,9 +487,9 @@ require("packer").startup {
                 ["<Tab>"] = actions.toggle_selection +
                     actions.move_selection_better,
                 ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
-                ["<M-q>"] = actions.send_selected_to_qflist +
-                    actions.open_qflist,
-                ["<C-l>"] = actions.complete_tag
+                ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+                ["<PageUp>"] = actions.results_scrolling_up,
+                ["<PageDown>"] = actions.results_scrolling_down,
               }
             },
             file_ignore_patterns = {},
