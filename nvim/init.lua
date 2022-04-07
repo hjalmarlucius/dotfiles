@@ -50,8 +50,8 @@ opt.tabstop = 2 -- Number of spaces tabs count for
 opt.shiftwidth = 2 -- Size of an indent
 
 -- search
-opt.ignorecase = true -- Ignore case
-opt.smartcase = true -- Do not ignore case with capitals
+opt.ignorecase = false -- Ignore case
+opt.smartcase = false -- Do not ignore case with capitals
 opt.wildmode = {"full"} -- Command-line completion mode
 opt.wildignorecase = true
 opt.wildignore = opt.wildignore + {
@@ -259,7 +259,7 @@ require("packer").startup {
       "kyazdani42/nvim-tree.lua",
       requires = {"kyazdani42/nvim-web-devicons"},
       config = function()
-        require("nvim-tree").setup {disable_netrw = false, auto_close = true}
+        require("nvim-tree").setup {disable_netrw = false}
         local map = vim.api.nvim_set_keymap
         map("n", "<C-t>", ":NvimTreeToggle<cr>", {noremap = true})
       end
@@ -302,7 +302,7 @@ require("packer").startup {
       "junegunn/seoul256.vim",
       config = function() vim.g.seoul256_background = 235 end
     }
-    vim.cmd "colorscheme one"
+    vim.cmd "colorscheme seoul256"
 
     -- coloring of colornames
     use {
@@ -364,12 +364,13 @@ require("packer").startup {
 
     use {
       "iamcco/markdown-preview.nvim", -- requires yarn
-      run = "cd /home/hjalmarlucius/.local/share/nvim/site/pack/packer/start/markdown-preview && yarn install",
+
+      run = "cd /home/hjalmarlucius/.local/share/nvim/site/pack/packer/start/markdown-preview.nvim && yarn install",
       config = function()
         vim.g.mkdp_auto_start = 0 -- auto start on moving into
         vim.g.mkdp_auto_close = 0 -- auto close on moving away
-        vim.g.mkdp_open_to_the_world = 0 -- available to others
-        vim.g.mkdp_open_ip = "" -- use custom IP to open preview page
+        vim.g.mkdp_open_to_the_world = 1 -- available to others
+        vim.g.mkdp_port = 8555
       end
     }
 
@@ -487,9 +488,10 @@ require("packer").startup {
                 ["<Tab>"] = actions.toggle_selection +
                     actions.move_selection_better,
                 ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
-                ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+                ["<M-q>"] = actions.send_selected_to_qflist +
+                    actions.open_qflist,
                 ["<PageUp>"] = actions.results_scrolling_up,
-                ["<PageDown>"] = actions.results_scrolling_down,
+                ["<PageDown>"] = actions.results_scrolling_down
               }
             },
             file_ignore_patterns = {},
