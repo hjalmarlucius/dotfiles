@@ -440,7 +440,12 @@ require("packer").startup {
       run = ":TSUpdate",
       config = function()
         require("nvim-treesitter.configs").setup {
-          ensure_installed = "maintained"
+          ensure_installed = {
+            "bash", "lua", "c", "comment", "cpp", "css", "cuda", "dockerfile",
+            "fish", "graphql", "help", "html", "java", "javascript", "json",
+            "json5", "julia", "latex", "lua", "make", "markdown", "ninja",
+            "python", "regex", "toml", "vim", "yaml"
+          }
         }
         vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
       end
