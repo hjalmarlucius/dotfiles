@@ -533,28 +533,38 @@ require("packer").startup {
       end
     }
 
-    use {"L3MON4D3/LuaSnip"}
-
     -- autocompletion
     use {
       "hrsh7th/nvim-cmp",
       requires = {
-        {"L3MON4D3/LuaSnip"}, {"hrsh7th/cmp-path", after = "nvim-cmp"},
+        {"hrsh7th/cmp-path", after = "nvim-cmp"},
         {"hrsh7th/cmp-buffer", after = "nvim-cmp"},
         {"hrsh7th/cmp-calc", after = "nvim-cmp"}
       },
       config = function()
         local cmp = require("cmp")
         cmp.setup({
-          snippet = {
-            expand = function(args)
-              require('luasnip').lsp_expand(args.body)
-            end
-          },
           sources = {
-            {name = "nvim_lsp"}, {name = "luasnip"}, {name = "buffer"},
-            {name = "path"}, {name = "nvim_lua"}
+            {name = "nvim_lsp"}, {name = "buffer"}, {name = "path"},
+            {name = "nvim_lua"}
           }
+        })
+        -- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
+        cmp.setup.cmdline('/', {
+          mapping = cmp.mapping.preset.cmdline(),
+          sources = {
+            { name = 'buffer' }
+          }
+        })
+
+        -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+        cmp.setup.cmdline(':', {
+          mapping = cmp.mapping.preset.cmdline(),
+          sources = cmp.config.sources({
+            { name = 'path' }
+          }, {
+            { name = 'cmdline' }
+          })
         })
       end
     }
