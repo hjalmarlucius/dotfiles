@@ -22,6 +22,7 @@ opt.background = "dark"
 opt.listchars = "tab:→ ,trail:·,extends:↷,precedes:↶,nbsp:+,eol:↵"
 opt.list = true -- Show listchars
 opt.showtabline = 2
+opt.laststatus = 3
 
 -- undo
 opt.undodir = "/home/hjalmarlucius/.cache/vim/undo"
@@ -80,6 +81,7 @@ opt.foldenable = false
 opt.foldmethod = "expr"
 
 opt.completeopt = "menu,menuone,noinsert"
+vim.g.seoul256_background = 235
 
 -- ----------------------------------------
 -- AUTOCOMMANDS
@@ -300,7 +302,6 @@ require("packer").startup {
 
     use {
       "junegunn/seoul256.vim",
-      config = function() vim.g.seoul256_background = 235 end
     }
     vim.cmd "colorscheme seoul256"
 
@@ -379,14 +380,17 @@ require("packer").startup {
       requires = {"kyazdani42/nvim-web-devicons"},
       config = function()
         require("lualine").setup {
-          options = {theme = "auto"},
+          options = {theme = "auto", globalstatus = true},
           extensions = {"fugitive"},
           sections = {
             lualine_a = {"mode"},
             lualine_b = {"branch"},
-            lualine_c = {{"filename", file_status = true, path = 1}}, -- , {"diff", colored=false}, { "diagnostics", sources = {"nvim_lsp"}}
+            lualine_c = {
+              {"filename", file_status = true, path = 1},
+              {"diff", colored = true}, {"diagnostics", sources = {"nvim_lsp"}}
+            },
             lualine_x = {"filetype"},
-            lualine_y = {"progress"}, -- "encoding", "fileformat",
+            lualine_y = {"progress", "encoding", "fileformat"},
             lualine_z = {"location"}
           },
           inactive_sections = {
