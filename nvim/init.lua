@@ -13,7 +13,7 @@ opt.updatetime = 300
 opt.timeoutlen = 200
 vim.g.BASH_Ctrl_j = "off"
 vim.g.BASH_Ctrl_l = "off"
-vim.g.python3_host_prog = "/usr/bin/python3.9"
+vim.g.python3_host_prog = "/usr/bin/python3.10"
 
 -- looks
 opt.termguicolors = true
@@ -22,7 +22,7 @@ opt.background = "dark"
 opt.listchars = "tab:→ ,trail:·,extends:↷,precedes:↶,nbsp:+,eol:↵"
 opt.list = true -- Show listchars
 opt.showtabline = 2
-opt.laststatus = 3
+opt.laststatus = 2
 
 -- undo
 opt.undodir = "/home/hjalmarlucius/.cache/vim/undo"
@@ -300,9 +300,7 @@ require("packer").startup {
 
     use {"arcticicestudio/nord-vim", config = function() end}
 
-    use {
-      "junegunn/seoul256.vim",
-    }
+    use {"junegunn/seoul256.vim"}
     vim.cmd "colorscheme seoul256"
 
     -- coloring of colornames
@@ -311,9 +309,6 @@ require("packer").startup {
       run = "cd /home/hjalmarlucius/.local/share/nvim/site/pack/packer/start/vim-hexokinase && make hexokinase",
       config = function() vim.g.Hexokinase_highlighters = {"virtual"} end
     }
-
-    -- edgedb syntax highlighting
-    use {"edgedb/edgedb-vim"}
 
     -- flashing cursor on move
     use {
@@ -380,7 +375,7 @@ require("packer").startup {
       requires = {"kyazdani42/nvim-web-devicons"},
       config = function()
         require("lualine").setup {
-          options = {theme = "auto", globalstatus = true},
+          options = {theme = "auto", globalstatus = false},
           extensions = {"fugitive"},
           sections = {
             lualine_a = {"mode"},
@@ -436,8 +431,6 @@ require("packer").startup {
 
     use {"psf/black", config = function() vim.g.black_fast = 1 end}
 
-    use {"numirias/semshi", config = function() end}
-
     -- treesitter
     use {
       "nvim-treesitter/nvim-treesitter",
@@ -449,7 +442,25 @@ require("packer").startup {
             "fish", "graphql", "help", "html", "java", "javascript", "json",
             "json5", "julia", "latex", "lua", "make", "markdown", "ninja",
             "python", "regex", "toml", "vim", "yaml"
-          }
+          },
+          highlight = {
+            enable = true,
+            -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+            -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+            -- Using this option may slow down your editor, and you may see some duplicate highlights.
+            -- Instead of true it can also be a list of languages
+            additional_vim_regex_highlighting = false
+          },
+          incremental_selection = {
+            enable = true,
+            keymaps = {
+              init_selection = "gnn",
+              node_decremental = "<M-j>",
+              node_incremental = "<M-k>",
+              scope_incremental = "<M-n>"
+            }
+          },
+          indent = {enable = true}
         }
         vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
       end
