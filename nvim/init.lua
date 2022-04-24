@@ -17,7 +17,7 @@ vim.g.python3_host_prog = "/usr/bin/python3.10"
 
 -- looks
 opt.termguicolors = true
-opt.cmdheight = 2
+opt.cmdheight = 1
 opt.background = "dark"
 opt.listchars = "tab:→ ,trail:·,extends:↷,precedes:↶,nbsp:+,eol:↵"
 opt.list = true -- Show listchars
@@ -320,15 +320,6 @@ require("packer").startup {
         vim.g.beacon_size = 40
         vim.g.beacon_minimal_jump = 10
         vim.g.beacon_shrink = 1
-      end
-    }
-
-    -- indentation guides
-    use {
-      "lukas-reineke/indent-blankline.nvim",
-      config = function()
-        vim.g.indent_blankline_char = "|"
-        vim.g.indent_blankline_use_treesitter = true
       end
     }
 
