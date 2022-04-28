@@ -183,6 +183,7 @@ for_window [class="Nitrogen"] floating enable sticky enable border normal
 for_window [class="Pamac-manager"] floating enable
 for_window [class="Pavucontrol"] floating enable
 for_window [class="qt5ct"] floating enable sticky enable border normal
+for_window [title="Origin"] floating enable
 
 # Set shut down, restart and locking features
 set $mode_system (l)ock, (e)xit, switch_(u)ser, (r)eboot, (s)hutdown

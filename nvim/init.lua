@@ -450,8 +450,7 @@ require("packer").startup {
               node_incremental = "<M-k>",
               scope_incremental = "<M-n>"
             }
-          },
-          indent = {enable = true}
+          }
         }
         vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
       end
@@ -558,7 +557,6 @@ require("packer").startup {
             ['<C-b>'] = cmp.mapping.scroll_docs(-4),
             ['<C-f>'] = cmp.mapping.scroll_docs(4),
             ['<C-Space>'] = cmp.mapping.complete(),
-            ['<CR>'] = cmp.mapping.confirm({select = true})
           })
         })
         cmp.setup.cmdline('/', {
