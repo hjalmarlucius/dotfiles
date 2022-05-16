@@ -18,7 +18,7 @@ vim.g.python3_host_prog = "/usr/bin/python3.10"
 -- looks
 opt.termguicolors = true
 opt.cmdheight = 1
-opt.background = "dark"
+-- opt.background = "dark"
 opt.listchars = "tab:→ ,trail:·,extends:↷,precedes:↶,nbsp:+,eol:↵"
 opt.list = true -- Show listchars
 opt.showtabline = 2
@@ -267,29 +267,19 @@ require("packer").startup {
       end
     }
 
-    -- theme
-    use {
-      "folke/tokyonight.nvim",
-      config = function() vim.g.tokyonight_style = "night" end
-    }
-
-    use {"sonph/onehalf", rtp = "vim"}
-    use {"tomasr/molokai"}
-    use {"morhetz/gruvbox"}
-    use {"jnurmine/Zenburn"}
-    use {"nanotech/jellybeans.vim"}
-    use {"mhartington/oceanic-next"}
+    -- theme dark and light
     use {"NLKNguyen/papercolor-theme"}
-    use {"drewtempelmeyer/palenight.vim"}
-    use {"altercation/vim-colors-solarized"}
-    use {"rakr/vim-one", config = function() vim.g.one_allow_italics = 1 end}
+    use {"folke/tokyonight.nvim"}
+    use {"junegunn/seoul256.vim"}
+    use {"mhartington/oceanic-next"}
+    use {"morhetz/gruvbox"}
+    use {"sonph/onehalf", rtp = "vim/"}
 
     use {
-      "ayu-theme/ayu-vim",
+      "Shatur/neovim-ayu",
       config = function()
-        -- vim.g.ayucolor = "light"
-        -- vim.g.ayucolor = "mirage"
-        vim.g.ayucolor = "dark"
+        require('ayu').setup {mirage = true}
+        vim.g.ayu_extended_palette = 1
       end
     }
 
@@ -298,10 +288,13 @@ require("packer").startup {
       config = function() vim.g.embark_terminal_italics = 1 end
     }
 
-    use {"arcticicestudio/nord-vim", config = function() end}
+    -- theme dark only
+    use {"arcticicestudio/nord-vim"}
+    use {"tomasr/molokai"}
+    use {"jnurmine/Zenburn"}
+    use {"nanotech/jellybeans.vim"}
 
-    use {"junegunn/seoul256.vim"}
-    vim.cmd "colorscheme seoul256"
+    vim.cmd "colorscheme ayu-mirage"
 
     -- coloring of colornames
     use {
@@ -474,7 +467,9 @@ require("packer").startup {
             opts)
         map("n", "<M-b>", "<cmd>Telescope buffers<cr>", opts)
         map("n", "<M-y>", "<cmd>Telescope filetypes<cr>", opts)
-        map("n", "<F3>", "<cmd>Telescope colorscheme<cr>", opts)
+        map("n", "<F3>",
+            "<cmd>lua require('telescope.builtin').colorscheme({enable_preview=1})<cr>",
+            opts)
         map("n", "<leader>la", "<cmd>Telescope lsp_code_actions<cr>", opts)
         map("v", "<leader>la", "<cmd>Telescope lsp_range_code_actions<cr>", opts)
         map("n", "<leader>ld", "<cmd>Telescope document_diagnostics<cr>", opts)
@@ -556,7 +551,7 @@ require("packer").startup {
           mapping = cmp.mapping.preset.insert({
             ['<C-b>'] = cmp.mapping.scroll_docs(-4),
             ['<C-f>'] = cmp.mapping.scroll_docs(4),
-            ['<C-Space>'] = cmp.mapping.complete(),
+            ['<C-Space>'] = cmp.mapping.complete()
           })
         })
         cmp.setup.cmdline('/', {
