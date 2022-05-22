@@ -294,7 +294,7 @@ require("packer").startup {
     use {"jnurmine/Zenburn"}
     use {"nanotech/jellybeans.vim"}
 
-    vim.cmd "colorscheme ayu-mirage"
+    vim.cmd "colorscheme seoul256"
 
     -- coloring of colornames
     use {
@@ -351,6 +351,7 @@ require("packer").startup {
         vim.g.mkdp_auto_close = 0 -- auto close on moving away
         vim.g.mkdp_open_to_the_world = 1 -- available to others
         vim.g.mkdp_port = 8555
+        vim.g.mkdp_echo_preview_url = 1
       end
     }
 
