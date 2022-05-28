@@ -120,6 +120,8 @@ map("n", "<leader>nu", [[:vnew ~/notes/urls.md<cr>]], {noremap = true})
 map("n", "<leader>nn", [[:Explore ~/notes<cr>]], {noremap = true})
 map("n", "<leader>ww", [[:cd %:p:h<cr>]], {noremap = true})
 map("n", "<esc><esc>", ":noh<cr>", {silent = true, noremap = true})
+map("n", "<F12>", "<esc>", {silent = true, noremap = true})
+map("i", "<F12>", "<esc>", {silent = true, noremap = true})
 
 -- <Tab> to navigate the completion menu
 map("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]],
@@ -475,7 +477,7 @@ require("packer").startup {
         map("v", "<leader>la", "<cmd>Telescope lsp_range_code_actions<cr>", opts)
         map("n", "<leader>ld", "<cmd>Telescope document_diagnostics<cr>", opts)
         map("n", "<leader>lD", "<cmd>Telescope workspace_diagnostics<cr>", opts)
-        map("n", "<F12>", "<cmd>Telescope<cr>", opts)
+        map("n", "<F11>", "<cmd>Telescope<cr>", opts)
         require("telescope").setup {
           defaults = {
             mappings = {
