@@ -3,7 +3,7 @@
 set zoom-min 0
 set zoom-max 1000
 set zoom-step 10
-set first-page-column 2
+set first-page-column 1
 set pages-per-row 2
 set scroll-step 100
 set scroll-page-aware "true"
