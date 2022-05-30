@@ -346,8 +346,7 @@ require("packer").startup {
 
     use {
       "iamcco/markdown-preview.nvim", -- requires yarn
-
-      run = "cd /home/hjalmarlucius/.local/share/nvim/site/pack/packer/start/markdown-preview.nvim && yarn install",
+      run = function() vim.fn["mkdp#util#install"]() end,
       config = function()
         vim.g.mkdp_auto_start = 0 -- auto start on moving into
         vim.g.mkdp_auto_close = 0 -- auto close on moving away
