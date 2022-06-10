@@ -88,8 +88,11 @@ bindsym Pause exec pactl set-sink-volume @DEFAULT_SINK@ +10%
 bindsym Print exec pactl set-sink-volume @DEFAULT_SINK@ -10%
 bindsym Scroll_Lock exec pactl set-sink-mute @DEFAULT_SINK@ toggle
 
+set $rofiopts -show-icons -matching fuzzy -lines 10 -eh 2 -width 30
+bindsym $mod+d exec rofi -show drun $rofiopts
+bindsym $mod+Shift+d exec rofi -show run $rofiopts
+
 bindsym $mod+Return exec i3-sensible-terminal
-bindsym $mod+d exec --no-startup-id rofi -show drun -lines 10 -eh 2 -width 30
 bindsym $mod+Shift+s --release exec --no-startup-id flameshot gui
 bindsym $mod+Shift+x --release exec --no-startup-id xkill
 
