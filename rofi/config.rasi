@@ -2,9 +2,17 @@ configuration {
 font: "hack 12";
 show-icons: true;
 terminal: "st";
-kb-mode-complete: "Control+l,Tab";
-kb-row-tab: "Shift+Tab";
-/*  modi: "window,run,ssh";*/
+kb-mode-complete: "Control+l";
+modi: "drun,run";
+kb-row-select: "Control+space";
+timeout {
+    action: "kb-cancel";
+    delay:  0;
+}
+filebrowser {
+    directories-first: true;
+    sorting-method:    "name";
+}
 /*  fixed-num-lines: true;*/
 /*  ssh-client: "ssh";*/
 /*  ssh-command: "{terminal} -e {ssh-client} {host} [-p {port}]";*/
@@ -91,7 +99,6 @@ kb-row-tab: "Shift+Tab";
 /*  kb-page-next: "Page_Down";*/
 /*  kb-row-first: "Home,KP_Home";*/
 /*  kb-row-last: "End,KP_End";*/
-/*  kb-row-select: "Control+space";*/
 /*  kb-screenshot: "Alt+S";*/
 /*  kb-ellipsize: "Alt+period";*/
 /*  kb-toggle-case-sensitivity: "grave,dead_grave";*/
@@ -133,12 +140,4 @@ kb-row-tab: "Shift+Tab";
 /*  me-select-entry: "MousePrimary";*/
 /*  me-accept-entry: "MouseDPrimary";*/
 /*  me-accept-custom: "Control+MouseDPrimary";*/
-  timeout {
-      action: "kb-cancel";
-      delay:  0;
-  }
-  filebrowser {
-      directories-first: true;
-      sorting-method:    "name";
-  }
 }
