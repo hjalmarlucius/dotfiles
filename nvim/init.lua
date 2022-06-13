@@ -293,6 +293,8 @@ require("packer").startup {
     -- theme dark only
     use {"arcticicestudio/nord-vim"}
     use {"tomasr/molokai"}
+    use {"kdheepak/monochrome.nvim"}
+    use {"kcsongor/vim-monochrome-light"}
     use {"jnurmine/Zenburn"}
     use {"nanotech/jellybeans.vim"}
 
@@ -455,7 +457,7 @@ require("packer").startup {
       "nvim-telescope/telescope.nvim",
       requires = {
         "nvim-lua/popup.nvim", "nvim-lua/plenary.nvim",
-        "nvim-telescope/telescope-rg.nvim"
+        "nvim-telescope/telescope-live-grep-args.nvim"
       },
       config = function()
         -- TODO grep with regex
@@ -465,7 +467,7 @@ require("packer").startup {
         map("n", "<M-F>", "<cmd>Telescope find_files<cr>", opts)
         map("n", "<M-f>", "<cmd>Telescope git_files<cr>", opts)
         map("n", "<M-w>",
-            ":lua require('telescope').extensions.live_grep_raw.live_grep_raw()<cr>",
+            ":lua require('telescope').extensions.live_grep_args.live_grep_args()<cr>",
             opts)
         map("n", "<M-b>", "<cmd>Telescope buffers<cr>", opts)
         map("n", "<M-y>", "<cmd>Telescope filetypes<cr>", opts)
