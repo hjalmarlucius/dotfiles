@@ -369,17 +369,20 @@ require("packer").startup {
             lualine_a = {"mode"},
             lualine_b = {"branch"},
             lualine_c = {
-              {"filename", file_status = true, path = 1},
-              {"diff", colored = true}, {"diagnostics", sources = {"nvim_lsp"}}
+              {"filename", file_status = true, path = 1, shorting_target = 0},
+              {"diff", colored = true}
             },
             lualine_x = {"filetype"},
-            lualine_y = {"progress", "encoding", "fileformat"},
+            lualine_y = {"progress"},
             lualine_z = {"location"}
           },
           inactive_sections = {
             lualine_a = {},
             lualine_b = {},
-            lualine_c = {{"filename", file_status = true, path = 1}},
+            lualine_c = {
+              {"filename", file_status = true, path = 1, shorting_target = 0},
+              {"diff", colored = true}
+            },
             lualine_x = {},
             lualine_y = {"progress"},
             lualine_z = {"location"}
@@ -428,8 +431,8 @@ require("packer").startup {
           ensure_installed = {
             "bash", "lua", "c", "comment", "cpp", "css", "cuda", "dockerfile",
             "fish", "graphql", "help", "html", "java", "javascript", "json",
-            "json5", "julia", "latex", "lua", "make", "markdown", "ninja",
-            "python", "regex", "toml", "vim", "yaml"
+            "json5", "julia", "latex", "lua", "make", "markdown",
+            "markdown_inline", "ninja", "python", "regex", "toml", "vim", "yaml"
           },
           highlight = {
             enable = true,
