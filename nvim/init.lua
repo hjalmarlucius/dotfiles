@@ -232,11 +232,11 @@ require("packer").startup {
             noremap = true,
             buffer = true,
 
-            ["n <M-.>"] = {
+            ["n <M-,>"] = {
               expr = true,
               [[&diff ? "]c" : "<cmd>lua require('gitsigns.actions').next_hunk()<cr>"]]
             },
-            ["n <M-,>"] = {
+            ["n <M-.>"] = {
               expr = true,
               [[&diff ? "[c" : "<cmd>lua require('gitsigns.actions').prev_hunk()<cr>"]]
             },
@@ -560,10 +560,6 @@ require("packer").startup {
             ['<C-f>'] = cmp.mapping.scroll_docs(4),
             ['<C-Space>'] = cmp.mapping.complete()
           })
-        })
-        cmp.setup.cmdline('/', {
-          mapping = cmp.mapping.preset.cmdline(),
-          sources = {{name = 'buffer'}}
         })
         cmp.setup.cmdline(':', {
           mapping = cmp.mapping.preset.cmdline(),
