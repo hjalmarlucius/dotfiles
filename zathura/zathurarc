@@ -7,6 +7,7 @@ set first-page-column 1
 set pages-per-row 2
 set scroll-step 100
 set scroll-page-aware "true"
+set show-recent 0
 set recolor-keephue "true"
 set guioptions "csv"
 set adjust-open "best-fit"

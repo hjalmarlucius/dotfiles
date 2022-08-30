@@ -291,7 +291,6 @@ require("packer").startup {
     }
 
     -- theme dark only
-    use {"arcticicestudio/nord-vim"}
     use {"tomasr/molokai"}
     use {"kdheepak/monochrome.nvim"}
     use {"kcsongor/vim-monochrome-light"}
