@@ -675,36 +675,27 @@ require("packer").startup {
                "<cmd>lua vim.diagnostic.set_loclist({severity_limit='Warning'})<cr>",
                opts)
           bmap(bufnr, "n", "<M-i>",
-               "<cmd>lua vim.diagnostic.show_line_diagnostics({show_header=false})<cr>",
+               "<cmd>lua vim.diagnostic.open_float(0, {scope='line'})<cr>", opts)
+          bmap(bufnr, "n", "<M-I>",
+               "<cmd>lua vim.diagnostic.open_float(0, {scope='cursor'})<cr>",
                opts)
           bmap(bufnr, "n", "<M-n>",
-               "<cmd>lua vim.diagnostic.goto_next({severity_limit='Warning', popup_opts={show_header=false}})<cr>",
-               opts)
+               "<cmd>lua vim.diagnostic.goto_next({float={}})<cr>", opts)
           bmap(bufnr, "n", "<M-p>",
-               "<cmd>lua vim.diagnostic.goto_prev({severity_limit='Warning', popup_opts={show_header=false}})<cr>",
-               opts)
+               "<cmd>lua vim.diagnostic.goto_prev({float={}})<cr>", opts)
           -- popups
           bmap(bufnr, "n", "<M-x>", "<cmd>lua vim.lsp.buf.signature_help()<cr>",
                opts)
           bmap(bufnr, "i", "<M-x>", "<cmd>lua vim.lsp.buf.signature_help()<cr>",
                opts)
           -- other
-          if client.server_capabilities.goto_definition then
-            bmap(bufnr, "n", "gd", ":lua vim.lsp.buf.definition()<cr>", opts)
-          end
-          if client.server_capabilities.find_references then
-            bmap(bufnr, "n", "gr", "<cmd>lua vim.lsp.buf.references()<cr>", opts)
-          end
-          if client.server_capabilities.hover then
-            bmap(bufnr, "n", "K", "<cmd>lua vim.lsp.buf.hover()<cr>", opts)
-          end
-          if client.server_capabilities.rename then
-            bmap(bufnr, "n", "<M-r>", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
-          end
-          if client.server_capabilities.document_formatting or
-              client.server_capabilities.document_range_formatting then
-            bmap(bufnr, "n", "<leader>f",
-                 "<cmd>lua vim.lsp.buf.formatting()<cr>", opts)
+          bmap(bufnr, "n", "gd", ":lua vim.lsp.buf.definition()<cr>", opts)
+          bmap(bufnr, "n", "gr", "<cmd>lua vim.lsp.buf.references()<cr>", opts)
+          bmap(bufnr, "n", "K", "<cmd>lua vim.lsp.buf.hover()<cr>", opts)
+          bmap(bufnr, "n", "<M-r>", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
+          bmap(bufnr, "n", "<leader>f", "<cmd>lua vim.lsp.buf.formatting()<cr>", opts)
+          if client.server_capabilities.documentFormattingProvider or
+              client.server_capabilities.documentRangeFormattingProvider then
             vim.api.nvim_command [[augroup Format]]
             vim.api.nvim_command [[autocmd! * <buffer>]]
             vim.api
