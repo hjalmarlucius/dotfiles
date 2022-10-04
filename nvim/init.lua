@@ -122,6 +122,7 @@ map("n", "<leader>ww", [[:cd %:p:h<cr>]], {noremap = true})
 map("n", "<esc><esc>", ":noh<cr>", {silent = true, noremap = true})
 map("n", "<F12>", "<esc>", {silent = true, noremap = true})
 map("i", "<F12>", "<esc>", {silent = true, noremap = true})
+map("v", "<F12>", "<esc>", {silent = true, noremap = true})
 
 -- <Tab> to navigate the completion menu
 map("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]],
@@ -688,20 +689,20 @@ require("packer").startup {
           bmap(bufnr, "i", "<M-x>", "<cmd>lua vim.lsp.buf.signature_help()<cr>",
                opts)
           -- other
-          if client.resolved_capabilities.goto_definition then
+          if client.server_capabilities.goto_definition then
             bmap(bufnr, "n", "gd", ":lua vim.lsp.buf.definition()<cr>", opts)
           end
-          if client.resolved_capabilities.find_references then
+          if client.server_capabilities.find_references then
             bmap(bufnr, "n", "gr", "<cmd>lua vim.lsp.buf.references()<cr>", opts)
           end
-          if client.resolved_capabilities.hover then
+          if client.server_capabilities.hover then
             bmap(bufnr, "n", "K", "<cmd>lua vim.lsp.buf.hover()<cr>", opts)
           end
-          if client.resolved_capabilities.rename then
+          if client.server_capabilities.rename then
             bmap(bufnr, "n", "<M-r>", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
           end
-          if client.resolved_capabilities.document_formatting or
-              client.resolved_capabilities.document_range_formatting then
+          if client.server_capabilities.document_formatting or
+              client.server_capabilities.document_range_formatting then
             bmap(bufnr, "n", "<leader>f",
                  "<cmd>lua vim.lsp.buf.formatting()<cr>", opts)
             vim.api.nvim_command [[augroup Format]]
