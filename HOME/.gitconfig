@@ -1,3 +1,14 @@
+[alias]
+  save = "!f() { git add -u && git commit --no-verify -m "\"SAVEPOINT - $@\""; }; f"
+  undo = reset HEAD~1 --mixed
+  checkpoint = "!f() { git save ${1-CHECKPOINT}; git tag "\"checkpoint/${1-`date +%Y%m%d_%H%M%S`}\""; git undo; }; f"
+  checkpoints = tag -l "checkpoint/*"
+  delcheckpoint = "!f() { git tag -d checkpoint/$1; }; f"
+  loadcheckpoint = "!f() { git reset --hard checkpoint/$1 && git undo; }; f"
+  cp = checkpoint
+  cpls = loadcheckpoint
+  cpd = delcheckpoint
+  cpld = loadcheckpoint required = true
 [core]
   filemode = false
   pager = diff-so-fancy | less --tabs=4 -RFX
@@ -10,4 +21,3 @@
   clean = git-lfs clean -- %f
   smudge = git-lfs smudge -- %f
   process = git-lfs filter-process
-  required = true

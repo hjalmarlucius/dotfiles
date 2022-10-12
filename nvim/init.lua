@@ -693,19 +693,20 @@ require("packer").startup {
           bmap(bufnr, "n", "gr", "<cmd>lua vim.lsp.buf.references()<cr>", opts)
           bmap(bufnr, "n", "K", "<cmd>lua vim.lsp.buf.hover()<cr>", opts)
           bmap(bufnr, "n", "<M-r>", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
-          bmap(bufnr, "n", "<leader>f", "<cmd>lua vim.lsp.buf.formatting()<cr>", opts)
+          bmap(bufnr, "n", "<leader>f", "<cmd>lua vim.lsp.buf.formatting()<cr>",
+               opts)
           if client.server_capabilities.documentFormattingProvider or
               client.server_capabilities.documentRangeFormattingProvider then
             vim.api.nvim_command [[augroup Format]]
             vim.api.nvim_command [[autocmd! * <buffer>]]
             vim.api
-                .nvim_command [[autocmd BufWritePost *.py lua vim.lsp.buf.formatting_seq_sync()]]
+                .nvim_command [[autocmd BufWritePost *.py lua vim.lsp.buf.format()]]
             vim.api
-                .nvim_command [[autocmd BufWritePost *.lua lua vim.lsp.buf.formatting_seq_sync()]]
+                .nvim_command [[autocmd BufWritePost *.lua lua vim.lsp.buf.format()]]
             vim.api
-                .nvim_command [[autocmd BufWritePost *.md lua vim.lsp.buf.formatting_seq_sync()]]
+                .nvim_command [[autocmd BufWritePost *.md lua vim.lsp.buf.format()]]
             vim.api
-                .nvim_command [[autocmd BufWritePost *.yaml lua vim.lsp.buf.formatting_seq_sync()]]
+                .nvim_command [[autocmd BufWritePost *.yaml lua vim.lsp.buf.format()]]
             vim.api.nvim_command [[augroup END]]
 
           end
