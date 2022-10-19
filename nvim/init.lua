@@ -420,7 +420,7 @@ require("packer").startup {
       end
     }
 
-    use {"psf/black", config = function() vim.g.black_fast = 1 end}
+    use {"psf/black", config = function() vim.g.black_fast = 1 vim.g.black_preview = 1 end}
 
     -- treesitter
     use {
