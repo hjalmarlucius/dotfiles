@@ -13,7 +13,6 @@ opt.updatetime = 300
 opt.timeoutlen = 200
 vim.g.BASH_Ctrl_j = "off"
 vim.g.BASH_Ctrl_l = "off"
-vim.g.python3_host_prog = "/usr/bin/python3.10"
 
 -- looks
 opt.termguicolors = true
@@ -93,6 +92,7 @@ vim.api.nvim_command [[augroup MYAU]]
 vim.api.nvim_command [[autocmd!]]
 vim.api.nvim_command [[autocmd BufWritePost * %s/\s\+$//e]]
 vim.api.nvim_command [[autocmd BufWritePost *.py silent! execute ':Black']]
+vim.api.nvim_command [[autocmd FileType *.py setlocal indentkeys-=<:>]]
 vim.api.nvim_command [[autocmd BufReadPost quickfix nmap <buffer> <cr> <cr>]]
 vim.api
     .nvim_command [[autocmd TextYankPost * "lua vim.highlight.on_yank {on_visual = false}"]]
@@ -214,6 +214,15 @@ require("packer").startup {
       "iberianpig/tig-explorer.vim",
       requires = {"rbgrouleff/bclose.vim"},
       config = function()
+        vim.tig_explorer_keymap_edit_e  = 'e'
+        vim.tig_explorer_keymap_edit    = '<C-o>'
+        vim.tig_explorer_keymap_tabedit = '<C-t>'
+        vim.tig_explorer_keymap_split   = '<C-s>'
+        vim.tig_explorer_keymap_vsplit  = '<C-v>'
+        vim.tig_explorer_keymap_commit_edit    = '<ESC>o'
+        vim.tig_explorer_keymap_commit_tabedit = '<ESC>t'
+        vim.tig_explorer_keymap_commit_split   = '<ESC>s'
+        vim.tig_explorer_keymap_commit_vsplit  = '<ESC>v'
         vim.g.tig_explorer_use_builtin_term = 0
         local map = vim.api.nvim_set_keymap
         map("", "<leader>gg", ":TigOpenProjectRootDir<cr><cr>", {})
@@ -408,18 +417,6 @@ require("packer").startup {
       end
     }
 
-    use {
-      "numtostr/FTerm.nvim",
-      config = function()
-        require("FTerm").setup {}
-        local map = vim.api.nvim_set_keymap
-        local opts = {noremap = true, silent = true}
-        map("n", "<F2>", [[<cmd>lua require("FTerm").toggle()<cr>]], opts)
-        map("t", "<F2>", [[<C-\><C-n><cmd>lua require("FTerm").toggle()<cr>]],
-            opts)
-      end
-    }
-
     use {"psf/black", config = function() vim.g.black_fast = 1 vim.g.black_preview = 1 end}
 
     -- treesitter
@@ -545,16 +542,17 @@ require("packer").startup {
       "hrsh7th/nvim-cmp",
       requires = {
         {"hrsh7th/cmp-path", after = "nvim-cmp"},
+        {"hrsh7th/cmp-nvim-lsp", after = "nvim-cmp"},
         {"hrsh7th/cmp-buffer", after = "nvim-cmp"},
-        {"hrsh7th/cmp-calc", after = "nvim-cmp"}
+        {"hrsh7th/cmp-cmdline", after = "nvim-cmp"}
       },
       config = function()
         local cmp = require("cmp")
         cmp.setup({
-          sources = {
-            {name = "nvim_lsp"}, {name = "buffer"}, {name = "path"},
-            {name = "nvim_lua"}
-          },
+          sources = cmp.config.sources({
+            {name = "nvim_lsp"},
+            {name = "buffer"}
+          }),
           mapping = cmp.mapping.preset.insert({
             ['<C-b>'] = cmp.mapping.scroll_docs(-4),
             ['<C-f>'] = cmp.mapping.scroll_docs(4),
@@ -564,6 +562,32 @@ require("packer").startup {
         cmp.setup.cmdline(':', {
           mapping = cmp.mapping.preset.cmdline(),
           sources = cmp.config.sources({{name = 'path'}}, {{name = 'cmdline'}})
+        })
+        -- Set configuration for specific filetype.
+        cmp.setup.filetype('gitcommit', {
+          sources = cmp.config.sources({
+            { name = 'cmp_git' }, -- You can specify the `cmp_git` source if you were installed it.
+          }, {
+            { name = 'buffer' },
+          })
+        })
+
+        -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
+        cmp.setup.cmdline({ '/', '?' }, {
+          mapping = cmp.mapping.preset.cmdline(),
+          sources = {
+            { name = 'buffer' }
+          }
+        })
+
+        -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+        cmp.setup.cmdline(':', {
+          mapping = cmp.mapping.preset.cmdline(),
+          sources = cmp.config.sources({
+            { name = 'path' }
+          }, {
+            { name = 'cmdline' }
+          })
         })
       end
     }
