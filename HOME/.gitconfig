@@ -11,7 +11,7 @@
   cpld = loadcheckpoint required = true
 [core]
   filemode = false
-  pager = diff-so-fancy | less --tabs=4 -RFX
+  pager = delta
   autorcrlf = true
   editor = nvim
 [user]
@@ -21,3 +21,14 @@
   clean = git-lfs clean -- %f
   smudge = git-lfs smudge -- %f
   process = git-lfs filter-process
+[interactive]
+    diffFilter = delta --color-only
+[delta]
+    navigate = true
+    light = false
+    line-numbers = true
+    side-by-side = true
+[merge]
+    conflictstyle = diff3
+[diff]
+    colorMoved = default

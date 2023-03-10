@@ -91,7 +91,7 @@ local cmd = vim.cmd
 vim.api.nvim_command [[augroup MYAU]]
 vim.api.nvim_command [[autocmd!]]
 vim.api.nvim_command [[autocmd BufWritePost * %s/\s\+$//e]]
-vim.api.nvim_command [[autocmd BufWritePost *.py silent! execute ':Black']]
+vim.api.nvim_command [[autocmd BufWritePre *.py execute ':Black']]
 vim.api.nvim_command [[autocmd FileType *.py setlocal indentkeys-=<:>]]
 vim.api.nvim_command [[autocmd BufReadPost quickfix nmap <buffer> <cr> <cr>]]
 vim.api
@@ -209,24 +209,12 @@ require("packer").startup {
       end
     }
 
-    -- tig
     use {
-      "iberianpig/tig-explorer.vim",
-      requires = {"rbgrouleff/bclose.vim"},
+      "rbong/vim-flog",
       config = function()
-        vim.tig_explorer_keymap_edit_e = 'e'
-        vim.tig_explorer_keymap_edit = '<C-o>'
-        vim.tig_explorer_keymap_tabedit = '<C-t>'
-        vim.tig_explorer_keymap_split = '<C-s>'
-        vim.tig_explorer_keymap_vsplit = '<C-v>'
-        vim.tig_explorer_keymap_commit_edit = '<ESC>o'
-        vim.tig_explorer_keymap_commit_tabedit = '<ESC>t'
-        vim.tig_explorer_keymap_commit_split = '<ESC>s'
-        vim.tig_explorer_keymap_commit_vsplit = '<ESC>v'
-        vim.g.tig_explorer_use_builtin_term = 0
         local map = vim.api.nvim_set_keymap
-        map("", "<leader>gg", ":TigOpenProjectRootDir<cr><cr>", {})
-        map("", "<leader>gG", ":TigOpenCurrentFile<cr>", {})
+        map("", "<leader>gg", ":Flog<cr>", {})
+        map("", "<leader>gG", ":Flogsplit<cr>", {})
       end
     }
 
