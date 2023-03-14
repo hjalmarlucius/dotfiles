@@ -1,77 +1,82 @@
-local opt = vim.opt
+-- TODO
+-- https://github.com/nvim-lua/kickstart.nvim/blob/master/init.lua
+-- https://github.com/CosmicNvim/CosmicNvim
+-- https://github.com/AstroNvim/AstroNvim
+-- https://github.com/jose-elias-alvarez/null-ls.nvim
+--
 -- ----------------------------------------
 -- SETTINGS
 -- ----------------------------------------
 
 -- system
-opt.shell = "/usr/bin/bash"
-opt.fileencodings = "utf-8,ucs-bom,gb18030,gbk,gb2312,cp936"
-opt.fileformats = "unix"
-opt.swapfile = false
-opt.backup = false
-opt.updatetime = 300
-opt.timeoutlen = 200
+vim.o.shell = "/usr/bin/bash"
+vim.o.fileencodings = "utf-8,ucs-bom,gb18030,gbk,gb2312,cp936"
+vim.o.fileformats = "unix"
+vim.o.swapfile = false
+vim.o.backup = false
+vim.o.updatetime = 300
+vim.o.timeoutlen = 200
 vim.g.BASH_Ctrl_j = "off"
 vim.g.BASH_Ctrl_l = "off"
 
 -- looks
-opt.termguicolors = true
-opt.cmdheight = 1
--- opt.background = "dark"
-opt.listchars = "tab:→ ,trail:·,extends:↷,precedes:↶,nbsp:+,eol:↵"
-opt.list = true -- Show listchars
-opt.showtabline = 2
-opt.laststatus = 2
+vim.o.termguicolors = true
+vim.o.cmdheight = 1
+-- vim.o.background = "dark"
+vim.o.listchars = "tab:→ ,trail:·,extends:↷,precedes:↶,nbsp:+,eol:↵"
+vim.o.list = true -- Show listchars
+vim.o.showtabline = 2
+vim.o.laststatus = 2
 
 -- undo
-opt.undodir = "/home/hjalmarlucius/.cache/vim/undo"
-opt.undofile = true
-opt.undolevels = 1000
-opt.undoreload = 10000
+vim.o.undodir = "/home/hjalmarlucius/.cache/vim/undo"
+vim.o.undofile = true
+vim.o.undolevels = 1000
+vim.o.undoreload = 10000
 
 -- window
-opt.splitbelow = true -- Put new windows below current
-opt.splitright = true -- Put new windows right of current
+vim.o.splitbelow = true -- Put new windows below current
+vim.o.splitright = true -- Put new windows right of current
 
 -- buffer
-opt.hidden = true -- Enable background buffers
-opt.wrap = false -- Disable line wrap
-opt.number = true -- Show line numbers
-opt.relativenumber = true -- Relative line numbers
-opt.cursorline = false -- Highlight current line
-opt.switchbuf = "useopen" -- Use existing window if buffer is already open
-opt.colorcolumn = "88"
+vim.o.hidden = true -- Enable background buffers
+vim.o.wrap = false -- Disable line wrap
+vim.o.number = true -- Show line numbers
+vim.o.relativenumber = true -- Relative line numbers
+vim.o.cursorline = false -- Highlight current line
+vim.o.switchbuf = "useopen" -- Use existing window if buffer is already open
+vim.o.colorcolumn = "88"
 
 -- diffs
-opt.diffopt="internal,filler,closeoff,hiddenoff,vertical,algorithm:patience"
+vim.o.diffopt="internal,filler,closeoff,hiddenoff,vertical,algorithm:patience"
 
 -- tabs
-opt.expandtab = true -- Use spaces instead of tabs
-opt.smartindent = false -- Avoid fucking with comment indents
-opt.shiftround = true -- Round indent
-opt.tabstop = 2 -- Number of spaces tabs count for
-opt.shiftwidth = 2 -- Size of an indent
+vim.o.expandtab = true -- Use spaces instead of tabs
+vim.o.smartindent = false -- Avoid fucking with comment indents
+vim.o.shiftround = true -- Round indent
+vim.o.tabstop = 2 -- Number of spaces tabs count for
+vim.o.shiftwidth = 2 -- Size of an indent
 
 -- search
-opt.ignorecase = false -- Ignore case
-opt.smartcase = false -- Do not ignore case with capitals
-opt.wildmode = {"full"} -- Command-line completion mode
-opt.wildignorecase = true
-opt.wildignore = opt.wildignore + {
+vim.o.ignorecase = false -- Ignore case
+vim.o.smartcase = false -- Do not ignore case with capitals
+vim.o.wildignorecase = true
+vim.opt.wildmode = {"full"} -- Command-line completion mode
+vim.opt.wildignore = vim.opt.wildignore + {
   "*swp", "*.class", "*.pyc", "*.png", "*.jpg", "*.gif", "*.zip", "*/tmp/*",
   "*.o", ".obj", "*.so"
 }
 
 -- cursor
-opt.scrolloff = 5 -- Lines of context
-opt.scrolljump = 1 -- Lines to scroll when cursor leaves screen
-opt.sidescrolloff = 4 -- Columns of context
-opt.showmatch = true -- Show matching brackets / parentheses
+vim.o.scrolloff = 5 -- Lines of context
+vim.o.scrolljump = 1 -- Lines to scroll when cursor leaves screen
+vim.o.sidescrolloff = 4 -- Columns of context
+vim.o.showmatch = true -- Show matching brackets / parentheses
 
 -- editing
-opt.timeoutlen = 500 -- How long to wait during key combo
-opt.langmap = "å(,¨),Å{,^},Ø\\;,ø:,æ^,+$"
-opt.clipboard = opt.clipboard + {"unnamedplus"}
+vim.o.timeoutlen = 500 -- How long to wait during key combo
+vim.o.langmap = "å(,¨),Å{,^},Ø\\;,ø:,æ^,+$"
+vim.opt.clipboard = vim.opt.clipboard + {"unnamedplus"}
 
 -- folding (also see treesitter)
 -- zm/M zr/R increase/increase foldlevel (max)
@@ -79,10 +84,10 @@ opt.clipboard = opt.clipboard + {"unnamedplus"}
 -- za zA switch fold (small/full)
 -- zi toggle folds
 -- zi zj move to next / prev fold
-opt.foldenable = false
-opt.foldmethod = "expr"
+vim.o.foldenable = false
+vim.o.foldmethod = "expr"
 
-opt.completeopt = "menu,menuone,noinsert"
+vim.o.completeopt = "menu,menuone,noinsert"
 vim.g.seoul256_background = 235
 
 -- ----------------------------------------
