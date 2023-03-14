@@ -42,6 +42,9 @@ opt.cursorline = false -- Highlight current line
 opt.switchbuf = "useopen" -- Use existing window if buffer is already open
 opt.colorcolumn = "88"
 
+-- diffs
+opt.diffopt="internal,filler,closeoff,hiddenoff,vertical,algorithm:patience"
+
 -- tabs
 opt.expandtab = true -- Use spaces instead of tabs
 opt.smartindent = false -- Avoid fucking with comment indents
@@ -213,8 +216,8 @@ require("packer").startup {
       "rbong/vim-flog",
       config = function()
         local map = vim.api.nvim_set_keymap
-        map("", "<leader>gg", ":Flog<cr>", {})
-        map("", "<leader>gG", ":Flogsplit<cr>", {})
+        map("", "<leader>gg", ":vertical Flogsplit<cr>", {})
+        map("", "<leader>gG", ":vertical Flogsplit -path=%<cr>", {})
       end
     }
 
