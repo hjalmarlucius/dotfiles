@@ -18,14 +18,14 @@ end
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
     -- tpope
-    "tpope/vim-sensible",         -- sensible default
-    "tpope/vim-commentary",       -- comment out stuff
+    "tpope/vim-sensible", -- sensible default
+    "tpope/vim-commentary", -- comment out stuff
     "tpope/vim-surround",
-    "tpope/vim-repeat",           -- repeat vim-surround with .
-    "tpope/vim-eunuch",           -- Move, Rename etc
+    "tpope/vim-repeat", -- repeat vim-surround with .
+    "tpope/vim-eunuch", -- Move, Rename etc
     -- div utils
     "dhruvasagar/vim-table-mode", -- tables
-    "itchyny/vim-qfedit",         -- editable quickfix list
+    "itchyny/vim-qfedit", -- editable quickfix list
     {
         -- keep location upon reopening
         "ethanholz/nvim-lastplace",
@@ -41,7 +41,7 @@ require("lazy").setup({
             vim.g.tmux_navigator_no_mappings = 1
             vim.g.tmux_navigator_disable_when_zoomed = 1
             local map = vim.keymap.set
-            opts = { silent = true, noremap = true }
+            local opts = { silent = true, noremap = true }
             map("n", "<M-h>", ":TmuxNavigateLeft<cr>", opts)
             map("n", "<M-j>", ":TmuxNavigateDown<cr>", opts)
             map("n", "<M-k>", ":TmuxNavigateUp<cr>", opts)
@@ -60,8 +60,8 @@ require("lazy").setup({
             vim.fn["mkdp#util#install"]()
         end,
         config = function()
-            vim.g.mkdp_auto_start = 0        -- auto start on moving into
-            vim.g.mkdp_auto_close = 0        -- auto close on moving away
+            vim.g.mkdp_auto_start = 0 -- auto start on moving into
+            vim.g.mkdp_auto_close = 0 -- auto close on moving away
             vim.g.mkdp_open_to_the_world = 1 -- available to others
             vim.g.mkdp_port = 8555
             vim.g.mkdp_echo_preview_url = 1
@@ -148,8 +148,8 @@ require("lazy").setup({
                         },
                         { "diff", colored = true },
                     },
-                    lualine_x = { "filetype" },
-                    lualine_y = { "progress" },
+                    lualine_x = {},
+                    lualine_y = { "filetype", "progress" },
                     lualine_z = { "location" },
                 },
                 inactive_sections = {
@@ -165,7 +165,7 @@ require("lazy").setup({
                         { "diff", colored = true },
                     },
                     lualine_x = {},
-                    lualine_y = { "progress" },
+                    lualine_y = { "filetype", "progress" },
                     lualine_z = { "location" },
                 },
             })
@@ -188,7 +188,7 @@ require("lazy").setup({
         config = function()
             local map = vim.keymap.set
             map("", "<C-g>", ":vertical Git<cr>:vertical resize 60<cr>", {})
-            map("", "<leader>gb", ":Git blame<cr>", {})
+            map("", "<leader>gB", ":Git blame<cr>", {})
             map("", "<leader>gp", ":Git push<cr>", {})
             map("", "<leader>gP", ":Git push -f<cr>", {})
         end,
@@ -208,12 +208,14 @@ require("lazy").setup({
                 signcolumn = true,
                 numhl = true,
                 linehl = false,
-                word_diff = true,
+                word_diff = false,
                 on_attach = function(bufnr)
                     local gs = package.loaded.gitsigns
 
-                    local function map(mode, l, r)
-                        vim.keymap.set(mode, l, r, { buffer = bufnr })
+                    local function map(mode, l, r, opts)
+                        opts = opts or {}
+                        opts.buffer = bufnr
+                        vim.keymap.set(mode, l, r, opts)
                     end
 
                     -- Navigation
@@ -239,7 +241,7 @@ require("lazy").setup({
 
                     -- Actions
                     map({ "n", "v" }, "<leader>gs", ":Gitsigns stage_hunk<CR>")
-                    map({ "n", "v" }, "<leader>xr", ":Gitsigns reset_hunk<CR>")
+                    map({ "n", "v" }, "<leader>gx", ":Gitsigns reset_hunk<CR>")
                     map("n", "<leader>gu", gs.undo_stage_hunk)
                     map("n", "<leader>gi", gs.preview_hunk)
                     map("n", "<leader>gb", function()
@@ -265,7 +267,7 @@ require("lazy").setup({
         dependencies = { "nvim-lua/plenary.nvim" },
         config = function()
             require("todo-comments").setup({
-                signs = true,      -- show icons in the signs column
+                signs = true, -- show icons in the signs column
                 sign_priority = 8, -- sign priority
                 -- keywords recognized as todo comments
                 keywords = {
@@ -340,6 +342,7 @@ require("lazy").setup({
         "nvim-telescope/telescope.nvim",
         version = "*",
         dependencies = {
+            "sharkdp/fd",
             "nvim-lua/plenary.nvim",
             "nvim-telescope/telescope-live-grep-args.nvim",
         },
@@ -447,9 +450,9 @@ require("lazy").setup({
         dependencies = { "nvim-treesitter/nvim-treesitter" },
         config = function()
             require("treesitter-context").setup({
-                enable = true,   -- Enable this plugin (Can be enabled/disabled later via commands)
+                enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
                 throttle = true, -- Throttles plugin updates (may improve performance)
-                max_lines = 0,   -- How many lines the window should span. Values <= 0 mean no limit.
+                max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
                 patterns = {
                     default = {
                         "class",
@@ -501,21 +504,34 @@ require("lazy").setup({
         "jose-elias-alvarez/null-ls.nvim",
         dependencies = { "nvim-lua/plenary.nvim" },
         config = function()
+            -- local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
             local null_ls = require("null-ls")
             null_ls.setup({
                 sources = {
-                    null_ls.builtins.completion.spell,
                     null_ls.builtins.diagnostics.mypy,
                     null_ls.builtins.diagnostics.eslint_d,
-                    null_ls.builtins.formatting.black.with({ extra_args = { "--preview" }, }),
+                    null_ls.builtins.formatting.black.with({ extra_args = { "--preview" } }),
                     null_ls.builtins.formatting.eslint_d,
                     null_ls.builtins.formatting.isort,
                     null_ls.builtins.formatting.jq,
                     null_ls.builtins.formatting.prettierd,
-                    null_ls.builtins.formatting.shfmt.with({ extra_args = { "--indent", "4" }, }),
+                    null_ls.builtins.formatting.shfmt.with({ extra_args = { "--indent", "4" } }),
+                    null_ls.builtins.formatting.stylua.with({ extra_args = { "--indent-type", "Spaces" } }),
                     null_ls.builtins.formatting.yamlfmt,
                     null_ls.builtins.formatting.yq,
                 },
+                -- on_attach = function(client, bufnr)
+                --     if client.supports_method("textDocument/formatting") then
+                --         vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+                --         vim.api.nvim_create_autocmd("BufWritePre", {
+                --             group = augroup,
+                --             buffer = bufnr,
+                --             callback = function()
+                --                 vim.lsp.buf.format({ bufnr = bufnr })
+                --             end,
+                --         })
+                --     end
+                -- end,
             })
         end,
     },
@@ -529,7 +545,7 @@ require("lazy").setup({
             "hrsh7th/nvim-cmp",
         },
         config = function()
-            on_attach = function(client, bufnr)
+            local on_attach = function(client, bufnr)
                 local bmap = function(mode, keys, func)
                     vim.keymap.set(mode, keys, func, { buffer = bufnr, noremap = true })
                 end
@@ -541,9 +557,15 @@ require("lazy").setup({
                     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
                 end)
                 -- jump
-                bmap("n", "<M-i>", vim.diagnostic.open_float)
-                bmap("n", "<M-n>", vim.diagnostic.goto_next)
-                bmap("n", "<M-p>", vim.diagnostic.goto_prev)
+                bmap("n", "<M-i>", function()
+                    vim.diagnostic.open_float({ source = true })
+                end)
+                bmap("n", "<M-n>", function()
+                    vim.diagnostic.goto_next({ severity = { min = vim.diagnostic.severity.INFO } })
+                end)
+                bmap("n", "<M-p>", function()
+                    vim.diagnostic.goto_prev({ severity = { min = vim.diagnostic.severity.INFO } })
+                end)
                 bmap("n", "gd", vim.lsp.buf.definition)
                 bmap("n", "gD", vim.lsp.buf.type_definition)
                 bmap("n", "gi", vim.lsp.buf.declaration)
@@ -556,18 +578,18 @@ require("lazy").setup({
                 -- other
                 bmap("n", "K", vim.lsp.buf.hover)
                 bmap("n", "<M-r>", vim.lsp.buf.rename)
-                bmap("n", "<leader>f", vim.lsp.buf.format)
                 bmap("n", "<leader>ca", vim.lsp.buf.code_action)
                 vim.api.nvim_buf_create_user_command(bufnr, "Format", function(_)
-                    vim.lsp.buf.format()
+                    vim.lsp.buf.format({ timeout_ms = 5000 })
                 end, { desc = "Format current buffer with LSP" })
+                bmap("n", "<leader>f", ":Format<cr>")
                 if
                     client.server_capabilities.documentFormattingProvider
                     or client.server_capabilities.documentRangeFormattingProvider
                 then
                     vim.api.nvim_command([[augroup Format]])
                     vim.api.nvim_command([[autocmd! * <buffer>]])
-                    vim.api.nvim_command([[autocmd BufWritePre * lua vim.lsp.buf.format()]])
+                    vim.api.nvim_command([[autocmd BufWritePre * lua vim.lsp.buf.format({ timeout_ms = 5000 })]])
                     vim.api.nvim_command([[augroup END]])
                 end
             end
@@ -586,8 +608,19 @@ require("lazy").setup({
                 },
                 lua_ls = {
                     Lua = {
-                        workspace = { checkThirdParty = false },
+                        workspace = {
+                            checkThirdParty = false,
+                            -- Make the server aware of Neovim runtime files
+                            library = vim.api.nvim_get_runtime_file("", true),
+                        },
                         telemetry = { enable = false },
+                        diagnostics = {
+                            -- Get the language server to recognize the `vim` global
+                            globals = { "vim" },
+                        },
+                        format = { -- disable formatting, stylua handles it
+                            enable = false,
+                        },
                     },
                 },
                 marksman = {},
@@ -597,7 +630,6 @@ require("lazy").setup({
                 html = {},
                 eslint = {},
                 dockerls = {},
-                docker_compose_language_service = {},
                 cssls = {},
                 bashls = {},
             }
@@ -621,6 +653,33 @@ require("lazy").setup({
                 end,
             })
         end,
+    },
+    {
+        "folke/noice.nvim",
+        config = function()
+            require("noice").setup({
+                lsp = {
+                    -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+                    override = {
+                        ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+                        ["vim.lsp.util.stylize_markdown"] = true,
+                        ["cmp.entry.get_documentation"] = true,
+                    },
+                },
+                -- you can enable a preset for easier configuration
+                presets = {
+                    bottom_search = false, -- use a classic bottom cmdline for search
+                    command_palette = true, -- position the cmdline and popupmenu together
+                    long_message_to_split = true, -- long messages will be sent to a split
+                    inc_rename = false, -- enables an input dialog for inc-rename.nvim
+                    lsp_doc_border = false, -- add a border to hover docs and signature help
+                },
+                messages = {
+                    enabled = false,
+                },
+            })
+        end,
+        dependencies = { "MunifTanjim/nui.nvim" },
     },
 })
 
@@ -663,11 +722,11 @@ vim.o.splitbelow = true -- Put new windows below current
 vim.o.splitright = true -- Put new windows right of current
 
 -- buffer
-vim.o.hidden = true         -- Enable background buffers
-vim.o.wrap = false          -- Disable line wrap
-vim.o.number = true         -- Show line numbers
+vim.o.hidden = true -- Enable background buffers
+vim.o.wrap = false -- Disable line wrap
+vim.o.number = true -- Show line numbers
 vim.o.relativenumber = true -- Relative line numbers
-vim.o.cursorline = false    -- Highlight current line
+vim.o.cursorline = false -- Highlight current line
 vim.o.switchbuf = "useopen" -- Use existing window if buffer is already open
 vim.o.colorcolumn = "88"
 
@@ -675,16 +734,16 @@ vim.o.colorcolumn = "88"
 vim.o.diffopt = "internal,filler,closeoff,hiddenoff,vertical,algorithm:patience"
 
 -- tabs
-vim.o.expandtab = true    -- Use spaces instead of tabs
+vim.o.expandtab = true -- Use spaces instead of tabs
 vim.o.smartindent = false -- Avoid fucking with comment indents
-vim.o.shiftround = true   -- Round indent
-vim.o.tabstop = 4         -- Number of spaces tabs count for
-vim.o.shiftwidth = 4      -- Size of an indent
-vim.o.breakindent = true  -- line breaks follow indents
+vim.o.shiftround = true -- Round indent
+vim.o.tabstop = 4 -- Number of spaces tabs count for
+vim.o.shiftwidth = 4 -- Size of an indent
+vim.o.breakindent = true -- line breaks follow indents
 
 -- search
-vim.o.ignorecase = false      -- Ignore case
-vim.o.smartcase = false       -- Do not ignore case with capitals
+vim.o.ignorecase = false -- Ignore case
+vim.o.smartcase = false -- Do not ignore case with capitals
 vim.o.wildignorecase = true
 vim.opt.wildmode = { "full" } -- Command-line completion mode
 vim.opt.wildignore = vim.opt.wildignore
@@ -703,10 +762,10 @@ vim.opt.wildignore = vim.opt.wildignore
     }
 
 -- cursor
-vim.o.scrolloff = 5     -- Lines of context
-vim.o.scrolljump = 1    -- Lines to scroll when cursor leaves screen
+vim.o.scrolloff = 5 -- Lines of context
+vim.o.scrolljump = 1 -- Lines to scroll when cursor leaves screen
 vim.o.sidescrolloff = 4 -- Columns of context
-vim.o.showmatch = true  -- Show matching brackets / parentheses
+vim.o.showmatch = true -- Show matching brackets / parentheses
 
 -- editing
 vim.o.timeoutlen = 500 -- How long to wait during key combo
@@ -731,7 +790,7 @@ local cmd = vim.cmd
 
 vim.api.nvim_command([[augroup MYAU]])
 vim.api.nvim_command([[autocmd!]])
-vim.api.nvim_command([[autocmd BufWritePost * %s/\s\+$//e]])
+vim.api.nvim_command([[autocmd BufWritePre * %s/\s\+$//e]])
 vim.api.nvim_command([[autocmd FileType python setlocal indentkeys-=<:>]])
 vim.api.nvim_command([[autocmd BufReadPost quickfix nmap <buffer> <cr> <cr>]])
 vim.api.nvim_command([[augroup END]])
@@ -804,4 +863,7 @@ map("n", "<F3>", ":LspInfo<cr>", { noremap = true })
 map("n", "<F4>", ":NullLsInfo<cr>", { noremap = true })
 map("n", "<F5>", ":checkt<cr>", { noremap = true })
 map("n", "<F6>", ":TodoQuickFix<cr>", { noremap = true })
-map("n", "<F9>", '<cmd>lua require("telescope.builtin").colorscheme({enable_preview=1})<cr>', opts)
+map("n", "<F9>", '<cmd>lua require("telescope.builtin").colorscheme({enable_preview=1})<cr>', { noremap = true })
+
+-- shit HACK
+map("n", "<leader>b", ":!blackdoc %<cr>", { noremap = true })
