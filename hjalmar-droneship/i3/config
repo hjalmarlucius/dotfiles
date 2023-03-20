@@ -98,8 +98,7 @@ bindsym $mod+Shift+x --release exec --no-startup-id xkill
 
 bindsym $mod+F1 exec i3-sensible-terminal -e 'htop'
 bindsym $mod+Shift+F1 exec i3-sensible-terminal -e 'glances'
-bindsym $mod+F2 exec "xdg-open 'https://rss.hjarl.com'"
-bindsym $mod+Shift+F2 exec "xdg-open --new-window 'https://rss.hjarl.com'"
+bindsym $mod+F2 exec "vivaldi-stable"
 bindsym $mod+F3 exec i3-sensible-terminal -e 'ranger'
 bindsym $mod+Shift+F3 exec thunar
 bindsym $mod+F4 exec pamac-manager
