@@ -355,6 +355,7 @@ require("lazy").setup({
             map("n", "<M-f>", "<cmd>Telescope git_files<cr>", opts)
             map("n", "<M-w>", ':lua require("telescope").extensions.live_grep_args.live_grep_args()<cr>', opts)
             map("n", "<M-y>", "<cmd>Telescope filetypes<cr>", opts)
+            map("n", "<M-u>", "<cmd>Telescope search_history<cr>", opts)
             require("telescope").setup({
                 defaults = {
                     mappings = {
