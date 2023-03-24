@@ -182,23 +182,25 @@ require("lazy").setup({
             map("n", "<M-P>", ":BufferLineMovePrev<cr>", { noremap = true, silent = true })
             map("n", "<M-N>", ":BufferLineMoveNext<cr>", { noremap = true, silent = true })
         end,
-    }, -- Git related plugins
+    }, -- git related plugins
     {
         "tpope/vim-fugitive",
         config = function()
             local map = vim.keymap.set
             map("", "<C-g>", ":vertical Git<cr>:vertical resize 60<cr>", {})
+            map("", "<leader>gl", ":Git log --oneline<cr>", {})
+            map("", "<leader>gL", ":Gclog<cr>", {})
             map("", "<leader>gB", ":Git blame<cr>", {})
-            map("", "<leader>gp", ":Git push<cr>", {})
-            map("", "<leader>gP", ":Git push -f<cr>", {})
+            map("", "<leader>gp", ":Git! push<cr>", {})
+            map("", "<leader>gP", ":Git! push -f<cr>", {})
         end,
     },
     {
         "rbong/vim-flog",
         config = function()
             local map = vim.keymap.set
-            map("", "<leader>gg", ":vertical Flogsplit<cr>", {})
-            map("", "<leader>gG", ":vertical Flogsplit -path=%<cr>", {})
+            map("", "<leader>gg", ":vertical Flogsplit -path=%<cr>", {})
+            map("", "<leader>gG", ":vertical Flogsplit<cr>", {})
         end,
     },
     {
@@ -496,7 +498,7 @@ require("lazy").setup({
             require("mason-null-ls").setup({
                 ensure_installed = nil,
                 automatic_setup = false,
-                automatic_installation = true,
+                automatic_installation = false,
             })
             require("mason-null-ls").setup_handlers()
         end,
@@ -509,7 +511,7 @@ require("lazy").setup({
             local null_ls = require("null-ls")
             null_ls.setup({
                 sources = {
-                    null_ls.builtins.diagnostics.mypy,
+                    -- null_ls.builtins.diagnostics.mypy,
                     null_ls.builtins.diagnostics.eslint_d,
                     null_ls.builtins.formatting.black.with({ extra_args = { "--preview" } }),
                     null_ls.builtins.formatting.eslint_d,
