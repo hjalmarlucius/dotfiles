@@ -43,24 +43,9 @@ disk "/" {
         format = " /  %total / %percentage_avail "
 }
 
-order += "disk /mnt/Games/"
-disk "/mnt/Games/" {
-        format = " /mnt/Games/  %total / %percentage_avail "
-}
-
-order += "disk /mnt/nuuetHDD/"
-disk "/mnt/nuuetHDD/" {
-        format = " /mnt/nuuetHDD/ ⛁ %total / %percentage_avail "
-}
-
-order += "disk /mnt/OneDrive/"
-disk "/mnt/OneDrive/" {
-        format = " /mnt/OneDrive/ ⛁ %total / %percentage_avail "
-}
-
-order += "disk /mnt/src/"
-disk "/mnt/src/" {
-        format = " /mnt/src/ ⛁ %total / %percentage_avail "
+order += "disk /mnt/hdd1/"
+disk "/mnt/hdd1/" {
+        format = " /mnt/hdd1/ ⛁ %total / %percentage_avail "
 }
 
 # order += "battery 0"
