@@ -412,29 +412,18 @@ require("lazy").setup({
         end,
     },
     {
-        "kiyoon/treesitter-indent-object.nvim",
-        dependencies = { "nvim-treesitter/nvim-treesitter" },
+        "RRethy/nvim-treesitter-textsubjects",
         config = function()
-            require("treesitter_indent_object").setup({})
+            require("nvim-treesitter.configs").setup({
+                textsubjects = {
+                    enable = true,
+                    prev_selection = ",",
+                    keymaps = {
+                        ["."] = "textsubjects-smart",
+                    },
+                },
+            })
         end,
-        keys = {
-            {
-                "ai",
-                function()
-                    require("treesitter_indent_object.textobj").select_indent_outer()
-                end,
-                mode = { "x", "o" },
-                desc = "Select context-aware indent (outer)",
-            },
-            {
-                "ii",
-                function()
-                    require("treesitter_indent_object.textobj").select_indent_inner()
-                end,
-                mode = { "x", "o" },
-                desc = "Select context-aware indent (inner, partial range)",
-            },
-        },
     },
     { -- context while scrolling
         "romgrk/nvim-treesitter-context",
