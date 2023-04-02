@@ -43,9 +43,9 @@ disk "/" {
         format = " /  %total / %percentage_avail "
 }
 
-order += "disk /mnt/nuuetHDD/"
-disk "/mnt/nuuetHDD/" {
-        format = " /mnt/nuuetHDD/ ⛁ %total / %percentage_avail "
+order += "disk /mnt/hdd1/"
+disk "/mnt/hdd1/" {
+        format = " /mnt/hdd1/ ⛁ %total / %percentage_avail "
 }
 
 order += "disk /mnt/OneDrive/"

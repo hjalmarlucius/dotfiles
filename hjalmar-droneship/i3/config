@@ -43,10 +43,10 @@ exec_always --no-startup-id fix_xcursor
 exec --no-startup-id setxkbmap -layout no -model pc105 -variant nodeadkeys -option caps:escape
 exec --no-startup-id redshift-gtk -l 59.91:10.75
 exec --no-startup-id dropbox start &
-# exec --no-startup-id nvidia-settings -a GPUFanControlState=1 -a GPUTargetFanSpeed=60
-exec --no-startup-id xrandr \
-    --output DP-4 --auto --primary --gamma 0.9:0.9:0.9 \
-    --output DP-2 --auto --right-of DP-4 --gamma 0.9:0.9:0.9
+exec --no-startup-id nvidia-settings -a GPUFanControlState=1 -a GPUTargetFanSpeed=60
+# exec --no-startup-id xrandr \
+#     --output DP-4 --auto --primary --gamma 0.9:0.9:0.9 \
+#     --output DP-2 --auto --right-of DP-4 --gamma 0.9:0.9:0.9
 
 # div bindings
 bindsym $mod+Shift+q kill
@@ -170,7 +170,7 @@ bindsym $mod+Shift+2 move container to workspace $ws2; workspace $ws2
 bindsym $mod+Shift+3 move container to workspace $ws3; workspace $ws3
 bindsym $mod+Shift+4 move container to workspace $ws4; workspace $ws4
 bindsym $mod+Shift+Insert move container to workspace $ws5; workspace $ws5
-bindsym $mod+Shift+Home move container to workspace $ws5; workspace $ws6
+bindsym $mod+Shift+Home move container to workspace $ws6; workspace $ws6
 bindsym $mod+Shift+Prior move container to workspace $ws7; workspace $ws7
 bindsym $mod+Shift+Delete move container to workspace $ws8; workspace $ws8
 bindsym $mod+Shift+End move container to workspace $ws9; workspace $ws9
@@ -189,6 +189,7 @@ for_window [class="Nitrogen"] floating enable sticky enable border normal
 for_window [class="Pamac-manager"] floating enable
 for_window [class="Pavucontrol"] floating enable
 for_window [class="qt5ct"] floating enable sticky enable border normal
+for_window [title="Origin"] floating enable
 
 # Set shut down, restart and locking features
 set $mode_system (l)ock, (e)xit, switch_(u)ser, (r)eboot, (s)hutdown
