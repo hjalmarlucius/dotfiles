@@ -51,7 +51,11 @@ require("lazy").setup({
     {
         -- Add indentation guides even on blank lines
         "lukas-reineke/indent-blankline.nvim",
-        opts = { show_trailing_blankline_indent = false },
+        opts = {
+            show_trailing_blankline_indent = false,
+            show_current_context = true,
+            show_current_context_start = true,
+        },
     },
     {
         -- live preview of markdown files
@@ -263,8 +267,8 @@ require("lazy").setup({
                 end,
             })
         end,
-    }, -- helplists
-    {
+    },
+    { -- helplists
         "folke/todo-comments.nvim",
         dependencies = { "nvim-lua/plenary.nvim" },
         config = function()
@@ -388,7 +392,6 @@ require("lazy").setup({
     {
         -- Highlight, edit, and navigate code
         "nvim-treesitter/nvim-treesitter",
-        dependencies = { "nvim-treesitter/nvim-treesitter-textobjects" },
         config = function()
             pcall(require("nvim-treesitter.install").update({ with_sync = true }))
             require("nvim-treesitter.configs").setup({
@@ -404,51 +407,36 @@ require("lazy").setup({
                         scope_incremental = "<M-n>",
                     },
                 },
-                textobjects = {
-                    select = {
-                        enable = true,
-                        lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
-                        keymaps = {
-                            -- You can use the capture groups defined in textobjects.scm
-                            ["aa"] = "@parameter.outer",
-                            ["ia"] = "@parameter.inner",
-                            ["af"] = "@function.outer",
-                            ["if"] = "@function.inner",
-                            ["ac"] = "@class.outer",
-                            ["ic"] = "@class.inner",
-                        },
-                    },
-                    move = {
-                        enable = true,
-                        set_jumps = true, -- whether to set jumps in the jumplist
-                        goto_next_start = {
-                            ["]m"] = "@function.outer",
-                            ["]]"] = "@class.outer",
-                        },
-                        goto_next_end = {
-                            ["]M"] = "@function.outer",
-                            ["]["] = "@class.outer",
-                        },
-                        goto_previous_start = {
-                            ["[m"] = "@function.outer",
-                            ["[["] = "@class.outer",
-                        },
-                        goto_previous_end = {
-                            ["[M"] = "@function.outer",
-                            ["[]"] = "@class.outer",
-                        },
-                    },
-                    swap = {
-                        enable = true,
-                        swap_next = { ["<leader>a"] = "@parameter.inner" },
-                        swap_previous = { ["<leader>A"] = "@parameter.inner" },
-                    },
-                },
             })
             vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
         end,
-    }, -- context while scrolling
+    },
     {
+        "kiyoon/treesitter-indent-object.nvim",
+        dependencies = { "nvim-treesitter/nvim-treesitter" },
+        config = function()
+            require("treesitter_indent_object").setup({})
+        end,
+        keys = {
+            {
+                "ai",
+                function()
+                    require("treesitter_indent_object.textobj").select_indent_outer()
+                end,
+                mode = { "x", "o" },
+                desc = "Select context-aware indent (outer)",
+            },
+            {
+                "ii",
+                function()
+                    require("treesitter_indent_object.textobj").select_indent_inner()
+                end,
+                mode = { "x", "o" },
+                desc = "Select context-aware indent (inner, partial range)",
+            },
+        },
+    },
+    { -- context while scrolling
         "romgrk/nvim-treesitter-context",
         dependencies = { "nvim-treesitter/nvim-treesitter" },
         config = function()
