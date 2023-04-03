@@ -849,3 +849,13 @@ map("n", "<F9>", '<cmd>lua require("telescope.builtin").colorscheme({enable_prev
 
 -- shit HACK
 map("n", "<leader>b", ":!blackdoc %<cr>", { noremap = true })
+
+-- cursor color
+
+local cursorcolor = function()
+    vim.api.nvim_set_hl(0, "CustomCursor", { fg = "red", bg = "red" })
+    vim.api.nvim_set_hl(0, "CustomICursor", { fg = "red", bg = "red" })
+end
+cursorcolor()
+vim.api.nvim_create_autocmd("ColorScheme", { pattern = "*", callback = cursorcolor })
+vim.o.guicursor = "n-v-c:block-CustomCursor,i:ver100-CustomICursor,n-v-c:blinkon0,i:blinkwait10"
