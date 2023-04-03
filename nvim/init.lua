@@ -17,13 +17,105 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
-    -- tpope
-    "tpope/vim-sensible", -- sensible default
-    "tpope/vim-commentary", -- comment out stuff
-    "tpope/vim-surround",
-    "tpope/vim-repeat", -- repeat vim-surround with .
-    "tpope/vim-eunuch", -- Move, Rename etc
+    -- mini
+    {
+        "echasnovski/mini.basics",
+        config = function()
+            require("mini.basics").setup({
+                options = {
+                    basic = true,
+                    extra_ui = true,
+                },
+                mappings = {
+                    move_with_alt = true,
+                },
+            })
+        end,
+    },
+    {
+        "echasnovski/mini.base16",
+        config = function()
+            require("mini.base16").setup({
+                palette = {
+                    base00 = "#112641",
+                    base01 = "#3a475e",
+                    base02 = "#606b81",
+                    base03 = "#8691a7",
+                    base04 = "#d5dc81",
+                    base05 = "#e2e98f",
+                    base06 = "#eff69c",
+                    base07 = "#fcffaa",
+                    base08 = "#ffcfa0",
+                    base09 = "#cc7e46",
+                    base0A = "#46a436",
+                    base0B = "#9ff895",
+                    base0C = "#ca6ecf",
+                    base0D = "#42f7ff",
+                    base0E = "#ffc4ff",
+                    base0F = "#00a5c5",
+                },
+                use_cterm = true,
+                plugins = {
+                    default = false,
+                    ["echasnovski/mini.nvim"] = true,
+                },
+            })
+        end,
+    },
+    {
+        "echasnovski/mini.comment",
+        config = function()
+            require("mini.comment").setup({})
+        end,
+    },
+    {
+        "echasnovski/mini.indentscope",
+        config = function()
+            require("mini.indentscope").setup({})
+        end,
+    },
+    {
+        "echasnovski/mini.jump",
+        config = function()
+            require("mini.jump").setup({})
+        end,
+    },
+    {
+        "echasnovski/mini.jump2d",
+        config = function()
+            require("mini.jump2d").setup({})
+        end,
+    },
+    {
+        "echasnovski/mini.pairs",
+        config = function()
+            require("mini.pairs").setup({})
+        end,
+    },
+    {
+        "echasnovski/mini.surround",
+        version = false,
+        config = function()
+            require("mini.surround").setup()
+        end,
+    },
+    {
+        "echasnovski/mini.bufremove",
+        config = function()
+            local bufremove = require("mini.bufremove")
+            bufremove.setup()
+            local map = vim.keymap.set
+            -- remove buffer
+            map("n", "<M-d>", function()
+                bufremove.wipeout()
+            end, { noremap = true })
+            map("n", "<M-D>", function()
+                bufremove.wipeout(nil, true)
+            end, { noremap = true })
+        end,
+    },
     -- div utils
+    "tpope/vim-eunuch", -- Move, Rename etc
     "dhruvasagar/vim-table-mode", -- tables
     "itchyny/vim-qfedit", -- editable quickfix list
     {
@@ -33,7 +125,6 @@ require("lazy").setup({
             require("nvim-lastplace").setup()
         end,
     },
-    "numToStr/Comment.nvim", -- 'gc' to comment visual regions/lines
     {
         -- tmux / vim interop
         "christoomey/vim-tmux-navigator",
@@ -47,15 +138,6 @@ require("lazy").setup({
             map("n", "<M-k>", ":TmuxNavigateUp<cr>", opts)
             map("n", "<M-l>", ":TmuxNavigateRight<cr>", opts)
         end,
-    },
-    {
-        -- Add indentation guides even on blank lines
-        "lukas-reineke/indent-blankline.nvim",
-        opts = {
-            show_trailing_blankline_indent = false,
-            show_current_context = true,
-            show_current_context_start = true,
-        },
     },
     {
         -- live preview of markdown files
@@ -674,41 +756,21 @@ vim.o.shell = "/usr/bin/bash"
 vim.o.fileencodings = "utf-8,ucs-bom,gb18030,gbk,gb2312,cp936"
 vim.o.fileformats = "unix"
 vim.o.swapfile = false
-vim.o.backup = false
 vim.o.updatetime = 300
 vim.o.timeoutlen = 200
 vim.g.BASH_Ctrl_j = "off"
 vim.g.BASH_Ctrl_l = "off"
 
--- looks
-vim.o.cmdheight = 1
--- vim.o.background = "dark"
-vim.o.listchars = "tab:→ ,trail:·,extends:↷,precedes:↶,nbsp:+,eol:↵"
-vim.o.list = true -- Show listchars
-vim.o.showtabline = 2
-vim.o.laststatus = 2
-
 -- colors
-vim.o.termguicolors = true
-vim.g.seoul256_background = 233
-vim.cmd("colorscheme seoul256")
-
+vim.cmd("colorscheme minicyan")
 -- undo
 vim.o.undodir = "/home/hjalmarlucius/.cache/vim/undo"
-vim.o.undofile = true
 vim.o.undolevels = 1000
 vim.o.undoreload = 10000
 
--- window
-vim.o.splitbelow = true -- Put new windows below current
-vim.o.splitright = true -- Put new windows right of current
-
 -- buffer
 vim.o.hidden = true -- Enable background buffers
-vim.o.wrap = false -- Disable line wrap
-vim.o.number = true -- Show line numbers
 vim.o.relativenumber = true -- Relative line numbers
-vim.o.cursorline = false -- Highlight current line
 vim.o.switchbuf = "useopen" -- Use existing window if buffer is already open
 vim.o.colorcolumn = "88"
 
@@ -717,31 +779,14 @@ vim.o.diffopt = "internal,filler,closeoff,hiddenoff,vertical,algorithm:patience"
 
 -- tabs
 vim.o.expandtab = true -- Use spaces instead of tabs
-vim.o.smartindent = false -- Avoid fucking with comment indents
 vim.o.shiftround = true -- Round indent
 vim.o.tabstop = 4 -- Number of spaces tabs count for
 vim.o.shiftwidth = 4 -- Size of an indent
-vim.o.breakindent = true -- line breaks follow indents
 
 -- search
-vim.o.ignorecase = false -- Ignore case
-vim.o.smartcase = false -- Do not ignore case with capitals
-vim.o.wildignorecase = true
 vim.opt.wildmode = { "full" } -- Command-line completion mode
 vim.opt.wildignore = vim.opt.wildignore
-    + {
-        "*swp",
-        "*.class",
-        "*.pyc",
-        "*.png",
-        "*.jpg",
-        "*.gif",
-        "*.zip",
-        "*/tmp/*",
-        "*.o",
-        ".obj",
-        "*.so",
-    }
+    + { "*swp", "*.class", "*.pyc", "*.png", "*.jpg", "*.gif", "*.zip", "*/tmp/*", "*.o", ".obj", "*.so" }
 
 -- cursor
 vim.o.scrolloff = 5 -- Lines of context
@@ -750,8 +795,7 @@ vim.o.sidescrolloff = 4 -- Columns of context
 vim.o.showmatch = true -- Show matching brackets / parentheses
 
 -- editing
-vim.o.timeoutlen = 500 -- How long to wait during key combo
-vim.o.langmap = "å(,¨),Å{,^},Ø\\;,ø:,æ^,+$"
+vim.o.langmap = "å(,¨),ø:,æ^,+$"
 vim.opt.clipboard = vim.opt.clipboard + { "unnamedplus" }
 
 -- folding (also see treesitter)
@@ -777,15 +821,6 @@ vim.api.nvim_command([[autocmd FileType python setlocal indentkeys-=<:>]])
 vim.api.nvim_command([[autocmd BufReadPost quickfix nmap <buffer> <cr> <cr>]])
 vim.api.nvim_command([[augroup END]])
 
--- highlight on yank
-local highlight_group = vim.api.nvim_create_augroup("YankHighlight", { clear = true })
-vim.api.nvim_create_autocmd("TextYankPost", {
-    callback = function()
-        vim.highlight.on_yank()
-    end,
-    group = highlight_group,
-    pattern = "*",
-})
 -- ----------------------------------------
 -- MAPS
 -- ----------------------------------------
@@ -835,9 +870,6 @@ map("n", "<C-l>", "5<C-w>>", { noremap = true })
 -- quickfix window
 map("n", "<C-p>", ":cp<cr>", { noremap = true })
 map("n", "<C-n>", ":cn<cr>", { noremap = true })
--- remove buffer
-map("n", "<M-d>", ":bprev<bar>:bd#<cr>", { noremap = true })
-map("n", "<M-D>", ":bprev<bar>:bd!#<cr>", { noremap = true })
 --- F keys
 map("n", "<F1>", ":Lazy<cr>", { noremap = true })
 map("n", "<F2>", ":Mason<cr>", { noremap = true })
@@ -852,9 +884,11 @@ map("n", "<leader>b", ":!blackdoc %<cr>", { noremap = true })
 
 -- cursor color
 
+-- https://codeyarns.com/tech/2011-07-29-vim-chart-of-color-names.html
+local col = "salmon1"
 local cursorcolor = function()
-    vim.api.nvim_set_hl(0, "CustomCursor", { fg = "red", bg = "red" })
-    vim.api.nvim_set_hl(0, "CustomICursor", { fg = "red", bg = "red" })
+    vim.api.nvim_set_hl(0, "CustomCursor", { fg = col, bg = col })
+    vim.api.nvim_set_hl(0, "CustomICursor", { fg = col, bg = col })
 end
 cursorcolor()
 vim.api.nvim_create_autocmd("ColorScheme", { pattern = "*", callback = cursorcolor })
