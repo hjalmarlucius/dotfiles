@@ -75,21 +75,14 @@ require("lazy").setup({
         end,
     },
     {
-        "echasnovski/mini.jump",
+        "phaazon/hop.nvim",
         config = function()
-            require("mini.jump").setup({})
-        end,
-    },
-    {
-        "echasnovski/mini.jump2d",
-        config = function()
-            require("mini.jump2d").setup({})
-        end,
-    },
-    {
-        "echasnovski/mini.pairs",
-        config = function()
-            require("mini.pairs").setup({})
+            require("hop").setup({
+                require("hop.highlight").insert_highlights(),
+            })
+            local map = vim.keymap.set
+            local opts = { silent = true, noremap = true }
+            map({ "n", "v" }, "<CR>", "<cmd>HopWord<cr>", opts)
         end,
     },
     {
@@ -133,10 +126,10 @@ require("lazy").setup({
             vim.g.tmux_navigator_disable_when_zoomed = 1
             local map = vim.keymap.set
             local opts = { silent = true, noremap = true }
-            map("n", "<M-h>", ":TmuxNavigateLeft<cr>", opts)
-            map("n", "<M-j>", ":TmuxNavigateDown<cr>", opts)
-            map("n", "<M-k>", ":TmuxNavigateUp<cr>", opts)
-            map("n", "<M-l>", ":TmuxNavigateRight<cr>", opts)
+            map("n", "<M-h>", "<cmd>TmuxNavigateLeft<cr>", opts)
+            map("n", "<M-j>", "<cmd>TmuxNavigateDown<cr>", opts)
+            map("n", "<M-k>", "<cmd>TmuxNavigateUp<cr>", opts)
+            map("n", "<M-l>", "<cmd>TmuxNavigateRight<cr>", opts)
         end,
     },
     {
@@ -177,7 +170,7 @@ require("lazy").setup({
         config = function()
             -- Unless you are still migrating, remove the deprecated commands from v1.x
             vim.cmd([[ let g:neo_tree_remove_legacy_commands = 1 ]])
-            vim.keymap.set("n", "<C-t>", ":NeoTreeFocusToggle<cr>", { noremap = true })
+            vim.keymap.set("n", "<C-t>", "<cmd>NeoTreeFocusToggle<cr>", { noremap = true })
         end,
     }, -- theme dark and light
     "NLKNguyen/papercolor-theme",
@@ -201,18 +194,6 @@ require("lazy").setup({
         build = "cd /home/hjalmarlucius/.local/share/nvim/site/pack/packer/start/vim-hexokinase && make hexokinase",
         config = function()
             vim.g.Hexokinase_highlighters = { "virtual" }
-        end,
-    },
-    {
-        -- flashing cursor on move
-        "danilamihailov/beacon.nvim",
-        init = function()
-            vim.api.nvim_exec([[highlight Beacon guibg=white ctermbg=15]], false)
-        end,
-        config = function()
-            vim.g.beacon_size = 40
-            vim.g.beacon_minimal_jump = 10
-            vim.g.beacon_shrink = 1
         end,
     }, -- status + buffer lines
     {
@@ -263,30 +244,30 @@ require("lazy").setup({
         config = function()
             require("bufferline").setup({ options = { diagnostics = "nvim_lsp" } })
             local map = vim.keymap.set
-            map("n", "<M-J>", ":BufferLineCyclePrev<cr>", { noremap = true, silent = true })
-            map("n", "<M-K>", ":BufferLineCycleNext<cr>", { noremap = true, silent = true })
-            map("n", "<M-P>", ":BufferLineMovePrev<cr>", { noremap = true, silent = true })
-            map("n", "<M-N>", ":BufferLineMoveNext<cr>", { noremap = true, silent = true })
+            map("n", "<M-J>", "<cmd>BufferLineCyclePrev<cr>", { noremap = true, silent = true })
+            map("n", "<M-K>", "<cmd>BufferLineCycleNext<cr>", { noremap = true, silent = true })
+            map("n", "<M-P>", "<cmd>BufferLineMovePrev<cr>", { noremap = true, silent = true })
+            map("n", "<M-N>", "<cmd>BufferLineMoveNext<cr>", { noremap = true, silent = true })
         end,
     }, -- git related plugins
     {
         "tpope/vim-fugitive",
         config = function()
             local map = vim.keymap.set
-            map("", "<C-g>", ":vertical Git<cr>:vertical resize 60<cr>", {})
-            map("", "<leader>gl", ":Git log --oneline<cr>", {})
-            map("", "<leader>gL", ":Gclog<cr>", {})
-            map("", "<leader>gB", ":Git blame<cr>", {})
-            map("", "<leader>gp", ":Git! push<cr>", {})
-            map("", "<leader>gP", ":Git! push -f<cr>", {})
+            map("", "<C-g>", "<cmd>vertical Git<cr>:vertical resize 60<cr>", {})
+            map("", "<leader>gl", "<cmd>Git log --oneline<cr>", {})
+            map("", "<leader>gL", "<cmd>Gclog<cr>", {})
+            map("", "<leader>gB", "<cmd>Git blame<cr>", {})
+            map("", "<leader>gp", "<cmd>Git push<cr>", {})
+            map("", "<leader>gP", "<cmd>Git push -f<cr>", {})
         end,
     },
     {
         "rbong/vim-flog",
         config = function()
             local map = vim.keymap.set
-            map("", "<leader>gg", ":vertical Flogsplit -path=%<cr>", {})
-            map("", "<leader>gG", ":vertical Flogsplit<cr>", {})
+            map("", "<leader>gg", "<cmd>vertical Flogsplit -path=%<cr>", {})
+            map("", "<leader>gG", "<cmd>vertical Flogsplit<cr>", {})
         end,
     },
     {
@@ -345,7 +326,7 @@ require("lazy").setup({
                     map("n", "<leader>tn", gs.toggle_numhl)
 
                     -- Text object
-                    map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>")
+                    map({ "o", "x" }, "ih", "<cmd><C-U>Gitsigns select_hunk<CR>")
                 end,
             })
         end,
@@ -508,34 +489,6 @@ require("lazy").setup({
                 },
             })
         end,
-    },
-    { -- context while scrolling
-        "romgrk/nvim-treesitter-context",
-        dependencies = { "nvim-treesitter/nvim-treesitter" },
-        config = function()
-            require("treesitter-context").setup({
-                enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
-                throttle = true, -- Throttles plugin updates (may improve performance)
-                max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
-                patterns = {
-                    default = {
-                        "class",
-                        "function",
-                        "method",
-                        -- 'for', -- These won't appear in the context
-                        -- 'while',
-                        -- 'if',
-                        -- 'switch',
-                        -- 'case',
-                    },
-                    -- Example for a specific filetype.
-                    -- If a pattern is missing, *open a PR* so everyone can benefit.
-                    --   rust = {
-                    --       'impl_item',
-                    --   },
-                },
-            })
-        end,
     }, -- package manager + lsp stuff
     {
         "williamboman/mason.nvim",
@@ -646,7 +599,7 @@ require("lazy").setup({
                 vim.api.nvim_buf_create_user_command(bufnr, "Format", function(_)
                     vim.lsp.buf.format({ timeout_ms = 5000 })
                 end, { desc = "Format current buffer with LSP" })
-                bmap("n", "<leader>f", ":Format<cr>")
+                bmap("n", "<leader>f", "<cmd>Format<cr>")
                 if
                     client.server_capabilities.documentFormattingProvider
                     or client.server_capabilities.documentRangeFormattingProvider
@@ -756,10 +709,9 @@ vim.o.shell = "/usr/bin/bash"
 vim.o.fileencodings = "utf-8,ucs-bom,gb18030,gbk,gb2312,cp936"
 vim.o.fileformats = "unix"
 vim.o.swapfile = false
-vim.o.updatetime = 300
-vim.o.timeoutlen = 200
 vim.g.BASH_Ctrl_j = "off"
 vim.g.BASH_Ctrl_l = "off"
+-- TODO remove <cr> in commands
 
 -- colors
 vim.cmd("colorscheme minicyan")
@@ -770,7 +722,9 @@ vim.o.undoreload = 10000
 
 -- buffer
 vim.o.hidden = true -- Enable background buffers
-vim.o.relativenumber = true -- Relative line numbers
+vim.o.number = false
+vim.o.relativenumber = false
+vim.o.cursorline = false
 vim.o.switchbuf = "useopen" -- Use existing window if buffer is already open
 vim.o.colorcolumn = "88"
 
@@ -832,7 +786,7 @@ map("n", "q:", "", { noremap = true })
 map({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
 map("n", "<leader>e", [[:vnew ~/dotfiles/nvim/init.lua<cr>]], { noremap = true })
 map("n", "<leader>ww", [[:cd %:p:h<cN>]], { noremap = true })
-map("n", "<esc><esc>", ":noh<cr>", { silent = true, noremap = true })
+map("n", "<esc><esc>", "<cmd>noh<cr>", { silent = true, noremap = true })
 map("", "<F12>", "<esc>", { silent = true, noremap = true })
 
 -- <Tab> to navigate the completion menu
@@ -851,36 +805,36 @@ map("n", "\\", "n.", { noremap = true })
 
 -- WINDOWS / BUFFERS
 -- make splits and tabs
-map("n", "<M-V>", ":vnew<cr>", { noremap = true })
-map("n", "<M-S>", ":new<cr>", { noremap = true })
-map("n", "<M-v>", ":vsplit<cr>", { noremap = true })
-map("n", "<M-s>", ":split<cr>", { noremap = true })
-map("n", "<M-t>", ":tabe %<cr>", { noremap = true })
-map("n", "<M-T>", ":tabnew<cr>", { noremap = true })
+map("n", "<M-V>", "<cmd>vnew<cr>", { noremap = true })
+map("n", "<M-S>", "<cmd>new<cr>", { noremap = true })
+map("n", "<M-v>", "<cmd>vsplit<cr>", { noremap = true })
+map("n", "<M-s>", "<cmd>split<cr>", { noremap = true })
+map("n", "<M-t>", "<cmd>tabe %<cr>", { noremap = true })
+map("n", "<M-T>", "<cmd>tabnew<cr>", { noremap = true })
 -- buffers and tabs
-map("n", "<M-J>", ":bprev<cr>", { noremap = true })
-map("n", "<M-K>", ":bnext<cr>", { noremap = true })
-map("n", "<M-H>", ":tabprev<cr>", { noremap = true })
-map("n", "<M-L>", ":tabnext<cr>", { noremap = true })
+map("n", "<M-J>", "<cmd>bprev<cr>", { noremap = true })
+map("n", "<M-K>", "<cmd>bnext<cr>", { noremap = true })
+map("n", "<M-H>", "<cmd>tabprev<cr>", { noremap = true })
+map("n", "<M-L>", "<cmd>tabnext<cr>", { noremap = true })
 -- resize windows with hjkl
 map("n", "<C-h>", "5<C-w><", { noremap = true })
 map("n", "<C-j>", "5<C-w>-", { noremap = true })
 map("n", "<C-k>", "5<C-w>+", { noremap = true })
 map("n", "<C-l>", "5<C-w>>", { noremap = true })
 -- quickfix window
-map("n", "<C-p>", ":cp<cr>", { noremap = true })
-map("n", "<C-n>", ":cn<cr>", { noremap = true })
+map("n", "<C-p>", "<cmd>cp<cr>", { noremap = true })
+map("n", "<C-n>", "<cmd>cn<cr>", { noremap = true })
 --- F keys
-map("n", "<F1>", ":Lazy<cr>", { noremap = true })
-map("n", "<F2>", ":Mason<cr>", { noremap = true })
-map("n", "<F3>", ":LspInfo<cr>", { noremap = true })
-map("n", "<F4>", ":NullLsInfo<cr>", { noremap = true })
-map("n", "<F5>", ":checkt<cr>", { noremap = true })
-map("n", "<F6>", ":TodoQuickFix<cr>", { noremap = true })
+map("n", "<F1>", "<cmd>Lazy<cr>", { noremap = true })
+map("n", "<F2>", "<cmd>Mason<cr>", { noremap = true })
+map("n", "<F3>", "<cmd>LspInfo<cr>", { noremap = true })
+map("n", "<F4>", "<cmd>NullLsInfo<cr>", { noremap = true })
+map("n", "<F5>", "<cmd>checkt<cr>", { noremap = true })
+map("n", "<F6>", "<cmd>TodoQuickFix<cr>", { noremap = true })
 map("n", "<F9>", '<cmd>lua require("telescope.builtin").colorscheme({enable_preview=1})<cr>', { noremap = true })
 
 -- shit HACK
-map("n", "<leader>b", ":!blackdoc %<cr>", { noremap = true })
+map("n", "<leader>b", "<cmd>!blackdoc %<cr>", { noremap = true })
 
 -- cursor color
 
