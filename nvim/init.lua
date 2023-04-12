@@ -514,6 +514,7 @@ require("lazy").setup({
                 automatic_setup = false,
                 automatic_installation = false,
             })
+            require("mason-null-ls").setup_handlers()
         end,
     },
     {
