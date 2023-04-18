@@ -45,8 +45,8 @@ exec --no-startup-id redshift-gtk -l 59.91:10.75
 exec --no-startup-id dropbox start &
 exec --no-startup-id nvidia-settings -a GPUFanControlState=1 -a GPUTargetFanSpeed=60
 # exec --no-startup-id xrandr \
-#     --output DP-4 --auto --primary --gamma 0.9:0.9:0.9 \
-#     --output DP-2 --auto --right-of DP-4 --gamma 0.9:0.9:0.9
+#     --output DP-0 --auto --primary --gamma 0.9:0.9:0.9 \
+#     --output DP-2 --auto --right-of DP-0 --gamma 0.9:0.9:0.9
 
 # div bindings
 bindsym $mod+Shift+q kill
@@ -129,13 +129,13 @@ set $ws9 "End"
 set $ws0 "PgDn"
 
 # switch to workspace
-workspace $ws1 output DP-4
+workspace $ws1 output DP-0
 workspace $ws2 output DP-2
-workspace $ws3 output DP-4
+workspace $ws3 output DP-0
 workspace $ws4 output DP-2
-workspace $ws5 output DP-4
-workspace $ws6 output DP-4
-workspace $ws7 output DP-4
+workspace $ws5 output DP-0
+workspace $ws6 output DP-0
+workspace $ws7 output DP-0
 workspace $ws8 output DP-2
 workspace $ws9 output DP-2
 workspace $ws0 output DP-2
