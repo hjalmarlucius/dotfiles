@@ -116,5 +116,5 @@ Subsystem	sftp	/usr/lib/ssh/sftp-server
 #	ForceCommand cvs server
 
 # HB edits
-AllowUsers hjalmarlucius theskjalg
+AllowUsers hjalmarlucius
 Protocol 2
