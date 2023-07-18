@@ -4,11 +4,12 @@ set zoom-min 0
 set zoom-max 1000
 set zoom-step 10
 set first-page-column 1
-set pages-per-row 2
+set pages-per-row 1
 set scroll-step 100
 set scroll-page-aware "true"
 set show-recent 0
 set recolor-keephue "true"
+set recolor-lightcolor \#222222
 set guioptions "csv"
 set adjust-open "best-fit"
 set selection-clipboard "clipboard"
