@@ -564,7 +564,6 @@ require("lazy").setup({
         dependencies = {
             "williamboman/mason.nvim",
             "williamboman/mason-lspconfig.nvim",
-            "j-hui/fidget.nvim",
             "folke/neodev.nvim",
             "hrsh7th/nvim-cmp",
         },
@@ -657,7 +656,6 @@ require("lazy").setup({
                 cssls = {},
                 bashls = {},
             }
-            require("fidget").setup()
             require("neodev").setup()
 
             local capabilities = vim.lsp.protocol.make_client_capabilities()
