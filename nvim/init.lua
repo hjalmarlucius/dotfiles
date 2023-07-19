@@ -384,6 +384,8 @@ require("lazy").setup({
                     ["<C-b>"] = cmp.mapping.scroll_docs(-4),
                     ["<C-f>"] = cmp.mapping.scroll_docs(4),
                     ["<C-Space>"] = cmp.mapping.complete(),
+                    ["<C-e>"] = cmp.mapping.abort(),
+                    ["<CR>"] = cmp.mapping.confirm({ select = true }),
                 }),
             })
             cmp.setup.cmdline(":", {
@@ -466,6 +468,7 @@ require("lazy").setup({
         config = function()
             pcall(require("nvim-treesitter.install").update({ with_sync = true }))
             require("nvim-treesitter.configs").setup({
+                ensure_installed = { "c", "cpp", "lua", "vimdoc", "gitcommit", "git_rebase", "bash", "python" },
                 auto_install = true,
                 highlight = { enable = true },
                 indent = { enable = true, disable = { "python" } },
@@ -648,8 +651,11 @@ require("lazy").setup({
                 },
                 marksman = {},
                 yamlls = {},
+                tsserver = {},
                 html = {},
+                eslint = {},
                 cssls = {},
+                bashls = {},
             }
             require("neodev").setup()
 
@@ -716,7 +722,6 @@ vim.g.BASH_Ctrl_l = "off"
 -- colors
 vim.cmd("colorscheme minicyan")
 -- undo
-vim.o.undodir = "/home/hjalmarlucius/.cache/vim/undo"
 vim.o.undolevels = 1000
 vim.o.undoreload = 10000
 
