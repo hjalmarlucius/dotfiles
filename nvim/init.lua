@@ -194,7 +194,7 @@ require("lazy").setup({
     {
         -- coloring of colornames
         "rrethy/vim-hexokinase",
-        build = "cd /home/hjalmarlucius/.local/share/nvim/site/pack/packer/start/vim-hexokinase && make hexokinase",
+        build = "cd /home/hjalmarlucius/.local/share/nvim/lazy/vim-hexokinase && make hexokinase",
         config = function()
             vim.g.Hexokinase_highlighters = { "virtual" }
         end,
@@ -648,13 +648,8 @@ require("lazy").setup({
                 },
                 marksman = {},
                 yamlls = {},
-                tsserver = {},
-                sqlls = {},
                 html = {},
-                eslint = {},
-                dockerls = {},
                 cssls = {},
-                bashls = {},
             }
             require("neodev").setup()
 
