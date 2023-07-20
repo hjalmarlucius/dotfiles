@@ -61,7 +61,7 @@ yay i3status rofi mutt redshift coolercontrol
 sudo systemctl enable --now coolercontrold.service
 
 # applications
-yay plex-media-server qbittorrent discord teamviewer steam qalculate ncspot
+yay plex-media-server qbittorrent discord teamviewer steam qalculate cmus ncspot
 sudo ufw allow 8010 comment "chromecast"
 sudo ufw allow 27031,27036/udp comment "Steam Link"
 sudo ufw allow 27036,27037/tcp comment "Steam Link"
