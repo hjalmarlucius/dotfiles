@@ -12,8 +12,12 @@ settings:
     global:
       normal:
         <: tab-move -
+        <Ctrl+l>: set-cmd-text :open {url:pretty}
+        <F10>: config-cycle colors.webpage.darkmode.enabled true false ;; restart
+        <F11>: config-cycle tabs.show always switching
+        <F12>: view-source
         '>': tab-move +
-        pb: spawn --userscript qute-bitwarden
+        pw: spawn --userscript qute-bitwarden
         tm: tab-move
         to: tab-focus
         ø: 'set-cmd-text :'
@@ -31,7 +35,7 @@ settings:
   fonts.statusbar:
     global: 15px default_family
   messages.timeout:
-    global: 10000
+    global: 5000
   scrolling.bar:
     global: always
   session.lazy_restore:
@@ -60,21 +64,18 @@ settings:
       top: 2
   tabs.position:
     global: left
+  tabs.show:
+    global: always
+  tabs.show_switching_delay:
+    global: 5000
   tabs.undo_stack_size:
     global: 1000
   tabs.width:
     global: 15%
   url.searchengines:
     global:
-      DEFAULT: https://duckduckgo.com/?q={}
+      DEFAULT: https://google.com/search?q={}
+      ddg: https://duckduckgo.com/?q={}
       goo: https://google.com/search?q={}
   url.start_pages:
     global: https://rss.hjarl.com/tt-rss
-  url.yank_ignored_parameters:
-    global:
-    - ref
-    - utm_source
-    - utm_medium
-    - utm_campaign
-    - utm_term
-    - utm_content
