@@ -150,6 +150,11 @@ require("lazy").setup({
         end,
     },
     {
+        "ellisonleao/glow.nvim",
+        config = true,
+        cmd = "Glow",
+    },
+    {
         -- better asterisk search
         "haya14busa/vim-asterisk",
         config = function()

@@ -21,7 +21,7 @@ yay kitty fish
 chsh -s /usr/bin/fish
 
 # code
-yay neovim tig stylua tmux diff-so-fancy ripgrep prettier jq git-lfs shfmt
+yay neovim tig stylua tmux diff-so-fancy ripgrep prettier jq git-lfs shfmt glow
 git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
 
 # file sync
