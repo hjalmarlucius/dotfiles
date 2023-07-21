@@ -5,10 +5,21 @@ sudo ufw allow 80/tcp comment "web"
 sudo ufw allow 443/tcp comment "websecure"
 sudo ufw allow 10000:10100/tcp comment "generic"
 
+# keyboard fix
+echo 'XKBMODEL="pc105"
+XKBLAYOUT="no"
+XKBVARIANT="nodeadkeys"
+XKBOPTIONS="caps:escape"
+
+BACKSPACE="guess"' | sudo tee /etc/default/keyboard
+
 # general
 sudo systemctl enable --now sshd.service
 sudo systemctl enable --now fstrim.timer
 yay plymouth tldextract go nodejs unzip exa
+
+# nvidia
+yay cuda nvidia-settings nvidia-docker
 
 # python
 yay python-pip pyenv ipython
@@ -29,6 +40,7 @@ yay syncthings rclone
 sudo systemctl enable --now syncthing@hjalmarlucius.service
 systemctl --user daemon-reload
 systemctl --user enable --now rclone-gdrive.service
+sudo ufw allow syncthing comment "Syncthing"
 
 # docker incl non-root daemon
 yay docker docker-compose dry-bin nvidia-docker docker-buildx
@@ -65,3 +77,5 @@ yay plex-media-server qbittorrent discord teamviewer steam qalculate cmus ncspot
 sudo ufw allow 8010 comment "chromecast"
 sudo ufw allow 27031,27036/udp comment "Steam Link"
 sudo ufw allow 27036,27037/tcp comment "Steam Link"
+sudo ufw allow to 224.0.0.1 comment "Multicast"
+sudo ufw allow from 192.168.1.1 port 1900 to any proto udp comment "Multicast"
