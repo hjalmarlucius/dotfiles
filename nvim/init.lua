@@ -416,7 +416,7 @@ require("lazy").setup({
                 sources = cmp.config.sources({
                     {
                         name = "path",
-                        option = { trailing_slash = true },
+                        option = { trailing_slash = false },
                     },
                 }, { { name = "cmdline" } }),
             })
@@ -795,7 +795,7 @@ map("n", "q:", "", { noremap = true })
 
 map({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
 map("n", "<leader>e", [[:vnew ~/dotfiles/nvim/init.lua<cr>]], { noremap = true })
-map("n", "<leader>ww", [[:cd %:p:h<cN>]], { noremap = true })
+map("n", "<leader>ww", [[:cd %:p:h<cr>]], { noremap = true })
 map("n", "<esc><esc>", "<cmd>noh<cr>", { silent = true, noremap = true })
 map("", "<F12>", "<esc>", { silent = true, noremap = true })
 
