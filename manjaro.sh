@@ -25,7 +25,7 @@ yay cuda nvidia-settings nvidia-docker
 yay python-pip pyenv ipython
 
 # sound
-yay pavucontrol pa-applet manjaro-pulse
+yay manjaro-pipewire pavucontrol
 
 # terminal and shell
 yay kitty fish
