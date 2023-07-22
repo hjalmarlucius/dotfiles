@@ -5,14 +5,6 @@ sudo ufw allow 80/tcp comment "web"
 sudo ufw allow 443/tcp comment "websecure"
 sudo ufw allow 10000:10100/tcp comment "generic"
 
-# keyboard fix
-echo 'XKBMODEL="pc105"
-XKBLAYOUT="no"
-XKBVARIANT="nodeadkeys"
-XKBOPTIONS="caps:escape"
-
-BACKSPACE="guess"' | sudo tee /etc/default/keyboard
-
 # general
 sudo systemctl enable --now sshd.service
 sudo systemctl enable --now fstrim.timer
@@ -40,7 +32,8 @@ yay syncthings rclone
 sudo systemctl enable --now syncthing@hjalmarlucius.service
 systemctl --user daemon-reload
 systemctl --user enable --now rclone-gdrive.service
-sudo ufw allow syncthing comment "Syncthing"
+sudo ufw allow 22000,21027/udp comment "syncthing"
+sudo ufw allow to 224.0.0.0/4 comment "Multicast"
 
 # docker incl non-root daemon
 yay docker docker-compose dry-bin nvidia-docker docker-buildx
@@ -68,14 +61,35 @@ yay noto-fonts-emoji ttf-hack
 # browser
 yay qutebrowser pdfjs bitwarden-cli
 
-# utils
-yay i3status rofi mutt redshift coolercontrol
-sudo systemctl enable --now coolercontrold.service
+# zerotier
+yay zerotier-one
+sudo systemctl enable --now zerotier-one.service
+sudo zerotier-cli join d5e5fb653797795b
+sudo ufw allow from 9993/udp comment "zerotier"
+sudo ufw allow from 172.30.0.0/16 comment "zerotier"
 
-# applications
-yay plex-media-server qbittorrent discord teamviewer steam qalculate cmus ncspot
+# coolercontrol
+yay coolercontrol
+sudo systemctl enable --now coolercontrold.service
+sudo systemctl edit coolercontrold.service  # set log level to WARN
+
+# video streaming
+yay plex-media-server
+sudo systemctl enable --now plexmediaserver.service
 sudo ufw allow 8010 comment "chromecast"
+sudo ufw allow 32400/tcp comment "plex"
+sudo ufw allow 1900/udp comment "plex DLNA server"
+sudo ufw allow 32469/tcp comment "plex DLNA server"
+sudo ufw allow 32410,32412,32413,32414/udp comment "plex GDM discovery"
+
+# steam
+yay steam
 sudo ufw allow 27031,27036/udp comment "Steam Link"
 sudo ufw allow 27036,27037/tcp comment "Steam Link"
-sudo ufw allow to 224.0.0.1 comment "Multicast"
-sudo ufw allow from 192.168.1.1 port 1900 to any proto udp comment "Multicast"
+
+# qbittorrent
+yay qbittorrent
+sudo ufw allow 6881/tcp comment "qbittorrent"
+
+# applications
+yay i3status rofi mutt redshift discord teamviewer qalculate cmus ncspot
