@@ -1,9 +1,5 @@
-# firewall
-sudo ufw enable
-sudo ufw allow 22/tcp comment "ssh"
-sudo ufw allow 80/tcp comment "web"
-sudo ufw allow 443/tcp comment "websecure"
-sudo ufw allow 10000:10100/tcp comment "generic"
+#!/bin/sh
+set -e
 
 # general
 sudo systemctl enable --now sshd.service
@@ -32,16 +28,9 @@ yay syncthings rclone
 sudo systemctl enable --now syncthing@hjalmarlucius.service
 systemctl --user daemon-reload
 systemctl --user enable --now rclone-gdrive.service
-sudo ufw allow 22000,21027/udp comment "syncthing"
-sudo ufw allow to 224.0.0.0/4 comment "Multicast"
 
 # docker incl non-root daemon
 yay docker docker-compose dry-bin nvidia-docker docker-buildx
-sudo ufw allow 2376/tcp comment "Docker"
-sudo ufw allow 2377/tcp comment "Docker"
-sudo ufw allow 4789/udp comment "Docker"
-sudo ufw allow 7946/udp comment "Docker"
-sudo ufw allow 7946/tcp comment "Docker"
 sudo groupadd docker && sudo usermod -aG docker $USER
 sudo systemctl enable --now containerd.service
 sudo systemctl enable --now docker.service
@@ -59,14 +48,11 @@ yay zathura zathura-pdf-mupdf zathura-djvu zathura-ps
 yay noto-fonts-emoji ttf-hack
 
 # browser
-yay qutebrowser pdfjs bitwarden-cli
 
 # zerotier
 yay zerotier-one
 sudo systemctl enable --now zerotier-one.service
 sudo zerotier-cli join d5e5fb653797795b
-sudo ufw allow from 9993/udp comment "zerotier"
-sudo ufw allow from 172.30.0.0/16 comment "zerotier"
 
 # coolercontrol
 yay coolercontrol
@@ -76,20 +62,17 @@ sudo systemctl edit coolercontrold.service  # set log level to WARN
 # video streaming
 yay plex-media-server
 sudo systemctl enable --now plexmediaserver.service
-sudo ufw allow 8010 comment "chromecast"
-sudo ufw allow 32400/tcp comment "plex"
-sudo ufw allow 1900/udp comment "plex DLNA server"
-sudo ufw allow 32469/tcp comment "plex DLNA server"
-sudo ufw allow 32410,32412,32413,32414/udp comment "plex GDM discovery"
 
-# steam
-yay steam
-sudo ufw allow 27031,27036/udp comment "Steam Link"
-sudo ufw allow 27036,27037/tcp comment "Steam Link"
-
-# qbittorrent
-yay qbittorrent
-sudo ufw allow 6881/tcp comment "qbittorrent"
-
-# applications
-yay i3status rofi mutt redshift discord teamviewer qalculate cmus ncspot
+# div applications
+yay i3status \
+    rofi \
+    mutt \
+    redshift \
+    discord \
+    teamviewer \
+    zerotier-one \
+    qalculate \
+    cmus \
+    ncspot \
+    steam \
+    qbittorrent
