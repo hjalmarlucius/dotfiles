@@ -79,5 +79,6 @@ settings:
       DEFAULT: https://google.com/search?q={}
       ddg: https://duckduckgo.com/?q={}
       goo: https://google.com/search?q={}
+      ip: https://iplocation.io/ip/{}
   url.start_pages:
     global: https://rss.hjarl.com/tt-rss
