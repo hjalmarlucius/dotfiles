@@ -60,8 +60,8 @@ sudo systemctl enable --now coolercontrold.service
 sudo systemctl edit coolercontrold.service  # set log level to WARN
 
 # video streaming
-yay plex-media-server
-sudo systemctl enable --now plexmediaserver.service
+yay vlc protobuf
+yay castnow
 
 # div applications
 yay i3status \
