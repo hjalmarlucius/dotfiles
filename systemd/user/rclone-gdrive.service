@@ -5,7 +5,7 @@ AssertPathIsDirectory=/mnt/hdd1/gdrive
 After=network.target
 
 [Service]
-Type=simple
+Type=notify
 
 ExecStart=/usr/bin/rclone mount --vfs-cache-mode full gdrive: /mnt/hdd1/gdrive
 

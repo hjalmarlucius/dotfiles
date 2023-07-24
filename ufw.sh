@@ -12,7 +12,8 @@ ufw allow "qBittorrent"
 ufw allow "syncthing"
 ufw allow "WWW Full"
 
-ufw allow in 10000:10100/tcp comment "generic"
+ufw allow in 10000:10100/tcp comment "generic tcp"
+ufw allow in 10000:10100/udp comment "generic udp"
 
 # docker
 ufw allow in 2376,2377,7946/tcp comment "Docker tcp"
