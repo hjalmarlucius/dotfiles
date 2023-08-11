@@ -390,7 +390,7 @@ require("lazy").setup({
                     ["<C-f>"] = cmp.mapping.scroll_docs(4),
                     ["<C-Space>"] = cmp.mapping.complete(),
                     ["<C-e>"] = cmp.mapping.abort(),
-                    ["<CR>"] = cmp.mapping.confirm({ select = true }),
+                    ["<CR>"] = cmp.mapping.confirm({ select = false }),
                 }),
             })
             cmp.setup.cmdline(":", {
@@ -550,7 +550,6 @@ require("lazy").setup({
                     null_ls.builtins.formatting.shfmt.with({ extra_args = { "--indent", "4" } }),
                     null_ls.builtins.formatting.stylua.with({ extra_args = { "--indent-type", "Spaces" } }),
                     null_ls.builtins.formatting.yamlfmt,
-                    null_ls.builtins.formatting.yq,
                 },
                 -- on_attach = function(client, bufnr)
                 --     if client.supports_method("textDocument/formatting") then
