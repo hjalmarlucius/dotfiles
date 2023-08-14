@@ -4,67 +4,73 @@ set -e
 # general
 sudo systemctl enable --now sshd.service
 sudo systemctl enable --now fstrim.timer
-yay plymouth tldextract go nodejs unzip exa
+yay -S plymouth tldextract go nodejs unzip exa
 
 # nvidia
-yay cuda nvidia-settings nvidia-docker
+yay -S cuda nvidia-settings nvidia-docker
 
 # python
-yay python-pip pyenv ipython
+yay -S python-pip pyenv ipython
 
 # sound
-yay manjaro-pipewire pavucontrol
+yay -S manjaro-pipewire pavucontrol
 
 # terminal and shell
-yay kitty fish
+yay -S kitty fish
 chsh -s /usr/bin/fish
 
 # code
-yay neovim tig stylua tmux diff-so-fancy ripgrep prettier jq git-lfs git-secret shfmt yq glow nvimpager git-delta
+yay -S neovim tmux tig diff-so-fancy ripgrep nvimpager
 git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
+# git
+yay -S git-secret git-delta git-lfs
+# formatters
+yay -S python-black python-blackdoc python-pyment python-isort \
+    eslint_d eslint jq yamlfmt shfmt prettierd
 
 # file sync
-yay syncthings rclone
+yay -S syncthings rclone glusterfs
 sudo systemctl enable --now syncthing@hjalmarlucius.service
 systemctl --user daemon-reload
 systemctl --user enable --now rclone-gdrive.service
+sudo systemctl enable --now glusterd
 
 # docker incl non-root daemon
-yay docker docker-compose dry-bin nvidia-docker docker-buildx
+yay -S docker docker-compose dry-bin nvidia-docker docker-buildx
 sudo groupadd docker && sudo usermod -aG docker $USER
 sudo systemctl enable --now containerd.service
 sudo systemctl enable --now docker.service
 
 # printer
-yay manajaro-printer samsung-unified-driver-printer
+yay -S manajaro-printer samsung-unified-driver-printer
 
 # monitors
-yay iftop bpytop nvtop
+yay -S iftop bpytop nvtop
 
 # pdf
-yay zathura zathura-pdf-mupdf zathura-djvu zathura-ps
+yay -S zathura zathura-pdf-mupdf zathura-djvu zathura-ps
 
 # fonts
-yay noto-fonts-emoji ttf-hack
+yay -S noto-fonts-emoji ttf-hack
 
 # browser
 
 # zerotier
-yay zerotier-one
+yay -S zerotier-one
 sudo systemctl enable --now zerotier-one.service
 sudo zerotier-cli join d5e5fb653797795b
 
 # coolercontrol
-yay coolercontrol
+yay -S coolercontrol
 sudo systemctl enable --now coolercontrold.service
-sudo systemctl edit coolercontrold.service  # set log level to WARN
+sudo systemctl edit coolercontrold.service # set log level to WARN
 
 # video streaming
-yay vlc protobuf
-yay castnow
+yay -S vlc protobuf
+yay -S castnow
 
 # div applications
-yay i3status \
+yay -S i3status \
     rofi \
     mutt \
     redshift \

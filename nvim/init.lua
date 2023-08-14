@@ -150,11 +150,6 @@ require("lazy").setup({
         end,
     },
     {
-        "ellisonleao/glow.nvim",
-        config = true,
-        cmd = "Glow",
-    },
-    {
         -- better asterisk search
         "haya14busa/vim-asterisk",
         config = function()
@@ -513,58 +508,85 @@ require("lazy").setup({
         end,
     },
     {
-        "williamboman/mason-lspconfig.nvim",
-        dependencies = { "williamboman/mason.nvim" },
-    },
-    {
-        -- autoinstalls stuff specified in null-ls
-        "jay-babu/mason-null-ls.nvim",
-        event = { "BufReadPre", "BufNewFile" },
-        dependencies = {
-            "williamboman/mason.nvim",
-            "jose-elias-alvarez/null-ls.nvim",
-        },
-        config = function()
-            require("mason-null-ls").setup({
-                ensure_installed = nil,
-                automatic_setup = false,
-                automatic_installation = false,
-            })
-        end,
-    },
-    {
-        "jose-elias-alvarez/null-ls.nvim",
-        dependencies = { "nvim-lua/plenary.nvim" },
-        config = function()
-            -- local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
-            local null_ls = require("null-ls")
-            null_ls.setup({
-                sources = {
-                    -- null_ls.builtins.diagnostics.mypy,
-                    null_ls.builtins.diagnostics.eslint_d,
-                    null_ls.builtins.formatting.black.with({ extra_args = { "--preview" } }),
-                    null_ls.builtins.formatting.eslint_d,
-                    null_ls.builtins.formatting.isort,
-                    null_ls.builtins.formatting.jq,
-                    null_ls.builtins.formatting.prettierd,
-                    null_ls.builtins.formatting.shfmt.with({ extra_args = { "--indent", "4" } }),
-                    null_ls.builtins.formatting.stylua.with({ extra_args = { "--indent-type", "Spaces" } }),
-                    null_ls.builtins.formatting.yamlfmt,
-                },
-                -- on_attach = function(client, bufnr)
-                --     if client.supports_method("textDocument/formatting") then
-                --         vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-                --         vim.api.nvim_create_autocmd("BufWritePre", {
-                --             group = augroup,
-                --             buffer = bufnr,
-                --             callback = function()
-                --                 vim.lsp.buf.format({ bufnr = bufnr })
-                --             end,
-                --         })
-                --     end
-                -- end,
-            })
-        end,
+        "mhartington/formatter.nvim",
+        -- Utilities for creating configurations
+        config = function ()
+
+        local util = require("formatter.util")
+        local map = vim.keymap.set
+        local opts = { silent = true, noremap = true }
+        map("n", "<leader>f", ":Format<cr>", opts)
+        map("n", "<leader>F", ":FormatWrite<cr>", opts)
+
+        -- Provides the Format, FormatWrite, FormatLock, and FormatWriteLock commands
+        require("formatter").setup({
+        logging = true,
+        log_level = vim.log.levels.WARN,
+        filetype = {
+            python = {
+                require("formatter.filetypes.python").black,
+                -- require("formatter.filetypes.python").pyment,
+                function ()
+                return {
+                    exe = "isort",
+                    args = { "--quiet", "--profile black", "--force-single-line-import", "-" },
+                    stdin = true,
+                }
+                end,
+                function ()
+                    return {
+                        exe = "black",
+                        args = { "--quiet", "--preview", "-" },
+                        stdin = true,
+                    }
+                    end,
+                function ()
+                    return {
+                        exe = "blackdoc",
+                        args = { "-q", "-t py311", },
+                        stdin = false,
+                    }
+                    end,
+            },
+            lua = {
+                function ()
+                return {
+                    exe = "stylua",
+                    args = {
+                    "--search-parent-directories",
+                    "--indent-type Spaces",
+                    "--stdin-filepath",
+                    util.escape_path(util.get_current_buffer_file_path()),
+                    "--",
+                    "-",
+                    },
+                    stdin = true,
+                }
+                end,
+            },
+            yaml = {
+                function ()
+                    return {
+                        exe = "yamlfmt",
+                        args = { "-formatter indentless_arrays=true,retain_line_breaks=true,line_ending=lf,max_line_length=100,pad_line_comments=2", "-in" },
+                        stdin = true,
+                    }
+                end,
+            },
+            sh = { require("formatter.filetypes.sh").shfmt, },
+            typescript = { require("formatter.filetypes.typescript").eslint_d, },
+            javascript = { require("formatter.filetypes.javascript").eslint_d, },
+            html = { require("formatter.filetypes.html").prettierd, },
+            css = {
+                        require("formatter.filetypes.css").prettierd,
+                        require("formatter.filetypes.css").eslint_d,
+                    },
+            markdown = { require("formatter.filetypes.markdown").prettierd, },
+            json = {require("formatter.filetypes.json").jq, },
+            ["*"] = { require("formatter.filetypes.any").remove_trailing_whitespace },
+        }
+        })
+    end
     },
     {
         "neovim/nvim-lspconfig",
@@ -609,22 +631,9 @@ require("lazy").setup({
                 bmap("n", "K", vim.lsp.buf.hover)
                 bmap("n", "<M-r>", vim.lsp.buf.rename)
                 bmap("n", "<leader>ca", vim.lsp.buf.code_action)
-                vim.api.nvim_buf_create_user_command(bufnr, "Format", function(_)
-                    vim.lsp.buf.format({ timeout_ms = 5000 })
-                end, { desc = "Format current buffer with LSP" })
-                bmap("n", "<leader>f", "<cmd>Format<cr>")
-                if
-                    client.server_capabilities.documentFormattingProvider
-                    or client.server_capabilities.documentRangeFormattingProvider
-                then
-                    vim.api.nvim_command([[augroup Format]])
-                    vim.api.nvim_command([[autocmd! * <buffer>]])
-                    vim.api.nvim_command([[autocmd BufWritePre * lua vim.lsp.buf.format({ timeout_ms = 5000 })]])
-                    vim.api.nvim_command([[augroup END]])
-                end
             end
 
-            local servers = {
+            local server_configs = {
                 pyright = {
                     python = {
                         analysis = {
@@ -645,21 +654,12 @@ require("lazy").setup({
                         },
                         telemetry = { enable = false },
                         diagnostics = {
-                            -- Get the language server to recognize the `vim` global
+                            -- Get the language server to recognize the `vim` global in init.lua
                             globals = { "vim" },
                         },
-                        format = { -- disable formatting, stylua handles it
-                            enable = false,
-                        },
+                        format = {enable = false},
                     },
                 },
-                marksman = {},
-                yamlls = {},
-                tsserver = {},
-                html = {},
-                eslint = {},
-                cssls = {},
-                bashls = {},
             }
             require("neodev").setup()
 
@@ -668,14 +668,25 @@ require("lazy").setup({
 
             local mason_lspconfig = require("mason-lspconfig")
             mason_lspconfig.setup({
-                ensure_installed = vim.tbl_keys(servers),
+                ensure_installed = {
+                    "bashls",  -- bash
+                    "cssls",  -- css
+                    "eslint",  -- javascript
+                    "html",  -- html
+                    "jsonls",  -- json
+                    "lua_ls",  -- lua
+                    "marksman",  -- markdown
+                    "pyright", -- python
+                    "tsserver",  -- typescript
+                    "yamlls",  -- yaml
+                },
             })
             mason_lspconfig.setup_handlers({
                 function(server_name)
                     require("lspconfig")[server_name].setup({
                         capabilities = capabilities,
                         on_attach = on_attach,
-                        settings = servers[server_name],
+                        settings = server_configs[server_name],
                     })
                 end,
             })
@@ -771,16 +782,11 @@ vim.o.foldenable = false
 vim.o.foldmethod = "expr"
 
 vim.o.completeopt = "menu,menuone,noinsert"
+vim.opt.formatoptions = vim.opt.formatoptions - {"c", "r", "o"}
 
--- ----------------------------------------
--- AUTOCOMMANDS
--- ----------------------------------------
-local cmd = vim.cmd
-
+-- press enter in quickfix list to goto
 vim.api.nvim_command([[augroup MYAU]])
 vim.api.nvim_command([[autocmd!]])
-vim.api.nvim_command([[autocmd BufWritePre * %s/\s\+$//e]])
-vim.api.nvim_command([[autocmd FileType python setlocal indentkeys-=<:>]])
 vim.api.nvim_command([[autocmd BufReadPost quickfix nmap <buffer> <cr> <cr>]])
 vim.api.nvim_command([[augroup END]])
 
@@ -837,13 +843,9 @@ map("n", "<C-n>", "<cmd>cn<cr>", { noremap = true })
 map("n", "<F1>", "<cmd>Lazy<cr>", { noremap = true })
 map("n", "<F2>", "<cmd>Mason<cr>", { noremap = true })
 map("n", "<F3>", "<cmd>LspInfo<cr>", { noremap = true })
-map("n", "<F4>", "<cmd>NullLsInfo<cr>", { noremap = true })
 map("n", "<F5>", "<cmd>checkt<cr>", { noremap = true })
 map("n", "<F6>", "<cmd>TodoQuickFix<cr>", { noremap = true })
 map("n", "<F9>", '<cmd>lua require("telescope.builtin").colorscheme({enable_preview=1})<cr>', { noremap = true })
-
--- shit HACK
-map("n", "<leader>b", "<cmd>!blackdoc %<cr>", { noremap = true })
 
 -- cursor color
 
