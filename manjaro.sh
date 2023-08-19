@@ -30,6 +30,8 @@ yay -S python-black python-blackdoc python-pyment python-isort \
 
 # file sync
 yay -S syncthings rclone glusterfs
+sudo systemctl edit syncthing@hjalmarlucius.service  # uncomment AmbientCapabilities
+sudo setcap CAP_CHOWN,CAP_FOWNER=pe /usr/bin/syncthing
 sudo systemctl enable --now syncthing@hjalmarlucius.service
 systemctl --user daemon-reload
 systemctl --user enable --now rclone-gdrive.service

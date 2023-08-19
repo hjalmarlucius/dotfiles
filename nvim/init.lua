@@ -485,6 +485,7 @@ require("lazy").setup({
             vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
         end,
     },
+    'Joorem/vim-haproxy',
     {
         "RRethy/nvim-treesitter-textsubjects",
         config = function()
