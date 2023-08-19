@@ -39,6 +39,7 @@ sudo systemctl enable --now glusterd
 
 # docker incl non-root daemon
 yay -S docker docker-compose dry-bin nvidia-docker docker-buildx
+docker plugin install grafana/loki-docker-driver --alias loki --grant-all-permissions
 sudo groupadd docker && sudo usermod -aG docker $USER
 sudo systemctl enable --now containerd.service
 sudo systemctl enable --now docker.service

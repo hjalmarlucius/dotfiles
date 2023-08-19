@@ -82,4 +82,4 @@ settings:
       ip: https://iplocation.io/ip/{}
       sh: https://explainshell.com/explain?cmd={}
   url.start_pages:
-    global: https://rss.hjarl.com/tt-rss
+    global: https://www.hjarl.com/tt-rss
