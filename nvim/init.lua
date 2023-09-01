@@ -520,85 +520,107 @@ require("lazy").setup({
         end,
     },
     {
+        "mfussenegger/nvim-lint",
+        config = function()
+            require("lint").linters_by_ft = {
+                javascript = { "eslint_d" },
+                typescript = { "eslint_d" },
+                html = { "tidy", "eslint_d" },
+            }
+            vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+                callback = function()
+                    require("lint").try_lint()
+                end,
+            })
+        end,
+    },
+    {
         "mhartington/formatter.nvim",
         -- Utilities for creating configurations
-        config = function ()
+        config = function()
+            local util = require("formatter.util")
+            local map = vim.keymap.set
+            local opts = { silent = true, noremap = true }
+            map("n", "<leader>f", ":Format<cr>", opts)
+            map("n", "<leader>F", ":FormatWrite<cr>", opts)
 
-        local util = require("formatter.util")
-        local map = vim.keymap.set
-        local opts = { silent = true, noremap = true }
-        map("n", "<leader>f", ":Format<cr>", opts)
-        map("n", "<leader>F", ":FormatWrite<cr>", opts)
-
-        -- Provides the Format, FormatWrite, FormatLock, and FormatWriteLock commands
-        require("formatter").setup({
-        logging = true,
-        log_level = vim.log.levels.WARN,
-        filetype = {
-            python = {
-                require("formatter.filetypes.python").black,
-                -- require("formatter.filetypes.python").pyment,
-                function ()
-                return {
-                    exe = "isort",
-                    args = { "--quiet", "--profile black", "--force-single-line-import", "-" },
-                    stdin = true,
-                }
-                end,
-                function ()
-                    return {
-                        exe = "black",
-                        args = { "--quiet", "--preview", "-" },
-                        stdin = true,
-                    }
-                    end,
-                function ()
-                    return {
-                        exe = "blackdoc",
-                        args = { "-q", "-t py311", },
-                        stdin = false,
-                    }
-                    end,
-            },
-            lua = {
-                function ()
-                return {
-                    exe = "stylua",
-                    args = {
-                    "--search-parent-directories",
-                    "--indent-type Spaces",
-                    "--stdin-filepath",
-                    util.escape_path(util.get_current_buffer_file_path()),
-                    "--",
-                    "-",
+            -- Provides the Format, FormatWrite, FormatLock, and FormatWriteLock commands
+            require("formatter").setup({
+                logging = true,
+                log_level = vim.log.levels.WARN,
+                filetype = {
+                    python = {
+                        require("formatter.filetypes.python").black,
+                        -- require("formatter.filetypes.python").pyment,
+                        function()
+                            return {
+                                exe = "isort",
+                                args = { "--quiet", "--profile black", "--force-single-line-import", "-" },
+                                stdin = true,
+                            }
+                        end,
+                        function()
+                            return {
+                                exe = "black",
+                                args = { "--quiet", "--preview", "-" },
+                                stdin = true,
+                            }
+                        end,
+                        function()
+                            return {
+                                exe = "blackdoc",
+                                args = { "-q", "-t py311" },
+                                stdin = false,
+                            }
+                        end,
                     },
-                    stdin = true,
-                }
-                end,
-            },
-            yaml = {
-                function ()
-                    return {
-                        exe = "yamlfmt",
-                        args = { "-formatter indentless_arrays=true,retain_line_breaks=true,line_ending=lf,max_line_length=100,pad_line_comments=2", "-in" },
-                        stdin = true,
-                    }
-                end,
-            },
-            sh = { require("formatter.filetypes.sh").shfmt, },
-            typescript = { require("formatter.filetypes.typescript").eslint_d, },
-            javascript = { require("formatter.filetypes.javascript").eslint_d, },
-            html = { require("formatter.filetypes.html").prettierd, },
-            css = {
+                    go = { require("formatter.filetypes.go").gofumpt, require("formatter.filetypes.go").golines },
+                    lua = {
+                        function()
+                            return {
+                                exe = "stylua",
+                                args = {
+                                    "--search-parent-directories",
+                                    "--indent-type Spaces",
+                                    "--stdin-filepath",
+                                    util.escape_path(util.get_current_buffer_file_path()),
+                                    "--",
+                                    "-",
+                                },
+                                stdin = true,
+                            }
+                        end,
+                    },
+                    yaml = {
+                        function()
+                            return {
+                                exe = "yamlfmt",
+                                args = {
+                                    "-formatter indentless_arrays=true,retain_line_breaks=true,line_ending=lf,max_line_length=100,pad_line_comments=2",
+                                    "-in",
+                                },
+                                stdin = true,
+                            }
+                        end,
+                    },
+                    sh = { require("formatter.filetypes.sh").shfmt },
+                    typescript = { require("formatter.filetypes.typescript").eslint_d },
+                    javascript = { require("formatter.filetypes.javascript").eslint_d },
+                    html = {
+                        -- require("formatter.filetypes.html").prettierd,
+                        require("formatter.filetypes.html").tidy,
+                        require("formatter.filetypes.javascript").eslint_d,
+                    },
+                    css = {
                         require("formatter.filetypes.css").prettierd,
                         require("formatter.filetypes.css").eslint_d,
                     },
-            markdown = { require("formatter.filetypes.markdown").prettierd, },
-            json = {require("formatter.filetypes.json").jq, },
-            ["*"] = { require("formatter.filetypes.any").remove_trailing_whitespace },
-        }
-        })
-    end
+                    markdown = { require("formatter.filetypes.markdown").prettierd },
+                    json = { require("formatter.filetypes.json").jq },
+                    ["*"] = { require("formatter.filetypes.any").remove_trailing_whitespace },
+                },
+            })
+        end,
     },
     {
         "neovim/nvim-lspconfig",
@@ -625,10 +647,10 @@ require("lazy").setup({
                     vim.diagnostic.open_float({ source = true })
                 end)
                 bmap("n", "<M-n>", function()
-                    vim.diagnostic.goto_next({ severity = { min = vim.diagnostic.severity.INFO } })
+                    vim.diagnostic.goto_next({ severity = { min = vim.diagnostic.severity.HINT } })
                 end)
                 bmap("n", "<M-p>", function()
-                    vim.diagnostic.goto_prev({ severity = { min = vim.diagnostic.severity.INFO } })
+                    vim.diagnostic.goto_prev({ severity = { min = vim.diagnostic.severity.HINT } })
                 end)
                 bmap("n", "gd", vim.lsp.buf.definition)
                 bmap("n", "gD", vim.lsp.buf.type_definition)
@@ -669,7 +691,20 @@ require("lazy").setup({
                             -- Get the language server to recognize the `vim` global in init.lua
                             globals = { "vim" },
                         },
-                        format = {enable = false},
+                        format = { enable = false },
+                    },
+                },
+                html = {
+                    html = {
+                        format = {
+                            templating = true,
+                            wrapLineLength = 120,
+                            wrapAttributes = "auto",
+                        },
+                        hover = {
+                            documentation = true,
+                            references = true,
+                        },
                     },
                 },
             }
@@ -681,16 +716,15 @@ require("lazy").setup({
             local mason_lspconfig = require("mason-lspconfig")
             mason_lspconfig.setup({
                 ensure_installed = {
-                    "bashls",  -- bash
-                    "cssls",  -- css
-                    "eslint",  -- javascript
-                    "html",  -- html
-                    "jsonls",  -- json
-                    "lua_ls",  -- lua
-                    "marksman",  -- markdown
+                    "bashls", -- bash
+                    "cssls", -- css
+                    "html", -- html
+                    "jsonls", -- json
+                    "lua_ls", -- lua
+                    "marksman", -- markdown
                     "pyright", -- python
-                    "tsserver",  -- typescript
-                    "yamlls",  -- yaml
+                    "tsserver", -- typescript
+                    "yamlls", -- yaml
                 },
             })
             mason_lspconfig.setup_handlers({
@@ -768,6 +802,8 @@ vim.o.expandtab = true -- Use spaces instead of tabs
 vim.o.shiftround = true -- Round indent
 vim.o.tabstop = 4 -- Number of spaces tabs count for
 vim.o.shiftwidth = 4 -- Size of an indent
+vim.o.listchars = "tab:→ ,trail:·,extends:↷,precedes:↶,nbsp:+,eol:↵"
+vim.o.list = true -- Show listchars
 
 -- search
 vim.opt.wildmode = { "full" } -- Command-line completion mode
@@ -794,7 +830,7 @@ vim.o.foldenable = false
 vim.o.foldmethod = "expr"
 
 vim.o.completeopt = "menu,menuone,noinsert"
-vim.opt.formatoptions = vim.opt.formatoptions - {"c", "r", "o"}
+vim.opt.formatoptions = vim.opt.formatoptions - { "c", "r", "o" }
 
 -- press enter in quickfix list to goto
 vim.api.nvim_command([[augroup MYAU]])
