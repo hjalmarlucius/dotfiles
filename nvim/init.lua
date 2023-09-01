@@ -241,6 +241,7 @@ require("lazy").setup({
             })
         end,
     },
+    "Joorem/vim-haproxy",
     {
         "akinsho/nvim-bufferline.lua",
         dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -485,7 +486,17 @@ require("lazy").setup({
             vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
         end,
     },
-    'Joorem/vim-haproxy',
+    {
+        "windwp/nvim-ts-autotag",
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter",
+        },
+        config = function()
+            require("nvim-ts-autotag").setup({
+                filetypes = { "html", "xml" },
+            })
+        end,
+    },
     {
         "RRethy/nvim-treesitter-textsubjects",
         config = function()
