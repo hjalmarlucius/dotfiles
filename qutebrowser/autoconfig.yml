@@ -23,21 +23,16 @@ settings:
         tm: tab-move
         to: tab-focus
         ø: 'set-cmd-text :'
-  colors.hints.bg:
-    global: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(255, 247, 133, 1.0),
-      stop:1 rgba(255, 197, 66, 1.0))
+        J: tab-prev
+        K: tab-next
   colors.webpage.darkmode.enabled:
-    global: true
+    global: false
   content.register_protocol_handler:
     https://mail.google.com?extsrc=mailto&url=%25s: true
   content.tls.certificate_errors:
-    global: ask
-  fonts.hints:
-    global: default_size default_family
-  fonts.statusbar:
-    global: 15px default_family
+    global: ask-block-thirdparty
   messages.timeout:
-    global: 5000
+    global: 500
   scrolling.bar:
     global: always
   session.lazy_restore:
@@ -58,6 +53,18 @@ settings:
     - scroll
     - history
     - progress
+  tabs.focus_stack_size:
+    global: 10
+  tabs.indicator.width:
+    global: 3
+  tabs.last_close:
+    global: close
+  tabs.max_width:
+    global: 8000
+  tabs.min_width:
+    global: -1
+  tabs.mode_on_change:
+    global: persist
   tabs.padding:
     global:
       bottom: 2
@@ -65,7 +72,7 @@ settings:
       right: 5
       top: 2
   tabs.position:
-    global: left
+    global: top
   tabs.show:
     global: always
   tabs.show_switching_delay:
@@ -83,3 +90,17 @@ settings:
       sh: https://explainshell.com/explain?cmd={}
   url.start_pages:
     global: https://www.hjarl.com/tt-rss
+  fonts.statusbar:
+    global: 20px default_family
+  fonts.tabs.selected:
+    global: 10pt sans-serif
+  fonts.tabs.unselected:
+    global: 10pt sans-serif
+  colors.tabs.even.bg:
+    global: cyan
+  colors.tabs.odd.bg:
+    global: cyan
+  colors.tabs.even.fg:
+    global: black
+  colors.tabs.odd.fg:
+    global: black

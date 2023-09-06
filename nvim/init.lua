@@ -527,7 +527,7 @@ require("lazy").setup({
                 typescript = { "eslint_d" },
                 html = { "tidy", "eslint_d" },
             }
-            vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+            vim.api.nvim_create_autocmd({ "BufWritePost", "TextChanged" }, {
                 callback = function()
                     require("lint").try_lint()
                 end,
@@ -543,11 +543,32 @@ require("lazy").setup({
             local opts = { silent = true, noremap = true }
             map("n", "<leader>f", ":Format<cr>", opts)
             map("n", "<leader>F", ":FormatWrite<cr>", opts)
-
+            local eslint_d = function()
+                return {
+                    exe = "eslint_d",
+                    args = {
+                        "--stdin",
+                        "--debug",
+                        "--stdin-filename",
+                        util.escape_path(util.get_current_buffer_file_path()),
+                        "--fix-to-stdout",
+                    },
+                    stdin = true,
+                    try_node_modules = true,
+                    ignore_exitcode = true,
+                }
+            end
+            local prettierd = function()
+                return {
+                    exe = "prettierd",
+                    args = { util.escape_path(util.get_current_buffer_file_path()) },
+                    stdin = true,
+                }
+            end
             -- Provides the Format, FormatWrite, FormatLock, and FormatWriteLock commands
             require("formatter").setup({
                 logging = true,
-                log_level = vim.log.levels.WARN,
+                log_level = vim.log.levels.DEBUG,
                 filetype = {
                     python = {
                         require("formatter.filetypes.python").black,
@@ -604,18 +625,22 @@ require("lazy").setup({
                         end,
                     },
                     sh = { require("formatter.filetypes.sh").shfmt },
-                    typescript = { require("formatter.filetypes.typescript").eslint_d },
-                    javascript = { require("formatter.filetypes.javascript").eslint_d },
+                    typescript = {
+                        eslint_d,
+                    },
+                    javascript = {
+                        prettierd,
+                        eslint_d,
+                    },
                     html = {
-                        -- require("formatter.filetypes.html").prettierd,
-                        require("formatter.filetypes.html").tidy,
-                        require("formatter.filetypes.javascript").eslint_d,
+                        prettierd,
+                        -- eslint_d,
                     },
                     css = {
-                        require("formatter.filetypes.css").prettierd,
-                        require("formatter.filetypes.css").eslint_d,
+                        prettierd,
+                        eslint_d,
                     },
-                    markdown = { require("formatter.filetypes.markdown").prettierd },
+                    markdown = { prettierd },
                     json = { require("formatter.filetypes.json").jq },
                     ["*"] = { require("formatter.filetypes.any").remove_trailing_whitespace },
                 },
@@ -689,7 +714,7 @@ require("lazy").setup({
                         telemetry = { enable = false },
                         diagnostics = {
                             -- Get the language server to recognize the `vim` global in init.lua
-                            globals = { "vim" },
+                            globals = { "vim", "core" },
                         },
                         format = { enable = false },
                     },
@@ -759,7 +784,7 @@ require("lazy").setup({
                     lsp_doc_border = false, -- add a border to hover docs and signature help
                 },
                 messages = {
-                    enabled = false,
+                    enabled = true,
                 },
             })
         end,
