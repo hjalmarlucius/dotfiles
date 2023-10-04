@@ -19,18 +19,32 @@ settings:
         <F11>: config-cycle tabs.show always switching
         <F12>: view-source
         '>': tab-move +
+        J: tab-prev
+        K: tab-next
         pw: spawn --userscript qute-bitwarden
         tm: tab-move
         to: tab-focus
         ø: 'set-cmd-text :'
-        J: tab-prev
-        K: tab-next
+  colors.tabs.even.bg:
+    global: cyan
+  colors.tabs.even.fg:
+    global: black
+  colors.tabs.odd.bg:
+    global: cyan
+  colors.tabs.odd.fg:
+    global: black
   colors.webpage.darkmode.enabled:
     global: false
   content.register_protocol_handler:
     https://mail.google.com?extsrc=mailto&url=%25s: true
   content.tls.certificate_errors:
     global: ask-block-thirdparty
+  fonts.statusbar:
+    global: 20px default_family
+  fonts.tabs.selected:
+    global: 10pt sans-serif
+  fonts.tabs.unselected:
+    global: 10pt sans-serif
   messages.timeout:
     global: 500
   scrolling.bar:
@@ -90,17 +104,3 @@ settings:
       sh: https://explainshell.com/explain?cmd={}
   url.start_pages:
     global: https://www.hjarl.com/tt-rss
-  fonts.statusbar:
-    global: 20px default_family
-  fonts.tabs.selected:
-    global: 10pt sans-serif
-  fonts.tabs.unselected:
-    global: 10pt sans-serif
-  colors.tabs.even.bg:
-    global: cyan
-  colors.tabs.odd.bg:
-    global: cyan
-  colors.tabs.even.fg:
-    global: black
-  colors.tabs.odd.fg:
-    global: black

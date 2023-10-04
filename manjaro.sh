@@ -74,6 +74,7 @@ yay -S castnow
 
 # div applications
 yay -S i3status \
+    qutebrowser \
     rofi \
     mutt \
     redshift \

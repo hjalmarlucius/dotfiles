@@ -732,6 +732,9 @@ require("lazy").setup({
                         },
                     },
                 },
+                yaml = {
+                    schemas = { kubernetes = "globPattern" },
+                },
             }
             require("neodev").setup()
 
@@ -784,7 +787,7 @@ require("lazy").setup({
                     lsp_doc_border = false, -- add a border to hover docs and signature help
                 },
                 messages = {
-                    enabled = true,
+                    enabled = false,
                 },
             })
         end,
@@ -856,6 +859,7 @@ vim.o.foldmethod = "expr"
 
 vim.o.completeopt = "menu,menuone,noinsert"
 vim.opt.formatoptions = vim.opt.formatoptions - { "c", "r", "o" }
+vim.opt.iskeyword = vim.opt.iskeyword - { "." }
 
 -- press enter in quickfix list to goto
 vim.api.nvim_command([[augroup MYAU]])
