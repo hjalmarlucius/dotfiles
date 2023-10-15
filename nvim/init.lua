@@ -811,8 +811,8 @@ vim.g.BASH_Ctrl_l = "off"
 -- colors
 vim.cmd("colorscheme minicyan")
 -- undo
-vim.o.undolevels = 1000
-vim.o.undoreload = 10000
+vim.o.undolevels = 100000
+vim.o.undoreload = 100000
 
 -- buffer
 vim.o.hidden = true -- Enable background buffers
