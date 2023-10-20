@@ -156,9 +156,24 @@ require("lazy").setup({
             vim.g["asterisk#keeppos"] = 1
             local map = vim.keymap.set
             map("", "*", "<Plug>(asterisk-z*)", {})
-            map("", "#", "<Plug>(asterisk-z#)", {})
             map("", "g*", "<Plug>(asterisk-gz*)", {})
-            map("", "g#", "<Plug>(asterisk-gz#)", {})
+        end,
+    },
+    {
+        -- better search
+        "kevinhwang91/nvim-hlslens",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "haya14busa/vim-asterisk",
+        },
+        config = function()
+            require("hlslens").setup()
+            local map = vim.keymap.set
+            local opts = { noremap = true, silent = true }
+            map({}, "*", "[[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]]", opts)
+            map({}, "g*", "[[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]]", opts)
+            map({}, "n", [[<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>]], opts)
+            map({}, "N", [[<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>]], opts)
         end,
     },
     {
