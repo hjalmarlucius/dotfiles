@@ -1,3 +1,7 @@
+# for kubectl autocomplete
+autoload -Uz compinit
+compinit
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -71,9 +75,10 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(zsh-autosuggestions kubectl-autocomplete history-substring-search zsh-syntax-highlighting git)
-
+plugins=(zsh-autosuggestions history-substring-search zsh-syntax-highlighting git)
 source $ZSH/oh-my-zsh.sh
+# for kubectl autocomplete
+source <(kubectl completion zsh)
 
 # User configuration
 
