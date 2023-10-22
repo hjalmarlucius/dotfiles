@@ -105,4 +105,4 @@ settings:
       ip: https://iplocation.io/ip/{}
       sh: https://explainshell.com/explain?cmd={}
   url.start_pages:
-    global: https://host.example.org/tt-rss
+    global: https://host.example.org
