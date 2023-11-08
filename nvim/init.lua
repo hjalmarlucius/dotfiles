@@ -160,23 +160,6 @@ require("lazy").setup({
         end,
     },
     {
-        -- better search
-        "kevinhwang91/nvim-hlslens",
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-            "haya14busa/vim-asterisk",
-        },
-        config = function()
-            require("hlslens").setup()
-            local map = vim.keymap.set
-            local opts = { noremap = true, silent = true }
-            map({}, "*", "[[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]]", opts)
-            map({}, "g*", "[[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]]", opts)
-            map({}, "n", [[<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>]], opts)
-            map({}, "N", [[<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>]], opts)
-        end,
-    },
-    {
         -- folder tree
         "nvim-neo-tree/neo-tree.nvim",
         branch = "v2.x",
@@ -203,8 +186,6 @@ require("lazy").setup({
         end,
     }, -- theme dark only
     "tomasr/molokai",
-    "kdheepak/monochrome.nvim",
-    "kcsongor/vim-monochrome-light",
     "jnurmine/Zenburn",
     {
         -- coloring of colornames
@@ -256,7 +237,6 @@ require("lazy").setup({
             })
         end,
     },
-    "Joorem/vim-haproxy",
     {
         "akinsho/nvim-bufferline.lua",
         dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -802,7 +782,7 @@ require("lazy").setup({
                     lsp_doc_border = false, -- add a border to hover docs and signature help
                 },
                 messages = {
-                    enabled = false,
+                    enabled = true,
                 },
             })
         end,
