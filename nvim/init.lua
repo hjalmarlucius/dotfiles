@@ -69,12 +69,6 @@ require("lazy").setup({
         end,
     },
     {
-        "echasnovski/mini.indentscope",
-        config = function()
-            require("mini.indentscope").setup({})
-        end,
-    },
-    {
         "phaazon/hop.nvim",
         config = function()
             require("hop").setup({
