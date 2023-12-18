@@ -35,8 +35,6 @@ settings:
     global: black
   colors.webpage.darkmode.enabled:
     global: true
-  colors.webpage.darkmode.increase_text_contrast:
-    global: true
   content.register_protocol_handler:
     https://mail.google.com?extsrc=mailto&url=%25s: true
   content.tls.certificate_errors:
