@@ -16,7 +16,7 @@ yay -S python-pip pyenv ipython
 yay -S manjaro-pipewire pavucontrol
 
 # terminal and shell
-yay -S kitty fish
+yay -S wezterm fish urxvt-resize-font
 chsh -s /usr/bin/fish
 
 # code
