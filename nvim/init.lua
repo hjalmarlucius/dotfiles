@@ -144,13 +144,24 @@ require("lazy").setup({
         end,
     },
     {
-        -- better asterisk search
-        "haya14busa/vim-asterisk",
+        -- search count > 99
+        "kevinhwang91/nvim-hlslens",
+        dependencies = {
+            "haya14busa/vim-asterisk",
+        },
         config = function()
-            vim.g["asterisk#keeppos"] = 1
+            require("hlslens").setup({ nearest_only = true })
+            local kopts = { noremap = true, silent = true }
             local map = vim.keymap.set
-            map("", "*", "<Plug>(asterisk-z*)", {})
-            map("", "g*", "<Plug>(asterisk-gz*)", {})
+            vim.g["asterisk#keeppos"] = 1
+            map({ "n", "x" }, "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], {})
+            map({ "n", "x" }, "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]], {})
+            map({ "n", "x" }, "g*", [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {})
+            map({ "n", "x" }, "g#", [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {})
+            map({ "n", "x" }, "n", [[n<Cmd>lua require('hlslens').start()<CR>]], kopts)
+            map({ "n", "x" }, "N", [[N<Cmd>lua require('hlslens').start()<CR>]], kopts)
+            map({ "n", "x" }, "m", "nzz", kopts)
+            map({ "n", "x" }, "M", "Nzz", kopts)
         end,
     },
     {
@@ -398,12 +409,7 @@ require("lazy").setup({
             -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
             cmp.setup.cmdline(":", {
                 mapping = cmp.mapping.preset.cmdline(),
-                sources = cmp.config.sources({
-                    {
-                        name = "path",
-                        option = { trailing_slash = false },
-                    },
-                }, { { name = "cmdline" } }),
+                sources = cmp.config.sources({ { name = "path" } }, { { name = "cmdline" } }),
             })
         end,
     }, -- Fuzzy Finder (files, lsp, etc)
@@ -450,6 +456,23 @@ require("lazy").setup({
                     set_env = { ["COLORTERM"] = "truecolor" },
                 },
             })
+        end,
+    },
+    {
+        "kevinhwang91/nvim-ufo",
+        dependencies = { "kevinhwang91/promise-async" },
+        config = function()
+            vim.o.foldcolumn = "1" -- '0' is not bad
+            vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
+            vim.o.foldlevelstart = 99
+            vim.o.foldenable = true
+
+            local ufo = require("ufo")
+            local map = vim.keymap.set
+            -- Using ufo provider need remap `zR` and `zM`. If Neovim is 0.6.1, remap yourself
+            map("n", "zR", ufo.openAllFolds)
+            map("n", "zM", ufo.closeAllFolds)
+            ufo.setup()
         end,
     },
     {
@@ -572,7 +595,7 @@ require("lazy").setup({
                         function()
                             return {
                                 exe = "black",
-                                args = { "--quiet", "--preview", "-" },
+                                args = { "--quiet", "-" },
                                 stdin = true,
                             }
                         end,
@@ -642,7 +665,6 @@ require("lazy").setup({
             "williamboman/mason.nvim",
             "williamboman/mason-lspconfig.nvim",
             "folke/neodev.nvim",
-            "hrsh7th/nvim-cmp",
         },
         config = function()
             local on_attach = function(client, bufnr)
@@ -728,7 +750,19 @@ require("lazy").setup({
             require("neodev").setup()
 
             local capabilities = vim.lsp.protocol.make_client_capabilities()
-            capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
+
+            local cmp = require("cmp_nvim_lsp")
+            if cmp then
+                capabilities = cmp.default_capabilities(capabilities)
+            end
+
+            local ufo = require("ufo")
+            if ufo then
+                capabilities.textDocument.foldingRange = {
+                    dynamicRegistration = false,
+                    lineFoldingOnly = true,
+                }
+            end
 
             local mason_lspconfig = require("mason-lspconfig")
             mason_lspconfig.setup({
@@ -775,9 +809,7 @@ require("lazy").setup({
                     inc_rename = false, -- enables an input dialog for inc-rename.nvim
                     lsp_doc_border = false, -- add a border to hover docs and signature help
                 },
-                messages = {
-                    enabled = true,
-                },
+                messages = { enabled = true, view_search = false },
             })
         end,
         dependencies = { "MunifTanjim/nui.nvim" },
