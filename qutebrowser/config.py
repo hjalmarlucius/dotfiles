@@ -11,8 +11,9 @@ config.set("content.register_protocol_handler", True, "https://mail.google.com?e
 config.bind("<", "tab-move -")
 config.bind("<Ctrl+Shift+Tab>", "tab-prev")
 config.bind("<Ctrl+Tab>", "tab-next")
-config.bind("<Ctrl+l>", "set-cmd-text :open {url:pretty}")
+config.bind("<Ctrl+l>", "cmd-set-text :open {url:pretty}")
 config.bind("<Ctrl-r>", "restart", mode="normal")
+config.bind("<Ctrl-h>", "history")
 config.bind("<F10>", "config-cycle colors.webpage.darkmode.enabled true false ;; restart")
 config.bind("<F11>", "config-cycle tabs.position top left")
 config.bind("<F12>", "view-source")
@@ -22,8 +23,13 @@ config.bind("K", "tab-next")
 config.bind("pw", "spawn --userscript qute-bitwarden")
 config.bind("tm", "tab-move")
 config.bind("to", "tab-focus")
-config.bind("ø", "set-cmd-text :")
-config.unbind("q", mode="normal")
+config.bind("ø", "cmd-set-text :")
+config.bind("m", 'cmd-set-text :quickmark-add {url:pretty} "{date} {title}"', mode="normal")
+config.unbind("q", mode="normal")  # macro recording
+config.unbind("M", mode="normal")  # add bookmark
+config.unbind("gb", mode="normal")  # load bookmark
+config.unbind("gB", mode="normal")  # load bookmark
+config.unbind("wB", mode="normal")  # load bookmark
 
 c.auto_save.session = True
 c.completion.open_categories = [
