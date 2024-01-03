@@ -855,6 +855,8 @@ vim.o.listchars = "tab:→ ,trail:·,extends:↷,precedes:↶,nbsp:+,eol:↵"
 vim.o.list = true -- Show listchars
 
 -- search
+vim.opt.smartcase = false
+vim.opt.ignorecase = false
 vim.opt.wildmode = { "full" } -- Command-line completion mode
 vim.opt.wildignore = vim.opt.wildignore
     + { "*swp", "*.class", "*.pyc", "*.png", "*.jpg", "*.gif", "*.zip", "*/tmp/*", "*.o", ".obj", "*.so" }

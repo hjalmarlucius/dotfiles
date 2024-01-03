@@ -2,7 +2,7 @@
 local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 local act = wezterm.action
-config.color_scheme = 'Monokai (dark) (terminal.sexy)'
+config.color_scheme = "Monokai (dark) (terminal.sexy)"
 config.font_size = 14
 -- config.font = wezterm.font("Noto Sans Mono")
 config.font = wezterm.font_with_fallback({
@@ -15,6 +15,7 @@ config.use_fancy_tab_bar = false
 config.hide_tab_bar_if_only_one_tab = true
 config.default_cursor_style = "BlinkingBar"
 config.disable_default_key_bindings = true
+config.window_padding = { left = 0, right = 0, top = 0, bottom = 0 }
 
 config.keys = {
     -- font size
