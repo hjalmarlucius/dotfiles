@@ -25,6 +25,8 @@ config.bind("tm", "tab-move")
 config.bind("to", "tab-focus")
 config.bind("ø", "cmd-set-text :")
 config.bind("m", 'cmd-set-text :quickmark-add {url:pretty} "{date} {title}"', mode="normal")
+config.bind("D", "tab-close")
+config.unbind("d", mode="normal")  # delete tab
 config.unbind("q", mode="normal")  # macro recording
 config.unbind("M", mode="normal")  # add bookmark
 config.unbind("gb", mode="normal")  # load bookmark
