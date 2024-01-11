@@ -24,7 +24,7 @@ config.bind("pw", "spawn --userscript qute-bitwarden")
 config.bind("tm", "tab-move")
 config.bind("to", "tab-focus")
 config.bind("ø", "cmd-set-text :")
-config.bind("m", 'cmd-set-text :quickmark-add {url:pretty} "{date} {title}"', mode="normal")
+config.bind("m", 'cmd-set-text :quickmark-add {url:pretty} "', mode="normal")
 config.bind("D", "tab-close")
 config.unbind("d", mode="normal")  # delete tab
 config.unbind("q", mode="normal")  # macro recording
@@ -42,6 +42,7 @@ c.completion.open_categories = [
     "filesystem",
 ]
 c.completion.web_history.max_items = 10000
+c.completion.height = "100%"
 c.content.autoplay = False
 c.content.geolocation = False
 c.content.cache.size = 52428800
