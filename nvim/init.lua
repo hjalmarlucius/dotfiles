@@ -105,15 +105,13 @@ require("lazy").setup({
     "tpope/vim-eunuch", -- Move, Rename etc
     "dhruvasagar/vim-table-mode", -- tables
     "itchyny/vim-qfedit", -- editable quickfix list
+    "mbbill/undotree",
     {
         -- keep location upon reopening
         "ethanholz/nvim-lastplace",
         config = function()
             require("nvim-lastplace").setup()
         end,
-    },
-    {
-        "mbbill/undotree",
     },
     {
         -- tmux / vim interop
@@ -259,8 +257,6 @@ require("lazy").setup({
         config = function()
             local map = vim.keymap.set
             map("", "<C-g>", "<cmd>vertical Git<cr>:vertical resize 60<cr>", {})
-            map("", "<leader>gl", "<cmd>Git log --oneline<cr>", {})
-            map("", "<leader>gL", "<cmd>Gclog<cr>", {})
             map("", "<leader>gB", "<cmd>Git blame<cr>", {})
             map("", "<leader>gp", "<cmd>Git push<cr>", {})
             map("", "<leader>gP", "<cmd>Git push -f<cr>", {})
@@ -270,8 +266,8 @@ require("lazy").setup({
         "rbong/vim-flog",
         config = function()
             local map = vim.keymap.set
-            map("", "<leader>gg", "<cmd>vertical Flogsplit -path=%<cr>", {})
-            map("", "<leader>gG", "<cmd>vertical Flogsplit<cr>", {})
+            map("", "<leader>gl", "<cmd>vertical Flogsplit -path=%<cr>", {})
+            map("", "<leader>gL", "<cmd>vertical Flogsplit<cr>", {})
         end,
     },
     {
