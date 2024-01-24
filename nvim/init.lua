@@ -158,8 +158,6 @@ require("lazy").setup({
             map({ "n", "x" }, "g#", [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {})
             map({ "n", "x" }, "n", [[n<Cmd>lua require('hlslens').start()<CR>]], kopts)
             map({ "n", "x" }, "N", [[N<Cmd>lua require('hlslens').start()<CR>]], kopts)
-            map({ "n", "x" }, "m", "nzz", kopts)
-            map({ "n", "x" }, "M", "Nzz", kopts)
         end,
     },
     {
@@ -591,14 +589,14 @@ require("lazy").setup({
                         function()
                             return {
                                 exe = "black",
-                                args = { "--quiet", "-" },
+                                args = { "--quiet", "-C", "--line-length", "100", "-" },
                                 stdin = true,
                             }
                         end,
                         function()
                             return {
                                 exe = "blackdoc",
-                                args = { "-q", "-t py311" },
+                                args = { "-q", "--line-length", "100", "-t py311" },
                                 stdin = false,
                             }
                         end,
@@ -837,7 +835,7 @@ vim.o.number = false
 vim.o.relativenumber = false
 vim.o.cursorline = false
 vim.o.switchbuf = "useopen" -- Use existing window if buffer is already open
-vim.o.colorcolumn = "88"
+vim.o.colorcolumn = "100"
 
 -- diffs
 vim.o.diffopt = "internal,filler,closeoff,hiddenoff,vertical,algorithm:patience"
