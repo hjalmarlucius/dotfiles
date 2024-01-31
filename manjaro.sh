@@ -16,8 +16,15 @@ yay -S python-pip pyenv ipython
 yay -S manjaro-pipewire pavucontrol
 
 # terminal and shell
-yay -S wezterm fish urxvt-resize-font
-chsh -s /usr/bin/fish
+yay -S wezterm zsh urxvt-resize-font
+chsh -s /usr/bin/zsh
+
+# zsh setup
+yay -S zsh-theme-powerlevel10k-git \
+    zsh-git-prompt-git \
+    zsh-autosuggestions-git \
+    zsh-history-substring-search-git \
+    zsh-syntax-highlighting-git
 
 # code
 yay -S neovim tmux tig diff-so-fancy ripgrep nvimpager
