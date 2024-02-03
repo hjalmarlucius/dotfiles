@@ -258,6 +258,13 @@ require("lazy").setup({
             map("", "<leader>gB", "<cmd>Git blame<cr>", {})
             map("", "<leader>gp", "<cmd>Git push<cr>", {})
             map("", "<leader>gP", "<cmd>Git push -f<cr>", {})
+            vim.api.nvim_create_autocmd("User", {
+                pattern = { "FugitiveCommit", "BufReadPost" },
+                callback = function()
+                    vim.opt.foldmethod = "syntax"
+                    vim.opt.foldlevel = 0
+                end,
+            })
         end,
     },
     {
@@ -879,11 +886,12 @@ vim.o.completeopt = "menu,menuone,noinsert"
 vim.opt.formatoptions = vim.opt.formatoptions - { "c", "r", "o" }
 vim.opt.iskeyword = vim.opt.iskeyword - { "." }
 
--- press enter in quickfix list to goto
-vim.api.nvim_command([[augroup MYAU]])
-vim.api.nvim_command([[autocmd!]])
-vim.api.nvim_command([[autocmd BufReadPost quickfix nmap <buffer> <cr> <cr>]])
-vim.api.nvim_command([[augroup END]])
+vim.api.nvim_create_autocmd({ "BufReadPost" }, {
+    pattern = { "quickfix" },
+    callback = function()
+        vim.keymap.set("n", "<cr>", "<cr>", { buffer = true })
+    end,
+})
 
 -- ----------------------------------------
 -- MAPS
