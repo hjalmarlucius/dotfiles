@@ -256,8 +256,8 @@ require("lazy").setup({
             local map = vim.keymap.set
             map("", "<C-g>", "<cmd>vertical Git<cr>:vertical resize 60<cr>", {})
             map("", "<leader>gB", "<cmd>Git blame<cr>", {})
-            map("", "<leader>gp", "<cmd>Git push<cr>", {})
-            map("", "<leader>gP", "<cmd>Git push -f<cr>", {})
+            map("", "<leader>gp", "<cmd>Git! push<cr>", {})
+            map("", "<leader>gP", "<cmd>Git! push -f<cr>", {})
             vim.api.nvim_create_autocmd("User", {
                 pattern = { "FugitiveCommit", "BufReadPost" },
                 callback = function()
