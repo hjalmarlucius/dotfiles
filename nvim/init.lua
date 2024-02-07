@@ -273,6 +273,11 @@ require("lazy").setup({
             local map = vim.keymap.set
             map("", "<leader>gl", "<cmd>vertical Flogsplit -path=%<cr>", {})
             map("", "<leader>gL", "<cmd>vertical Flogsplit<cr>", {})
+            vim.g.flog_permanent_default_opts = {
+                -- format = "%ad [%h] {%an}%d %s",
+                format = "%ad [%h]%d %s",
+                date = "short",
+            }
         end,
     },
     {
@@ -549,7 +554,7 @@ require("lazy").setup({
         end,
     },
     {
-        "mhartington/formatter.nvim",
+        "mhartington/formatter.nvim", -- TODO move to conform
         -- Utilities for creating configurations
         config = function()
             local util = require("formatter.util")
@@ -596,7 +601,7 @@ require("lazy").setup({
                         end,
                         function()
                             return {
-                                exe = "black",
+                                exe = "black", -- TODO move to ruff
                                 args = { "--quiet", "-C", "--line-length", "100", "-" },
                                 stdin = true,
                             }
