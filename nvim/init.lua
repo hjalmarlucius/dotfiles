@@ -433,13 +433,16 @@ require("lazy").setup({
             local map = vim.keymap.set
             local opts = { noremap = true }
             local actions = require("telescope.actions")
-            map("n", "<M-F>", "<cmd>Telescope find_files<cr>", opts)
-            map("n", "<M-f>", "<cmd>Telescope git_files<cr>", opts)
-            map("n", "<M-w>", ':lua require("telescope").extensions.live_grep_args.live_grep_args()<cr>', opts)
+            map("n", "<M-F>", "<cmd>Telescope find_files layout_config={width=0.99}<cr>", opts)
+            map("n", "<M-f>", "<cmd>Telescope git_files layout_config={width=0.99}<cr>", opts)
+            map("n", "<M-e>", "<cmd>Telescope diagnostics layout_strategy=vertical layout_config={width=0.99}<cr>", opts)
+            map("n", "<M-w>", "<cmd>Telescope live_grep layout_strategy=vertical layout_config={width=0.99}<cr>", opts)
             map("n", "<M-y>", "<cmd>Telescope filetypes<cr>", opts)
             map("n", "<M-u>", "<cmd>Telescope search_history<cr>", opts)
+            map("n", "<F9>", "<cmd>Telescope colorscheme layout_config={width=0.5} enable_preview=1<cr>", opts)
             require("telescope").setup({
                 defaults = {
+                    layout_config = { horizontal = { width = 0.95 } },
                     mappings = {
                         i = {
                             ["<esc>"] = actions.close,
@@ -966,7 +969,6 @@ map("n", "<F2>", "<cmd>Mason<cr>", { noremap = true })
 map("n", "<F3>", "<cmd>LspInfo<cr>", { noremap = true })
 map("n", "<F5>", "<cmd>checkt<cr>", { noremap = true })
 map("n", "<F6>", "<cmd>TodoQuickFix<cr>", { noremap = true })
-map("n", "<F9>", '<cmd>lua require("telescope.builtin").colorscheme({enable_preview=1})<cr>', { noremap = true })
 
 -- cursor color
 
