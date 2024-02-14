@@ -713,13 +713,7 @@ require("lazy").setup({
             local server_configs = {
                 pyright = {
                     python = {
-                        analysis = {
-                            diagnosticMode = "workspace",
-                            logLevel = "Warning",
-                            typeCheckingMode = "basic",
-                            autoImportCompletions = false,
-                            venvPath = ".",
-                        },
+                        analysis = { typeCheckingMode = "standard" },
                     },
                 },
                 lua_ls = {
@@ -807,6 +801,7 @@ require("lazy").setup({
                         ["vim.lsp.util.stylize_markdown"] = true,
                         ["cmp.entry.get_documentation"] = true,
                     },
+                    progress = { enabled = false },
                 },
                 -- you can enable a preset for easier configuration
                 presets = {
@@ -817,6 +812,23 @@ require("lazy").setup({
                     lsp_doc_border = false, -- add a border to hover docs and signature help
                 },
                 messages = { enabled = true, view_search = false },
+                routes = {
+                    {
+                        filter = {
+                            event = "msg_show",
+                            kind = "search_count",
+                        },
+                        opts = { skip = true },
+                    },
+                    { -- show 'recording @...'
+                        filter = { event = "msg_showmode" },
+                        view = "notify",
+                    },
+                    {
+                        filter = { kind = "", min_height = 2 },
+                        view = "split",
+                    },
+                },
             })
         end,
         dependencies = { "MunifTanjim/nui.nvim" },
@@ -837,7 +849,7 @@ vim.g.BASH_Ctrl_l = "off"
 -- TODO remove <cr> in commands
 
 -- colors
-vim.cmd("colorscheme minicyan")
+vim.cmd("colorscheme ayu-mirage")
 -- undo
 vim.o.undolevels = 100000
 vim.o.undoreload = 100000
@@ -915,6 +927,7 @@ map("", "<F12>", "<esc>", { silent = true, noremap = true })
 -- <Tab> to navigate the completion menu
 map("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], { expr = true, noremap = true })
 map("i", "<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]], { expr = true, noremap = true })
+vim.opt.pumheight = 0
 
 -- CURSOR
 -- stay visual when indenting
