@@ -1,6 +1,3 @@
-c.InteractiveShellApp.extensions = ["autoreload"]
-c.InteractiveShellApp.exec_lines = ["%autoreload 2"]
-
 ## Use colors for displaying information about objects. Because this information
 #  is passed through a pager (like 'less'), and some pagers get confused with
 #  color codes, this capability can be turned off.
