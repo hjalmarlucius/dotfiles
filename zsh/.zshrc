@@ -36,6 +36,7 @@ bindkey "^[[1;3C" forward-word  # alt+right
 bindkey "^[[1;3D" backward-word  # alt+left
 bindkey "[[3~" delete-char  # delete
 bindkey "^[^?" backward-kill-word  # alt+backspace
+bindkey '^[[Z' reverse-menu-complete
 
 # substring search
 bindkey "^[[A" history-substring-search-up # up

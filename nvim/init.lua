@@ -200,6 +200,7 @@ require("lazy").setup({
         "nvim-lualine/lualine.nvim",
         dependencies = { "nvim-tree/nvim-web-devicons" },
         config = function()
+            local noice_status = require("noice").api.status
             require("lualine").setup({
                 options = { theme = "auto", globalstatus = false },
                 extensions = { "fugitive" },
@@ -215,7 +216,18 @@ require("lazy").setup({
                         },
                         { "diff", colored = true },
                     },
-                    lualine_x = {},
+                    lualine_x = {
+                        {
+                            noice_status.command.get,
+                            cond = noice_status.command.has,
+                            color = { fg = "#ff9e64" },
+                        },
+                        {
+                            noice_status.mode.get,
+                            cond = noice_status.mode.has,
+                            color = { fg = "#ff9e64" },
+                        },
+                    },
                     lualine_y = { "filetype", "progress" },
                     lualine_z = { "location" },
                 },
@@ -382,6 +394,7 @@ require("lazy").setup({
         },
         config = function()
             local cmp = require("cmp")
+            local compare = require("cmp.config.compare")
             cmp.setup({
                 sources = cmp.config.sources({
                     { name = "nvim_lsp" },
@@ -395,25 +408,44 @@ require("lazy").setup({
                     ["<C-e>"] = cmp.mapping.abort(),
                     ["<CR>"] = cmp.mapping.confirm({ select = false }),
                 }),
+                matching = {
+                    disallow_fuzzy_matching = true,
+                    disallow_fullfuzzy_matching = true,
+                    disallow_partial_fuzzy_matching = true,
+                    disallow_partial_matching = true,
+                    disallow_prefix_unmatching = false,
+                },
+                sorting = {
+                    priority_weight = 2,
+                    comparators = {
+                        compare.offset,
+                        compare.exact,
+                        -- compare.scopes,
+                        compare.score,
+                        compare.recently_used,
+                        compare.locality,
+                        compare.kind,
+                        compare.sort_text,
+                        compare.length,
+                        compare.order,
+                    },
+                },
             })
             cmp.setup.cmdline(":", {
                 mapping = cmp.mapping.preset.cmdline(),
                 sources = cmp.config.sources({ { name = "path" } }, { { name = "cmdline" } }),
             })
-            -- Set configuration for specific filetype.
             cmp.setup.filetype("gitcommit", {
                 sources = cmp.config.sources({
                     { name = "cmp_git" }, -- You can specify the `cmp_git` source if you were installed it.
                 }, { { name = "buffer" } }),
             })
 
-            -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
-            -- cmp.setup.cmdline({ "/", "?" }, {
-            --     mapping = cmp.mapping.preset.cmdline(),
-            --     sources = { { name = "buffer" } },
-            -- })
+            cmp.setup.cmdline({ "/", "?" }, {
+                mapping = cmp.mapping.preset.cmdline(),
+                sources = { { name = "buffer" } },
+            })
 
-            -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
             cmp.setup.cmdline(":", {
                 mapping = cmp.mapping.preset.cmdline(),
                 sources = cmp.config.sources({ { name = "path" } }, { { name = "cmdline" } }),
@@ -435,8 +467,14 @@ require("lazy").setup({
             local actions = require("telescope.actions")
             map("n", "<M-F>", "<cmd>Telescope find_files layout_config={width=0.99}<cr>", opts)
             map("n", "<M-f>", "<cmd>Telescope git_files layout_config={width=0.99}<cr>", opts)
-            map("n", "<M-e>", "<cmd>Telescope diagnostics layout_strategy=vertical layout_config={width=0.99}<cr>", opts)
+            map(
+                "n",
+                "<M-e>",
+                "<cmd>Telescope diagnostics layout_strategy=vertical layout_config={width=0.99}<cr>",
+                opts
+            )
             map("n", "<M-w>", "<cmd>Telescope live_grep layout_strategy=vertical layout_config={width=0.99}<cr>", opts)
+            map("n", "<M-w>", ':lua require("telescope").extensions.live_grep_args.live_grep_args()<cr>', opts)
             map("n", "<M-y>", "<cmd>Telescope filetypes<cr>", opts)
             map("n", "<M-u>", "<cmd>Telescope search_history<cr>", opts)
             map("n", "<F9>", "<cmd>Telescope colorscheme layout_config={width=0.5} enable_preview=1<cr>", opts)
@@ -822,10 +860,6 @@ require("lazy").setup({
                             kind = "search_count",
                         },
                         opts = { skip = true },
-                    },
-                    { -- show 'recording @...'
-                        filter = { event = "msg_showmode" },
-                        view = "notify",
                     },
                     {
                         filter = { kind = "", min_height = 2 },
