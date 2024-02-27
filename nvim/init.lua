@@ -510,17 +510,63 @@ require("lazy").setup({
         "kevinhwang91/nvim-ufo",
         dependencies = { "kevinhwang91/promise-async" },
         config = function()
-            vim.o.foldcolumn = "1" -- '0' is not bad
-            vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
+            vim.o.foldcolumn = "0"
+            vim.o.foldlevel = 99
             vim.o.foldlevelstart = 99
             vim.o.foldenable = true
 
             local ufo = require("ufo")
+            -- zm/M zr/R increase/increase foldlevel (max)
+            -- zo/O zc/C open / close fold (max)
+            -- za zA switch fold (small/full)
+            -- zi toggle folds
+            -- zi zj move to next / prev fold
+
             local map = vim.keymap.set
-            -- Using ufo provider need remap `zR` and `zM`. If Neovim is 0.6.1, remap yourself
             map("n", "zR", ufo.openAllFolds)
             map("n", "zM", ufo.closeAllFolds)
-            ufo.setup()
+            map("n", "zm", ufo.closeFoldsWith)
+            map("n", "zr", ufo.openFoldsExceptKinds)
+
+            local closecounthandler = function(virtText, lnum, endLnum, width, truncate)
+                local newVirtText = {}
+                local suffix = (" 󰁂 %d "):format(endLnum - lnum)
+                local sufWidth = vim.fn.strdisplaywidth(suffix)
+                local targetWidth = width - sufWidth
+                local curWidth = 0
+                for _, chunk in ipairs(virtText) do
+                    local chunkText = chunk[1]
+                    local chunkWidth = vim.fn.strdisplaywidth(chunkText)
+                    if targetWidth > curWidth + chunkWidth then
+                        table.insert(newVirtText, chunk)
+                    else
+                        chunkText = truncate(chunkText, targetWidth - curWidth)
+                        local hlGroup = chunk[2]
+                        table.insert(newVirtText, { chunkText, hlGroup })
+                        chunkWidth = vim.fn.strdisplaywidth(chunkText)
+                        -- str width returned from truncate() may less than 2nd argument, need padding
+                        if curWidth + chunkWidth < targetWidth then
+                            suffix = suffix .. (" "):rep(targetWidth - curWidth - chunkWidth)
+                        end
+                        break
+                    end
+                    curWidth = curWidth + chunkWidth
+                end
+                table.insert(newVirtText, { suffix, "MoreMsg" })
+                return newVirtText
+            end
+            ufo.setup({
+                preview = {
+                    mappings = {
+                        scrollU = "<C-u>",
+                        scrollD = "<C-d>",
+                        jumpTop = "[",
+                        jumpBot = "]",
+                    },
+                },
+                close_fold_kinds = { "imports", "comment" },
+                fold_virt_text_handler = closecounthandler,
+            })
         end,
     },
     {
@@ -713,6 +759,7 @@ require("lazy").setup({
             "williamboman/mason.nvim",
             "williamboman/mason-lspconfig.nvim",
             "folke/neodev.nvim",
+            "kevinhwang91/nvim-ufo",
         },
         config = function()
             local on_attach = function(client, bufnr)
@@ -746,7 +793,12 @@ require("lazy").setup({
                 -- popups
                 bmap({ "n", "i" }, "<M-x>", vim.lsp.buf.signature_help)
                 -- other
-                bmap("n", "K", vim.lsp.buf.hover)
+                bmap("n", "K", function()
+                    local winid = require("ufo").peekFoldedLinesUnderCursor()
+                    if not winid then
+                        vim.lsp.buf.hover()
+                    end
+                end)
                 bmap("n", "<M-r>", vim.lsp.buf.rename)
                 bmap("n", "<leader>ca", vim.lsp.buf.code_action)
             end
@@ -926,15 +978,6 @@ vim.o.showmatch = true -- Show matching brackets / parentheses
 -- editing
 vim.o.langmap = "å(,¨),ø:,æ^,+$"
 vim.opt.clipboard = vim.opt.clipboard + { "unnamedplus" }
-
--- folding (also see treesitter)
--- zm/M zr/R increase/increase foldlevel (max)
--- zo/O zc/C open / close fold (max)
--- za zA switch fold (small/full)
--- zi toggle folds
--- zi zj move to next / prev fold
-vim.o.foldenable = false
-vim.o.foldmethod = "expr"
 
 vim.o.completeopt = "menu,menuone,noinsert"
 vim.opt.formatoptions = vim.opt.formatoptions - { "c", "r", "o" }
