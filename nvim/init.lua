@@ -420,7 +420,7 @@ require("lazy").setup({
                     comparators = {
                         compare.offset,
                         compare.exact,
-                        -- compare.scopes,
+                        compare.scopes,
                         compare.score,
                         compare.recently_used,
                         compare.locality,
@@ -480,7 +480,7 @@ require("lazy").setup({
             map("n", "<F9>", "<cmd>Telescope colorscheme layout_config={width=0.5} enable_preview=1<cr>", opts)
             require("telescope").setup({
                 defaults = {
-                    layout_config = { horizontal = { width = 0.95 } },
+                    layout_config = { horizontal = { width = 0.99 } },
                     mappings = {
                         i = {
                             ["<esc>"] = actions.close,
