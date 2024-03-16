@@ -43,5 +43,7 @@ bindkey "^[[A" history-substring-search-up # up
 bindkey "^[[B" history-substring-search-down # down
 HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1
 
+zstyle ':completion:*' menu select
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
