@@ -1,0 +1,26 @@
+
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+sensor:
+  - platform: nordpool
+    region: "Oslo"
+    currency: "NOK"
+    VAT: True
+    precision: 3
+    low_price_cutoff: 0.95
+    price_in_cents: false
+    price_type: kWh
+
+    # Template to specify additional cost to be added to the tariff.
+    # The template price is in EUR, DKK, NOK or SEK (not in cents).
+    # For example: "{{ current_price * 0.19 + 0.023 | float}}" 
+    additional_costs: "{{0.0|float}}"
