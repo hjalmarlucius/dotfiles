@@ -1,12 +1,12 @@
 [Default Applications]
-x-scheme-handler/https=vivaldi-stable.desktop
-x-scheme-handler/http=vivaldi-stable.desktop
-application/x-extension-htm=vivaldi-stable.desktop
-application/x-extension-html=vivaldi-stable.desktop
-application/x-extension-shtml=vivaldi-stable.desktop
-application/x-extension-xhtml=vivaldi-stable.desktop
-application/x-extension-xht=vivaldi-stable.desktop
-application/xhtml+xml=vivaldi-stable.desktop
+x-scheme-handler/https=firefox.desktop
+x-scheme-handler/http=firefox.desktop
+application/x-extension-htm=firefox.desktop
+application/x-extension-html=firefox.desktop
+application/x-extension-shtml=firefox.desktop
+application/x-extension-xhtml=firefox.desktop
+application/x-extension-xht=firefox.desktop
+application/xhtml+xml=firefox.desktop
 application/xml=draw.io.desktop
 application/pdf=org.pwmt.zathura.desktop
 application/x-bittorrent=deluge.desktop
@@ -14,7 +14,7 @@ inode/directory=ranger.desktop
 image/jpeg=viewnior.desktop
 image/png=viewnior.desktop
 image/svg+xml=viewnior.desktop
-message/rfc822=vivaldi-stable.desktop
+message/rfc822=firefox.desktop
 text/csv=freeoffice-planmaker.desktop
 text/html=nvim.desktop
 text/x-log=nvim.desktop
@@ -26,4 +26,4 @@ application/octet-stream=nvim.desktop
 x-scheme-handler/msteams=teams.desktop
 
 [Added Associations]
-application/pdf=vivaldi-stable.desktop;
+application/pdf=zathura.desktop;
