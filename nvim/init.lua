@@ -564,7 +564,6 @@ require("lazy").setup({
                         jumpBot = "]",
                     },
                 },
-                close_fold_kinds = { "imports", "comment" },
                 fold_virt_text_handler = closecounthandler,
             })
         end,
