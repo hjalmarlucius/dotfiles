@@ -391,15 +391,22 @@ require("lazy").setup({
             "hrsh7th/cmp-path",
             "hrsh7th/cmp-buffer",
             "hrsh7th/cmp-cmdline",
+            "hrsh7th/cmp-nvim-lsp-signature-help",
         },
         config = function()
             local cmp = require("cmp")
             local compare = require("cmp.config.compare")
             cmp.setup({
+                snippet = {
+                    expand = function(args)
+                        vim.snippet.expand(args.body)
+                    end,
+                },
                 sources = cmp.config.sources({
                     { name = "nvim_lsp" },
+                    { name = "nvim_lsp_signature_help" },
+                }, {
                     { name = "buffer" },
-                    { name = "path" },
                 }),
                 mapping = cmp.mapping.preset.insert({
                     ["<C-b>"] = cmp.mapping.scroll_docs(-4),
@@ -416,39 +423,31 @@ require("lazy").setup({
                     disallow_prefix_unmatching = false,
                 },
                 sorting = {
-                    priority_weight = 2,
                     comparators = {
-                        compare.offset,
-                        compare.exact,
-                        compare.scopes,
-                        compare.score,
-                        compare.recently_used,
-                        compare.locality,
-                        compare.kind,
-                        compare.sort_text,
-                        compare.length,
-                        compare.order,
+                        -- compare.offset,
+                        -- compare.exact,
+                        -- compare.scopes,
+                        -- compare.score,
+                        -- compare.recently_used,
+                        -- compare.locality,
+                        -- compare.kind,
+                        -- compare.sort_text,
+                        -- compare.length,
+                        -- compare.order,
                     },
                 },
             })
-            cmp.setup.cmdline(":", {
-                mapping = cmp.mapping.preset.cmdline(),
-                sources = cmp.config.sources({ { name = "path" } }, { { name = "cmdline" } }),
-            })
-            cmp.setup.filetype("gitcommit", {
-                sources = cmp.config.sources({
-                    { name = "cmp_git" }, -- You can specify the `cmp_git` source if you were installed it.
-                }, { { name = "buffer" } }),
-            })
-
             cmp.setup.cmdline({ "/", "?" }, {
                 mapping = cmp.mapping.preset.cmdline(),
                 sources = { { name = "buffer" } },
             })
-
             cmp.setup.cmdline(":", {
                 mapping = cmp.mapping.preset.cmdline(),
                 sources = cmp.config.sources({ { name = "path" } }, { { name = "cmdline" } }),
+                matching = { disallow_symbol_nonprefix_matching = false },
+            })
+            cmp.setup.filetype("gitcommit", {
+                sources = cmp.config.sources({ { name = "buffer" } }),
             })
         end,
     }, -- Fuzzy Finder (files, lsp, etc)
@@ -938,6 +937,7 @@ vim.g.BASH_Ctrl_l = "off"
 
 -- colors
 vim.cmd("colorscheme ayu-mirage")
+vim.api.nvim_set_hl(0, "ColorColumn", { bg="DarkRed" })
 -- undo
 vim.o.undolevels = 100000
 vim.o.undoreload = 100000
@@ -948,7 +948,6 @@ vim.o.number = false
 vim.o.relativenumber = false
 vim.o.cursorline = false
 vim.o.switchbuf = "useopen" -- Use existing window if buffer is already open
-vim.o.colorcolumn = "100"
 
 -- diffs
 vim.o.diffopt = "internal,filler,closeoff,hiddenoff,vertical,algorithm:patience"
@@ -978,7 +977,7 @@ vim.o.showmatch = true -- Show matching brackets / parentheses
 vim.o.langmap = "å(,¨),ø:,æ^,+$"
 vim.opt.clipboard = vim.opt.clipboard + { "unnamedplus" }
 
-vim.o.completeopt = "menu,menuone,noinsert"
+vim.o.completeopt = "menu,menuone,noinsert,noselect"
 vim.opt.formatoptions = vim.opt.formatoptions - { "c", "r", "o" }
 vim.opt.iskeyword = vim.opt.iskeyword - { "." }
 
