@@ -107,6 +107,12 @@ require("lazy").setup({
     "itchyny/vim-qfedit", -- editable quickfix list
     "mbbill/undotree",
     {
+        "rcarriga/nvim-notify",
+        config = function()
+            require("notify").setup({ timeout = 2500, stages = "fade", render = "compact" })
+        end,
+    },
+    {
         -- keep location upon reopening
         "ethanholz/nvim-lastplace",
         config = function()
@@ -404,7 +410,6 @@ require("lazy").setup({
                 },
                 sources = cmp.config.sources({
                     { name = "nvim_lsp" },
-                    { name = "nvim_lsp_signature_help" },
                 }, {
                     { name = "buffer" },
                 }),
@@ -883,42 +888,43 @@ require("lazy").setup({
     },
     {
         "folke/noice.nvim",
+        dependencies = { "MunifTanjim/nui.nvim" },
         config = function()
             require("noice").setup({
+                cmdline = { enabled = true, view = "cmdline_popup" },
+                messages = {
+                    enabled = true, -- enables the Noice messages UI
+                    view = "notify", -- default view for messages
+                    view_error = "notify", -- view for errors
+                    view_warn = "mini", -- view for warnings
+                    view_history = "popup", -- view for :messages
+                    view_search = false,
+                },
+                popupmenu = { enabled = true },
+                notify = { enabled = true, view = "notify" },
                 lsp = {
-                    -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
                     override = {
                         ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
                         ["vim.lsp.util.stylize_markdown"] = true,
                         ["cmp.entry.get_documentation"] = true,
                     },
                     progress = { enabled = false },
+                    hover = { enabled = true },
+                    signature = { enabled = true, auto_open = { enabled = true, throttle = 0 } },
+                    message = { enabled = true, view = "notify" },
+                    documentation = { view = "hover" },
                 },
                 -- you can enable a preset for easier configuration
                 presets = {
-                    bottom_search = false, -- use a classic bottom cmdline for search
                     command_palette = true, -- position the cmdline and popupmenu together
                     long_message_to_split = true, -- long messages will be sent to a split
-                    inc_rename = false, -- enables an input dialog for inc-rename.nvim
-                    lsp_doc_border = false, -- add a border to hover docs and signature help
                 },
-                messages = { enabled = true, view_search = false },
                 routes = {
-                    {
-                        filter = {
-                            event = "msg_show",
-                            kind = "search_count",
-                        },
-                        opts = { skip = true },
-                    },
-                    {
-                        filter = { kind = "", min_height = 2 },
-                        view = "split",
-                    },
+                    { filter = { event = "msg_show", kind = "search_count" }, opts = { skip = true } },
+                    { filter = { kind = "", min_height = 2 }, view = "split" },
                 },
             })
         end,
-        dependencies = { "MunifTanjim/nui.nvim" },
     },
 })
 
@@ -1058,8 +1064,8 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     pattern = { "OceanicNext" },
     group = customthemegroup,
     callback = function()
-        vim.api.nvim_set_hl(0, "DiffAdded", { default=false, link="DiffAdd" })
-        vim.api.nvim_set_hl(0, "DiffRemoved", { default=false, link="DiffDelete" })
-    end
+        vim.api.nvim_set_hl(0, "DiffAdded", { default = false, link = "DiffAdd" })
+        vim.api.nvim_set_hl(0, "DiffRemoved", { default = false, link = "DiffDelete" })
+    end,
 })
-vim.cmd("colorscheme OceanicNext")
+vim.cmd("colorscheme minicyan")
