@@ -935,9 +935,6 @@ vim.g.BASH_Ctrl_j = "off"
 vim.g.BASH_Ctrl_l = "off"
 -- TODO remove <cr> in commands
 
--- colors
-vim.cmd("colorscheme ayu-mirage")
-vim.api.nvim_set_hl(0, "ColorColumn", { bg="DarkRed" })
 -- undo
 vim.o.undolevels = 100000
 vim.o.undoreload = 100000
@@ -1045,14 +1042,24 @@ map("n", "<F3>", "<cmd>LspInfo<cr>", { noremap = true })
 map("n", "<F5>", "<cmd>checkt<cr>", { noremap = true })
 map("n", "<F6>", "<cmd>TodoQuickFix<cr>", { noremap = true })
 
--- cursor color
-
--- https://codeyarns.com/tech/2011-07-29-vim-chart-of-color-names.html
-local col = "salmon1"
-local cursorcolor = function()
-    vim.api.nvim_set_hl(0, "CustomCursor", { fg = col, bg = col })
-    vim.api.nvim_set_hl(0, "CustomICursor", { fg = col, bg = col })
-end
-cursorcolor()
-vim.api.nvim_create_autocmd("ColorScheme", { pattern = "*", callback = cursorcolor })
+-- VISUALS
 vim.o.guicursor = "n-v-c:block-CustomCursor,i:ver100-CustomICursor,n-v-c:blinkon0,i:blinkwait10"
+-- https://codeyarns.com/tech/2011-07-29-vim-chart-of-color-names.html
+vim.api.nvim_create_autocmd("ColorScheme", {
+    pattern = { "*" },
+    callback = function()
+        vim.api.nvim_set_hl(0, "CustomCursor", { fg = "salmon1", bg = "cyan" })
+        vim.api.nvim_set_hl(0, "CustomICursor", { fg = "salmon1", bg = "cyan" })
+        vim.api.nvim_set_hl(0, "ColorColumn", { bg = "salmon4" })
+    end,
+})
+local customthemegroup = vim.api.nvim_create_augroup("customthemegroup", {})
+vim.api.nvim_create_autocmd("ColorScheme", {
+    pattern = { "OceanicNext" },
+    group = customthemegroup,
+    callback = function()
+        vim.api.nvim_set_hl(0, "DiffAdded", { default=false, link="DiffAdd" })
+        vim.api.nvim_set_hl(0, "DiffRemoved", { default=false, link="DiffDelete" })
+    end
+})
+vim.cmd("colorscheme OceanicNext")
