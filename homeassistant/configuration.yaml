@@ -14,22 +14,13 @@ automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
 
-sensor:
-  - platform: nordpool
-    region: "Oslo"
-    currency: "NOK"
-    VAT: True
-    precision: 3
-    low_price_cutoff: 0.95
-    price_in_cents: false
-    price_type: kWh
-
-    # Template to specify additional cost to be added to the tariff.
-    # The template price is in EUR, DKK, NOK or SEK (not in cents).
-    # For example: "{{ current_price * 0.19 + 0.023 | float}}" 
-    additional_costs: "{{0.0|float}}"
-
 google_assistant:
   project_id: homeassistant-mothership-1123
   service_account: !include SERVICE_ACCOUNT.JSON
   report_state: true
+
+sensor:
+  - platform: nordpool
+    region: "Oslo"
+    currency: "NOK"
+    low_price_cutoff: 0.95
