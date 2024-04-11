@@ -895,7 +895,7 @@ require("lazy").setup({
                 cmdline = { enabled = true, view = "cmdline_popup" },
                 messages = {
                     enabled = true, -- enables the Noice messages UI
-                    view = "notify", -- default view for messages
+                    view = "mini", -- default view for messages
                     view_error = "notify", -- view for errors
                     view_warn = "mini", -- view for warnings
                     view_history = "popup", -- view for :messages

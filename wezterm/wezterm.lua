@@ -16,6 +16,7 @@ config.hide_tab_bar_if_only_one_tab = true
 config.default_cursor_style = "BlinkingBar"
 config.disable_default_key_bindings = true
 config.window_padding = { left = 0, right = 0, top = 0, bottom = 0 }
+config.set_environment_variables = { EDITOR = "nvim" }
 
 config.keys = {
     -- font size

@@ -60,9 +60,6 @@ bindsym $mod+space focus mode_toggle
 bindsym $mod+Shift+space floating toggle
 bindsym $mod+Ctrl+space sticky toggle
 
-bindsym $mod+Shift+p exec picom-trans -c -10
-bindsym $mod+p exec picom-trans -c +10
-
 bindsym $mod+minus scratchpad show
 bindsym $mod+Shift+minus move scratchpad
 
@@ -89,22 +86,20 @@ bindsym $mod+Shift+Return exec urxvt
 bindsym $mod+Shift+s --release exec --no-startup-id cd $(xdg-user-dir PICTURES) && scrot --freeze --select --exec 'xclip -selection clipboard -t image/png -i $f'
 bindsym $mod+Shift+x --release exec --no-startup-id xkill
 
-bindsym $mod+F1 exec urxvt -e htop
+bindsym $mod+F1 exec wezterm -e htop
 bindsym $mod+F2 exec qutebrowser
-bindsym $mod+F3 exec pcmanfm
-bindsym $mod+F4 exec urxvt -e ranger
 bindsym $mod+F5 exec pavucontrol
-bindsym $mod+F6 exec urxvt -e cmus
-bindsym $mod+F7 exec urxvt -e ncspot
-bindsym $mod+F9 exec --no-startup-id picom -b
-bindsym $mod+Shift+F9 exec --no-startup-id pkill picom
+bindsym $mod+F6 exec clementine
+bindsym $mod+Shift+F6 exec wezterm -e cmus
+bindsym $mod+F7 exec wezterm -e ncspot
 bindsym $mod+Shift+F10 --release exec "killall dunst; exec notify-send 'restart dunst'"
+bindsym $mod+p exec pcmanfm
+bindsym $mod+Shift+p exec wezterm -e ranger
+bindsym $mod+c exec qalculate-gtk
 
-bindsym $mod+0 mode "$mode_system"
+bindsym $mod+Shift+e mode "$mode_system"
 bindsym $mod+z mode "resize"
 bindsym $mod+g mode "$mode_gaps"
-bindsym $mod+c exec qalculate-gtk
-bindsym $mod+u exec zulip
 
 # Open specific applications in floating mode
 for_window [class="GParted"] floating enable border normal
@@ -118,6 +113,11 @@ for_window [class="Nitrogen"] floating enable sticky enable border normal
 for_window [class="Pamac-manager"] floating enable
 for_window [class="Pavucontrol"] floating enable
 for_window [class="qt5ct"] floating enable sticky enable border normal
+
+# https://github.com/ValveSoftware/steam-for-linux/issues/1040
+for_window [class="^steam$"] floating enable
+for_window [class="^Steam$"] floating enable
+for_window [class="^steam$" title="^Steam$"] floating disable
 
 # Set shut down, restart and locking features
 set $mode_system (l)ock, (e)xit, switch_(u)ser, (r)eboot, (s)hutdown
