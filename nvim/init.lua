@@ -902,7 +902,7 @@ require("lazy").setup({
                     view_search = false,
                 },
                 popupmenu = { enabled = true },
-                notify = { enabled = true, view = "notify" },
+                notify = { enabled = true, view = "mini" },
                 lsp = {
                     override = {
                         ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
