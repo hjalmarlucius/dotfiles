@@ -410,8 +410,12 @@ require("lazy").setup({
                     end,
                 },
                 sources = cmp.config.sources({
-                    { name = "nvim_lsp" },
-                }, {
+                    {
+                        name = "nvim_lsp",
+                        entry_filter = function(entry, ctx)
+                            return compare.scopes.scopes_map[entry:get_word()] ~= nil
+                        end,
+                    },
                     { name = "buffer" },
                 }),
                 mapping = cmp.mapping.preset.insert({
@@ -430,12 +434,12 @@ require("lazy").setup({
                 },
                 sorting = {
                     comparators = {
-                        -- compare.offset,
-                        -- compare.exact,
-                        -- compare.scopes,
+                        compare.scopes,
+                        compare.exact,
+                        compare.locality,  -- number of lines away
+                        -- compare.offset,  -- order in file (partially)
                         -- compare.score,
                         -- compare.recently_used,
-                        -- compare.locality,
                         -- compare.kind,
                         -- compare.sort_text,
                         -- compare.length,
