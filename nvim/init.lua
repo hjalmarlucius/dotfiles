@@ -389,77 +389,6 @@ require("lazy").setup({
                 },
             })
         end,
-    },
-    {
-        -- Autocompletion
-        "hrsh7th/nvim-cmp",
-        dependencies = {
-            "hrsh7th/cmp-nvim-lsp",
-            "hrsh7th/cmp-path",
-            "hrsh7th/cmp-buffer",
-            "hrsh7th/cmp-cmdline",
-            "hrsh7th/cmp-nvim-lsp-signature-help",
-        },
-        config = function()
-            local cmp = require("cmp")
-            local compare = require("cmp.config.compare")
-            cmp.setup({
-                snippet = {
-                    expand = function(args)
-                        vim.snippet.expand(args.body)
-                    end,
-                },
-                sources = cmp.config.sources({
-                    {
-                        name = "nvim_lsp",
-                        entry_filter = function(entry, ctx)
-                            return compare.scopes.scopes_map[entry:get_word()] ~= nil
-                        end,
-                    },
-                    { name = "buffer" },
-                }),
-                mapping = cmp.mapping.preset.insert({
-                    ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-                    ["<C-f>"] = cmp.mapping.scroll_docs(4),
-                    ["<C-Space>"] = cmp.mapping.complete(),
-                    ["<C-e>"] = cmp.mapping.abort(),
-                    ["<CR>"] = cmp.mapping.confirm({ select = false }),
-                }),
-                matching = {
-                    disallow_fuzzy_matching = true,
-                    disallow_fullfuzzy_matching = true,
-                    disallow_partial_fuzzy_matching = true,
-                    disallow_partial_matching = true,
-                    disallow_prefix_unmatching = false,
-                },
-                sorting = {
-                    comparators = {
-                        compare.scopes,
-                        compare.exact,
-                        compare.locality,  -- number of lines away
-                        -- compare.offset,  -- order in file (partially)
-                        -- compare.score,
-                        -- compare.recently_used,
-                        -- compare.kind,
-                        -- compare.sort_text,
-                        -- compare.length,
-                        -- compare.order,
-                    },
-                },
-            })
-            cmp.setup.cmdline({ "/", "?" }, {
-                mapping = cmp.mapping.preset.cmdline(),
-                sources = { { name = "buffer" } },
-            })
-            cmp.setup.cmdline(":", {
-                mapping = cmp.mapping.preset.cmdline(),
-                sources = cmp.config.sources({ { name = "path" } }, { { name = "cmdline" } }),
-                matching = { disallow_symbol_nonprefix_matching = false },
-            })
-            cmp.setup.filetype("gitcommit", {
-                sources = cmp.config.sources({ { name = "buffer" } }),
-            })
-        end,
     }, -- Fuzzy Finder (files, lsp, etc)
     {
         "nvim-telescope/telescope.nvim",
@@ -608,22 +537,6 @@ require("lazy").setup({
         config = function()
             require("nvim-ts-autotag").setup({
                 filetypes = { "html", "xml" },
-            })
-        end,
-    },
-    {
-        "RRethy/nvim-treesitter-textsubjects",
-        config = function()
-            require("nvim-treesitter.configs").setup({
-                textsubjects = {
-                    enable = true,
-                    prev_selection = ",",
-                    keymaps = {
-                        ["."] = "textsubjects-smart",
-                        [";"] = "textsubjects-container-outer",
-                        ["-"] = "textsubjects-container-inner",
-                    },
-                },
             })
         end,
     }, -- package manager + lsp stuff
@@ -853,11 +766,6 @@ require("lazy").setup({
 
             local capabilities = vim.lsp.protocol.make_client_capabilities()
 
-            local cmp = require("cmp_nvim_lsp")
-            if cmp then
-                capabilities = cmp.default_capabilities(capabilities)
-            end
-
             local ufo = require("ufo")
             if ufo then
                 capabilities.textDocument.foldingRange = {
@@ -911,7 +819,6 @@ require("lazy").setup({
                     override = {
                         ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
                         ["vim.lsp.util.stylize_markdown"] = true,
-                        ["cmp.entry.get_documentation"] = true,
                     },
                     progress = { enabled = false },
                     hover = { enabled = true },
@@ -985,7 +892,7 @@ vim.o.showmatch = true -- Show matching brackets / parentheses
 vim.o.langmap = "å(,¨),ø:,æ^,+$"
 vim.opt.clipboard = vim.opt.clipboard + { "unnamedplus" }
 
-vim.o.completeopt = "menu,menuone,noinsert,noselect"
+vim.o.completeopt = "menu,menuone,preview,longest"
 vim.opt.formatoptions = vim.opt.formatoptions - { "c", "r", "o" }
 vim.opt.iskeyword = vim.opt.iskeyword - { "." }
 
@@ -1017,7 +924,7 @@ vim.opt.pumheight = 0
 
 -- CURSOR
 -- stay visual when indenting
-map("n", "-", "_", { noremap = true })
+map({"n", "v"}, "-", "_", { noremap = true })
 map("v", "v", "<esc>", { noremap = true })
 map("v", "<Tab>", ">gv", { noremap = true })
 map("v", "<S-Tab>", "<gv", { noremap = true })
