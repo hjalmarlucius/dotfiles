@@ -1,4 +1,3 @@
-vim.opt.termguicolors = true
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
@@ -61,12 +60,6 @@ require("lazy").setup({
                     ["echasnovski/mini.nvim"] = true,
                 },
             })
-        end,
-    },
-    {
-        "echasnovski/mini.comment",
-        config = function()
-            require("mini.comment").setup({})
         end,
     },
     {
@@ -610,14 +603,14 @@ require("lazy").setup({
                         function()
                             return {
                                 exe = "black", -- TODO move to ruff
-                                args = { "--quiet", "-C", "--line-length", "100", "-" },
+                                args = { "--quiet", "-C", "--line-length", "100", "--target-version py312", "-" },
                                 stdin = true,
                             }
                         end,
                         function()
                             return {
                                 exe = "blackdoc",
-                                args = { "-q", "--line-length", "100", "-t py311" },
+                                args = { "-q", "--line-length", "100", "-t py312" },
                                 stdin = false,
                             }
                         end,
@@ -872,7 +865,7 @@ vim.o.expandtab = true -- Use spaces instead of tabs
 vim.o.shiftround = true -- Round indent
 vim.o.tabstop = 4 -- Number of spaces tabs count for
 vim.o.shiftwidth = 4 -- Size of an indent
-vim.o.listchars = "tab:→ ,trail:·,extends:↷,precedes:↶,nbsp:+,eol:↵"
+vim.o.listchars = "tab:→ ,trail:·,extends:↷,precedes:↶,nbsp:+"
 vim.o.list = true -- Show listchars
 
 -- search
