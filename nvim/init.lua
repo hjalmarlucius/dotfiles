@@ -503,7 +503,7 @@ require("lazy").setup({
         -- Highlight, edit, and navigate code
         "nvim-treesitter/nvim-treesitter",
         config = function()
-            pcall(require("nvim-treesitter.install").update({ with_sync = true }))
+            pcall(require("nvim-treesitter.install").update())
             require("nvim-treesitter.configs").setup({
                 ensure_installed = { "c", "cpp", "lua", "vimdoc", "gitcommit", "git_rebase", "bash", "python" },
                 auto_install = true,
@@ -591,27 +591,18 @@ require("lazy").setup({
                 log_level = vim.log.levels.DEBUG,
                 filetype = {
                     python = {
-                        require("formatter.filetypes.python").black,
-                        -- require("formatter.filetypes.python").pyment,
                         function()
                             return {
-                                exe = "isort",
-                                args = { "--quiet", "--profile black", "--force-single-line-import", "-" },
+                                exe = "ruff",
+                                args = { "check", "--fix", "-" },
                                 stdin = true,
                             }
                         end,
                         function()
                             return {
-                                exe = "black", -- TODO move to ruff
-                                args = { "--quiet", "-C", "--line-length", "100", "--target-version py312", "-" },
+                                exe = "ruff",
+                                args = { "format", "-" },
                                 stdin = true,
-                            }
-                        end,
-                        function()
-                            return {
-                                exe = "blackdoc",
-                                args = { "-q", "--line-length", "100", "-t py312" },
-                                stdin = false,
                             }
                         end,
                     },
