@@ -594,7 +594,7 @@ require("lazy").setup({
                         function()
                             return {
                                 exe = "ruff",
-                                args = { "check", "--fix", "-" },
+                                args = { "check", "--select I,F,UP", "--fix", "-" },
                                 stdin = true,
                             }
                         end,
@@ -908,7 +908,7 @@ vim.opt.pumheight = 0
 
 -- CURSOR
 -- stay visual when indenting
-map({"n", "v"}, "-", "_", { noremap = true })
+map({ "n", "v" }, "-", "_", { noremap = true })
 map("v", "v", "<esc>", { noremap = true })
 map("v", "<Tab>", ">gv", { noremap = true })
 map("v", "<S-Tab>", "<gv", { noremap = true })

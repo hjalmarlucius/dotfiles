@@ -102,6 +102,7 @@ bindsym $mod+z mode "resize"
 bindsym $mod+g mode "$mode_gaps"
 
 # Open specific applications in floating mode
+for_window [class="Matplotlib"] floating enable, move position center, border normal
 for_window [class="GParted"] floating enable border normal
 for_window [class="Lightdm-settings"] floating enable
 for_window [class="Qalculate-gtk"] floating enable sticky enable border normal
