@@ -912,7 +912,7 @@ map("v", "<Tab>", ">gv", { noremap = true })
 map("v", "<S-Tab>", "<gv", { noremap = true })
 map("n", "<leader>o", "m`o<Esc>``", { noremap = true }) -- Insert a newline in normal mode
 -- repeat and next
-map("n", "\\", "n.", { noremap = true })
+map("n", "\\", "n.", { noremap = true, silent = true })
 
 -- WINDOWS / BUFFERS
 -- make splits and tabs
