@@ -663,7 +663,6 @@ require("lazy").setup({
         dependencies = {
             "williamboman/mason.nvim",
             "williamboman/mason-lspconfig.nvim",
-            "folke/neodev.nvim",
             "kevinhwang91/nvim-ufo",
         },
         config = function()
@@ -746,7 +745,6 @@ require("lazy").setup({
                     schemas = { kubernetes = "globPattern" },
                 },
             }
-            require("neodev").setup()
 
             local capabilities = vim.lsp.protocol.make_client_capabilities()
 
