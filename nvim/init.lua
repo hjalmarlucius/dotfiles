@@ -594,7 +594,7 @@ require("lazy").setup({
                         function()
                             return {
                                 exe = "ruff",
-                                args = { "check", "--select I,F,UP", "--fix", "-" },
+                                args = { "check", "--select I,F,UP", "--fix-only", "-" },
                                 stdin = true,
                             }
                         end,
