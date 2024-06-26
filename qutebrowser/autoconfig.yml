@@ -6,9 +6,42 @@
 
 config_version: 2
 settings:
+  bindings.commands:
+    global:
+      normal:
+        <: tab-move -
+        <Ctrl+Shift+Tab>: tab-prev
+        <Ctrl+Tab>: tab-next
+        <Ctrl+h>: history
+        <Ctrl+l>: cmd-set-text :open {url:pretty}
+        <Ctrl+r>: restart
+        <F10>: config-cycle colors.webpage.darkmode.enabled true false ;; restart
+        <F11>: config-cycle tabs.position top left
+        <F12>: view-source
+        '>': tab-move +
+        D: tab-close
+        J: tab-prev
+        K: tab-next
+        M: null
+        d: null
+        gB: null
+        gb: null
+        m: cmd-set-text :quickmark-add {url:pretty} "
+        pw: spawn --userscript qute-bitwarden
+        q: null
+        tm: tab-move
+        to: tab-focus
+        wB: null
+        ø: 'cmd-set-text :'
   colors.webpage.darkmode.enabled:
     global: false
+  content.desktop_capture:
+    https://meet.google.com: true
+  content.fullscreen.window:
+    global: true
   content.register_protocol_handler:
     https://calendar.google.com?cid=%25s: true
+  tabs.mode_on_change:
+    global: restore
   tabs.position:
     global: top
