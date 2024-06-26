@@ -1,17 +1,14 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
--- Install package manager
---    https://github.com/folke/lazy.nvim
---    `:help lazy.nvim.txt` for more info
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
     vim.fn.system({
         "git",
         "clone",
         "--filter=blob:none",
+        "--branch=stable",
         "https://github.com/folke/lazy.nvim.git",
-        "--branch=stable", -- latest stable release
         lazypath,
     })
 end
@@ -71,6 +68,7 @@ require("lazy").setup({
             local map = vim.keymap.set
             local opts = { silent = true, noremap = true }
             map({ "n", "v" }, "<CR>", "<cmd>HopWord<cr>", opts)
+            map({ "n", "v" }, "<M-CR>", "<cmd>HopWord<cr>", opts)
         end,
     },
     {
@@ -266,7 +264,7 @@ require("lazy").setup({
         "tpope/vim-fugitive",
         config = function()
             local map = vim.keymap.set
-            map("", "<C-g>", "<cmd>vertical Git<cr>:vertical resize 60<cr>", {})
+            map("", "<C-g>", "<cmd>vertical Git<cr>", {})
             map("", "<leader>gB", "<cmd>Git blame<cr>", {})
             map("", "<leader>gp", "<cmd>Git! push<cr>", {})
             map("", "<leader>gP", "<cmd>Git! push -f<cr>", {})
@@ -300,6 +298,7 @@ require("lazy").setup({
                 numhl = true,
                 linehl = false,
                 word_diff = false,
+                signs_staged_enable = false,
                 on_attach = function(bufnr)
                     local gs = package.loaded.gitsigns
 
