@@ -656,11 +656,11 @@ require("lazy").setup({
                     },
                     sh = { require("formatter.filetypes.sh").shfmt },
                     typescript = {
-                        eslint_d,
+                        -- eslint_d,
                     },
                     javascript = {
                         prettierd,
-                        eslint_d,
+                        -- eslint_d,
                     },
                     html = {
                         prettierd,
@@ -668,7 +668,7 @@ require("lazy").setup({
                     },
                     css = {
                         prettierd,
-                        eslint_d,
+                        -- eslint_d,
                     },
                     markdown = { prettierd },
                     json = { require("formatter.filetypes.json").jq },

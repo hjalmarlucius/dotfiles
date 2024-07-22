@@ -39,6 +39,8 @@ settings:
     https://meet.google.com: true
   content.fullscreen.window:
     global: true
+  content.javascript.clipboard:
+    global: access-paste
   content.register_protocol_handler:
     https://calendar.google.com?cid=%25s: true
   tabs.mode_on_change:
