@@ -689,7 +689,6 @@ require("lazy").setup({
                 local bmap = function(mode, keys, func)
                     vim.keymap.set(mode, keys, func, { buffer = bufnr, noremap = true })
                 end
-                vim.api.nvim_set_option_value("omnifunc", "v:lua.vim.lsp.omnifunc", { buf = bufnr })
                 -- workspaces
                 bmap("n", "<leader>wa", vim.lsp.buf.add_workspace_folder)
                 bmap("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder)
@@ -701,10 +700,10 @@ require("lazy").setup({
                     vim.diagnostic.open_float({ source = true })
                 end)
                 bmap("n", "<M-n>", function()
-                    vim.diagnostic.jump({ severity = { min = vim.diagnostic.severity.HINT }, count = 1 })
+                    vim.diagnostic.jump({ severity = { min = vim.diagnostic.severity.HINT }, float=true, count = 1 })
                 end)
                 bmap("n", "<M-p>", function()
-                    vim.diagnostic.jump({ severity = { min = vim.diagnostic.severity.HINT }, count = -1 })
+                    vim.diagnostic.jump({ severity = { min = vim.diagnostic.severity.HINT }, float=true, count = -1 })
                 end)
                 bmap("n", "gd", vim.lsp.buf.definition)
                 bmap("n", "gD", vim.lsp.buf.type_definition)
