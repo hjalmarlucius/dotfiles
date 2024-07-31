@@ -17,6 +17,8 @@ config.bind("<Ctrl-h>", "history")
 config.bind("<F10>", "config-cycle colors.webpage.darkmode.enabled true false ;; restart")
 config.bind("<F11>", "config-cycle tabs.position top left")
 config.bind("<F12>", "view-source")
+config.bind("<Shift+Escape>", "mode-enter passthrough", mode="normal")
+config.bind("<Shift+Escape>", "mode-enter passthrough", mode="insert")
 config.bind(">", "tab-move +")
 config.bind("J", "tab-prev")
 config.bind("K", "tab-next")
@@ -26,6 +28,7 @@ config.bind("to", "tab-focus")
 config.bind("ø", "cmd-set-text :")
 config.bind("m", 'cmd-set-text :quickmark-add {url:pretty} "', mode="normal")
 config.bind("D", "tab-close")
+config.unbind("<Ctrl+v>")  # delete tab
 config.unbind("d", mode="normal")  # delete tab
 config.unbind("q", mode="normal")  # macro recording
 config.unbind("M", mode="normal")  # add bookmark
@@ -97,13 +100,12 @@ c.url.start_pages = "https://rss.hjarl.com"
 
 c.url.searchengines = dict(
     DEFAULT="https://google.com/search?q={}",
-    a="https://wiki.archlinux.org/?search={}",
-    d="https://duckduckgo.com/?q={}",
-    g="https://github.com/search?q={}&type=Code",
-    i="https://iplocation.io/ip/{}",
-    s="https://explainshell.com/explain?cmd={}",
-    w="https://en.wikipedia.org/w/index.php?search={}",
-    y="https://yewtu.be/search?q={}",
+    al="https://wiki.archlinux.org/?search={}",
+    gh="https://github.com/search?q={}&type=Code",
+    ip="https://iplocation.io/ip/{}",
+    sh="https://explainshell.com/explain?cmd={}",
+    wi="https://en.wikipedia.org/w/index.php?search={}",
+    yt="https://yewtu.be/search?q={}",
 )
 
 c.colors.tabs.even.bg = "cyan"
