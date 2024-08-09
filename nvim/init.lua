@@ -892,7 +892,7 @@ vim.o.showmatch = true -- Show matching brackets / parentheses
 vim.o.langmap = "å(,¨),ø:,æ^,+$"
 vim.opt.clipboard = vim.opt.clipboard + { "unnamedplus" }
 
-vim.o.completeopt = "menu,menuone,preview,longest"
+vim.o.completeopt = "noinsert,preview,menu,menuone"
 vim.opt.formatoptions = vim.opt.formatoptions - { "c", "r", "o" }
 vim.opt.iskeyword = vim.opt.iskeyword - { "." }
 
