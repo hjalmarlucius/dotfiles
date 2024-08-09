@@ -8,6 +8,8 @@ config_version: 2
 settings:
   bindings.commands:
     global:
+      insert:
+        <Shift+Escape>: mode-enter passthrough
       normal:
         <: tab-move -
         <Ctrl+Shift+Tab>: tab-prev
@@ -15,9 +17,11 @@ settings:
         <Ctrl+h>: history
         <Ctrl+l>: cmd-set-text :open {url:pretty}
         <Ctrl+r>: restart
+        <Ctrl+v>: null
         <F10>: config-cycle colors.webpage.darkmode.enabled true false ;; restart
         <F11>: config-cycle tabs.position top left
         <F12>: view-source
+        <Shift+Escape>: mode-enter passthrough
         '>': tab-move +
         D: tab-close
         J: tab-prev
