@@ -1,7 +1,7 @@
 exec --no-startup-id xrandr --output DP-0 --mode 5120x1440
 exec --no-startup-id xinput --set-prop 'Logitech USB Receiver' 'libinput Accel Profile Enabled' 0, 1, 0
-exec --no-startup-id xsetwacom --set 14 MapToOutput 2335x1440+2785+0
-exec --no-startup-id xsetwacom --set 16 MapToOutput 2335x1440+2785+0
+exec --no-startup-id xsetwacom --set "Wacom Co.,Ltd. Wacom One pen tablet small stylus" MapToOutput 2335x1440+2785+0
+exec --no-startup-id xsetwacom --set "Wacom Co.,Ltd. Wacom One pen tablet small eraser" MapToOutput 2335x1440+2785+0
 
 bindsym $mod+Shift+F12 exec "xrandr --output DP-0 --mode 5120x1440"
 
