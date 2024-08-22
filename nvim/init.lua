@@ -527,7 +527,7 @@ require("lazy").setup({
                 ensure_installed = { "c", "cpp", "lua", "vimdoc", "gitcommit", "git_rebase", "bash", "python" },
                 auto_install = true,
                 highlight = { enable = true },
-                indent = { enable = true, disable = { "python" } },
+                indent = { enable = true, additional_vim_regex_highlighting = { "python" } },
                 incremental_selection = {
                     enable = true,
                     keymaps = {
@@ -700,10 +700,10 @@ require("lazy").setup({
                     vim.diagnostic.open_float({ source = true })
                 end)
                 bmap("n", "<M-n>", function()
-                    vim.diagnostic.jump({ severity = { min = vim.diagnostic.severity.HINT }, float=true, count = 1 })
+                    vim.diagnostic.jump({ severity = { min = vim.diagnostic.severity.HINT }, float = true, count = 1 })
                 end)
                 bmap("n", "<M-p>", function()
-                    vim.diagnostic.jump({ severity = { min = vim.diagnostic.severity.HINT }, float=true, count = -1 })
+                    vim.diagnostic.jump({ severity = { min = vim.diagnostic.severity.HINT }, float = true, count = -1 })
                 end)
                 bmap("n", "gd", vim.lsp.buf.definition)
                 bmap("n", "gD", vim.lsp.buf.type_definition)
@@ -892,7 +892,7 @@ vim.o.showmatch = true -- Show matching brackets / parentheses
 vim.o.langmap = "å(,¨),ø:,æ^,+$"
 vim.opt.clipboard = vim.opt.clipboard + { "unnamedplus" }
 
-vim.o.completeopt = "noinsert,preview,menu,menuone"
+vim.o.completeopt = "menu,menuone,preview"
 vim.opt.formatoptions = vim.opt.formatoptions - { "c", "r", "o" }
 vim.opt.iskeyword = vim.opt.iskeyword - { "." }
 
