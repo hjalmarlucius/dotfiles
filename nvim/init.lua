@@ -951,8 +951,8 @@ map("n", "<C-j>", "5<C-w>-", { noremap = true })
 map("n", "<C-k>", "5<C-w>+", { noremap = true })
 map("n", "<C-l>", "5<C-w>>", { noremap = true })
 -- quickfix window
-map("n", "<C-p>", "<cmd>cp<cr>", { noremap = true })
-map("n", "<C-n>", "<cmd>cn<cr>", { noremap = true })
+map("n", "<C-p>", "<cmd>lprev<cr>", { noremap = true })
+map("n", "<C-n>", "<cmd>lnext<cr>", { noremap = true })
 --- F keys
 map("n", "<F1>", "<cmd>Lazy<cr>", { noremap = true })
 map("n", "<F2>", "<cmd>Mason<cr>", { noremap = true })
