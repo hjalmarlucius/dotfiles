@@ -89,8 +89,7 @@ bindsym $mod+Shift+x --release exec --no-startup-id xkill
 bindsym $mod+F1 exec wezterm -e htop
 bindsym $mod+F2 exec qutebrowser
 bindsym $mod+F5 exec pavucontrol
-bindsym $mod+F6 exec clementine
-bindsym $mod+Shift+F6 exec wezterm -e cmus
+bindsym $mod+F6 exec quodlibet
 bindsym $mod+F7 exec wezterm -e ncspot
 bindsym $mod+Shift+F10 --release exec "killall dunst; exec notify-send 'restart dunst'"
 bindsym $mod+p exec pcmanfm

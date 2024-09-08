@@ -89,7 +89,7 @@ yay -S i3status \
     teamviewer \
     zerotier-one \
     qalculate \
-    cmus \
+    quodlibet \
     ncspot \
     steam \
     qbittorrent
