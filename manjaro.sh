@@ -20,11 +20,11 @@ yay -S wezterm zsh urxvt-resize-font
 chsh -s /usr/bin/zsh
 
 # zsh setup
-yay -S zsh-theme-powerlevel10k-git \
-    zsh-git-prompt-git \
-    zsh-autosuggestions-git \
-    zsh-history-substring-search-git \
-    zsh-syntax-highlighting-git
+yay -S zsh-theme-powerlevel10k \
+    zsh-git-prompt \
+    zsh-autosuggestions \
+    zsh-history-substring-search \
+    zsh-syntax-highlighting
 
 # code
 yay -S neovim tmux tig diff-so-fancy ripgrep nvimpager
