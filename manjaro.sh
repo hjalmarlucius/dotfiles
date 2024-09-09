@@ -82,6 +82,7 @@ yay -S castnow
 # div applications
 yay -S i3status \
     qutebrowser \
+    firefox \
     rofi \
     mutt \
     redshift \
@@ -93,3 +94,6 @@ yay -S i3status \
     ncspot \
     steam \
     qbittorrent
+
+# firefox windowed fullscreen
+# can be achieved by setting full-screen-api.ignore-widgets to true in about:config
