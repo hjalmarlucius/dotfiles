@@ -20,8 +20,9 @@ settings:
         <Ctrl+v>: null
         <F10>: config-cycle colors.webpage.darkmode.enabled true false ;; restart
         <F11>: config-cycle tabs.position top left
-        <F12>: view-source
+        <F12>: devtools
         <Shift+Escape>: mode-enter passthrough
+        <Shift+F12>: view-source
         '>': tab-move +
         D: tab-close
         J: tab-prev
@@ -47,7 +48,9 @@ settings:
     global: access-paste
   content.register_protocol_handler:
     https://calendar.google.com?cid=%25s: true
+  session.default_name:
+    global: hb
   tabs.mode_on_change:
     global: restore
   tabs.position:
-    global: top
+    global: left

@@ -784,7 +784,6 @@ require("lazy").setup({
                     "lua_ls", -- lua
                     "marksman", -- markdown
                     "pyright", -- python
-                    "tsserver", -- typescript
                     "yamlls", -- yaml
                 },
             })
