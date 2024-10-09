@@ -274,8 +274,8 @@ require("lazy").setup({
         config = function()
             require("bufferline").setup({ options = { diagnostics = "nvim_lsp" } })
             local map = vim.keymap.set
-            map("n", "<M-J>", "<cmd>BufferLineCyclePrev<cr>", { noremap = true, silent = true })
-            map("n", "<M-K>", "<cmd>BufferLineCycleNext<cr>", { noremap = true, silent = true })
+            map("n", "<M-K>", "<cmd>BufferLineCyclePrev<cr>", { noremap = true, silent = true })
+            map("n", "<M-J>", "<cmd>BufferLineCycleNext<cr>", { noremap = true, silent = true })
             map("n", "<M-P>", "<cmd>BufferLineMovePrev<cr>", { noremap = true, silent = true })
             map("n", "<M-N>", "<cmd>BufferLineMoveNext<cr>", { noremap = true, silent = true })
         end,
@@ -939,8 +939,8 @@ map("n", "<M-s>", "<cmd>split<cr>", { noremap = true })
 map("n", "<M-t>", "<cmd>tabe %<cr>", { noremap = true })
 map("n", "<M-T>", "<cmd>tabnew<cr>", { noremap = true })
 -- buffers and tabs
-map("n", "<M-J>", "<cmd>bprev<cr>", { noremap = true })
-map("n", "<M-K>", "<cmd>bnext<cr>", { noremap = true })
+map("n", "<M-K>", "<cmd>bprev<cr>", { noremap = true })
+map("n", "<M-J>", "<cmd>bnext<cr>", { noremap = true })
 map("n", "<M-H>", "<cmd>tabprev<cr>", { noremap = true })
 map("n", "<M-L>", "<cmd>tabnext<cr>", { noremap = true })
 -- resize windows with hjkl
