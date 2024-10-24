@@ -223,7 +223,7 @@ require("lazy").setup({
                 options = { theme = "auto", globalstatus = false },
                 extensions = { "fugitive" },
                 sections = {
-                    lualine_a = { "mode" },
+                    lualine_a = { { "mode", color = { bg = "goldenrod" } } },
                     lualine_b = { "branch" },
                     lualine_c = {
                         {
@@ -238,12 +238,10 @@ require("lazy").setup({
                         {
                             noice_status.command.get,
                             cond = noice_status.command.has,
-                            color = { fg = "#ff9e64" },
                         },
                         {
                             noice_status.mode.get,
                             cond = noice_status.mode.has,
-                            color = { fg = "#ff9e64" },
                         },
                     },
                     lualine_y = { "filetype", "progress" },
@@ -265,19 +263,25 @@ require("lazy").setup({
                     lualine_y = { "filetype", "progress" },
                     lualine_z = { "location" },
                 },
+                tabline = {
+                    lualine_a = {
+                        {
+                            "buffers",
+                            symbols = { alternate_file = "" },
+                            buffers_color = {
+                                -- Same values as the general color option can be used here.
+                                active = { bg = "goldenrod" }, -- Color for active buffer.
+                                -- inactive = { bg = "#009688" }, -- Color for inactive buffer.
+                            },
+                        },
+                    },
+                    lualine_b = {},
+                    lualine_c = {},
+                    lualine_x = {},
+                    lualine_y = {},
+                    lualine_z = { "tabs" },
+                },
             })
-        end,
-    },
-    {
-        "akinsho/nvim-bufferline.lua",
-        dependencies = { "nvim-tree/nvim-web-devicons" },
-        config = function()
-            require("bufferline").setup({ options = { diagnostics = "nvim_lsp" } })
-            local map = vim.keymap.set
-            map("n", "<M-K>", "<cmd>BufferLineCyclePrev<cr>", { noremap = true, silent = true })
-            map("n", "<M-J>", "<cmd>BufferLineCycleNext<cr>", { noremap = true, silent = true })
-            map("n", "<M-P>", "<cmd>BufferLineMovePrev<cr>", { noremap = true, silent = true })
-            map("n", "<M-N>", "<cmd>BufferLineMoveNext<cr>", { noremap = true, silent = true })
         end,
     }, -- git related plugins
     {
@@ -393,8 +397,8 @@ require("lazy").setup({
                 highlight = { keyword = "bg", pattern = [[<(KEYWORDS)\s*]] },
                 search = { pattern = [[\b(KEYWORDS)\b]] },
                 colors = {
-                    error = { "#E15030" },
-                    warning = { "#FBBF24" },
+                    error = { "#ba1a1a" },
+                    warning = { "#FFC107" },
                     info = { "#91BED0" },
                     hint = { "#10B981" },
                     default = { "#91D0C1" },
