@@ -269,9 +269,7 @@ require("lazy").setup({
                             "buffers",
                             symbols = { alternate_file = "" },
                             buffers_color = {
-                                -- Same values as the general color option can be used here.
-                                active = { bg = "goldenrod" }, -- Color for active buffer.
-                                -- inactive = { bg = "#009688" }, -- Color for inactive buffer.
+                                active = { bg = "goldenrod" },
                             },
                         },
                     },
@@ -279,7 +277,15 @@ require("lazy").setup({
                     lualine_c = {},
                     lualine_x = {},
                     lualine_y = {},
-                    lualine_z = { "tabs" },
+                    lualine_z = {
+                        {
+                            "tabs",
+                            mode = 2,
+                            tabs_color = {
+                                active = { bg = "goldenrod" },
+                            },
+                        },
+                    },
                 },
             })
         end,
@@ -763,8 +769,11 @@ require("lazy").setup({
                         },
                     },
                 },
-                yaml = {
-                    schemas = { kubernetes = "globPattern" },
+                yamlls = {
+                    yaml = {
+                        schemas = { kubernetes = "/home/hjalmarlucius/src/hjarl/system/manifests/*.yaml" },
+                        -- schemaStore = { enable = false, url = "" },
+                    },
                 },
             }
 
