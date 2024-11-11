@@ -738,7 +738,7 @@ require("lazy").setup({
             local server_configs = {
                 pyright = {
                     python = {
-                        analysis = { typeCheckingMode = "standard" },
+                        analysis = { autoImportCompletions = false, diagnosticMode = "openFilesOnly" },
                     },
                 },
                 lua_ls = {
@@ -795,7 +795,6 @@ require("lazy").setup({
                     "html", -- html
                     "jsonls", -- json
                     "lua_ls", -- lua
-                    "marksman", -- markdown
                     "pyright", -- python
                     "yamlls", -- yaml
                 },
@@ -816,6 +815,7 @@ require("lazy").setup({
         dependencies = { "MunifTanjim/nui.nvim" },
         config = function()
             require("noice").setup({
+                views = { hover = { scrollbar = false } },
                 cmdline = { enabled = true, view = "cmdline_popup" },
                 messages = {
                     enabled = true, -- enables the Noice messages UI
