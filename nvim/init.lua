@@ -607,13 +607,6 @@ require("lazy").setup({
                     ignore_exitcode = true,
                 }
             end
-            local prettierd = function()
-                return {
-                    exe = "prettierd",
-                    args = { util.escape_path(util.get_current_buffer_file_path()) },
-                    stdin = true,
-                }
-            end
             -- Provides the Format, FormatWrite, FormatLock, and FormatWriteLock commands
             require("formatter").setup({
                 logging = true,
@@ -665,22 +658,16 @@ require("lazy").setup({
                         end,
                     },
                     sh = { require("formatter.filetypes.sh").shfmt },
-                    typescript = {
-                        -- eslint_d,
-                    },
                     javascript = {
-                        prettierd,
-                        -- eslint_d,
+                        require("formatter.filetypes.javascript").prettierd,
                     },
                     html = {
-                        prettierd,
-                        -- eslint_d,
+                        require("formatter.filetypes.html").prettierd,
                     },
                     css = {
-                        prettierd,
-                        -- eslint_d,
+                        require("formatter.filetypes.css").prettierd,
                     },
-                    markdown = { prettierd },
+                    markdown = { require("formatter.filetypes.markdown").mdformat },
                     json = { require("formatter.filetypes.json").jq },
                     ["*"] = { require("formatter.filetypes.any").remove_trailing_whitespace },
                 },
@@ -790,13 +777,13 @@ require("lazy").setup({
             local mason_lspconfig = require("mason-lspconfig")
             mason_lspconfig.setup({
                 ensure_installed = {
-                    "bashls", -- bash
-                    "cssls", -- css
-                    "html", -- html
-                    "jsonls", -- json
-                    "lua_ls", -- lua
-                    "pyright", -- python
-                    "yamlls", -- yaml
+                    "cssls",
+                    "html",
+                    "jsonls",
+                    "yamlls",
+                    "bashls",
+                    "pyright",
+                    "lua_ls",
                 },
             })
             mason_lspconfig.setup_handlers({
