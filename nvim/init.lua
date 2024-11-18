@@ -802,7 +802,6 @@ require("lazy").setup({
         dependencies = { "MunifTanjim/nui.nvim" },
         config = function()
             require("noice").setup({
-                views = { hover = { scrollbar = false } },
                 cmdline = { enabled = true, view = "cmdline_popup" },
                 messages = {
                     enabled = true, -- enables the Noice messages UI
