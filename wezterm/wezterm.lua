@@ -10,6 +10,7 @@ config.font = wezterm.font_with_fallback({
     "Terminess Nerd Font",
     "Noto Color Emoji",
 })
+config.max_fps = 120
 config.warn_about_missing_glyphs = false
 config.use_fancy_tab_bar = false
 config.hide_tab_bar_if_only_one_tab = true
