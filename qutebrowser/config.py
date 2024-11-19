@@ -12,8 +12,9 @@ config.bind("<", "tab-move -")
 config.bind("<Ctrl+Shift+Tab>", "tab-prev")
 config.bind("<Ctrl+Tab>", "tab-next")
 config.bind("<Ctrl+l>", "cmd-set-text :open {url:pretty}")
-config.bind("<Ctrl-r>", "restart", mode="normal")
-config.bind("<Ctrl-h>", "history")
+config.bind("<Ctrl+r>", "reload")
+config.bind("<Ctrl+Shift+r>", "restart", mode="normal")
+config.bind("<Ctrl+h>", "history")
 config.bind("<F11>", "config-cycle tabs.position top left")
 config.bind("<F12>", "devtools")
 config.bind("<Shift+F12>", "view-source")
@@ -28,6 +29,7 @@ config.bind("to", "tab-focus")
 config.bind("ø", "cmd-set-text :")
 config.bind("m", 'cmd-set-text :quickmark-add {url:pretty} "', mode="normal")
 config.bind("D", "tab-close")
+config.unbind("co")  # close all tabs except this one
 config.unbind("<Ctrl+v>")  # delete tab
 config.unbind("d", mode="normal")  # delete tab
 config.unbind("q", mode="normal")  # macro recording
