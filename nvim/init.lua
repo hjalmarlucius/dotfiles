@@ -667,7 +667,7 @@ require("lazy").setup({
                     css = {
                         require("formatter.filetypes.css").prettierd,
                     },
-                    markdown = { require("formatter.filetypes.markdown").mdformat },
+                    markdown = { require("formatter.filetypes.markdown").prettierd },
                     json = { require("formatter.filetypes.json").jq },
                     ["*"] = { require("formatter.filetypes.any").remove_trailing_whitespace },
                 },
@@ -975,6 +975,10 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     callback = function()
         vim.api.nvim_set_hl(0, "DiffAdded", { default = false, link = "DiffAdd" })
         vim.api.nvim_set_hl(0, "DiffRemoved", { default = false, link = "DiffDelete" })
+        vim.api.nvim_set_hl(0, "Normal", {})
+        vim.api.nvim_set_hl(0, "LineNr", {})
+        vim.api.nvim_set_hl(0, "SignColumn", {})
+        vim.api.nvim_set_hl(0, "EndOfBuffer", {})
     end,
 })
-vim.cmd("colorscheme minicyan")
+vim.cmd("colorscheme OceanicNext")
