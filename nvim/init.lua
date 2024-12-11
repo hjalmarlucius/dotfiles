@@ -148,10 +148,12 @@ require("lazy").setup({
     {
         -- live preview of markdown files
         "iamcco/markdown-preview.nvim", -- requires yarn
+        cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+        ft = { "markdown" },
         build = function()
             vim.fn["mkdp#util#install"]()
         end,
-        config = function()
+        init = function()
             vim.g.mkdp_auto_start = 0 -- auto start on moving into
             vim.g.mkdp_auto_close = 0 -- auto close on moving away
             vim.g.mkdp_open_to_the_world = 1 -- available to others

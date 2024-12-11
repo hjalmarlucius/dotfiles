@@ -58,7 +58,7 @@ yay -S manajaro-printer samsung-unified-driver-printer
 yay -S iftop bpytop nvtop
 
 # pdf
-yay -S zathura zathura-pdf-mupdf zathura-djvu zathura-ps
+yay -S sioyek zathura zathura-pdf-mupdf zathura-djvu zathura-ps
 
 # fonts
 yay -S noto-fonts-emoji ttf-hack
