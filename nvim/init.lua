@@ -102,7 +102,12 @@ require("lazy").setup({
     {
         "rcarriga/nvim-notify",
         config = function()
-            require("notify").setup({ timeout = 2500, stages = "fade", render = "compact" })
+            require("notify").setup({
+                timeout = 2500,
+                background_colour = "#000000",
+                stages = "fade",
+                render = "compact",
+            })
         end,
     },
     {
