@@ -76,7 +76,7 @@ sudo systemctl enable --now coolercontrold.service
 sudo systemctl edit coolercontrold.service # set log level to WARN
 
 # video streaming
-yay -S vlc protobuf
+yay -S vlc protobuf yt-dlp
 yay -S castnow
 
 # div applications

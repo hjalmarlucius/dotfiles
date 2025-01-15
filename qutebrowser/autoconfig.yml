@@ -46,11 +46,19 @@ settings:
     global: true
   content.javascript.clipboard:
     global: access-paste
+  content.media.audio_capture:
+    https://meet.google.com: true
+  content.media.audio_video_capture:
+    https://meet.google.com: true
+  content.media.video_capture:
+    https://meet.google.com: true
   content.register_protocol_handler:
     https://calendar.google.com?cid=%25s: true
+  downloads.location.directory:
+    global: /home/hjalmarlucius/Downloads
   session.default_name:
     global: hb
   tabs.mode_on_change:
     global: restore
   tabs.position:
-    global: left
+    global: top
