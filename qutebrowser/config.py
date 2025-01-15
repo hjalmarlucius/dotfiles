@@ -2,11 +2,16 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import Any
+
     config: Any = None
     c: Any = None
 
 config.load_autoconfig(True)
-config.set("content.register_protocol_handler", True, "https://mail.google.com?extsrc=mailto&url=%25s")
+config.set(
+    "content.register_protocol_handler",
+    True,
+    "https://mail.google.com?extsrc=mailto&url=%25s",
+)
 
 config.bind("<", "tab-move -")
 config.bind("<Ctrl+Shift+Tab>", "tab-prev")
@@ -30,6 +35,8 @@ config.bind("to", "tab-focus")
 config.bind("ø", "cmd-set-text :")
 config.bind("m", 'cmd-set-text :quickmark-add {url:pretty} "', mode="normal")
 config.bind("D", "tab-close")
+config.bind(",m", "hint links spawn mpv {hint-url}", mode="normal")
+config.bind(",M", "spawn mpv {url}", mode="normal")
 config.unbind("co")  # close all tabs except this one
 config.unbind("<Ctrl+v>")  # delete tab
 config.unbind("d", mode="normal")  # delete tab
@@ -43,7 +50,6 @@ c.auto_save.session = True
 c.completion.open_categories = [
     "searchengines",
     "quickmarks",
-    "bookmarks",
     "history",
     "filesystem",
 ]
@@ -54,6 +60,7 @@ c.content.geolocation = False
 c.content.cache.size = 52428800
 c.content.notifications.enabled = False
 c.content.tls.certificate_errors = "ask-block-thirdparty"
+c.downloads.position = "bottom"
 c.editor.command = [
     "urxvt",
     "-title",
