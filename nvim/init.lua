@@ -545,7 +545,7 @@ require("lazy").setup({
                 ensure_installed = { "c", "cpp", "lua", "vimdoc", "gitcommit", "git_rebase", "bash", "python" },
                 auto_install = true,
                 highlight = { enable = true },
-                indent = { enable = true, additional_vim_regex_highlighting = { "python" } },
+                indent = { disable = { "python" }, additional_vim_regex_highlighting = { "python" } },
                 incremental_selection = {
                     enable = true,
                     keymaps = {
