@@ -73,6 +73,22 @@ require("lazy").setup({
         end,
     },
     {
+        "echasnovski/mini.icons",
+        config = function()
+            require("mini.icons").setup()
+        end,
+    },
+    {
+        "echasnovski/mini.files",
+        dependencies = {
+            "echasnovski/mini.icons",
+        },
+        config = function()
+            local minifiles = require("mini.files")
+            vim.keymap.set("n", "<C-t>", minifiles.open, { noremap = true })
+        end,
+    },
+    {
         "echasnovski/mini.surround",
         version = false,
         config = function()
@@ -184,21 +200,6 @@ require("lazy").setup({
             map({ "n", "x" }, "n", [[n<Cmd>lua require('hlslens').start()<CR>]], kopts)
             map({ "n", "x" }, "N", [[N<Cmd>lua require('hlslens').start()<CR>]], kopts)
         end,
-    },
-    {
-        -- folder tree
-        "nvim-neo-tree/neo-tree.nvim",
-        branch = "v2.x",
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-            "nvim-tree/nvim-web-devicons",
-            "MunifTanjim/nui.nvim",
-        },
-        config = function()
-            -- Unless you are still migrating, remove the deprecated commands from v1.x
-            vim.cmd([[ let g:neo_tree_remove_legacy_commands = 1 ]])
-            vim.keymap.set("n", "<C-t>", "<cmd>NeoTreeFocusToggle<cr>", { noremap = true })
-        end,
     }, -- theme dark and light
     "NLKNguyen/papercolor-theme",
     "junegunn/seoul256.vim",
@@ -223,7 +224,7 @@ require("lazy").setup({
     }, -- status + buffer lines
     {
         "nvim-lualine/lualine.nvim",
-        dependencies = { "nvim-tree/nvim-web-devicons" },
+        dependencies = { "echasnovski/mini.icons" },
         config = function()
             local noice_status = require("noice").api.status
             require("lualine").setup({
