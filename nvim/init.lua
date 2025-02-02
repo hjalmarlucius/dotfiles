@@ -180,6 +180,8 @@ require("lazy").setup({
             vim.g.mkdp_open_to_the_world = 1 -- available to others
             vim.g.mkdp_port = 10010
             vim.g.mkdp_echo_preview_url = 1
+            vim.g.mkdp_images_path = "/home/hjalmarlucius/Pictures/"
+            vim.g.mkdp_preview_options = { disable_sync_scroll = 1 }
         end,
     },
     {
