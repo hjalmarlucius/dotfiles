@@ -56,6 +56,8 @@ settings:
     https://calendar.google.com?cid=%25s: true
   downloads.location.directory:
     global: /home/hjalmarlucius/Downloads
+  downloads.prevent_mixed_content:
+    global: false
   session.default_name:
     global: hb
   tabs.mode_on_change:
