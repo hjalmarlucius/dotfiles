@@ -46,6 +46,11 @@ config.unbind("M", mode="normal")  # add bookmark
 config.unbind("gb", mode="normal")  # load bookmark
 config.unbind("gB", mode="normal")  # load bookmark
 config.unbind("wB", mode="normal")  # load bookmark
+config.set(
+    "content.headers.user_agent",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25",
+    "*://*.youtube.com/*",
+)
 
 c.auto_save.session = True
 c.completion.open_categories = [
@@ -56,6 +61,7 @@ c.completion.open_categories = [
 ]
 c.completion.web_history.max_items = 10000
 c.completion.height = "100%"
+c.content.javascript.clipboard = "ask"
 c.content.autoplay = False
 c.content.geolocation = False
 c.content.cache.size = 52428800
