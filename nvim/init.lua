@@ -110,22 +110,40 @@ require("lazy").setup({
             end, { noremap = true })
         end,
     },
+    -- snacks
+    {
+        "folke/snacks.nvim",
+        priority = 1000,
+        lazy = false,
+        ---@type snacks.Config
+        opts = {
+            bigfile = {
+                enabled = true,
+                notify = true, -- show notification when big file detected
+                size = 1.5 * 1024 * 1024, -- 1.5MB
+                line_length = 1000, -- average line length (useful for minified files)
+                -- Enable or disable features when big file detected
+                ---@param ctx {buf: number, ft:string}
+                setup = function(ctx)
+                    if vim.fn.exists(":NoMatchParen") ~= 0 then
+                        vim.cmd([[NoMatchParen]])
+                    end
+                    Snacks.util.wo(0, { foldmethod = "manual", statuscolumn = "", conceallevel = 0 })
+                    vim.schedule(function()
+                        if vim.api.nvim_buf_is_valid(ctx.buf) then
+                            vim.bo[ctx.buf].syntax = ctx.ft
+                        end
+                    end)
+                end,
+            },
+            notifier = { enabled = true },
+        },
+    },
     -- div utils
     "tpope/vim-eunuch", -- Move, Rename etc
     "dhruvasagar/vim-table-mode", -- tables
     "itchyny/vim-qfedit", -- editable quickfix list
     "mbbill/undotree",
-    {
-        "rcarriga/nvim-notify",
-        config = function()
-            require("notify").setup({
-                timeout = 2500,
-                background_colour = "#000000",
-                stages = "fade",
-                render = "compact",
-            })
-        end,
-    },
     {
         -- keep location upon reopening
         "ethanholz/nvim-lastplace",
@@ -207,6 +225,7 @@ require("lazy").setup({
     "mhartington/oceanic-next",
     "morhetz/gruvbox",
     "sonph/onehalf",
+    { "catppuccin/nvim", lazy = false, name = "catppuccin", priority = 1000 },
     {
         "Shatur/neovim-ayu",
         config = function()
@@ -990,4 +1009,4 @@ vim.api.nvim_create_autocmd("ColorScheme", {
         vim.api.nvim_set_hl(0, "EndOfBuffer", {})
     end,
 })
-vim.cmd("colorscheme OceanicNext")
+vim.cmd("colorscheme catppuccin-mocha")
