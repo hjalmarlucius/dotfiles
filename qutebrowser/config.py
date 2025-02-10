@@ -12,6 +12,15 @@ config.set(
     True,
     "https://mail.google.com?extsrc=mailto&url=%25s",
 )
+config.set(
+    "content.register_protocol_handler",
+    True,
+    "https://calendar.google.com?cid=%25s",
+)
+config.set("content.desktop_capture", True, "https://meet.google.com")
+config.set("content.media.audio_video_capture", True, "https://meet.google.com")
+config.set("content.media.video_capture", True, "https://meet.google.com")
+config.set("content.media.audio_capture", True, "https://meet.google.com")
 
 config.bind("<", "tab-move -")
 config.bind("<Ctrl+Shift+Tab>", "tab-prev")
@@ -31,6 +40,11 @@ config.bind("K", "tab-prev")
 config.bind("J", "tab-next")
 config.bind("pw", "spawn --userscript qute-bitwarden")
 config.bind("do", "download-open")
+config.bind("dx", "download-cancel")
+config.bind("dD", "download-delete")
+config.bind("dr", "download-retry")
+config.bind("dC", "download-clear")
+config.bind("dc", "download-remove")
 config.bind("tm", "tab-move")
 config.bind("to", "tab-focus")
 config.bind("ø", "cmd-set-text :")
@@ -68,6 +82,7 @@ c.content.cache.size = 52428800
 c.content.notifications.enabled = False
 c.content.tls.certificate_errors = "ask-block-thirdparty"
 c.downloads.position = "bottom"
+c.downloads.prevent_mixed_content = False
 c.editor.command = [
     "urxvt",
     "-title",
