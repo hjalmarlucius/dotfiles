@@ -425,6 +425,17 @@ require("lazy").setup({
         },
         -- git related plugins
         {
+            "sindrets/diffview.nvim",
+            cmd = {
+                "DiffviewOpen",
+                "DiffviewClose",
+                "DiffviewToggleFiles",
+                "DiffviewFocusFiles",
+                "DiffviewRefresh",
+            },
+            keys = { { "<leader>gD", "<cmd>DiffviewOpen<cr>" } },
+        },
+        {
             "tpope/vim-fugitive",
             config = function()
                 vim.api.nvim_create_autocmd("User", {
@@ -489,8 +500,8 @@ require("lazy").setup({
                     end, { expr = true })
 
                     -- Actions
-                    map({ "n", "v" }, "<leader>gs", ":Gitsigns stage_hunk<CR>")
-                    map({ "n", "v" }, "<leader>gx", ":Gitsigns reset_hunk<CR>")
+                    map({ "n", "v" }, "<leader>gs", "<cmd>Gitsigns stage_hunk<CR>")
+                    map({ "n", "v" }, "<leader>gx", "<cmd>Gitsigns reset_hunk<CR>")
                     map("n", "<leader>gu", gs.undo_stage_hunk)
                     map("n", "<leader>gi", gs.preview_hunk)
                     map("n", "<leader>gb", function() gs.blame_line({ full = true }) end)
@@ -749,8 +760,8 @@ require("lazy").setup({
             "mhartington/formatter.nvim", -- TODO move to conform
             -- Utilities for creating configurations,
             keys = {
-                { "<leader>f", ":Format<cr>", silent = true, noremap = true },
-                { "<leader>F", ":FormatWrite<cr>", silent = true, noremap = true },
+                { "<leader>f", "<cmd>Format<cr>", silent = true, noremap = true },
+                { "<leader>F", "<cmd>FormatWrite<cr>", silent = true, noremap = true },
             },
             config = function()
                 local util = require("formatter.util")
