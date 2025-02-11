@@ -433,7 +433,10 @@ require("lazy").setup({
                 "DiffviewFocusFiles",
                 "DiffviewRefresh",
             },
-            keys = { { "<leader>gD", "<cmd>DiffviewOpen<cr>" } },
+            keys = {
+                { "<leader>gd", "<cmd>DiffviewOpen<cr>", noremap = true },
+                { "<leader>gh", "<cmd>DiffviewFileHistory<cr>", noremap = true },
+            },
         },
         {
             "tpope/vim-fugitive",
@@ -478,7 +481,7 @@ require("lazy").setup({
                 word_diff = false,
                 signs_staged_enable = false,
                 on_attach = function(bufnr)
-                    local gs = package.loaded.gitsigns
+                    local gs = require("gitsigns")
 
                     local function map(mode, l, r, opts)
                         opts = opts or {}
@@ -500,12 +503,11 @@ require("lazy").setup({
                     end, { expr = true })
 
                     -- Actions
-                    map({ "n", "v" }, "<leader>gs", "<cmd>Gitsigns stage_hunk<CR>")
-                    map({ "n", "v" }, "<leader>gx", "<cmd>Gitsigns reset_hunk<CR>")
+                    map({ "n", "v" }, "<leader>gs", gs.stage_hunk)
+                    map({ "n", "v" }, "<leader>gx", gs.reset_hunk)
                     map("n", "<leader>gu", gs.undo_stage_hunk)
-                    map("n", "<leader>gi", gs.preview_hunk)
+                    map("n", "<leader>gi", gs.preview_hunk_inline)
                     map("n", "<leader>gb", function() gs.blame_line({ full = true }) end)
-                    map("n", "<leader>gd", gs.diffthis)
                     map("n", "<leader>gS", gs.stage_buffer)
                     map("n", "<leader>gX", gs.reset_buffer)
                     map("n", "<leader>td", gs.toggle_deleted)
@@ -740,6 +742,7 @@ require("lazy").setup({
         -- package manager + lsp stuff
         {
             "williamboman/mason.nvim",
+            lazy = false,
             opts = {},
             keys = { { "<F2>", "<cmd>Mason<cr>", noremap = true } },
         },
