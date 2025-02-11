@@ -167,15 +167,6 @@ require("lazy").setup({
             opts = {},
         },
         {
-            -- folder tree
-            "nvim-neo-tree/neo-tree.nvim",
-            version = "*",
-            lazy = false,
-            dependencies = { "nvim-lua/plenary.nvim", "mini.icons", "MunifTanjim/nui.nvim" },
-            opts = {},
-            keys = { { "<C-t>", "<cmd>Neotree<cr>", noremap = true } },
-        },
-        {
             "echasnovski/mini.surround",
             version = "*",
             opts = {},
@@ -213,6 +204,28 @@ require("lazy").setup({
                 notifier = { enabled = true },
                 indent = { enabled = true },
                 quickfile = { enabled = true },
+            },
+        },
+        -- file management
+        {
+            "nvim-neo-tree/neo-tree.nvim",
+            version = "*",
+            cmd = { "Neotree" },
+            dependencies = { "nvim-lua/plenary.nvim", "mini.icons", "MunifTanjim/nui.nvim" },
+            opts = { hijack_netrw_behavior = "disabled" },
+            keys = { { "<C-t>", "<cmd>Neotree<cr>", noremap = true } },
+        },
+        {
+            "stevearc/oil.nvim",
+            dependencies = { "mini.icons" },
+            cmd = { "Oil" },
+            opts = {
+                watch_for_changes = true,
+                view_options = { show_hidden = true },
+            },
+            keys = {
+                { "<leader>b", "<cmd>Oil .<cr>", noremap = true },
+                { "<leader>B", "<cmd>Oil --float .<cr>", noremap = true },
             },
         },
         -- div utils
