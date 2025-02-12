@@ -204,6 +204,9 @@ require("lazy").setup({
                 notifier = { enabled = true },
                 indent = { enabled = true },
                 quickfile = { enabled = true },
+                dashboard = { enabled = true },
+                image = { enabled = true },
+                scroll = { enabled = true },
             },
         },
         -- file management
