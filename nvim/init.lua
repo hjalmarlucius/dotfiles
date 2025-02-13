@@ -527,21 +527,22 @@ require("lazy").setup({
         { -- helplists
             "folke/todo-comments.nvim",
             dependencies = { "nvim-lua/plenary.nvim" },
+            lazy = false,
             opts = {
                 signs = true, -- show icons in the signs column
                 sign_priority = 8, -- sign priority
-                -- keywords recognized as todo comments
                 keywords = {
-                    ERROR = { icon = " ", color = "error" },
-                    WIP = { icon = " ", color = "warning" },
-                    TODO = { icon = " ", color = "warning" },
-                    PERF = { icon = " ", color = "info" },
-                    TEST = { icon = " ", color = "info" },
-                    MAYBE = { icon = " ", color = "default" },
-                    IDEA = { icon = " ", color = "hint" },
+                    MAYBE = { icon = " " },
+                    PERF = { icon = " " },
+                    FIX = { icon = " ", color = "error", alt = { "BUG" } },
+                    TODO = { icon = " ", color = "info" },
+                    HACK = { icon = " ", color = "warning" },
+                    WARN = { icon = " ", color = "warning" },
+                    NOTE = { icon = " ", color = "hint" },
+                    TEST = { icon = "⏲ ", color = "test" },
                 },
                 merge_keywords = false, -- when true, custom keywords will be merged with the defaults
-                highlight = { keyword = "bg", pattern = [[<(KEYWORDS)\s*]] },
+                highlight = { keyword = "bg", pattern = [[.*<(KEYWORDS)\s*:]] },
                 search = { pattern = [[\b(KEYWORDS)\b]] },
                 colors = {
                     error = { "#ba1a1a" },
