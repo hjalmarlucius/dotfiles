@@ -206,7 +206,6 @@ require("lazy").setup({
                 quickfile = { enabled = true },
                 dashboard = { enabled = true },
                 image = { enabled = true },
-                scroll = { enabled = true },
             },
         },
         -- file management
