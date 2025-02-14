@@ -157,6 +157,19 @@ require("lazy").setup({
         {
             "smoka7/hop.nvim",
             opts = {},
+            cmd = {
+                "HopWord",
+                "HopCamelCase",
+                "HopChar1",
+                "HopChar2",
+                "HopPattern",
+                "HopLine",
+                "HopLineStart",
+                "HopAnywhere",
+                "HopNodes",
+                "HopPaste",
+                "HopYankChar1",
+            },
             keys = {
                 { "<CR>", "<cmd>HopWord<cr>", mode = { "n", "v" }, silent = true, noremap = true },
                 { "<M-CR>", "<cmd>HopAnywhere<cr>", mode = { "n", "v" }, silent = true, noremap = true },
@@ -168,11 +181,12 @@ require("lazy").setup({
         },
         {
             "echasnovski/mini.surround",
-            version = "*",
+            version = false,
             opts = {},
         },
         {
             "echasnovski/mini.bufremove",
+            version = false,
             opts = {},
             keys = {
                 { "<M-d>", function() require("mini.bufremove").wipeout() end, noremap = true },
@@ -211,7 +225,7 @@ require("lazy").setup({
         -- file management
         {
             "nvim-neo-tree/neo-tree.nvim",
-            version = "*",
+            version = false,
             cmd = { "Neotree" },
             dependencies = { "nvim-lua/plenary.nvim", "mini.icons", "MunifTanjim/nui.nvim" },
             opts = { hijack_netrw_behavior = "disabled" },
@@ -275,6 +289,7 @@ require("lazy").setup({
             -- search count > 99
             "kevinhwang91/nvim-hlslens",
             dependencies = { "haya14busa/vim-asterisk" },
+            cmd = { "HlSearchLensDisable", "HlSearchLensEnable", "HlSearchLensToggle" },
             opts = { nearest_only = true },
             keys = {
                 { "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, {} },
@@ -427,6 +442,7 @@ require("lazy").setup({
                 "DiffviewToggleFiles",
                 "DiffviewFocusFiles",
                 "DiffviewRefresh",
+                "DiffviewFileHistory",
             },
             keys = {
                 { "<leader>gd", "<cmd>DiffviewOpen<cr>", noremap = true },
@@ -435,6 +451,22 @@ require("lazy").setup({
         },
         {
             "tpope/vim-fugitive",
+            cmd = {
+                "Git",
+                "Gedit",
+                "Gdiffsplit",
+                "Gread",
+                "Gwrite",
+                "Ggrep",
+                "Glgrep",
+                "Gmove",
+                "GRename",
+                "GDelete",
+                "GRemove",
+                "Gdelete",
+                "GUnlink",
+                "GBrowse",
+            },
             config = function()
                 vim.api.nvim_create_autocmd("User", {
                     pattern = { "FugitiveCommit", "BufReadPost" },
@@ -478,41 +510,41 @@ require("lazy").setup({
                 on_attach = function(bufnr)
                     local gs = require("gitsigns")
 
-                    local function map(mode, l, r, opts)
+                    local function bmap(mode, l, r, opts)
                         opts = opts or {}
                         opts.buffer = bufnr
                         vim.keymap.set(mode, l, r, opts)
                     end
 
                     -- Navigation
-                    map("n", "<M-,>", function()
+                    bmap("n", "<M-,>", function()
                         if vim.wo.diff then return "]c" end
                         vim.schedule(function() gs.next_hunk() end)
                         return "<Ignore>"
                     end, { expr = true })
 
-                    map("n", "<M-.>", function()
+                    bmap("n", "<M-.>", function()
                         if vim.wo.diff then return "[c" end
                         vim.schedule(function() gs.prev_hunk() end)
                         return "<Ignore>"
                     end, { expr = true })
 
                     -- Actions
-                    map({ "n", "v" }, "<leader>gs", gs.stage_hunk)
-                    map({ "n", "v" }, "<leader>gx", gs.reset_hunk)
-                    map("n", "<leader>gu", gs.undo_stage_hunk)
-                    map("n", "<leader>gi", gs.preview_hunk_inline)
-                    map("n", "<leader>gb", function() gs.blame_line({ full = true }) end)
-                    map("n", "<leader>gS", gs.stage_buffer)
-                    map("n", "<leader>gX", gs.reset_buffer)
-                    map("n", "<leader>td", gs.toggle_deleted)
-                    map("n", "<leader>tl", gs.toggle_linehl)
-                    map("n", "<leader>tb", gs.toggle_current_line_blame)
-                    map("n", "<leader>th", gs.toggle_word_diff)
-                    map("n", "<leader>tn", gs.toggle_numhl)
+                    bmap({ "n", "v" }, "<leader>gs", gs.stage_hunk)
+                    bmap({ "n", "v" }, "<leader>gx", gs.reset_hunk)
+                    bmap("n", "<leader>gu", gs.undo_stage_hunk)
+                    bmap("n", "<leader>gi", gs.preview_hunk)
+                    bmap("n", "<leader>gb", function() gs.blame_line({ full = true }) end)
+                    bmap("n", "<leader>gS", gs.stage_buffer)
+                    bmap("n", "<leader>gX", gs.reset_buffer)
+                    bmap("n", "<leader>td", gs.toggle_deleted)
+                    bmap("n", "<leader>tl", gs.toggle_linehl)
+                    bmap("n", "<leader>tb", gs.toggle_current_line_blame)
+                    bmap("n", "<leader>th", gs.toggle_word_diff)
+                    bmap("n", "<leader>tn", gs.toggle_numhl)
 
                     -- Text object
-                    map({ "o", "x" }, "ih", "<cmd><C-U>Gitsigns select_hunk<CR>")
+                    bmap({ "o", "x" }, "ih", "<cmd><C-U>Gitsigns select_hunk<CR>")
                 end,
             },
         },
@@ -549,7 +581,7 @@ require("lazy").setup({
         {
             -- Fuzzy Finder (files, lsp, etc)
             "nvim-telescope/telescope.nvim",
-            version = "*",
+            version = false,
             dependencies = {
                 "sharkdp/fd",
                 "nvim-lua/plenary.nvim",
@@ -845,11 +877,15 @@ require("lazy").setup({
         },
         {
             "neovim/nvim-lspconfig",
+            lazy = false,
             dependencies = {
                 "williamboman/mason.nvim",
                 "williamboman/mason-lspconfig.nvim",
                 "kevinhwang91/nvim-ufo",
+                { "j-hui/fidget.nvim", opts = {} },
             },
+            event = { "BufReadPost", "BufNewFile" },
+            cmd = { "LspInfo", "LspInstall", "LspUninstall" },
             keys = { { "<F3>", "<cmd>LspInfo<cr>", noremap = true } },
             config = function()
                 local on_attach = function(client, bufnr)
