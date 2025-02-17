@@ -379,14 +379,8 @@ require("lazy").setup({
                         { "diff", colored = true },
                     },
                     lualine_x = {
-                        {
-                            function() require("noice").api.status.command.get() end,
-                            cond = function() require("noice").api.status.command.has() end,
-                        },
-                        {
-                            function() require("noice").api.status.mode.get() end,
-                            cond = function() require("noice").api.status.mode.has() end,
-                        },
+                        { "require('noice').api.status.command.get()" },
+                        { "require('noice').api.status.mode.get()" },
                     },
                     lualine_y = { "filetype", "progress" },
                     lualine_z = { "location" },
