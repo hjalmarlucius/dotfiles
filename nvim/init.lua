@@ -218,7 +218,6 @@ require("lazy").setup({
                 notifier = { enabled = true },
                 indent = { enabled = true },
                 quickfile = { enabled = true },
-                dashboard = { enabled = true },
                 image = { enabled = true },
             },
         },
@@ -246,6 +245,7 @@ require("lazy").setup({
         },
         -- div utils
         "tpope/vim-eunuch", -- Move, Rename etc
+        "tpope/vim-sleuth", -- do the right thing with tabstop and softtabstop
         "dhruvasagar/vim-table-mode", -- tables
         "itchyny/vim-qfedit", -- editable quickfix list
         "mbbill/undotree",
@@ -589,7 +589,17 @@ require("lazy").setup({
                 },
                 {
                     "<M-f>",
-                    function() require("telescope.builtin").git_files({ layout_config = { width = 0.99 } }) end,
+                    function()
+                        local cwd = vim.fn.getcwd()
+                        vim.fn.system("git rev-parse --is-inside-work-tree")
+                        local is_inside_work_tree = vim.v.shell_error == 0
+                        local opts = { layout_config = { width = 0.99 } }
+                        if is_inside_work_tree then
+                            require("telescope.builtin").git_files(opts)
+                        else
+                            require("telescope.builtin").find_files(opts)
+                        end
+                    end,
                     noremap = true,
                 },
                 {
@@ -653,9 +663,11 @@ require("lazy").setup({
                                 ["<Tab>"] = actions.toggle_selection + actions.move_selection_better,
                                 ["<C-q>"] = actions.send_to_loclist + actions.open_loclist,
                                 ["<M-q>"] = actions.send_selected_to_loclist + actions.open_loclist,
+                                ["<M-p>"] = require("telescope.actions.layout").toggle_preview,
                                 ["<PageUp>"] = "results_scrolling_up",
                                 ["<PageDown>"] = "results_scrolling_down",
                             },
+                            n = { ["<M-p>"] = require("telescope.actions.layout").toggle_preview },
                         },
                         file_ignore_patterns = {},
                         set_env = { ["COLORTERM"] = "truecolor" },
@@ -739,7 +751,17 @@ require("lazy").setup({
             build = ":TSUpdate",
             opts = {
                 {
-                    ensure_installed = { "c", "cpp", "lua", "vimdoc", "gitcommit", "git_rebase", "bash", "python" },
+                    ensure_installed = {
+                        "bash",
+                        "c",
+                        "cpp",
+                        "git_rebase",
+                        "gitcommit",
+                        "lua",
+                        "python",
+                        "regex",
+                        "vimdoc",
+                    },
                     auto_install = true,
                     highlight = { enable = true },
                     indent = { enable = true, disable = { "python" }, additional_vim_regex_highlighting = { "python" } },
@@ -1009,6 +1031,7 @@ require("lazy").setup({
         },
         {
             "folke/noice.nvim",
+            event = "VeryLazy",
             dependencies = { "MunifTanjim/nui.nvim" },
             opts = {
                 cmdline = { enabled = true, view = "cmdline_popup" },
