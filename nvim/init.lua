@@ -248,7 +248,6 @@ require("lazy").setup({
         "tpope/vim-sleuth", -- do the right thing with tabstop and softtabstop
         "dhruvasagar/vim-table-mode", -- tables
         "itchyny/vim-qfedit", -- editable quickfix list
-        "mbbill/undotree",
         {
             -- keep location upon reopening
             "ethanholz/nvim-lastplace",
@@ -614,22 +613,11 @@ require("lazy").setup({
                 },
                 {
                     "<M-w>",
-                    "<cmd>Telescope live_grep <cr>",
-                    function()
-                        require("telescope.builtin").live_grep({
-                            layout_strategy = "vertical",
-                            layout_config = { width = 0.99 },
-                        })
-                    end,
-                    noremap = true,
-                },
-                {
-                    "<M-w>",
                     function() require("telescope").extensions.live_grep_args.live_grep_args() end,
                     noremap = true,
                 },
                 { "<M-y>", function() require("telescope.builtin").filetypes() end, noremap = true },
-                { "<M-u>", function() require("telescope.builtin").search_history() end, noremap = true },
+                { "<M-H>", function() require("telescope.builtin").search_history() end, noremap = true },
                 {
                     "<F9>",
                     function()
@@ -673,6 +661,42 @@ require("lazy").setup({
                         set_env = { ["COLORTERM"] = "truecolor" },
                     },
                 })
+            end,
+        },
+        {
+            "debugloop/telescope-undo.nvim",
+            dependencies = {
+                {
+                    "nvim-telescope/telescope.nvim",
+                    dependencies = { "nvim-lua/plenary.nvim" },
+                },
+            },
+            keys = {
+                {
+                    "<M-u>",
+                    function() require("telescope").extensions.undo.undo() end,
+                    desc = "undo history",
+                },
+            },
+            opts = {
+                extensions = {
+                    undo = {
+                        side_by_side = true,
+                        vim_diff_opts = { ctxlen = vim.o.scrolloff },
+                        entry_format = "state #$ID, $STAT, $TIME",
+                        time_format = "%H:%M:%S %m/%d/%Y",
+                        saved_only = false,
+                        layout_strategy = "vertical",
+                        layout_config = { preview_height = 0.6, width = 0.99 },
+                    },
+                },
+            },
+            config = function(_, opts)
+                -- Calling telescope's setup from multiple specs does not hurt, it will happily merge the
+                -- configs for us. We won't use data, as everything is in it's own namespace (telescope
+                -- defaults, as well as each extension).
+                require("telescope").setup(opts)
+                require("telescope").load_extension("undo")
             end,
         },
         {
@@ -797,8 +821,10 @@ require("lazy").setup({
                     javascript = { "eslint_d" },
                     typescript = { "eslint_d" },
                     html = { "tidy", "eslint_d" },
+                    go = { "golangcilint" },
+                    sh = { "shellcheck" },
                 }
-                vim.api.nvim_create_autocmd({ "BufWritePost", "TextChanged" }, {
+                vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
                     callback = function() require("lint").try_lint() end,
                 })
             end,
