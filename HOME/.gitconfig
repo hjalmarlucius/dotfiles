@@ -1,14 +1,3 @@
-[alias]
-    save = "!f() { git add -u && git commit --no-verify -m "\"SAVEPOINT - $@\""; }; f"
-    undo = reset HEAD~1 --mixed
-    checkpoint = "!f() { git save ${1-CHECKPOINT}; git tag "\"checkpoint/${1-`date +%Y%m%d_%H%M%S`}\""; git undo; }; f"
-    checkpoints = tag -l "checkpoint/*"
-    delcheckpoint = "!f() { git tag -d checkpoint/$1; }; f"
-    loadcheckpoint = "!f() { git reset --hard checkpoint/$1 && git undo; }; f"
-    cp = checkpoint
-    cpls = loadcheckpoint
-    cpd = delcheckpoint
-    cpld = loadcheckpoint required = true
 [core]
     filemode = false
     pager = delta --diff-so-fancy
@@ -26,9 +15,6 @@
     diffFilter = delta --color-only
 [merge]
     conflictstyle = diff3
-[diff]
-    external = difft
-    colorMoved = default
 [delta]
     navigate = true
     light = false
@@ -48,6 +34,38 @@
     file-style = bold yellow ul
     file-decoration-style = none
     hunk-header-decoration-style = cyan box ul
+[init]
+    defaultBranch = main
+
+# better defaults
+# https://blog.gitbutler.com/how-git-core-devs-configure-git/
+[column]
+    ui = auto
+[branch]
+    sort = -committerdate
+[tag]
+    sort = version:refname
+[diff]
+    algorithm = histogram
+    colorMoved = plain
+    mnemonicPrefix = true
+    renames = true
+[push]
+    autoSetupRemote = true
+    followTags = true
+[fetch]
+    prune = true
+    pruneTags = true
+    all = true
+[help]
+    autocorrect = prompt
+[rebase]
+    autoSquash = true
+    autoStash = true
+    updateRefs = true
+
+# Improved colors for the highlighted bits
+# https://github.com/so-fancy/diff-so-fancy
 [color]
     ui = true
     [color "diff-highlight"]
@@ -63,5 +81,3 @@
     old = red bold
     new = green bold
     whitespace = red reverse
-[init]
-	defaultBranch = main
