@@ -270,6 +270,16 @@ require("lazy").setup({
             end,
         },
         {
+            "chomosuke/typst-preview.nvim",
+            lazy = false, -- or ft = 'typst'
+            version = "1.*",
+            opts = {
+                port = 10010,
+                debug = true,
+                dependencies_bin = { ["tinymist"] = "tinymist" },
+            },
+        },
+        {
             -- live preview of markdown files
             "iamcco/markdown-preview.nvim", -- requires yarn
             cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
@@ -883,6 +893,15 @@ require("lazy").setup({
                                         "-formatter indentless_arrays=true,retain_line_breaks=true,line_ending=lf,max_line_length=100,pad_line_comments=2",
                                         "-in",
                                     },
+                                    stdin = true,
+                                }
+                            end,
+                        },
+                        typst = {
+                            function()
+                                local util = require("formatter.util")
+                                return {
+                                    exe = "typstyle",
                                     stdin = true,
                                 }
                             end,
