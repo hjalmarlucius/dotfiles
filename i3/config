@@ -91,7 +91,8 @@ bindsym $mod+F2 exec qutebrowser
 bindsym $mod+F5 exec pavucontrol
 bindsym $mod+F6 exec quodlibet
 bindsym $mod+F7 exec wezterm -e ncspot
-bindsym $mod+Shift+F10 --release exec "killall dunst; exec notify-send 'restart dunst'"
+bindsym $mod+F10 exec dunstctl history-pop
+bindsym $mod+Shift+F10 exec dunstctl close-all
 bindsym $mod+p exec pcmanfm
 bindsym $mod+Shift+p exec wezterm -e ranger
 bindsym $mod+c exec qalculate-gtk
