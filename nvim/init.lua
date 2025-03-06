@@ -320,7 +320,6 @@ require("lazy").setup({
             lazy = false, -- or ft = 'typst'
             version = "1.*",
             opts = {
-                port = 10010,
                 debug = true,
                 dependencies_bin = { ["tinymist"] = "tinymist" },
             },
