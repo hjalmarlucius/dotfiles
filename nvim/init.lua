@@ -173,6 +173,52 @@ require("lazy").setup({
             keys = {
                 { "<CR>", "<cmd>HopWord<cr>", mode = { "n", "v" }, silent = true, noremap = true },
                 { "<M-CR>", "<cmd>HopAnywhere<cr>", mode = { "n", "v" }, silent = true, noremap = true },
+                {
+                    "f",
+                    function()
+                        require("hop").hint_char1({
+                            direction = require("hop.hint").HintDirection.AFTER_CURSOR,
+                            current_line_only = true,
+                        })
+                    end,
+                    mode = { "n", "v", "o" },
+                    remap = true,
+                },
+                {
+                    "F",
+                    function()
+                        require("hop").hint_char1({
+                            direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
+                            current_line_only = true,
+                        })
+                    end,
+                    mode = { "n", "v", "o" },
+                    remap = true,
+                },
+                {
+                    "t",
+                    function()
+                        require("hop").hint_char1({
+                            direction = require("hop.hint").HintDirection.AFTER_CURSOR,
+                            current_line_only = true,
+                            hint_offset = -1,
+                        })
+                    end,
+                    mode = { "n", "v", "o" },
+                    remap = true,
+                },
+                {
+                    "T",
+                    function()
+                        require("hop").hint_char1({
+                            direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
+                            current_line_only = true,
+                            hint_offset = 1,
+                        })
+                    end,
+                    mode = { "n", "v", "o" },
+                    remap = true,
+                },
             },
         },
         {
