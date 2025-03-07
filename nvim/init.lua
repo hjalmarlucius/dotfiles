@@ -892,7 +892,6 @@ require("lazy").setup({
                 { "<leader>F", "<cmd>FormatWrite<cr>", silent = true, noremap = true },
             },
             config = function()
-                local util = require("formatter.util")
                 require("formatter").setup({
                     logging = true,
                     log_level = vim.log.levels.DEBUG,
@@ -915,6 +914,7 @@ require("lazy").setup({
                         },
                         lua = {
                             function()
+                                local util = require("formatter.util")
                                 return {
                                     exe = "stylua",
                                     args = {
@@ -944,7 +944,6 @@ require("lazy").setup({
                         },
                         typst = {
                             function()
-                                local util = require("formatter.util")
                                 return {
                                     exe = "typstyle",
                                     stdin = true,
