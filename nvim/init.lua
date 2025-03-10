@@ -321,6 +321,7 @@ require("lazy").setup({
             version = "1.*",
             opts = {
                 debug = true,
+                port = 10010,
                 dependencies_bin = { ["tinymist"] = "tinymist" },
             },
         },
@@ -578,8 +579,10 @@ require("lazy").setup({
                     end, { expr = true })
 
                     -- Actions
-                    bmap({ "n", "v" }, "<leader>gs", gs.stage_hunk)
-                    bmap({ "n", "v" }, "<leader>gx", gs.reset_hunk)
+                    bmap("v", "<leader>gs", function() gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end)
+                    bmap("v", "<leader>gx", function() gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") }) end)
+                    bmap("n", "<leader>gs", gs.stage_hunk)
+                    bmap("n", "<leader>gx", gs.reset_hunk)
                     bmap("n", "<leader>gu", gs.undo_stage_hunk)
                     bmap("n", "<leader>gi", gs.preview_hunk)
                     bmap("n", "<leader>gb", function() gs.blame_line({ full = true }) end)
