@@ -323,6 +323,8 @@ require("lazy").setup({
                 debug = true,
                 port = 10010,
                 dependencies_bin = { ["tinymist"] = "tinymist" },
+                follow_cursor = false,
+                invert_colors = "auto",
             },
         },
         {
@@ -721,6 +723,7 @@ require("lazy").setup({
                 })
             end,
         },
+        "mbbill/undotree",
         {
             "debugloop/telescope-undo.nvim",
             dependencies = {
