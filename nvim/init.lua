@@ -325,6 +325,20 @@ require("lazy").setup({
                 dependencies_bin = { ["tinymist"] = "tinymist" },
                 follow_cursor = false,
                 invert_colors = "auto",
+                get_root = function(filename)
+                    local root = os.getenv("TYPST_ROOT")
+                    if root then return root end
+                    local dir0 = vim.fn.fnamemodify(filename, ":p:h")
+                    local dir = dir0
+                    for _ = 1, 10 do
+                        if vim.fn.isdirectory(dir .. "/.git/") ~= 0 or vim.fn.filereadable(dir .. "/.git") ~= 0 then
+                            print("root dir: " .. dir)
+                            return dir
+                        end
+                        dir = vim.fn.fnamemodify(dir, ":p:h:h")
+                    end
+                    return dir0
+                end,
             },
         },
         {
