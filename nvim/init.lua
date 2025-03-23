@@ -691,7 +691,7 @@ require("lazy").setup({
                     noremap = true,
                 },
                 { "<M-y>", function() require("telescope.builtin").filetypes() end, noremap = true },
-                { "<M-H>", function() require("telescope.builtin").search_history() end, noremap = true },
+                { "<M-/>", function() require("telescope.builtin").search_history() end, noremap = true },
                 {
                     "<F9>",
                     function()
