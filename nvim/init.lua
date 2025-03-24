@@ -178,6 +178,37 @@ vim.api.nvim_create_autocmd("LspAttach", {
         local client = assert(vim.lsp.get_client_by_id(ev.data.client_id))
     end,
 })
+vim.api.nvim_create_user_command("LspStop", function(kwargs)
+    local name = kwargs.fargs[1]
+    for _, client in ipairs(vim.lsp.get_clients({ name = name })) do
+        client:stop()
+    end
+end, {
+    nargs = "?",
+    complete = function()
+        return vim.tbl_map(function(c) return c.name end, vim.lsp.get_clients())
+    end,
+})
+
+vim.api.nvim_create_user_command("LspRestart", function(kwargs)
+    local name = kwargs.fargs[1]
+    for _, client in ipairs(vim.lsp.get_clients({ name = name })) do
+        local bufs = vim.lsp.get_buffers_by_client_id(client.id)
+        client:stop()
+        vim.wait(30000, function() return vim.lsp.get_client_by_id(client.id) == nil end)
+        local client_id = vim.lsp.start(client.config, { attach = nil })
+        if client_id then
+            for _, buf in ipairs(bufs) do
+                vim.lsp.buf_attach_client(buf, client_id)
+            end
+        end
+    end
+end, {
+    nargs = "?",
+    complete = function()
+        return vim.tbl_map(function(c) return c.name end, vim.lsp.get_clients())
+    end,
+})
 
 vim.lsp.config("*", { root_markers = { ".git" } })
 vim.lsp.config["lua_ls"] = {
@@ -257,6 +288,58 @@ vim.lsp.config["typst"] = {
     settings = {},
 }
 vim.lsp.enable("typst")
+vim.lsp.config["bash"] = {
+    cmd = { "bash-language-server", "start" },
+    filetypes = { "bash", "sh" },
+}
+vim.lsp.enable("bash")
+vim.lsp.config["js"] = {
+    cmd = { "vtsls", "--stdio" },
+    root_markers = { ".git", "package.json", "tsconfig.json", "jsconfig.json" },
+    filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
+    settings = {
+        complete_function_calls = true,
+        vtsls = {
+            enableMoveToFileCodeAction = true,
+            autoUseWorkspaceTsdk = true,
+            experimental = {
+                maxInlayHintLength = 30,
+                completion = {
+                    enableServerSideFuzzyMatch = true,
+                },
+            },
+        },
+        javascript = {
+            updateImportsOnFileMove = { enabled = "always" },
+            suggest = {
+                completeFunctionCalls = true,
+            },
+            inlayHints = {
+                enumMemberValues = { enabled = true },
+                functionLikeReturnTypes = { enabled = true },
+                parameterNames = { enabled = "literals" },
+                parameterTypes = { enabled = true },
+                propertyDeclarationTypes = { enabled = true },
+                variableTypes = { enabled = false },
+            },
+        },
+        typescript = {
+            updateImportsOnFileMove = { enabled = "always" },
+            suggest = {
+                completeFunctionCalls = true,
+            },
+            inlayHints = {
+                enumMemberValues = { enabled = true },
+                functionLikeReturnTypes = { enabled = true },
+                parameterNames = { enabled = "literals" },
+                parameterTypes = { enabled = true },
+                propertyDeclarationTypes = { enabled = true },
+                variableTypes = { enabled = false },
+            },
+        },
+    },
+}
+vim.lsp.enable("js")
 
 -- ----------------------------------------
 -- PLUGINS
