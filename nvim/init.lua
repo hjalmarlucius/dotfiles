@@ -94,6 +94,9 @@ map("v", "v", "<esc>", { noremap = true })
 map("v", "<Tab>", ">gv", { noremap = true })
 map("v", "<S-Tab>", "<gv", { noremap = true })
 map("n", "<leader>o", "m`o<Esc>``", { noremap = true }) -- Insert a newline in normal mode
+-- better indenting
+map("v", "<", "<gv")
+map("v", ">", ">gv")
 -- repeat and next
 map("n", "\\", "n.", { noremap = true, silent = true })
 
@@ -115,6 +118,9 @@ map("n", "<C-h>", "5<C-w><", { noremap = true })
 map("n", "<C-j>", "5<C-w>-", { noremap = true })
 map("n", "<C-k>", "5<C-w>+", { noremap = true })
 map("n", "<C-l>", "5<C-w>>", { noremap = true })
+-- Move Lines
+map("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move Down" })
+map("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move Up" })
 -- quickfix window
 map("n", "<C-p>", "<cmd>lprev<cr>", { noremap = true })
 map("n", "<C-n>", "<cmd>lnext<cr>", { noremap = true })
@@ -198,8 +204,8 @@ vim.lsp.config["lua_ls"] = {
     },
 }
 vim.lsp.enable("lua_ls")
-vim.lsp.config["pyright"] = {
-    cmd = { "pyright-langserver", "--stdio" },
+vim.lsp.config["basedpyright"] = {
+    cmd = { "basedpyright-langserver", "--stdio" },
     filetypes = { "python" },
     root_markers = {
         "pyproject.toml",
@@ -215,7 +221,7 @@ vim.lsp.config["pyright"] = {
         },
     },
 }
-vim.lsp.enable("pyright")
+vim.lsp.enable("basedpyright")
 vim.lsp.config["html"] = {
     cmd = { "vscode-html-language-server", "--stdio" },
     filetypes = { "html" },
@@ -383,6 +389,7 @@ require("lazy").setup({
                 indent = { enabled = true },
                 quickfile = { enabled = true },
                 image = { enabled = true },
+                rename = { enabled = true },
             },
         },
         -- file management
@@ -406,6 +413,16 @@ require("lazy").setup({
                 { "<leader>b", "<cmd>Oil .<cr>", noremap = true },
                 { "<leader>B", "<cmd>Oil --float .<cr>", noremap = true },
             },
+            config = function()
+                vim.api.nvim_create_autocmd("User", {
+                    pattern = "OilActionsPost",
+                    callback = function(event)
+                        if event.data.actions.type == "move" then
+                            Snacks.rename.on_rename_file(event.data.actions.src_url, event.data.actions.dest_url)
+                        end
+                    end,
+                })
+            end,
         },
         -- div utils
         "tpope/vim-eunuch", -- Move, Rename etc
