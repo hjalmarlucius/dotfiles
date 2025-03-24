@@ -1,6 +1,6 @@
 vim.opt.termguicolors = true
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
+vim.g.mapleader = vim.keycode("<space>")
+vim.g.maplocalleader = vim.keycode("<cr>")
 
 -- ----------------------------------------
 -- SETTINGS
@@ -43,6 +43,12 @@ vim.opt.ignorecase = false
 vim.opt.wildmode = { "full" } -- Command-line completion mode
 vim.opt.wildignore = vim.opt.wildignore
     + { "*swp", "*.class", "*.pyc", "*.png", "*.jpg", "*.gif", "*.zip", "*/tmp/*", "*.o", ".obj", "*.so" }
+
+-- folding
+vim.o.foldenable = true -- enable fold
+vim.o.foldlevel = 99 -- start editing with all folds opened
+vim.o.foldmethod = "expr" -- use tree-sitter for folding method
+vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 
 -- cursor
 vim.o.scrolloff = 5 -- Lines of context
@@ -127,6 +133,118 @@ vim.api.nvim_create_autocmd("ColorScheme", {
         vim.api.nvim_set_hl(0, "ColorColumn", { bg = "salmon4" })
     end,
 })
+
+-- ----------------------------------------
+-- LSP
+-- ----------------------------------------
+
+-- vim.lsp.set_log_level(1)
+vim.api.nvim_create_autocmd("LspAttach", {
+    group = vim.api.nvim_create_augroup("UserLspAttach", { clear = true }),
+    callback = function(ev)
+        vim.lsp.completion.enable(true, ev.data.client_id, ev.buf)
+        local bmap = function(mode, keys, func) vim.keymap.set(mode, keys, func, { buffer = ev.buf, noremap = true }) end
+        local diag = vim.diagnostic
+        local severity = diag.severity.HINT
+        -- workspaces
+        bmap("n", "<leader>wa", vim.lsp.buf.add_workspace_folder)
+        bmap("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder)
+        bmap("n", "<leader>wl", function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end)
+        -- jump
+        bmap("n", "<M-i>", function() diag.open_float({ source = true }) end)
+        bmap("n", "<M-n>", function() diag.jump({ severity = { min = severity }, float = true, count = 1 }) end)
+        bmap("n", "<M-p>", function() diag.jump({ severity = { min = severity }, float = true, count = -1 }) end)
+        bmap("n", "gd", vim.lsp.buf.definition)
+        bmap("n", "gD", vim.lsp.buf.type_definition)
+        bmap("n", "gi", vim.lsp.buf.declaration)
+        bmap("n", "gI", vim.lsp.buf.implementation)
+        -- quickfix
+        bmap("n", "gl", diag.setloclist)
+        bmap("n", "gr", vim.lsp.buf.references)
+        -- popups
+        bmap({ "n", "i" }, "<M-x>", vim.lsp.buf.signature_help)
+        -- other
+        bmap("n", "K", vim.lsp.buf.hover)
+        bmap("n", "<M-r>", vim.lsp.buf.rename)
+        bmap("n", "<leader>ca", vim.lsp.buf.code_action)
+
+        -- NOTE: Using `assert` bypasses needing to do a nil check before accessing a member that could be nil
+        local client = assert(vim.lsp.get_client_by_id(ev.data.client_id))
+    end,
+})
+
+vim.lsp.config("*", { root_markers = { ".git" } })
+vim.lsp.config["lua_ls"] = {
+    cmd = { "lua-language-server" },
+    filetypes = { "lua" },
+    root_markers = {
+        ".luarc.json",
+        ".luarc.jsonc",
+        ".stylua.toml",
+        "stylua.toml",
+        ".git",
+    },
+    settings = {
+        Lua = {
+            workspace = {
+                checkThirdParty = false,
+                library = { vim.env.VIMRUNTIME },
+            },
+            telemetry = { enable = false },
+            diagnostics = { globals = { "vim" } },
+            format = { enable = false },
+            runtime = { version = "LuaJIT" },
+        },
+    },
+}
+vim.lsp.enable("lua_ls")
+vim.lsp.config["pyright"] = {
+    cmd = { "pyright-langserver", "--stdio" },
+    filetypes = { "python" },
+    root_markers = {
+        "pyproject.toml",
+        "setup.py",
+        "setup.cfg",
+        "requirements.txt",
+        "pyrightconfig.json",
+        ".git",
+    },
+    settings = {
+        python = {
+            analysis = { autoImportCompletions = false, diagnosticMode = "workspace", useLibraryCodeForTypes = false },
+        },
+    },
+}
+vim.lsp.enable("pyright")
+vim.lsp.config["html"] = {
+    cmd = { "vscode-html-language-server", "--stdio" },
+    filetypes = { "html" },
+    settings = {
+        html = {
+            format = {
+                templating = true,
+                wrapLineLength = 120,
+                wrapAttributes = "auto",
+            },
+            hover = {
+                documentation = true,
+                references = true,
+            },
+        },
+    },
+}
+vim.lsp.enable("html")
+vim.lsp.config["yaml"] = {
+    cmd = { "yaml-language-server", "--stdio" },
+    filetypes = { "yaml" },
+    settings = {
+        yaml = {
+            schemas = { kubernetes = "/home/hjalmarlucius/src/hjarl/system/manifests/*.yaml" },
+            -- schemaStore = { enable = false, url = "" },
+        },
+    },
+}
+vim.lsp.enable("yaml")
 
 -- ----------------------------------------
 -- PLUGINS
@@ -775,76 +893,6 @@ require("lazy").setup({
             end,
         },
         {
-            "kevinhwang91/nvim-ufo",
-            dependencies = { "kevinhwang91/promise-async" },
-            opts = {
-                preview = {
-                    mappings = {
-                        scrollU = "<C-u>",
-                        scrollD = "<C-d>",
-                        jumpTop = "[",
-                        jumpBot = "]",
-                    },
-                },
-                fold_virt_text_handler = function(virtText, lnum, endLnum, width, truncate)
-                    local newVirtText = {}
-                    local suffix = (" 󰁂 %d "):format(endLnum - lnum)
-                    local sufWidth = vim.fn.strdisplaywidth(suffix)
-                    local targetWidth = width - sufWidth
-                    local curWidth = 0
-                    for _, chunk in ipairs(virtText) do
-                        local chunkText = chunk[1]
-                        local chunkWidth = vim.fn.strdisplaywidth(chunkText)
-                        if targetWidth > curWidth + chunkWidth then
-                            table.insert(newVirtText, chunk)
-                        else
-                            chunkText = truncate(chunkText, targetWidth - curWidth)
-                            local hlGroup = chunk[2]
-                            table.insert(newVirtText, { chunkText, hlGroup })
-                            chunkWidth = vim.fn.strdisplaywidth(chunkText)
-                            -- str width returned from truncate() may less than 2nd argument, need padding
-                            if curWidth + chunkWidth < targetWidth then
-                                suffix = suffix .. (" "):rep(targetWidth - curWidth - chunkWidth)
-                            end
-                            break
-                        end
-                        curWidth = curWidth + chunkWidth
-                    end
-                    table.insert(newVirtText, { suffix, "MoreMsg" })
-                    return newVirtText
-                end,
-            },
-            keys = {
-                -- zm/M zr/R increase/increase foldlevel (max)
-                -- zo/O zc/C open / close fold (max)
-                -- za zA switch fold (small/full)
-                -- zi toggle folds
-                -- zi zj move to next / prev fold
-                {
-                    "zR",
-                    function() require("ufo").openAllFolds() end,
-                },
-                {
-                    "zM",
-                    function() require("ufo").closeAllFolds() end,
-                },
-                {
-                    "zm",
-                    function() require("ufo").closeFoldsWith() end,
-                },
-                {
-                    "zr",
-                    function() require("ufo").openFoldsExceptKinds() end,
-                },
-            },
-            init = function()
-                vim.o.foldcolumn = "0"
-                vim.o.foldlevel = 99
-                vim.o.foldlevelstart = 99
-                vim.o.foldenable = true
-            end,
-        },
-        {
             -- Highlight, edit, and navigate code
             "nvim-treesitter/nvim-treesitter",
             build = ":TSUpdate",
@@ -997,144 +1045,6 @@ require("lazy").setup({
                         json = { require("formatter.filetypes.json").jq },
                         ["*"] = { require("formatter.filetypes.any").remove_trailing_whitespace },
                     },
-                })
-            end,
-        },
-        {
-            "neovim/nvim-lspconfig",
-            lazy = false,
-            dependencies = {
-                "williamboman/mason.nvim",
-                "williamboman/mason-lspconfig.nvim",
-                "kevinhwang91/nvim-ufo",
-                { "j-hui/fidget.nvim", opts = {} },
-            },
-            event = { "BufReadPost", "BufNewFile" },
-            cmd = { "LspInfo", "LspInstall", "LspUninstall" },
-            keys = { { "<F3>", "<cmd>LspInfo<cr>", noremap = true } },
-            config = function()
-                local on_attach = function(client, bufnr)
-                    local bmap = function(mode, keys, func)
-                        vim.keymap.set(mode, keys, func, { buffer = bufnr, noremap = true })
-                    end
-                    -- workspaces
-                    bmap("n", "<leader>wa", vim.lsp.buf.add_workspace_folder)
-                    bmap("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder)
-                    bmap("n", "<leader>wl", function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end)
-                    -- jump
-                    bmap("n", "<M-i>", function() vim.diagnostic.open_float({ source = true }) end)
-                    bmap(
-                        "n",
-                        "<M-n>",
-                        function()
-                            vim.diagnostic.jump({
-                                severity = { min = vim.diagnostic.severity.HINT },
-                                float = true,
-                                count = 1,
-                            })
-                        end
-                    )
-                    bmap(
-                        "n",
-                        "<M-p>",
-                        function()
-                            vim.diagnostic.jump({
-                                severity = { min = vim.diagnostic.severity.HINT },
-                                float = true,
-                                count = -1,
-                            })
-                        end
-                    )
-                    bmap("n", "gd", vim.lsp.buf.definition)
-                    bmap("n", "gD", vim.lsp.buf.type_definition)
-                    bmap("n", "gi", vim.lsp.buf.declaration)
-                    bmap("n", "gI", vim.lsp.buf.implementation)
-                    -- quickfix
-                    bmap("n", "gl", vim.diagnostic.setloclist)
-                    bmap("n", "gr", vim.lsp.buf.references)
-                    -- popups
-                    bmap({ "n", "i" }, "<M-x>", vim.lsp.buf.signature_help)
-                    -- other
-                    bmap("n", "K", function()
-                        local winid = require("ufo").peekFoldedLinesUnderCursor()
-                        if not winid then vim.lsp.buf.hover() end
-                    end)
-                    bmap("n", "<M-r>", vim.lsp.buf.rename)
-                    bmap("n", "<leader>ca", vim.lsp.buf.code_action)
-                end
-
-                local server_configs = {
-                    pyright = {
-                        python = {
-                            analysis = { autoImportCompletions = false, diagnosticMode = "openFilesOnly" },
-                        },
-                    },
-                    lua_ls = {
-                        Lua = {
-                            workspace = {
-                                checkThirdParty = false,
-                                -- Make the server aware of Neovim runtime files
-                                library = vim.api.nvim_get_runtime_file("", true),
-                            },
-                            telemetry = { enable = false },
-                            diagnostics = {
-                                -- Get the language server to recognize the `vim` global in init.lua
-                                globals = { "vim", "core" },
-                            },
-                            format = { enable = false },
-                        },
-                    },
-                    html = {
-                        html = {
-                            format = {
-                                templating = true,
-                                wrapLineLength = 120,
-                                wrapAttributes = "auto",
-                            },
-                            hover = {
-                                documentation = true,
-                                references = true,
-                            },
-                        },
-                    },
-                    yamlls = {
-                        yaml = {
-                            schemas = { kubernetes = "/home/hjalmarlucius/src/hjarl/system/manifests/*.yaml" },
-                            -- schemaStore = { enable = false, url = "" },
-                        },
-                    },
-                }
-
-                local capabilities = vim.lsp.protocol.make_client_capabilities()
-
-                local ufo = require("ufo")
-                if ufo then
-                    capabilities.textDocument.foldingRange = {
-                        dynamicRegistration = false,
-                        lineFoldingOnly = true,
-                    }
-                end
-
-                local mason_lspconfig = require("mason-lspconfig")
-                mason_lspconfig.setup({
-                    ensure_installed = {
-                        "cssls",
-                        "html",
-                        "jsonls",
-                        "yamlls",
-                        "bashls",
-                        "pyright",
-                        "lua_ls",
-                    },
-                })
-                mason_lspconfig.setup_handlers({
-                    function(server_name)
-                        require("lspconfig")[server_name].setup({
-                            capabilities = capabilities,
-                            on_attach = on_attach,
-                            settings = server_configs[server_name],
-                        })
-                    end,
                 })
             end,
         },
