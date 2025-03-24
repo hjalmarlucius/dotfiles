@@ -251,6 +251,12 @@ vim.lsp.config["yaml"] = {
     },
 }
 vim.lsp.enable("yaml")
+vim.lsp.config["typst"] = {
+    cmd = { "tinymist" },
+    filetypes = { "typst" },
+    settings = {},
+}
+vim.lsp.enable("typst")
 
 -- ----------------------------------------
 -- PLUGINS
