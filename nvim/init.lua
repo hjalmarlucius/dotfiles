@@ -419,278 +419,11 @@ end
 lspsetup()
 
 -- ----------------------------------------
--- PLUGINS
+-- SPECS
 -- ----------------------------------------
 
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-    vim.fn.system({
-        "git",
-        "clone",
-        "--filter=blob:none",
-        "--branch=stable",
-        "https://github.com/folke/lazy.nvim.git",
-        lazypath,
-    })
-end
-vim.opt.rtp:prepend(lazypath)
-require("lazy").setup({
-    spec = {
-        -- mini
-        {
-            "echasnovski/mini.basics",
-            opts = {
-                options = { basic = true, extra_ui = true },
-                mappings = { move_with_alt = true },
-            },
-        },
-        {
-            "smoka7/hop.nvim",
-            opts = {},
-            cmd = {
-                "HopWord",
-                "HopCamelCase",
-                "HopChar1",
-                "HopChar2",
-                "HopPattern",
-                "HopLine",
-                "HopLineStart",
-                "HopAnywhere",
-                "HopNodes",
-                "HopPaste",
-                "HopYankChar1",
-            },
-            keys = {
-                { "<CR>", "<cmd>HopWord<cr>", mode = { "n", "v" }, silent = true, noremap = true },
-                { "<M-CR>", "<cmd>HopAnywhere<cr>", mode = { "n", "v" }, silent = true, noremap = true },
-                {
-                    "f",
-                    function()
-                        require("hop").hint_char1({
-                            direction = require("hop.hint").HintDirection.AFTER_CURSOR,
-                            current_line_only = true,
-                        })
-                    end,
-                    mode = { "n", "v", "o" },
-                    remap = true,
-                },
-                {
-                    "F",
-                    function()
-                        require("hop").hint_char1({
-                            direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
-                            current_line_only = true,
-                        })
-                    end,
-                    mode = { "n", "v", "o" },
-                    remap = true,
-                },
-                {
-                    "t",
-                    function()
-                        require("hop").hint_char1({
-                            direction = require("hop.hint").HintDirection.AFTER_CURSOR,
-                            current_line_only = true,
-                            hint_offset = -1,
-                        })
-                    end,
-                    mode = { "n", "v", "o" },
-                    remap = true,
-                },
-                {
-                    "T",
-                    function()
-                        require("hop").hint_char1({
-                            direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
-                            current_line_only = true,
-                            hint_offset = 1,
-                        })
-                    end,
-                    mode = { "n", "v", "o" },
-                    remap = true,
-                },
-            },
-        },
-        {
-            "echasnovski/mini.icons",
-            opts = {},
-        },
-        {
-            "echasnovski/mini.surround",
-            version = false,
-            opts = {},
-        },
-        {
-            "echasnovski/mini.bufremove",
-            version = false,
-            opts = {},
-            keys = {
-                { "<M-d>", function() require("mini.bufremove").wipeout() end, noremap = true },
-                { "<M-D>", function() require("mini.bufremove").wipeout(nil, true) end, noremap = true },
-            },
-        },
-        -- snacks
-        {
-            "folke/snacks.nvim",
-            priority = 1000,
-            lazy = false,
-            ---@type snacks.Config
-            opts = {
-                bigfile = {
-                    enabled = true,
-                    notify = true, -- show notification when big file detected
-                    size = 1.5 * 1024 * 1024, -- 1.5MB
-                    line_length = 1000, -- average line length (useful for minified files)
-                    -- Enable or disable features when big file detected
-                    ---@param ctx {buf: number, ft:string}
-                    setup = function(ctx)
-                        if vim.fn.exists(":NoMatchParen") ~= 0 then vim.cmd([[NoMatchParen]]) end
-                        Snacks.util.wo(0, { foldmethod = "manual", statuscolumn = "", conceallevel = 0 })
-                        vim.schedule(function()
-                            if vim.api.nvim_buf_is_valid(ctx.buf) then vim.bo[ctx.buf].syntax = ctx.ft end
-                        end)
-                    end,
-                },
-                notifier = { enabled = true },
-                indent = { enabled = true },
-                quickfile = { enabled = true },
-                image = { enabled = true },
-                rename = { enabled = true },
-            },
-        },
-        -- file management
-        {
-            "nvim-neo-tree/neo-tree.nvim",
-            version = false,
-            cmd = { "Neotree" },
-            dependencies = { "nvim-lua/plenary.nvim", "mini.icons", "MunifTanjim/nui.nvim" },
-            opts = { hijack_netrw_behavior = "disabled" },
-            keys = { { "<C-t>", "<cmd>Neotree<cr>", noremap = true } },
-        },
-        {
-            "stevearc/oil.nvim",
-            dependencies = { "mini.icons" },
-            cmd = { "Oil" },
-            opts = {
-                watch_for_changes = true,
-                view_options = { show_hidden = true },
-            },
-            keys = {
-                { "<leader>b", "<cmd>Oil .<cr>", noremap = true },
-                { "<leader>B", "<cmd>Oil --float .<cr>", noremap = true },
-            },
-            config = function()
-                vim.api.nvim_create_autocmd("User", {
-                    pattern = "OilActionsPost",
-                    callback = function(event)
-                        if event.data.actions.type == "move" then
-                            Snacks.rename.on_rename_file(event.data.actions.src_url, event.data.actions.dest_url)
-                        end
-                    end,
-                })
-            end,
-        },
-        -- div utils
-        "tpope/vim-eunuch", -- Move, Rename etc
-        "tpope/vim-sleuth", -- do the right thing with tabstop and softtabstop
-        "dhruvasagar/vim-table-mode", -- tables
-        "itchyny/vim-qfedit", -- editable quickfix list
-        {
-            -- keep location upon reopening
-            "ethanholz/nvim-lastplace",
-            opts = {},
-        },
-        {
-            -- tmux / vim interop
-            "alexghergh/nvim-tmux-navigation",
-            config = function()
-                require("nvim-tmux-navigation").setup({
-                    disable_when_zoomed = true, -- defaults to false
-                    keybindings = {
-                        left = "<M-h>",
-                        down = "<M-j>",
-                        up = "<M-k>",
-                        right = "<M-l>",
-                        last_active = "<M-\\>",
-                    },
-                })
-            end,
-        },
-        {
-            "chomosuke/typst-preview.nvim",
-            lazy = false, -- or ft = 'typst'
-            version = "1.*",
-            opts = {
-                debug = true,
-                port = 10010,
-                dependencies_bin = { ["tinymist"] = "tinymist" },
-                follow_cursor = false,
-                invert_colors = "auto",
-                get_root = function(filename)
-                    local root = os.getenv("TYPST_ROOT")
-                    if root then return root end
-                    local dir0 = vim.fn.fnamemodify(filename, ":p:h")
-                    local dir = dir0
-                    for _ = 1, 10 do
-                        if vim.fn.isdirectory(dir .. "/.git/") ~= 0 or vim.fn.filereadable(dir .. "/.git") ~= 0 then
-                            print("root dir: " .. dir)
-                            return dir
-                        end
-                        dir = vim.fn.fnamemodify(dir, ":p:h:h")
-                    end
-                    return dir0
-                end,
-            },
-        },
-        {
-            -- live preview of markdown files
-            "iamcco/markdown-preview.nvim", -- requires yarn
-            cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-            ft = { "markdown" },
-            build = function() vim.fn["mkdp#util#install"]() end,
-            init = function()
-                vim.g.mkdp_auto_start = 0 -- auto start on moving into
-                vim.g.mkdp_auto_close = 0 -- auto close on moving away
-                vim.g.mkdp_open_to_the_world = 1 -- available to others
-                vim.g.mkdp_port = 10010
-                vim.g.mkdp_echo_preview_url = 1
-                vim.g.mkdp_preview_options = { disable_sync_scroll = 1 }
-            end,
-        },
-        {
-            -- search count > 99
-            "kevinhwang91/nvim-hlslens",
-            dependencies = { "haya14busa/vim-asterisk" },
-            cmd = { "HlSearchLensDisable", "HlSearchLensEnable", "HlSearchLensToggle" },
-            opts = { nearest_only = true },
-            keys = {
-                { "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, {} },
-                { "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, {} },
-                { "g*", [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, {} },
-                { "g#", [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, {} },
-                {
-                    "n",
-                    [[n<Cmd>lua require('hlslens').start()<CR>]],
-                    mode = { "n", "x" },
-                    noremap = true,
-                    silent = true,
-                },
-                {
-                    "N",
-                    [[N<Cmd>lua require('hlslens').start()<CR>]],
-                    mode = { "n", "x" },
-                    noremap = true,
-                    silent = true,
-                },
-            },
-            init = function() vim.g["asterisk#keeppos"] = 1 end,
-        },
-        {
-            "catgoose/nvim-colorizer.lua",
-            event = "BufReadPre",
-            opts = { user_default_options = { mode = "virtualtext" } },
-        },
-        -- theme dark and light
+local function makespecs_themes()
+    return {
         "NLKNguyen/papercolor-theme",
         "junegunn/seoul256.vim",
         {
@@ -728,78 +461,277 @@ require("lazy").setup({
             "Shatur/neovim-ayu",
             init = function() vim.g.ayu_extended_palette = 1 end,
         },
-        -- theme dark only
         "tomasr/molokai",
         "jnurmine/Zenburn",
-        -- status + buffer lines
-        {
-            "nvim-lualine/lualine.nvim",
-            dependencies = { "echasnovski/mini.icons", "folke/noice.nvim" },
-            opts = {
-                options = { theme = "auto", globalstatus = false },
-                extensions = { "fugitive" },
-                sections = {
-                    lualine_a = { { "mode", color = { bg = "goldenrod" } } },
-                    lualine_b = { "branch" },
-                    lualine_c = {
-                        {
-                            "filename",
-                            file_status = true,
-                            path = 1,
-                            shorting_target = 0,
-                        },
-                        { "diff", colored = true },
+    }
+end
+
+local function makespec_lualine()
+    return {
+        "nvim-lualine/lualine.nvim",
+        dependencies = { "echasnovski/mini.icons", "folke/noice.nvim" },
+        opts = {
+            options = { theme = "auto", globalstatus = false },
+            extensions = { "fugitive" },
+            sections = {
+                lualine_a = { { "mode", color = { bg = "goldenrod" } } },
+                lualine_b = { "branch" },
+                lualine_c = {
+                    {
+                        "filename",
+                        file_status = true,
+                        path = 1,
+                        shorting_target = 0,
                     },
-                    lualine_x = {
-                        { "require('noice').api.status.command.get()" },
-                        { "require('noice').api.status.mode.get()" },
-                    },
-                    lualine_y = { "filetype", "progress" },
-                    lualine_z = { "location" },
+                    { "diff", colored = true },
                 },
-                inactive_sections = {
-                    lualine_a = {},
-                    lualine_b = {},
-                    lualine_c = {
-                        {
-                            "filename",
-                            file_status = true,
-                            path = 1,
-                            shorting_target = 0,
-                        },
-                        { "diff", colored = true },
-                    },
-                    lualine_x = {},
-                    lualine_y = { "filetype", "progress" },
-                    lualine_z = { "location" },
+                lualine_x = {
+                    { "require('noice').api.status.command.get()" },
+                    { "require('noice').api.status.mode.get()" },
                 },
-                tabline = {
-                    lualine_a = {
-                        {
-                            "buffers",
-                            symbols = { alternate_file = "" },
-                            buffers_color = {
-                                active = { bg = "goldenrod" },
-                            },
+                lualine_y = { "filetype", "progress" },
+                lualine_z = { "location" },
+            },
+            inactive_sections = {
+                lualine_a = {},
+                lualine_b = {},
+                lualine_c = {
+                    {
+                        "filename",
+                        file_status = true,
+                        path = 1,
+                        shorting_target = 0,
+                    },
+                    { "diff", colored = true },
+                },
+                lualine_x = {},
+                lualine_y = { "filetype", "progress" },
+                lualine_z = { "location" },
+            },
+            tabline = {
+                lualine_a = {
+                    {
+                        "buffers",
+                        symbols = { alternate_file = "" },
+                        buffers_color = {
+                            active = { bg = "goldenrod" },
                         },
                     },
-                    lualine_b = {},
-                    lualine_c = {},
-                    lualine_x = {},
-                    lualine_y = {},
-                    lualine_z = {
-                        {
-                            "tabs",
-                            mode = 2,
-                            tabs_color = {
-                                active = { bg = "goldenrod" },
-                            },
+                },
+                lualine_b = {},
+                lualine_c = {},
+                lualine_x = {},
+                lualine_y = {},
+                lualine_z = {
+                    {
+                        "tabs",
+                        mode = 2,
+                        tabs_color = {
+                            active = { bg = "goldenrod" },
                         },
                     },
                 },
             },
         },
-        -- git related plugins
+    }
+end
+
+local function makespecs_utilbundles()
+    return {
+        {
+            "catgoose/nvim-colorizer.lua",
+            event = "BufReadPre",
+            opts = { user_default_options = { mode = "virtualtext" } },
+        },
+        "dhruvasagar/vim-table-mode", -- tables
+        "itchyny/vim-qfedit", -- editable quickfix list
+        { "ethanholz/nvim-lastplace", opts = {} }, -- keep location upon reopening
+        "tpope/vim-eunuch", -- Move, Rename etc
+        "tpope/vim-sleuth", -- do the right thing with tabstop and softtabstop
+        "mbbill/undotree",
+        {
+            "echasnovski/mini.basics",
+            opts = {
+                options = { basic = true, extra_ui = true },
+                mappings = { move_with_alt = true },
+            },
+        },
+        {
+            "echasnovski/mini.icons",
+            opts = {},
+        },
+        {
+            "echasnovski/mini.surround",
+            version = false,
+            opts = {},
+        },
+        {
+            "echasnovski/mini.bufremove",
+            version = false,
+            opts = {},
+            keys = {
+                { "<M-d>", function() require("mini.bufremove").wipeout() end, noremap = true },
+                { "<M-D>", function() require("mini.bufremove").wipeout(nil, true) end, noremap = true },
+            },
+        },
+        {
+            "folke/snacks.nvim",
+            priority = 1000,
+            lazy = false,
+            ---@type snacks.Config
+            opts = {
+                bigfile = {
+                    enabled = true,
+                    notify = true, -- show notification when big file detected
+                    size = 1.5 * 1024 * 1024, -- 1.5MB
+                    line_length = 1000, -- average line length (useful for minified files)
+                    -- Enable or disable features when big file detected
+                    ---@param ctx {buf: number, ft:string}
+                    setup = function(ctx)
+                        if vim.fn.exists(":NoMatchParen") ~= 0 then vim.cmd([[NoMatchParen]]) end
+                        Snacks.util.wo(0, { foldmethod = "manual", statuscolumn = "", conceallevel = 0 })
+                        vim.schedule(function()
+                            if vim.api.nvim_buf_is_valid(ctx.buf) then vim.bo[ctx.buf].syntax = ctx.ft end
+                        end)
+                    end,
+                },
+                notifier = { enabled = true },
+                indent = { enabled = true },
+                quickfile = { enabled = true },
+                image = { enabled = true },
+                rename = { enabled = true },
+            },
+        },
+    }
+end
+
+local function makespecs_filemgmt()
+    return {
+        {
+            "nvim-neo-tree/neo-tree.nvim",
+            version = false,
+            cmd = { "Neotree" },
+            dependencies = { "nvim-lua/plenary.nvim", "mini.icons", "MunifTanjim/nui.nvim" },
+            opts = { hijack_netrw_behavior = "disabled" },
+            keys = { { "<C-t>", "<cmd>Neotree<cr>", noremap = true } },
+        },
+        {
+            "stevearc/oil.nvim",
+            dependencies = { "mini.icons" },
+            cmd = { "Oil" },
+            opts = {
+                watch_for_changes = true,
+                view_options = { show_hidden = true },
+            },
+            keys = {
+                { "<leader>b", "<cmd>Oil .<cr>", noremap = true },
+                { "<leader>B", "<cmd>Oil --float .<cr>", noremap = true },
+            },
+            init = function()
+                vim.api.nvim_create_autocmd("User", {
+                    pattern = "OilActionsPost",
+                    callback = function(event)
+                        if event.data.actions.type == "move" then
+                            Snacks.rename.on_rename_file(event.data.actions.src_url, event.data.actions.dest_url)
+                        end
+                    end,
+                })
+            end,
+        },
+    }
+end
+
+local function makespecs_previewers()
+    return {
+        {
+            "chomosuke/typst-preview.nvim",
+            lazy = false, -- or ft = 'typst'
+            version = "1.*",
+            opts = {
+                -- debug = true,
+                port = 10010,
+                dependencies_bin = { ["tinymist"] = "tinymist" },
+                follow_cursor = false,
+                invert_colors = "auto",
+                get_root = function(filename)
+                    local root = os.getenv("TYPST_ROOT")
+                    if root then return root end
+                    local dir0 = vim.fn.fnamemodify(filename, ":p:h")
+                    local dir = dir0
+                    for _ = 1, 10 do
+                        if vim.fn.isdirectory(dir .. "/.git/") ~= 0 or vim.fn.filereadable(dir .. "/.git") ~= 0 then
+                            print("root dir: " .. dir)
+                            return dir
+                        end
+                        dir = vim.fn.fnamemodify(dir, ":p:h:h")
+                    end
+                    return dir0
+                end,
+            },
+        },
+        {
+            -- live preview of markdown files
+            "iamcco/markdown-preview.nvim", -- requires yarn
+            cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+            ft = { "markdown" },
+            build = function() vim.fn["mkdp#util#install"]() end,
+            init = function()
+                vim.g.mkdp_auto_start = 0 -- auto start on moving into
+                vim.g.mkdp_auto_close = 0 -- auto close on moving away
+                vim.g.mkdp_open_to_the_world = 1 -- available to others
+                vim.g.mkdp_port = 10010
+                vim.g.mkdp_echo_preview_url = 1
+                vim.g.mkdp_preview_options = { disable_sync_scroll = 1 }
+            end,
+        },
+    }
+end
+
+local function makespecs_git()
+    local function on_gitsigns_attach(bufnr)
+        local gs = require("gitsigns")
+        local function next_hunk()
+            if vim.wo.diff then return "]c" end
+            vim.schedule(function() gs.next_hunk() end)
+            return "<Ignore>"
+        end
+        local function prev_hunk()
+            if vim.wo.diff then return "[c" end
+            vim.schedule(function() gs.prev_hunk() end)
+            return "<Ignore>"
+        end
+
+        local function bmap(mode, l, r, opts)
+            opts = opts or {}
+            opts.buffer = bufnr
+            vim.keymap.set(mode, l, r, opts)
+        end
+
+        -- Navigation
+        bmap("n", "<M-,>", next_hunk, { expr = true })
+        bmap("n", "<M-.>", prev_hunk, { expr = true })
+
+        -- Actions
+        bmap("v", "<leader>gs", function() gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end)
+        bmap("v", "<leader>gx", function() gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") }) end)
+        bmap("n", "<leader>gs", gs.stage_hunk)
+        bmap("n", "<leader>gx", gs.reset_hunk)
+        bmap("n", "<leader>gu", gs.undo_stage_hunk)
+        bmap("n", "<leader>gi", gs.preview_hunk)
+        bmap("n", "<leader>gb", function() gs.blame_line({ full = true }) end)
+        bmap("n", "<leader>gS", gs.stage_buffer)
+        bmap("n", "<leader>gX", gs.reset_buffer)
+        bmap("n", "<leader>td", gs.toggle_deleted)
+        bmap("n", "<leader>tl", gs.toggle_linehl)
+        bmap("n", "<leader>tb", gs.toggle_current_line_blame)
+        bmap("n", "<leader>th", gs.toggle_word_diff)
+        bmap("n", "<leader>tn", gs.toggle_numhl)
+
+        -- Text object
+        bmap({ "o", "x" }, "ih", "<cmd><C-U>Gitsigns select_hunk<CR>")
+    end
+
+    return {
         {
             "sindrets/diffview.nvim",
             cmd = {
@@ -873,81 +805,41 @@ require("lazy").setup({
                 linehl = false,
                 word_diff = false,
                 signs_staged_enable = false,
-                on_attach = function(bufnr)
-                    local gs = require("gitsigns")
-
-                    local function bmap(mode, l, r, opts)
-                        opts = opts or {}
-                        opts.buffer = bufnr
-                        vim.keymap.set(mode, l, r, opts)
-                    end
-
-                    -- Navigation
-                    bmap("n", "<M-,>", function()
-                        if vim.wo.diff then return "]c" end
-                        vim.schedule(function() gs.next_hunk() end)
-                        return "<Ignore>"
-                    end, { expr = true })
-
-                    bmap("n", "<M-.>", function()
-                        if vim.wo.diff then return "[c" end
-                        vim.schedule(function() gs.prev_hunk() end)
-                        return "<Ignore>"
-                    end, { expr = true })
-
-                    -- Actions
-                    bmap("v", "<leader>gs", function() gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end)
-                    bmap("v", "<leader>gx", function() gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") }) end)
-                    bmap("n", "<leader>gs", gs.stage_hunk)
-                    bmap("n", "<leader>gx", gs.reset_hunk)
-                    bmap("n", "<leader>gu", gs.undo_stage_hunk)
-                    bmap("n", "<leader>gi", gs.preview_hunk)
-                    bmap("n", "<leader>gb", function() gs.blame_line({ full = true }) end)
-                    bmap("n", "<leader>gS", gs.stage_buffer)
-                    bmap("n", "<leader>gX", gs.reset_buffer)
-                    bmap("n", "<leader>td", gs.toggle_deleted)
-                    bmap("n", "<leader>tl", gs.toggle_linehl)
-                    bmap("n", "<leader>tb", gs.toggle_current_line_blame)
-                    bmap("n", "<leader>th", gs.toggle_word_diff)
-                    bmap("n", "<leader>tn", gs.toggle_numhl)
-
-                    -- Text object
-                    bmap({ "o", "x" }, "ih", "<cmd><C-U>Gitsigns select_hunk<CR>")
-                end,
+                on_attach = on_gitsigns_attach,
             },
         },
-        { -- helplists
-            "folke/todo-comments.nvim",
-            dependencies = { "nvim-lua/plenary.nvim" },
-            lazy = false,
-            opts = {
-                signs = true, -- show icons in the signs column
-                sign_priority = 8, -- sign priority
-                keywords = {
-                    MAYBE = { icon = " " },
-                    PERF = { icon = " " },
-                    FIX = { icon = " ", color = "error", alt = { "BUG" } },
-                    TODO = { icon = " ", color = "info" },
-                    HACK = { icon = " ", color = "warning" },
-                    WARN = { icon = " ", color = "warning" },
-                    NOTE = { icon = " ", color = "hint" },
-                    TEST = { icon = "⏲ ", color = "test" },
-                },
-                merge_keywords = false, -- when true, custom keywords will be merged with the defaults
-                highlight = { keyword = "bg", pattern = [[.*<(KEYWORDS)\s*:]] },
-                search = { pattern = [[\b(KEYWORDS)\b]] },
-                colors = {
-                    error = { "#ba1a1a" },
-                    warning = { "#FFC107" },
-                    info = { "#91BED0" },
-                    hint = { "#10B981" },
-                    default = { "#91D0C1" },
-                },
-            },
-            keys = { { "<F6>", "<cmd>TodoQuickFix<cr>", noremap = true } },
-        },
+    }
+end
+
+local function makespecs_telescope()
+    local function findfiles() require("telescope.builtin").find_files({ layout_config = { width = 0.99 } }) end
+    local function findgitfiles()
+        local cwd = vim.fn.getcwd()
+        vim.fn.system("git rev-parse --is-inside-work-tree")
+        local is_inside_work_tree = vim.v.shell_error == 0
+        local opts = { layout_config = { width = 0.99 } }
+        if is_inside_work_tree then
+            require("telescope.builtin").git_files(opts)
+        else
+            require("telescope.builtin").find_files(opts)
+        end
+    end
+    local function showdiagnostics()
+        require("telescope.builtin").diagnostics({
+            layout_strategy = "vertical",
+            layout_config = { width = 0.99 },
+        })
+    end
+    local function searchfiles() require("telescope").extensions.live_grep_args.live_grep_args() end
+    local function colorschemes()
+        require("telescope.builtin").colorscheme({
+            layout_config = { width = 0.5 },
+            enable_preview = true,
+            ignore_builtins = true,
+        })
+    end
+    return {
         {
-            -- Fuzzy Finder (files, lsp, etc)
             "nvim-telescope/telescope.nvim",
             version = false,
             dependencies = {
@@ -956,54 +848,13 @@ require("lazy").setup({
                 "nvim-telescope/telescope-live-grep-args.nvim",
             },
             keys = {
-                {
-                    "<M-F>",
-                    function() require("telescope.builtin").find_files({ layout_config = { width = 0.99 } }) end,
-                    noremap = true,
-                },
-                {
-                    "<M-f>",
-                    function()
-                        local cwd = vim.fn.getcwd()
-                        vim.fn.system("git rev-parse --is-inside-work-tree")
-                        local is_inside_work_tree = vim.v.shell_error == 0
-                        local opts = { layout_config = { width = 0.99 } }
-                        if is_inside_work_tree then
-                            require("telescope.builtin").git_files(opts)
-                        else
-                            require("telescope.builtin").find_files(opts)
-                        end
-                    end,
-                    noremap = true,
-                },
-                {
-                    "<M-e>",
-                    function()
-                        require("telescope.builtin").diagnostics({
-                            layout_strategy = "vertical",
-                            layout_config = { width = 0.99 },
-                        })
-                    end,
-                    noremap = true,
-                },
-                {
-                    "<M-w>",
-                    function() require("telescope").extensions.live_grep_args.live_grep_args() end,
-                    noremap = true,
-                },
+                { "<M-F>", findfiles, noremap = true },
+                { "<M-f>", findgitfiles, noremap = true },
+                { "<M-e>", showdiagnostics, noremap = true },
+                { "<M-w>", searchfiles, noremap = true },
                 { "<M-y>", function() require("telescope.builtin").filetypes() end, noremap = true },
                 { "<M-/>", function() require("telescope.builtin").search_history() end, noremap = true },
-                {
-                    "<F9>",
-                    function()
-                        require("telescope.builtin").colorscheme({
-                            layout_config = { width = 0.5 },
-                            enable_preview = true,
-                            ignore_builtins = true,
-                        })
-                    end,
-                    noremap = true,
-                },
+                { "<F9>", colorschemes, noremap = true },
             },
             config = function()
                 -- TODO grep with regex
@@ -1038,7 +889,6 @@ require("lazy").setup({
                 })
             end,
         },
-        "mbbill/undotree",
         {
             "debugloop/telescope-undo.nvim",
             dependencies = {
@@ -1075,201 +925,380 @@ require("lazy").setup({
                 require("telescope").load_extension("undo")
             end,
         },
-        {
-            -- Highlight, edit, and navigate code
-            "nvim-treesitter/nvim-treesitter",
-            build = ":TSUpdate",
-            opts = {
-                {
-                    ensure_installed = {
-                        "bash",
-                        "c",
-                        "cpp",
-                        "git_rebase",
-                        "gitcommit",
-                        "lua",
-                        "python",
-                        "regex",
-                        "vimdoc",
-                    },
-                    auto_install = true,
-                    highlight = { enable = true },
-                    indent = { enable = true, disable = { "python" }, additional_vim_regex_highlighting = { "python" } },
-                    incremental_selection = {
-                        enable = true,
-                        keymaps = {
-                            init_selection = "gnn",
-                            node_decremental = "<M-k>",
-                            node_incremental = "<M-j>",
-                            scope_incremental = "<M-n>",
-                        },
+    }
+end
+
+local function makespec_todolists()
+    return {
+        "folke/todo-comments.nvim",
+        dependencies = { "nvim-lua/plenary.nvim" },
+        lazy = false,
+        opts = {
+            signs = true, -- show icons in the signs column
+            sign_priority = 8, -- sign priority
+            keywords = {
+                MAYBE = { icon = " " },
+                PERF = { icon = " " },
+                FIX = { icon = " ", color = "error", alt = { "BUG" } },
+                TODO = { icon = " ", color = "info" },
+                HACK = { icon = " ", color = "warning" },
+                WARN = { icon = " ", color = "warning" },
+                NOTE = { icon = " ", color = "hint" },
+                TEST = { icon = "⏲ ", color = "test" },
+            },
+            merge_keywords = false, -- when true, custom keywords will be merged with the defaults
+            highlight = { keyword = "bg", pattern = [[.*<(KEYWORDS)\s*:]] },
+            search = { pattern = [[\b(KEYWORDS)\b]] },
+            colors = {
+                error = { "#ba1a1a" },
+                warning = { "#FFC107" },
+                info = { "#91BED0" },
+                hint = { "#10B981" },
+                default = { "#91D0C1" },
+            },
+        },
+        keys = { { "<F6>", "<cmd>TodoQuickFix<cr>", noremap = true } },
+    }
+end
+
+local function makespec_tmux()
+    return {
+        -- tmux / vim interop
+        "alexghergh/nvim-tmux-navigation",
+        config = function()
+            require("nvim-tmux-navigation").setup({
+                disable_when_zoomed = true, -- defaults to false
+                keybindings = {
+                    left = "<M-h>",
+                    down = "<M-j>",
+                    up = "<M-k>",
+                    right = "<M-l>",
+                    last_active = "<M-\\>",
+                },
+            })
+        end,
+    }
+end
+
+local function makespec_mason()
+    return {
+        "williamboman/mason.nvim",
+        lazy = false,
+        opts = {},
+        keys = { { "<F2>", "<cmd>Mason<cr>", noremap = true } },
+    }
+end
+
+local function makespec_hop()
+    local function hopf()
+        require("hop").hint_char1({
+            direction = require("hop.hint").HintDirection.AFTER_CURSOR,
+            current_line_only = true,
+        })
+    end
+    local function hopF()
+        require("hop").hint_char1({
+            direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
+            current_line_only = true,
+        })
+    end
+    local function hopt()
+        require("hop").hint_char1({
+            direction = require("hop.hint").HintDirection.AFTER_CURSOR,
+            current_line_only = true,
+            hint_offset = -1,
+        })
+    end
+    local function hopT()
+        require("hop").hint_char1({
+            direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
+            current_line_only = true,
+            hint_offset = 1,
+        })
+    end
+    return {
+        "smoka7/hop.nvim",
+        opts = {},
+        cmd = {
+            "HopWord",
+            "HopCamelCase",
+            "HopChar1",
+            "HopChar2",
+            "HopPattern",
+            "HopLine",
+            "HopLineStart",
+            "HopAnywhere",
+            "HopNodes",
+            "HopPaste",
+            "HopYankChar1",
+        },
+        keys = {
+            { "<CR>", "<cmd>HopWord<cr>", mode = { "n", "v" }, silent = true, noremap = true },
+            { "<M-CR>", "<cmd>HopAnywhere<cr>", mode = { "n", "v" }, silent = true, noremap = true },
+            { "f", hopf, mode = { "n", "v", "o" }, remap = true },
+            { "F", hopF, mode = { "n", "v", "o" }, remap = true },
+            { "t", hopt, mode = { "n", "v", "o" }, remap = true },
+            { "T", hopT, mode = { "n", "v", "o" }, remap = true },
+        },
+    }
+end
+
+local function makespec_treesitter()
+    return {
+        "nvim-treesitter/nvim-treesitter",
+        build = ":TSUpdate",
+        opts = {
+            {
+                ensure_installed = {
+                    "bash",
+                    "c",
+                    "cpp",
+                    "git_rebase",
+                    "gitcommit",
+                    "lua",
+                    "python",
+                    "regex",
+                    "vimdoc",
+                },
+                auto_install = true,
+                highlight = { enable = true },
+                indent = { enable = true, disable = { "python" }, additional_vim_regex_highlighting = { "python" } },
+                incremental_selection = {
+                    enable = true,
+                    keymaps = {
+                        init_selection = "gnn",
+                        node_decremental = "<M-k>",
+                        node_incremental = "<M-j>",
+                        scope_incremental = "<M-n>",
                     },
                 },
             },
-            config = function() vim.opt.foldexpr = "nvim_treesitter#foldexpr()" end,
         },
-        {
-            "windwp/nvim-ts-autotag",
-            dependencies = { "nvim-treesitter/nvim-treesitter" },
-            opts = { filetypes = { "html", "xml" } },
-        },
-        -- package manager + lsp stuff
-        {
-            "williamboman/mason.nvim",
-            lazy = false,
-            opts = {},
-            keys = { { "<F2>", "<cmd>Mason<cr>", noremap = true } },
-        },
-        {
-            "mfussenegger/nvim-lint",
-            config = function()
-                require("lint").linters_by_ft = {
-                    javascript = { "eslint_d" },
-                    typescript = { "eslint_d" },
-                    html = { "tidy", "eslint_d" },
-                    go = { "golangcilint" },
-                    sh = { "shellcheck" },
-                }
-                vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
-                    callback = function() require("lint").try_lint() end,
-                })
-            end,
-        },
-        {
-            "mhartington/formatter.nvim", -- TODO move to conform
-            -- Utilities for creating configurations,
-            keys = {
-                { "<leader>f", "<cmd>Format<cr>", silent = true, noremap = true },
-                { "<leader>F", "<cmd>FormatWrite<cr>", silent = true, noremap = true },
+        config = function() vim.opt.foldexpr = "nvim_treesitter#foldexpr()" end,
+    }
+end
+
+local function makespec_search()
+    return {
+        -- search count > 99
+        "kevinhwang91/nvim-hlslens",
+        dependencies = { "haya14busa/vim-asterisk" },
+        cmd = { "HlSearchLensDisable", "HlSearchLensEnable", "HlSearchLensToggle" },
+        opts = { nearest_only = true },
+        keys = {
+            { "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, {} },
+            { "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, {} },
+            { "g*", [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, {} },
+            { "g#", [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, {} },
+            {
+                "n",
+                [[n<Cmd>lua require('hlslens').start()<CR>]],
+                mode = { "n", "x" },
+                noremap = true,
+                silent = true,
             },
-            config = function()
-                require("formatter").setup({
-                    logging = true,
-                    log_level = vim.log.levels.DEBUG,
-                    filetype = {
-                        python = {
-                            function()
-                                return {
-                                    exe = "ruff",
-                                    args = { "check", "--select I,F,UP", "--fix-only", "-" },
-                                    stdin = true,
-                                }
-                            end,
-                            function()
-                                return {
-                                    exe = "ruff",
-                                    args = { "format", "-" },
-                                    stdin = true,
-                                }
-                            end,
-                        },
-                        lua = {
-                            function()
-                                local util = require("formatter.util")
-                                return {
-                                    exe = "stylua",
-                                    args = {
-                                        "--search-parent-directories",
-                                        "--indent-type Spaces",
-                                        "--collapse-simple-statement Always",
-                                        "--stdin-filepath",
-                                        util.escape_path(util.get_current_buffer_file_path()),
-                                        "--",
-                                        "-",
-                                    },
-                                    stdin = true,
-                                }
-                            end,
-                        },
-                        yaml = {
-                            function()
-                                return {
-                                    exe = "yamlfmt",
-                                    args = {
-                                        "-formatter indentless_arrays=true,retain_line_breaks=true,line_ending=lf,max_line_length=100,pad_line_comments=2",
-                                        "-in",
-                                    },
-                                    stdin = true,
-                                }
-                            end,
-                        },
-                        typst = {
-                            function()
-                                return {
-                                    exe = "typstyle",
-                                    stdin = true,
-                                }
-                            end,
-                        },
-                        typescript = {
-                            function()
-                                local util = require("formatter.util")
-                                return {
-                                    exe = "eslint_d",
-                                    args = {
-                                        "--stdin",
-                                        "--debug",
-                                        "--stdin-filename",
-                                        util.escape_path(util.get_current_buffer_file_path()),
-                                        "--fix-to-stdout",
-                                    },
-                                    stdin = true,
-                                    try_node_modules = true,
-                                    ignore_exitcode = true,
-                                }
-                            end,
-                        },
-                        go = { require("formatter.filetypes.go").gofumpt, require("formatter.filetypes.go").golines },
-                        sh = { require("formatter.filetypes.sh").shfmt },
-                        javascript = { require("formatter.filetypes.javascript").prettierd },
-                        html = { require("formatter.filetypes.html").prettierd },
-                        css = { require("formatter.filetypes.css").prettierd },
-                        markdown = { require("formatter.filetypes.markdown").prettierd },
-                        json = { require("formatter.filetypes.json").jq },
-                        ["*"] = { require("formatter.filetypes.any").remove_trailing_whitespace },
-                    },
-                })
-            end,
-        },
-        {
-            "folke/noice.nvim",
-            event = "VeryLazy",
-            dependencies = { "MunifTanjim/nui.nvim" },
-            opts = {
-                cmdline = { enabled = true, view = "cmdline_popup" },
-                messages = {
-                    enabled = true, -- enables the Noice messages UI
-                    view = "mini", -- default view for messages
-                    view_error = "notify", -- view for errors
-                    view_warn = "mini", -- view for warnings
-                    view_history = "popup", -- view for :messages
-                    view_search = false,
-                },
-                popupmenu = { enabled = true },
-                notify = { enabled = true, view = "mini" },
-                lsp = {
-                    override = {
-                        ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-                        ["vim.lsp.util.stylize_markdown"] = true,
-                    },
-                    progress = { enabled = false },
-                    hover = { enabled = true },
-                    signature = { enabled = true, auto_open = { enabled = true, throttle = 0 } },
-                    message = { enabled = true, view = "notify" },
-                    documentation = { view = "hover" },
-                },
-                -- you can enable a preset for easier configuration
-                presets = {
-                    command_palette = true, -- position the cmdline and popupmenu together
-                    long_message_to_split = true, -- long messages will be sent to a split
-                },
-                routes = {
-                    { filter = { event = "msg_show", kind = "search_count" }, opts = { skip = true } },
-                    { filter = { kind = "", min_height = 2 }, view = "split" },
-                },
+            {
+                "N",
+                [[N<Cmd>lua require('hlslens').start()<CR>]],
+                mode = { "n", "x" },
+                noremap = true,
+                silent = true,
             },
         },
-    },
+        init = function() vim.g["asterisk#keeppos"] = 1 end,
+    }
+end
+
+local function makespec_autotag()
+    return {
+        "windwp/nvim-ts-autotag",
+        dependencies = { "nvim-treesitter/nvim-treesitter" },
+        opts = { filetypes = { "html", "xml" } },
+    }
+end
+
+local function makespec_lint()
+    return {
+        "mfussenegger/nvim-lint",
+        config = function()
+            require("lint").linters_by_ft = {
+                javascript = { "eslint_d" },
+                typescript = { "eslint_d" },
+                html = { "tidy", "eslint_d" },
+                go = { "golangcilint" },
+                sh = { "shellcheck" },
+            }
+            vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+                callback = function() require("lint").try_lint() end,
+            })
+        end,
+    }
+end
+
+local function makespec_autoformat()
+    local function ruff_fix()
+        return { exe = "ruff", args = { "check", "--select I,F,UP", "--fix-only", "-" }, stdin = true }
+    end
+    local function ruff_format() return { exe = "ruff", args = { "format", "-" }, stdin = true } end
+    local function stylua_format()
+        local util = require("formatter.util")
+        return {
+            exe = "stylua",
+            args = {
+                "--search-parent-directories",
+                "--indent-type Spaces",
+                "--collapse-simple-statement Always",
+                "--stdin-filepath",
+                util.escape_path(util.get_current_buffer_file_path()),
+                "--",
+                "-",
+            },
+            stdin = true,
+        }
+    end
+    local function yaml_format()
+        return {
+            exe = "yamlfmt",
+            args = {
+                "-formatter indentless_arrays=true,retain_line_breaks=true,line_ending=lf,max_line_length=100,pad_line_comments=2",
+                "-in",
+            },
+            stdin = true,
+        }
+    end
+    local function typescript_format()
+        local util = require("formatter.util")
+        return {
+            exe = "eslint_d",
+            args = {
+                "--stdin",
+                "--debug",
+                "--stdin-filename",
+                util.escape_path(util.get_current_buffer_file_path()),
+                "--fix-to-stdout",
+            },
+            stdin = true,
+            try_node_modules = true,
+            ignore_exitcode = true,
+        }
+    end
+    return {
+        "mhartington/formatter.nvim", -- TODO move to conform
+        keys = {
+            { "<leader>f", "<cmd>Format<cr>", silent = true, noremap = true },
+            { "<leader>F", "<cmd>FormatWrite<cr>", silent = true, noremap = true },
+        },
+        config = function()
+            require("formatter").setup({
+                logging = true,
+                log_level = vim.log.levels.DEBUG,
+                filetype = {
+                    python = { ruff_fix, ruff_format },
+                    lua = { stylua_format },
+                    yaml = { yaml_format },
+                    typst = { function() return { exe = "typstyle", stdin = true } end },
+                    typescript = { typescript_format },
+                    go = { require("formatter.filetypes.go").gofumpt, require("formatter.filetypes.go").golines },
+                    sh = { require("formatter.filetypes.sh").shfmt },
+                    javascript = { require("formatter.filetypes.javascript").prettierd },
+                    html = { require("formatter.filetypes.html").prettierd },
+                    css = { require("formatter.filetypes.css").prettierd },
+                    markdown = { require("formatter.filetypes.markdown").prettierd },
+                    json = { require("formatter.filetypes.json").jq },
+                    ["*"] = { require("formatter.filetypes.any").remove_trailing_whitespace },
+                },
+            })
+        end,
+    }
+end
+
+local function makespec_noice()
+    return {
+        "folke/noice.nvim",
+        event = "VeryLazy",
+        dependencies = { "MunifTanjim/nui.nvim" },
+        opts = {
+            cmdline = { enabled = true, view = "cmdline_popup" },
+            messages = {
+                enabled = true, -- enables the Noice messages UI
+                view = "mini", -- default view for messages
+                view_error = "notify", -- view for errors
+                view_warn = "mini", -- view for warnings
+                view_history = "popup", -- view for :messages
+                view_search = false,
+            },
+            popupmenu = { enabled = true },
+            notify = { enabled = true, view = "mini" },
+            lsp = {
+                override = {
+                    ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+                    ["vim.lsp.util.stylize_markdown"] = true,
+                },
+                progress = { enabled = false },
+                hover = { enabled = true },
+                signature = { enabled = true, auto_open = { enabled = true, throttle = 0 } },
+                message = { enabled = true, view = "notify" },
+                documentation = { view = "hover" },
+            },
+            -- you can enable a preset for easier configuration
+            presets = {
+                command_palette = true, -- position the cmdline and popupmenu together
+                long_message_to_split = true, -- long messages will be sent to a split
+            },
+            routes = {
+                { filter = { event = "msg_show", kind = "search_count" }, opts = { skip = true } },
+                { filter = { kind = "", min_height = 2 }, view = "split" },
+            },
+        },
+    }
+end
+
+-- ----------------------------------------
+-- LAZY
+-- ----------------------------------------
+
+local lazyspecs = {}
+for _, spec in ipairs({
+    makespec_hop(),
+    makespec_lualine(),
+    makespec_autoformat(),
+    makespec_noice(),
+    makespec_treesitter(),
+    makespec_todolists(),
+    makespec_tmux(),
+    makespec_autotag(),
+    makespec_lint(),
+    makespec_search(),
+    makespec_mason(),
+}) do
+    table.insert(lazyspecs, spec)
+end
+for _, specs in ipairs({
+    makespecs_themes(),
+    makespecs_utilbundles(),
+    makespecs_filemgmt(),
+    makespecs_telescope(),
+    makespecs_previewers(),
+    makespecs_git(),
+}) do
+    for _, spec in ipairs(specs) do
+        table.insert(lazyspecs, spec)
+    end
+end
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "--branch=stable",
+        "https://github.com/folke/lazy.nvim.git",
+        lazypath,
+    })
+end
+vim.opt.rtp:prepend(lazypath)
+require("lazy").setup({
+    spec = lazyspecs,
     install = { colorscheme = { "habamax" } },
     checker = { enabled = true },
 })
