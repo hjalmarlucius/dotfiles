@@ -1139,79 +1139,47 @@ local function makespec_lint()
 end
 
 local function makespec_autoformat()
-    local function ruff_fix()
-        return { exe = "ruff", args = { "check", "--select I,F,UP", "--fix-only", "-" }, stdin = true }
-    end
-    local function ruff_format() return { exe = "ruff", args = { "format", "-" }, stdin = true } end
-    local function stylua_format()
-        local util = require("formatter.util")
-        return {
-            exe = "stylua",
-            args = {
-                "--search-parent-directories",
-                "--indent-type Spaces",
-                "--collapse-simple-statement Always",
-                "--stdin-filepath",
-                util.escape_path(util.get_current_buffer_file_path()),
-                "--",
-                "-",
-            },
-            stdin = true,
-        }
-    end
-    local function yaml_format()
-        return {
-            exe = "yamlfmt",
-            args = {
-                "-formatter indentless_arrays=true,retain_line_breaks=true,line_ending=lf,max_line_length=100,pad_line_comments=2",
-                "-in",
-            },
-            stdin = true,
-        }
-    end
-    local function typescript_format()
-        local util = require("formatter.util")
-        return {
-            exe = "eslint_d",
-            args = {
-                "--stdin",
-                "--debug",
-                "--stdin-filename",
-                util.escape_path(util.get_current_buffer_file_path()),
-                "--fix-to-stdout",
-            },
-            stdin = true,
-            try_node_modules = true,
-            ignore_exitcode = true,
-        }
-    end
     return {
-        "mhartington/formatter.nvim", -- TODO move to conform
+        "stevearc/conform.nvim",
+        lazy = true,
+        cmd = { "ConformInfo" },
         keys = {
-            { "<leader>f", "<cmd>Format<cr>", silent = true, noremap = true },
-            { "<leader>F", "<cmd>FormatWrite<cr>", silent = true, noremap = true },
+            { "<leader>f", function() require("conform").format() end, silent = true, noremap = true },
+            { "<leader>lf", "<cmd>e ~/.local/state/nvim/conform.log<cr>", noremap = true },
         },
-        config = function()
-            require("formatter").setup({
-                logging = true,
-                log_level = vim.log.levels.DEBUG,
-                filetype = {
-                    python = { ruff_fix, ruff_format },
-                    lua = { stylua_format },
-                    yaml = { yaml_format },
-                    typst = { function() return { exe = "typstyle", stdin = true } end },
-                    typescript = { typescript_format },
-                    go = { require("formatter.filetypes.go").gofumpt, require("formatter.filetypes.go").golines },
-                    sh = { require("formatter.filetypes.sh").shfmt },
-                    javascript = { require("formatter.filetypes.javascript").prettierd },
-                    html = { require("formatter.filetypes.html").prettierd },
-                    css = { require("formatter.filetypes.css").prettierd },
-                    markdown = { require("formatter.filetypes.markdown").prettierd },
-                    json = { require("formatter.filetypes.json").jq },
-                    ["*"] = { require("formatter.filetypes.any").remove_trailing_whitespace },
+        opts = {
+            formatters_by_ft = {
+                ["_"] = { "trim_whitespace" },
+                css = { "prettierd", "prettier", stop_after_first = true },
+                go = { "gofumpt", "golines" },
+                html = { "prettierd", "prettier", stop_after_first = true },
+                javascript = { "prettierd", "prettier", stop_after_first = true },
+                json = { "jq" },
+                lua = { "stylua" },
+                markdown = { "prettierd", "prettier", stop_after_first = true },
+                python = { "ruff_format", "ruff_fix", "ruff_organize_imports" },
+                sh = { "shfmt" },
+                bash = { "shfmt" },
+                typescript = { "eslint_d" },
+                typst = { "typstyle" },
+                yaml = { "yamlfix", "yamlfmt" },
+            },
+            default_format_opts = {
+                timeout_ms = 3000,
+                lsp_format = "fallback",
+            },
+            formatters = {
+                javascript = { require_cwd = true },
+                stylua = { append_args = { "--indent-type", "Spaces", "--collapse-simple-statement", "Always" } },
+                ruff_fix = { append_args = { "--select", "I,F,UP" } },
+                yamlfmt = {
+                    append_args = {
+                        "-formatter",
+                        "indentless_arrays=true,retain_line_breaks=true,line_ending=lf,max_line_length=100,pad_line_comments=2",
+                    },
                 },
-            })
-        end,
+            },
+        },
     }
 end
 
