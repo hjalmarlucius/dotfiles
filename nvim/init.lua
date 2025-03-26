@@ -299,8 +299,8 @@ local function lspsetup()
         },
     }
     vim.lsp.enable("lua_ls")
-    vim.lsp.config["basedpyright"] = {
-        cmd = { "basedpyright-langserver", "--stdio" },
+    vim.lsp.config["pyright"] = {
+        cmd = { "pyright-langserver", "--stdio", "--threads", "20" },
         filetypes = { "python" },
         root_markers = {
             "pyproject.toml",
@@ -313,14 +313,17 @@ local function lspsetup()
         settings = {
             python = {
                 analysis = {
+                    -- logLevel = "Trace",
                     autoImportCompletions = false,
                     diagnosticMode = "openFilesOnly",
                     useLibraryCodeForTypes = false,
+                    -- logTypeEvaluationTime = true,
+                    -- typeEvaluationTimeThreshold = 5000,
                 },
             },
         },
     }
-    vim.lsp.enable("basedpyright")
+    vim.lsp.enable("pyright")
     vim.lsp.config["html"] = {
         cmd = { "vscode-html-language-server", "--stdio" },
         filetypes = { "html" },
