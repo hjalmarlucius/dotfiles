@@ -77,8 +77,7 @@ map("n", "Q", "", { noremap = true })
 map("n", "q:", "", { noremap = true })
 
 map({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
-map("n", "<leader>e", [[:vnew ~/dotfiles/nvim/init.lua<cr>]], { noremap = true })
-map("n", "<leader>ww", [[:cd %:p:h<cr>]], { noremap = true })
+map("n", "<leader>ww", [[:cd %:p:h<cr>]], { noremap = true }) -- change workspace
 map("n", "<esc><esc>", "<cmd>noh<cr>", { silent = true, noremap = true })
 map("", "<F12>", "<esc>", { silent = true, noremap = true })
 
@@ -140,6 +139,18 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     end,
 })
 
+-- reload
+vim.api.nvim_create_autocmd("FocusGained", {
+    desc = "Reload files from disk when we focus vim",
+    pattern = "*",
+    command = "if getcmdwintype() == '' | checktime | endif",
+})
+vim.api.nvim_create_autocmd("BufEnter", {
+    desc = "Every time we enter an unmodified buffer, check if it changed on disk",
+    pattern = "*",
+    command = "if &buftype == '' && !&modified && expand('%') != '' | exec 'checktime ' . expand('<abuf>') | endif",
+})
+
 -- ----------------------------------------
 -- LSP
 -- ----------------------------------------
@@ -157,9 +168,9 @@ local function lspsetup()
             local severity = diag.severity.HINT
             local keyspec = {
                 -- workspaces
-                { "<leader>wa", vim.lsp.buf.add_workspace_folder },
-                { "<leader>wr", vim.lsp.buf.remove_workspace_folder },
-                { "<leader>wl", function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end },
+                -- { "<leader>wa", vim.lsp.buf.add_workspace_folder },
+                -- { "<leader>wr", vim.lsp.buf.remove_workspace_folder },
+                -- { "<leader>wl", function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end },
                 -- jump
                 { "<M-i>", function() diag.open_float({ source = true }) end },
                 { "<M-n>", function() diag.jump({ severity = { min = severity }, float = true, count = 1 }) end },
@@ -174,8 +185,8 @@ local function lspsetup()
                 -- popups
                 { "<M-x>", vim.lsp.buf.signature_help, { "n", "i" } },
                 -- symbols
-                { "<leader>ds", vim.lsp.buf.document_symbol },
-                { "<leader>ws", vim.lsp.buf.workspace_symbol },
+                -- { "<leader>ds", vim.lsp.buf.document_symbol },
+                -- { "<leader>ws", vim.lsp.buf.workspace_symbol },
                 -- other
                 { "K", vim.lsp.buf.hover },
                 { "<M-r>", vim.lsp.buf.rename },
@@ -1003,7 +1014,7 @@ local function makespec_search()
         "kevinhwang91/nvim-hlslens",
         dependencies = { "haya14busa/vim-asterisk" },
         cmd = { "HlSearchLensDisable", "HlSearchLensEnable", "HlSearchLensToggle" },
-        opts = { nearest_only = true },
+        opts = { nearest_only = true, nearest_float_when = "never" },
         keys = {
             { "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, {} },
             { "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, {} },
