@@ -179,7 +179,6 @@ local function lspsetup()
                 -- other
                 { "K", vim.lsp.buf.hover },
                 { "<M-r>", vim.lsp.buf.rename },
-                { "<leader>rn", function() Snacks.rename.rename_file() end },
                 { "<leader>ca", vim.lsp.buf.code_action, { "n", "x" } },
             }
             for _, key in ipairs(keyspec) do
@@ -569,15 +568,6 @@ local function makespecs_utilbundles()
             opts = {},
         },
         {
-            "echasnovski/mini.bufremove",
-            version = false,
-            opts = {},
-            keys = {
-                { "<M-d>", function() require("mini.bufremove").wipeout() end, noremap = true },
-                { "<M-D>", function() require("mini.bufremove").wipeout(nil, true) end, noremap = true },
-            },
-        },
-        {
             "folke/snacks.nvim",
             priority = 1000,
             lazy = false,
@@ -598,11 +588,54 @@ local function makespecs_utilbundles()
                         end)
                     end,
                 },
-                notifier = { enabled = true },
-                indent = { enabled = true },
-                quickfile = { enabled = true },
+                bufdelete = { enabled = true },
                 image = { enabled = true },
+                indent = { enabled = true },
+                lazygit = { enabled = vim.fn.has("lazygit") == 1 },
+                notifier = {
+                    enabled = true,
+                    style = "minimal",
+                    refresh = 500,
+                    top_down = false,
+                },
+                ---@class snacks.picker
+                picker = {
+                    formatters = { file = { filename_first = true } },
+                    win = { preview = { wo = { statuscolumn = "" } } },
+                },
+                quickfile = { enabled = true },
                 rename = { enabled = true },
+            },
+            keys = {
+                { "<leader>r", function() Snacks.rename.rename_file() end, desc = "Rename File" },
+                { "<M-d>", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
+                { "<leader>G", function() Snacks.lazygit() end, desc = "Launch Lazygit" },
+                { "<leader>.", function() Snacks.scratch.open() end, desc = "Scratch Buffer" },
+                -- find
+                { "<M-f>", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
+                { "<M-F>", function() Snacks.picker.files() end, desc = "Find Files" },
+                { "<M-b>", function() Snacks.picker.buffers() end, desc = "Find Buffers" },
+                { "<leader>d", function() Snacks.picker.files({ cwd = "/home/hjalmarlucius/dotfiles" }) end, desc = "Find Config" },
+                { "<leader>n", function() Snacks.picker.files({ cwd = "/home/hjalmarlucius/notes" }) end, desc = "Find Note" },
+                -- search
+                { "<F4>", function() Snacks.picker.help() end, desc = "Help Pages" },
+                { "<F9>", function() Snacks.picker.colorschemes() end, desc = "Colorschemes" },
+                { "<M-w>", function() Snacks.picker.grep() end, desc = "Grep" },
+                { "<leader>*", function() Snacks.picker.grep_word() end, desc = "Visual selection or word", mode = { "n", "x" } },
+                { "<leader>/", function() Snacks.picker.search_history() end, desc = "Search History" },
+                { "<leader>b", function() Snacks.picker.lines() end, desc = "Grep Buffer" },
+                { "<leader>B", function() Snacks.picker.grep_buffers() end, desc = "Grep Buffers" },
+                { "<leader>D", function() Snacks.picker.grep({ cwd = "/home/hjalmarlucius/dotfiles" }) end, desc = "Find Config Content" },
+                { "<leader>N", function() Snacks.picker.grep({ cwd = "/home/hjalmarlucius/notes" }) end, desc = "Find Notes Content" },
+                { "<leader>i", function() Snacks.picker.diagnostics() end, desc = "Diagnostics" },
+                { "<leader>l", function() Snacks.picker.loclist() end, desc = "Location List" },
+                { "<leader>h", function() Snacks.picker.notifications() end, desc = "Notification History" },
+                { "<leader>p", function() Snacks.picker.projects() end, desc = "Find Projects" },
+                { "<leader>q", function() Snacks.picker.qflist() end, desc = "Quickfix List" },
+                { "<leader>ø", function() Snacks.picker.command_history() end, desc = "Command History" },
+                { "<leader>ss", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
+                { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
+                { "<leader>u", function() Snacks.picker.undo() end, desc = "Undo History" },
             },
         },
     }
@@ -627,8 +660,8 @@ local function makespecs_filemgmt()
                 view_options = { show_hidden = true },
             },
             keys = {
-                { "<leader>b", "<cmd>Oil .<cr>", noremap = true },
-                { "<leader>B", "<cmd>Oil --float .<cr>", noremap = true },
+                { "<leader>e", "<cmd>Oil .<cr>", noremap = true },
+                { "<leader>E", "<cmd>Oil --float .<cr>", noremap = true },
             },
             init = function()
                 vim.api.nvim_create_autocmd("User", {
@@ -810,123 +843,6 @@ local function makespecs_git()
                 signs_staged_enable = false,
                 on_attach = on_gitsigns_attach,
             },
-        },
-    }
-end
-
-local function makespecs_telescope()
-    local function findfiles() require("telescope.builtin").find_files({ layout_config = { width = 0.99 } }) end
-    local function findgitfiles()
-        local cwd = vim.fn.getcwd()
-        vim.fn.system("git rev-parse --is-inside-work-tree")
-        local is_inside_work_tree = vim.v.shell_error == 0
-        local opts = { layout_config = { width = 0.99 } }
-        if is_inside_work_tree then
-            require("telescope.builtin").git_files(opts)
-        else
-            require("telescope.builtin").find_files(opts)
-        end
-    end
-    local function showdiagnostics()
-        require("telescope.builtin").diagnostics({
-            layout_strategy = "vertical",
-            layout_config = { width = 0.99 },
-        })
-    end
-    local function searchfiles() require("telescope").extensions.live_grep_args.live_grep_args() end
-    local function colorschemes()
-        require("telescope.builtin").colorscheme({
-            layout_config = { width = 0.5 },
-            enable_preview = true,
-            ignore_builtins = true,
-        })
-    end
-    return {
-        {
-            "nvim-telescope/telescope.nvim",
-            version = false,
-            dependencies = {
-                "sharkdp/fd",
-                "nvim-lua/plenary.nvim",
-                "nvim-telescope/telescope-live-grep-args.nvim",
-            },
-            keys = {
-                { "<M-F>", findfiles, noremap = true },
-                { "<M-f>", findgitfiles, noremap = true },
-                { "<M-e>", showdiagnostics, noremap = true },
-                { "<M-w>", searchfiles, noremap = true },
-                { "<M-y>", function() require("telescope.builtin").filetypes() end, noremap = true },
-                { "<M-/>", function() require("telescope.builtin").search_history() end, noremap = true },
-                { "<F9>", colorschemes, noremap = true },
-            },
-            config = function()
-                -- TODO grep with regex
-                local actions = require("telescope.actions")
-                require("telescope").setup({
-                    defaults = {
-                        layout_config = { horizontal = { width = 0.99 } },
-                        mappings = {
-                            i = {
-                                ["<esc>"] = "close",
-                                ["<CR>"] = "select_default",
-                                ["<C-j>"] = "move_selection_next",
-                                ["<C-k>"] = "move_selection_previous",
-                                ["<C-b>"] = "preview_scrolling_up",
-                                ["<C-f>"] = "preview_scrolling_down",
-                                ["<C-s>"] = "select_horizontal",
-                                ["<C-v>"] = "select_vertical",
-                                ["<C-t>"] = "select_tab",
-                                ["<S-Tab>"] = actions.toggle_selection + actions.move_selection_worse,
-                                ["<Tab>"] = actions.toggle_selection + actions.move_selection_better,
-                                ["<C-q>"] = actions.send_to_loclist + actions.open_loclist,
-                                ["<M-q>"] = actions.send_selected_to_loclist + actions.open_loclist,
-                                ["<M-p>"] = require("telescope.actions.layout").toggle_preview,
-                                ["<PageUp>"] = "results_scrolling_up",
-                                ["<PageDown>"] = "results_scrolling_down",
-                            },
-                            n = { ["<M-p>"] = require("telescope.actions.layout").toggle_preview },
-                        },
-                        file_ignore_patterns = {},
-                        set_env = { ["COLORTERM"] = "truecolor" },
-                    },
-                })
-            end,
-        },
-        {
-            "debugloop/telescope-undo.nvim",
-            dependencies = {
-                {
-                    "nvim-telescope/telescope.nvim",
-                    dependencies = { "nvim-lua/plenary.nvim" },
-                },
-            },
-            keys = {
-                {
-                    "<M-u>",
-                    function() require("telescope").extensions.undo.undo() end,
-                    desc = "undo history",
-                },
-            },
-            opts = {
-                extensions = {
-                    undo = {
-                        side_by_side = true,
-                        vim_diff_opts = { ctxlen = vim.o.scrolloff },
-                        entry_format = "state #$ID, $STAT, $TIME",
-                        time_format = "%H:%M:%S %m/%d/%Y",
-                        saved_only = false,
-                        layout_strategy = "vertical",
-                        layout_config = { preview_height = 0.6, width = 0.99 },
-                    },
-                },
-            },
-            config = function(_, opts)
-                -- Calling telescope's setup from multiple specs does not hurt, it will happily merge the
-                -- configs for us. We won't use data, as everything is in it's own namespace (telescope
-                -- defaults, as well as each extension).
-                require("telescope").setup(opts)
-                require("telescope").load_extension("undo")
-            end,
         },
     }
 end
@@ -1248,7 +1164,6 @@ for _, specs in ipairs({
     makespecs_themes(),
     makespecs_utilbundles(),
     makespecs_filemgmt(),
-    makespecs_telescope(),
     makespecs_previewers(),
     makespecs_git(),
 }) do
