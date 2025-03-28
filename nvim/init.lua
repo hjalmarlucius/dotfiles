@@ -853,6 +853,22 @@ local function makespecs_git()
                 word_diff = false,
                 signs_staged_enable = false,
                 on_attach = on_gitsigns_attach,
+                -- extra thin lines
+                signs = {
+                    add = { text = "▎" },
+                    change = { text = "▎" },
+                    delete = { text = "▎" },
+                    topdelete = { text = "▎" },
+                    changedelete = { text = "▎" },
+                    untracked = { text = "▎" },
+                },
+                signs_staged = {
+                    add = { text = "▎" },
+                    change = { text = "▎" },
+                    delete = { text = "▎" },
+                    topdelete = { text = "▎" },
+                    changedelete = { text = "▎" },
+                },
             },
         },
     }
