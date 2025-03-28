@@ -766,6 +766,7 @@ local function makespecs_git()
         bmap("n", "<leader>gu", gs.undo_stage_hunk)
         bmap("n", "<leader>gi", gs.preview_hunk)
         bmap("n", "<leader>gb", function() gs.blame_line({ full = true }) end)
+        bmap("n", "<leader>gB", gs.blame)
         bmap("n", "<leader>gS", gs.stage_buffer)
         bmap("n", "<leader>gX", gs.reset_buffer)
         bmap("n", "<leader>td", gs.toggle_deleted)
@@ -823,7 +824,6 @@ local function makespecs_git()
             end,
             keys = {
                 { "<C-g>", "<cmd>vertical Git<cr>" },
-                { "<leader>gB", "<cmd>Git blame<cr>" },
                 { "<leader>gp", "<cmd>Git! push<cr>" },
                 { "<leader>gP", "<cmd>Git! push -f<cr>" },
             },
