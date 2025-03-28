@@ -485,41 +485,41 @@ local function makespec_lualine()
         dependencies = { "echasnovski/mini.icons", "folke/noice.nvim" },
         opts = {
             options = { theme = "auto", globalstatus = false },
-            extensions = { "fugitive" },
+            extensions = { "fugitive", "neo-tree", "lazy" },
             sections = {
-                lualine_a = { "mode" },
-                lualine_b = { "branch" },
                 lualine_c = {
-                    {
-                        "filename",
-                        file_status = true,
-                        path = 1,
-                        shorting_target = 0,
-                    },
-                    { "diff", colored = true },
+                    { "filename", file_status = true, path = 1, shorting_target = 0 },
+                    { "filetype", icon_only = true, separator = " ", padding = { left = 1, right = 0 } },
                 },
                 lualine_x = {
-                    { "require('noice').api.status.command.get()" },
-                    { "require('noice').api.status.mode.get()" },
+                    {
+                        function() require("noice").api.status.message.get_hl() end,
+                        cond = function() require("noice").api.status.message.has() end,
+                    },
+                    {
+                        function() require("noice").api.status.command.get() end,
+                        cond = function() require("noice").api.status.command.has() end,
+                        color = { fg = "#ff9e64" },
+                    },
+                    {
+                        function() require("noice").api.status.mode.get() end,
+                        cond = function() require("noice").api.status.mode.has() end,
+                        color = { fg = "#ff9e64" },
+                    },
                 },
-                lualine_y = { "filetype", "progress" },
-                lualine_z = { "location" },
+                lualine_y = { "progress", "location" },
+                lualine_z = { { function() return " " .. os.date("%R") end } },
             },
             inactive_sections = {
                 lualine_a = {},
                 lualine_b = {},
                 lualine_c = {
-                    {
-                        "filename",
-                        file_status = true,
-                        path = 1,
-                        shorting_target = 0,
-                    },
-                    { "diff", colored = true },
+                    { "filename", file_status = true, path = 1, shorting_target = 0 },
+                    { "filetype", icon_only = true, separator = " ", padding = { left = 1, right = 0 } },
                 },
                 lualine_x = {},
-                lualine_y = { "filetype", "progress" },
-                lualine_z = { "location" },
+                lualine_y = { "progress", "location" },
+                lualine_z = {},
             },
             tabline = {
                 lualine_a = {
