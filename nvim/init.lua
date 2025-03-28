@@ -823,7 +823,7 @@ local function makespec_snacks()
         },
         -- stylua: ignore
         keys = {
-            { "<leader>r", function() Snacks.rename.rename_file() end, desc = "Rename File" },
+            { "<leader>R", function() Snacks.rename.rename_file() end, desc = "Rename File" },
             { "<M-d>", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
             { "<leader>G", function() Snacks.lazygit() end, desc = "Launch Lazygit" },
             { "<leader>.", function() Snacks.scratch.open() end, desc = "Scratch Buffer" },
@@ -948,6 +948,31 @@ local function makespec_flash()
                 desc = "Treesitter Search",
             },
             { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+        },
+    }
+end
+
+local function makespec_grugfar()
+    return {
+        "MagicDuck/grug-far.nvim",
+        opts = { headerMaxWidth = 80 },
+        cmd = "GrugFar",
+        keys = {
+            {
+                "<leader>r",
+                function()
+                    local grug = require("grug-far")
+                    local ext = vim.bo.buftype == "" and vim.fn.expand("%:e")
+                    grug.open({
+                        transient = true,
+                        prefills = {
+                            filesFilter = ext and ext ~= "" and "*." .. ext or nil,
+                        },
+                    })
+                end,
+                mode = { "n", "v" },
+                desc = "Search and Replace",
+            },
         },
     }
 end
@@ -1153,6 +1178,7 @@ for _, spec in ipairs({
     makespec_tmuxnav(),
     makespec_hlslens(),
     makespec_flash(),
+    makespec_grugfar(),
     -- visuals
     makespec_lualine(),
     makespec_noice(),
