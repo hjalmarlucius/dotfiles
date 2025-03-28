@@ -1,6 +1,6 @@
 vim.opt.termguicolors = true
 vim.g.mapleader = vim.keycode("<space>")
-vim.g.maplocalleader = vim.keycode("<cr>")
+vim.g.maplocalleader = vim.keycode(",")
 
 -- ----------------------------------------
 -- SETTINGS
@@ -487,7 +487,7 @@ local function makespec_lualine()
             options = { theme = "auto", globalstatus = false },
             extensions = { "fugitive" },
             sections = {
-                lualine_a = { { "mode", color = { bg = "goldenrod" } } },
+                lualine_a = { "mode" },
                 lualine_b = { "branch" },
                 lualine_c = {
                     {
@@ -549,110 +549,33 @@ local function makespec_lualine()
     }
 end
 
-local function makespecs_utilbundles()
+local function makespec_oil()
     return {
-        {
-            "catgoose/nvim-colorizer.lua",
-            event = "BufReadPre",
-            opts = { user_default_options = { mode = "virtualtext" } },
+        "stevearc/oil.nvim",
+        dependencies = { "mini.icons" },
+        cmd = { "Oil" },
+        opts = {
+            watch_for_changes = true,
+            view_options = { show_hidden = true },
         },
-        "dhruvasagar/vim-table-mode", -- tables
-        "itchyny/vim-qfedit", -- editable quickfix list
-        { "ethanholz/nvim-lastplace", opts = {} }, -- keep location upon reopening
-        "tpope/vim-eunuch", -- Move, Rename etc
-        "tpope/vim-sleuth", -- do the right thing with tabstop and softtabstop
-        "mbbill/undotree",
-        {
-            "echasnovski/mini.basics",
-            opts = {
-                options = { basic = true, extra_ui = true },
-                mappings = { move_with_alt = true },
-            },
+        keys = {
+            { "<leader>e", "<cmd>Oil .<cr>", noremap = true },
+            { "<leader>E", "<cmd>Oil --float .<cr>", noremap = true },
         },
-        {
-            "echasnovski/mini.icons",
-            opts = {},
-        },
-        {
-            "echasnovski/mini.surround",
-            version = false,
-            opts = {},
-        },
-        {
-            "folke/snacks.nvim",
-            priority = 1000,
-            lazy = false,
-            ---@type snacks.Config
-            opts = {
-                bigfile = {
-                    enabled = true,
-                    notify = true, -- show notification when big file detected
-                    size = 1.5 * 1024 * 1024, -- 1.5MB
-                    line_length = 1000, -- average line length (useful for minified files)
-                    -- Enable or disable features when big file detected
-                    ---@param ctx {buf: number, ft:string}
-                    setup = function(ctx)
-                        if vim.fn.exists(":NoMatchParen") ~= 0 then vim.cmd([[NoMatchParen]]) end
-                        Snacks.util.wo(0, { foldmethod = "manual", statuscolumn = "", conceallevel = 0 })
-                        vim.schedule(function()
-                            if vim.api.nvim_buf_is_valid(ctx.buf) then vim.bo[ctx.buf].syntax = ctx.ft end
-                        end)
-                    end,
-                },
-                bufdelete = { enabled = true },
-                image = { enabled = true },
-                indent = { enabled = true },
-                lazygit = { enabled = vim.fn.has("lazygit") == 1 },
-                notifier = {
-                    enabled = true,
-                    style = "minimal",
-                    refresh = 500,
-                    top_down = false,
-                },
-                ---@class snacks.picker
-                picker = {
-                    formatters = { file = { filename_first = true } },
-                    win = { preview = { wo = { statuscolumn = "" } } },
-                },
-                quickfile = { enabled = true },
-                rename = { enabled = true },
-            },
-            keys = {
-                { "<leader>r", function() Snacks.rename.rename_file() end, desc = "Rename File" },
-                { "<M-d>", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
-                { "<leader>G", function() Snacks.lazygit() end, desc = "Launch Lazygit" },
-                { "<leader>.", function() Snacks.scratch.open() end, desc = "Scratch Buffer" },
-                -- find
-                { "<M-f>", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
-                { "<M-F>", function() Snacks.picker.files() end, desc = "Find Files" },
-                { "<M-b>", function() Snacks.picker.buffers() end, desc = "Find Buffers" },
-                { "<leader>d", function() Snacks.picker.files({ cwd = "/home/hjalmarlucius/dotfiles" }) end, desc = "Find Config" },
-                { "<leader>n", function() Snacks.picker.files({ cwd = "/home/hjalmarlucius/notes" }) end, desc = "Find Note" },
-                -- search
-                { "<F4>", function() Snacks.picker.help() end, desc = "Help Pages" },
-                { "<F9>", function() Snacks.picker.colorschemes() end, desc = "Colorschemes" },
-                { "<M-w>", function() Snacks.picker.grep() end, desc = "Grep" },
-                { "<leader>*", function() Snacks.picker.grep_word() end, desc = "Visual selection or word", mode = { "n", "x" } },
-                { "<leader>/", function() Snacks.picker.search_history() end, desc = "Search History" },
-                { "<leader>b", function() Snacks.picker.lines() end, desc = "Grep Buffer" },
-                { "<leader>B", function() Snacks.picker.grep_buffers() end, desc = "Grep Buffers" },
-                { "<leader>D", function() Snacks.picker.grep({ cwd = "/home/hjalmarlucius/dotfiles" }) end, desc = "Find Config Content" },
-                { "<leader>N", function() Snacks.picker.grep({ cwd = "/home/hjalmarlucius/notes" }) end, desc = "Find Notes Content" },
-                { "<leader>i", function() Snacks.picker.diagnostics() end, desc = "Diagnostics" },
-                { "<leader>l", function() Snacks.picker.loclist() end, desc = "Location List" },
-                { "<leader>h", function() Snacks.picker.notifications() end, desc = "Notification History" },
-                { "<leader>p", function() Snacks.picker.projects() end, desc = "Find Projects" },
-                { "<leader>q", function() Snacks.picker.qflist() end, desc = "Quickfix List" },
-                { "<leader>ø", function() Snacks.picker.command_history() end, desc = "Command History" },
-                { "<leader>ss", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
-                { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
-                { "<leader>u", function() Snacks.picker.undo() end, desc = "Undo History" },
-            },
-        },
+        init = function()
+            vim.api.nvim_create_autocmd("User", {
+                pattern = "OilActionsPost",
+                callback = function(event)
+                    if event.data.actions.type == "move" then
+                        Snacks.rename.on_rename_file(event.data.actions.src_url, event.data.actions.dest_url)
+                    end
+                end,
+            })
+        end,
     }
 end
 
-local function makespecs_filemgmt()
+local function makespec_neotree()
     return {
         {
             "nvim-neo-tree/neo-tree.nvim",
@@ -661,29 +584,6 @@ local function makespecs_filemgmt()
             dependencies = { "nvim-lua/plenary.nvim", "mini.icons", "MunifTanjim/nui.nvim" },
             opts = { hijack_netrw_behavior = "disabled" },
             keys = { { "<C-t>", "<cmd>Neotree<cr>", noremap = true } },
-        },
-        {
-            "stevearc/oil.nvim",
-            dependencies = { "mini.icons" },
-            cmd = { "Oil" },
-            opts = {
-                watch_for_changes = true,
-                view_options = { show_hidden = true },
-            },
-            keys = {
-                { "<leader>e", "<cmd>Oil .<cr>", noremap = true },
-                { "<leader>E", "<cmd>Oil --float .<cr>", noremap = true },
-            },
-            init = function()
-                vim.api.nvim_create_autocmd("User", {
-                    pattern = "OilActionsPost",
-                    callback = function(event)
-                        if event.data.actions.type == "move" then
-                            Snacks.rename.on_rename_file(event.data.actions.src_url, event.data.actions.dest_url)
-                        end
-                    end,
-                })
-            end,
         },
     }
 end
@@ -734,7 +634,80 @@ local function makespecs_previewers()
     }
 end
 
-local function makespecs_git()
+local function makespec_vimflog()
+    return {
+        {
+            "rbong/vim-flog",
+            dependencies = { "tpope/vim-fugitive" },
+            cmd = { "Flog", "Flogsplit", "Floggit" },
+            config = function()
+                vim.g.flog_permanent_default_opts = {
+                    -- format = "%ad [%h] {%an}%d %s",
+                    format = "%ad [%h]%d %s",
+                    date = "short",
+                }
+            end,
+            keys = {
+                { "<leader>gl", "<cmd>vertical Flogsplit -path=%<cr>" },
+                { "<leader>gL", "<cmd>vertical Flogsplit<cr>" },
+            },
+        },
+    }
+end
+local function makespec_diffview()
+    return {
+        "sindrets/diffview.nvim",
+        cmd = {
+            "DiffviewOpen",
+            "DiffviewClose",
+            "DiffviewToggleFiles",
+            "DiffviewFocusFiles",
+            "DiffviewRefresh",
+            "DiffviewFileHistory",
+        },
+        keys = {
+            { "<leader>gd", "<cmd>DiffviewOpen<cr>", noremap = true },
+            { "<leader>gh", "<cmd>DiffviewFileHistory<cr>", noremap = true },
+        },
+    }
+end
+local function makespec_fugitive()
+    return {
+        "tpope/vim-fugitive",
+        cmd = {
+            "Git",
+            "Gedit",
+            "Gdiffsplit",
+            "Gread",
+            "Gwrite",
+            "Ggrep",
+            "Glgrep",
+            "Gmove",
+            "GRename",
+            "GDelete",
+            "GRemove",
+            "Gdelete",
+            "GUnlink",
+            "GBrowse",
+        },
+        config = function()
+            vim.api.nvim_create_autocmd("User", {
+                pattern = { "FugitiveCommit", "BufReadPost" },
+                callback = function()
+                    vim.opt.foldmethod = "syntax"
+                    vim.opt.foldlevel = 0
+                end,
+            })
+        end,
+        keys = {
+            { "<C-g>", "<cmd>vertical Git<cr>" },
+            { "<leader>gp", "<cmd>Git! push<cr>" },
+            { "<leader>gP", "<cmd>Git! push -f<cr>" },
+        },
+    }
+end
+
+local function makespec_gitsigns()
     local function on_gitsigns_attach(bufnr)
         local gs = require("gitsigns")
         local function next_hunk()
@@ -780,101 +753,121 @@ local function makespecs_git()
     end
 
     return {
-        {
-            "sindrets/diffview.nvim",
-            cmd = {
-                "DiffviewOpen",
-                "DiffviewClose",
-                "DiffviewToggleFiles",
-                "DiffviewFocusFiles",
-                "DiffviewRefresh",
-                "DiffviewFileHistory",
+        "lewis6991/gitsigns.nvim",
+        opts = {
+            signcolumn = true,
+            numhl = true,
+            linehl = false,
+            word_diff = false,
+            signs_staged_enable = false,
+            on_attach = on_gitsigns_attach,
+            -- extra thin lines
+            signs = {
+                add = { text = "▎" },
+                change = { text = "▎" },
+                delete = { text = "▎" },
+                topdelete = { text = "▎" },
+                changedelete = { text = "▎" },
+                untracked = { text = "▎" },
             },
-            keys = {
-                { "<leader>gd", "<cmd>DiffviewOpen<cr>", noremap = true },
-                { "<leader>gh", "<cmd>DiffviewFileHistory<cr>", noremap = true },
-            },
-        },
-        {
-            "tpope/vim-fugitive",
-            cmd = {
-                "Git",
-                "Gedit",
-                "Gdiffsplit",
-                "Gread",
-                "Gwrite",
-                "Ggrep",
-                "Glgrep",
-                "Gmove",
-                "GRename",
-                "GDelete",
-                "GRemove",
-                "Gdelete",
-                "GUnlink",
-                "GBrowse",
-            },
-            config = function()
-                vim.api.nvim_create_autocmd("User", {
-                    pattern = { "FugitiveCommit", "BufReadPost" },
-                    callback = function()
-                        vim.opt.foldmethod = "syntax"
-                        vim.opt.foldlevel = 0
-                    end,
-                })
-            end,
-            keys = {
-                { "<C-g>", "<cmd>vertical Git<cr>" },
-                { "<leader>gp", "<cmd>Git! push<cr>" },
-                { "<leader>gP", "<cmd>Git! push -f<cr>" },
-            },
-        },
-        {
-            "rbong/vim-flog",
-            dependencies = { "tpope/vim-fugitive" },
-            cmd = { "Flog", "Flogsplit", "Floggit" },
-            config = function()
-                vim.g.flog_permanent_default_opts = {
-                    -- format = "%ad [%h] {%an}%d %s",
-                    format = "%ad [%h]%d %s",
-                    date = "short",
-                }
-            end,
-            keys = {
-                { "<leader>gl", "<cmd>vertical Flogsplit -path=%<cr>" },
-                { "<leader>gL", "<cmd>vertical Flogsplit<cr>" },
-            },
-        },
-        {
-            "lewis6991/gitsigns.nvim",
-            opts = {
-                signcolumn = true,
-                numhl = true,
-                linehl = false,
-                word_diff = false,
-                signs_staged_enable = false,
-                on_attach = on_gitsigns_attach,
-                -- extra thin lines
-                signs = {
-                    add = { text = "▎" },
-                    change = { text = "▎" },
-                    delete = { text = "▎" },
-                    topdelete = { text = "▎" },
-                    changedelete = { text = "▎" },
-                    untracked = { text = "▎" },
-                },
-                signs_staged = {
-                    add = { text = "▎" },
-                    change = { text = "▎" },
-                    delete = { text = "▎" },
-                    topdelete = { text = "▎" },
-                    changedelete = { text = "▎" },
-                },
+            signs_staged = {
+                add = { text = "▎" },
+                change = { text = "▎" },
+                delete = { text = "▎" },
+                topdelete = { text = "▎" },
+                changedelete = { text = "▎" },
             },
         },
     }
 end
 
-local function makespec_todolists()
+local function makespec_snacks()
+    return {
+        "folke/snacks.nvim",
+        priority = 1000,
+        lazy = false,
+        ---@type snacks.Config
+        opts = {
+            bigfile = {
+                enabled = true,
+                notify = true, -- show notification when big file detected
+                size = 1.5 * 1024 * 1024, -- 1.5MB
+                line_length = 1000, -- average line length (useful for minified files)
+                -- Enable or disable features when big file detected
+                ---@param ctx {buf: number, ft:string}
+                setup = function(ctx)
+                    if vim.fn.exists(":NoMatchParen") ~= 0 then vim.cmd([[NoMatchParen]]) end
+                    Snacks.util.wo(0, { foldmethod = "manual", statuscolumn = "", conceallevel = 0 })
+                    vim.schedule(function()
+                        if vim.api.nvim_buf_is_valid(ctx.buf) then vim.bo[ctx.buf].syntax = ctx.ft end
+                    end)
+                end,
+            },
+            bufdelete = { enabled = true },
+            image = { enabled = true },
+            indent = { enabled = true },
+            lazygit = { enabled = vim.fn.has("lazygit") == 1 },
+            notifier = {
+                enabled = true,
+                style = "minimal",
+                refresh = 500,
+                top_down = false,
+            },
+            ---@class snacks.picker
+            picker = {
+                formatters = { file = { filename_first = true } },
+                win = { preview = { wo = { statuscolumn = "" } } },
+            },
+            quickfile = { enabled = true },
+            rename = { enabled = true },
+        },
+        -- stylua: ignore
+        keys = {
+            { "<leader>r", function() Snacks.rename.rename_file() end, desc = "Rename File" },
+            { "<M-d>", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
+            { "<leader>G", function() Snacks.lazygit() end, desc = "Launch Lazygit" },
+            { "<leader>.", function() Snacks.scratch.open() end, desc = "Scratch Buffer" },
+            -- find
+            { "<M-f>", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
+            { "<M-F>", function() Snacks.picker.files() end, desc = "Find Files" },
+            { "<M-b>", function() Snacks.picker.buffers() end, desc = "Find Buffers" },
+            { "<leader>d", function() Snacks.picker.files({ cwd = "/home/hjalmarlucius/dotfiles" }) end, desc = "Find Config" },
+            { "<leader>n", function() Snacks.picker.files({ cwd = "/home/hjalmarlucius/notes" }) end, desc = "Find Note", },
+            -- search
+            { "<F4>", function() Snacks.picker.help() end, desc = "Help Pages" },
+            { "<F9>", function() Snacks.picker.colorschemes() end, desc = "Colorschemes" },
+            { "<M-w>", function() Snacks.picker.grep() end, desc = "Grep" },
+            { "<leader>*", function() Snacks.picker.grep_word() end, desc = "Visual selection or word", mode = { "n", "x" }, },
+            { "<leader>/", function() Snacks.picker.search_history() end, desc = "Search History" },
+            { "<leader>b", function() Snacks.picker.lines() end, desc = "Grep Buffer" },
+            { "<leader>B", function() Snacks.picker.grep_buffers() end, desc = "Grep Buffers" },
+            { "<leader>D", function() Snacks.picker.grep({ cwd = "/home/hjalmarlucius/dotfiles" }) end, desc = "Find Config Content" },
+            { "<leader>N", function() Snacks.picker.grep({ cwd = "/home/hjalmarlucius/notes" }) end, desc = "Find Notes Content", },
+            { "<leader>i", function() Snacks.picker.diagnostics() end, desc = "Diagnostics" },
+            { "<leader>l", function() Snacks.picker.loclist() end, desc = "Location List" },
+            { "<leader>h", function() Snacks.picker.notifications() end, desc = "Notification History" },
+            { "<leader>p", function() Snacks.picker.projects() end, desc = "Find Projects" },
+            { "<leader>q", function() Snacks.picker.qflist() end, desc = "Quickfix List" },
+            { "<leader>ø", function() Snacks.picker.command_history() end, desc = "Command History" },
+            { "<leader>ss", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
+            { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
+            { "<leader>u", function() Snacks.picker.undo() end, desc = "Undo History" },
+        },
+    }
+end
+
+local function makespecs_mini()
+    return {
+        {
+            "echasnovski/mini.basics",
+            opts = { options = { basic = true, extra_ui = true }, mappings = { move_with_alt = true } },
+        },
+        { "echasnovski/mini.icons", opts = {} },
+        { "echasnovski/mini.surround", version = false, opts = {} },
+    }
+end
+
+local function makespec_todocomments()
     return {
         "folke/todo-comments.nvim",
         dependencies = { "nvim-lua/plenary.nvim" },
@@ -907,7 +900,7 @@ local function makespec_todolists()
     }
 end
 
-local function makespec_tmux()
+local function makespec_tmuxnav()
     return {
         -- tmux / vim interop
         "alexghergh/nvim-tmux-navigation",
@@ -994,7 +987,7 @@ local function makespec_treesitter()
     }
 end
 
-local function makespec_search()
+local function makespec_hlslens()
     return {
         -- search count > 99
         "kevinhwang91/nvim-hlslens",
@@ -1051,7 +1044,7 @@ local function makespec_lint()
     }
 end
 
-local function makespec_autoformat()
+local function makespec_conform()
     return {
         "stevearc/conform.nvim",
         lazy = true,
@@ -1140,28 +1133,44 @@ end
 -- LAZY
 -- ----------------------------------------
 
-local lazyspecs = {}
+local lazyspecs = {
+    "dhruvasagar/vim-table-mode", -- tables
+    "itchyny/vim-qfedit", -- editable quickfix list
+    { "ethanholz/nvim-lastplace", opts = {} }, -- keep location upon reopening
+    "tpope/vim-eunuch", -- Move, Rename etc
+    "tpope/vim-sleuth", -- do the right thing with tabstop and softtabstop
+    "mbbill/undotree",
+}
 for _, spec in ipairs({
-    makespec_flash(),
-    makespec_lualine(),
-    makespec_autoformat(),
-    makespec_noice(),
+    makespec_snacks(),
+    makespec_conform(), -- autoformat
     makespec_treesitter(),
-    makespec_todolists(),
-    makespec_tmux(),
+    makespec_todocomments(),
     makespec_autotag(),
     makespec_lint(),
-    makespec_search(),
     makespec_mason(),
+    -- navigation
+    makespec_tmuxnav(),
+    makespec_hlslens(),
+    makespec_flash(),
+    -- visuals
+    makespec_lualine(),
+    makespec_noice(),
+    -- file browsers
+    makespec_neotree(),
+    makespec_oil(),
+    -- git
+    makespec_gitsigns(),
+    makespec_fugitive(),
+    makespec_diffview(),
+    makespec_vimflog(),
 }) do
     table.insert(lazyspecs, spec)
 end
 for _, specs in ipairs({
     makespecs_themes(),
-    makespecs_utilbundles(),
-    makespecs_filemgmt(),
+    makespecs_mini(),
     makespecs_previewers(),
-    makespecs_git(),
 }) do
     for _, spec in ipairs(specs) do
         table.insert(lazyspecs, spec)
