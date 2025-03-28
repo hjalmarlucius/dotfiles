@@ -919,56 +919,26 @@ local function makespec_mason()
     }
 end
 
-local function makespec_hop()
-    local function hopf()
-        require("hop").hint_char1({
-            direction = require("hop.hint").HintDirection.AFTER_CURSOR,
-            current_line_only = true,
-        })
-    end
-    local function hopF()
-        require("hop").hint_char1({
-            direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
-            current_line_only = true,
-        })
-    end
-    local function hopt()
-        require("hop").hint_char1({
-            direction = require("hop.hint").HintDirection.AFTER_CURSOR,
-            current_line_only = true,
-            hint_offset = -1,
-        })
-    end
-    local function hopT()
-        require("hop").hint_char1({
-            direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
-            current_line_only = true,
-            hint_offset = 1,
-        })
-    end
+local function makespec_flash()
     return {
-        "smoka7/hop.nvim",
+        "folke/flash.nvim",
         opts = {},
-        cmd = {
-            "HopWord",
-            "HopCamelCase",
-            "HopChar1",
-            "HopChar2",
-            "HopPattern",
-            "HopLine",
-            "HopLineStart",
-            "HopAnywhere",
-            "HopNodes",
-            "HopPaste",
-            "HopYankChar1",
-        },
         keys = {
-            { "<CR>", "<cmd>HopWord<cr>", mode = { "n", "v" }, silent = true, noremap = true },
-            { "<M-CR>", "<cmd>HopAnywhere<cr>", mode = { "n", "v" }, silent = true, noremap = true },
-            { "f", hopf, mode = { "n", "v", "o" }, remap = true },
-            { "F", hopF, mode = { "n", "v", "o" }, remap = true },
-            { "t", hopt, mode = { "n", "v", "o" }, remap = true },
-            { "T", hopT, mode = { "n", "v", "o" }, remap = true },
+            { "<cr>", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+            {
+                "<M-cr>",
+                mode = { "n", "o", "x" },
+                function() require("flash").treesitter() end,
+                desc = "Flash Treesitter",
+            },
+            { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+            {
+                "R",
+                mode = { "o", "x" },
+                function() require("flash").treesitter_search() end,
+                desc = "Treesitter Search",
+            },
+            { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
         },
     }
 end
@@ -1113,7 +1083,6 @@ end
 local function makespec_noice()
     return {
         "folke/noice.nvim",
-        event = "VeryLazy",
         dependencies = { "MunifTanjim/nui.nvim" },
         opts = {
             cmdline = { enabled = true, view = "cmdline_popup" },
@@ -1157,7 +1126,7 @@ end
 
 local lazyspecs = {}
 for _, spec in ipairs({
-    makespec_hop(),
+    makespec_flash(),
     makespec_lualine(),
     makespec_autoformat(),
     makespec_noice(),
