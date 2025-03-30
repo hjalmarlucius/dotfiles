@@ -105,7 +105,7 @@ c.scrolling.bar = "always"
 c.session.lazy_restore = False
 c.statusbar.padding = {"bottom": 10, "left": 10, "right": 10, "top": 10}
 c.statusbar.position = "bottom"
-c.statusbar.show = "in-mode"
+c.statusbar.show = "always"
 c.statusbar.widgets = [
     "keypress",
     "search_match",
