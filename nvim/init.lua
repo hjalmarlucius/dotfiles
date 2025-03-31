@@ -492,20 +492,9 @@ local function makespec_lualine()
                     { "filetype", icon_only = true, separator = " ", padding = { left = 1, right = 0 } },
                 },
                 lualine_x = {
-                    {
-                        function() require("noice").api.status.message.get_hl() end,
-                        cond = function() require("noice").api.status.message.has() end,
-                    },
-                    {
-                        function() require("noice").api.status.command.get() end,
-                        cond = function() require("noice").api.status.command.has() end,
-                        color = { fg = "#ff9e64" },
-                    },
-                    {
-                        function() require("noice").api.status.mode.get() end,
-                        cond = function() require("noice").api.status.mode.has() end,
-                        color = { fg = "#ff9e64" },
-                    },
+                    { 'require("noice").api.status.message.get_hl()' },
+                    { 'require("noice").api.status.command.get()', color = { fg = "#ff9e64" } },
+                    { 'require("noice").api.status.mode.get()', color = { fg = "#ff9e64" } },
                 },
                 lualine_y = { "progress", "location" },
                 lualine_z = { { function() return " " .. os.date("%R") end } },
