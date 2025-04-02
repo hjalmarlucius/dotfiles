@@ -240,252 +240,6 @@ vim.api.nvim_create_autocmd("BufEnter", {
 })
 
 -- ----------------------------------------
--- LSP
--- ----------------------------------------
-
-local function lspsetup()
-    vim.lsp.set_log_level(2)
-    local lspgroup = vim.api.nvim_create_augroup("lsp", { clear = true })
-
-    vim.api.nvim_create_autocmd("LspAttach", {
-        group = lspgroup,
-        callback = function(ev) vim.lsp.completion.enable(true, ev.data.client_id, ev.buf) end,
-    })
-    vim.api.nvim_create_user_command("LspStop", function(kwargs)
-        local name = kwargs.fargs[1]
-        for _, client in ipairs(vim.lsp.get_clients({ name = name })) do
-            client:stop()
-        end
-    end, {
-        nargs = "?",
-        complete = function()
-            return vim.tbl_map(function(c) return c.name end, vim.lsp.get_clients())
-        end,
-    })
-
-    vim.api.nvim_create_user_command("LspRestart", function(kwargs)
-        local name = kwargs.fargs[1]
-        for _, client in ipairs(vim.lsp.get_clients({ name = name })) do
-            local bufs = vim.lsp.get_buffers_by_client_id(client.id)
-            client:stop()
-            vim.wait(30000, function() return vim.lsp.get_client_by_id(client.id) == nil end)
-            local client_id = vim.lsp.start(client.config, { attach = nil })
-            if client_id then
-                for _, buf in ipairs(bufs) do
-                    vim.lsp.buf_attach_client(buf, client_id)
-                end
-            end
-        end
-    end, {
-        nargs = "?",
-        complete = function()
-            return vim.tbl_map(function(c) return c.name end, vim.lsp.get_clients())
-        end,
-    })
-    vim.api.nvim_create_autocmd("LspProgress", {
-        group = lspgroup,
-        callback = function(args)
-            local function is_blocking()
-                local mode = vim.api.nvim_get_mode()
-                for _, m in ipairs({ "ic", "ix", "c", "no", "r%?", "rm" }) do
-                    if mode.mode:find(m) == 1 then return true end
-                end
-                return mode.blocking
-            end
-            local update_delay_ms = 300
-            local last_update = 0
-            local current_time = vim.uv.now()
-            if is_blocking() or (current_time - last_update) < update_delay_ms then return end
-            last_update = current_time
-
-            local client = vim.lsp.get_client_by_id(args.data.client_id)
-            local value = args.data.params.value --[[@as {percentage?: number, title?: string, message?: string, kind: "begin"|"report"|"end"}]]
-            if not client or type(value) ~= "table" then return end
-            local progress = vim.defaulttable()
-            local p = progress[client.id]
-
-            for i = 1, #p + 1 do
-                if i == #p + 1 or p[i].token == args.data.params.token then
-                    p[1] = {
-                        token = args.data.params.token,
-                        msg = ("[%3d%%] %s%s"):format(
-                            value.kind == "end" and 100 or value.percentage or 100,
-                            value.title or "",
-                            value.message and (" **%s**"):format(value.message) or ""
-                        ),
-                        done = value.kind == "end",
-                    }
-                    break
-                end
-            end
-
-            local msg = {} ---@type string[]
-            progress[client.id] = vim.tbl_filter(function(v) return table.insert(msg, v.msg) or not v.done end, p)
-
-            local spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
-            vim.notify(table.concat(msg, "\n"), vim.log.levels.INFO, {
-                id = "lsp_progress",
-                title = client.name,
-                timeout = 1200,
-                level = 5000,
-                width = { min = 50, max = 50 },
-                opts = function(notif)
-                    ---@diagnostic disable-next-line: missing-fields
-                    notif.icon = #progress[client.id] == 0 and " "
-                        or spinner[math.floor(vim.uv.hrtime() / (1e6 * 80)) % #spinner + 1]
-                end,
-            })
-        end,
-    })
-
-    vim.lsp.config("*", { root_markers = { ".git" } })
-    vim.lsp.config["lua_ls"] = {
-        cmd = { "lua-language-server" },
-        filetypes = { "lua" },
-        root_markers = {
-            ".luarc.json",
-            ".luarc.jsonc",
-            ".stylua.toml",
-            "stylua.toml",
-            ".git",
-        },
-        settings = {
-            Lua = {
-                workspace = {
-                    checkThirdParty = false,
-                    library = { vim.env.VIMRUNTIME },
-                },
-                telemetry = { enable = false },
-                diagnostics = { globals = { "vim" } },
-                format = { enable = false },
-                runtime = { version = "LuaJIT" },
-            },
-        },
-    }
-    vim.lsp.enable("lua_ls")
-    vim.lsp.config["pyright"] = {
-        cmd = { "pyright-langserver", "--stdio", "--threads", "20" },
-        filetypes = { "python" },
-        root_markers = {
-            "pyproject.toml",
-            "setup.py",
-            "setup.cfg",
-            "requirements.txt",
-            "pyrightconfig.json",
-            ".git",
-        },
-        settings = {
-            python = {
-                analysis = {
-                    -- logLevel = "Trace",
-                    autoImportCompletions = false,
-                    diagnosticMode = "openFilesOnly",
-                    useLibraryCodeForTypes = false,
-                    -- logTypeEvaluationTime = true,
-                    -- typeEvaluationTimeThreshold = 5000,
-                },
-            },
-        },
-    }
-    vim.lsp.enable("pyright")
-    vim.lsp.config["html"] = {
-        cmd = { "vscode-html-language-server", "--stdio" },
-        filetypes = { "html" },
-        settings = {
-            html = {
-                format = {
-                    templating = true,
-                    wrapLineLength = 120,
-                    wrapAttributes = "auto",
-                },
-                hover = {
-                    documentation = true,
-                    references = true,
-                },
-            },
-        },
-    }
-    vim.lsp.enable("html")
-    vim.lsp.config["yaml"] = {
-        cmd = { "yaml-language-server", "--stdio" },
-        filetypes = { "yaml" },
-        settings = {
-            yaml = {
-                schemas = { kubernetes = "/home/hjalmarlucius/src/hjarl/system/manifests/*.yaml" },
-                -- schemaStore = { enable = false, url = "" },
-            },
-        },
-    }
-    vim.lsp.enable("yaml")
-    vim.lsp.config["typst"] = {
-        cmd = { "tinymist" },
-        filetypes = { "typst" },
-        settings = {},
-    }
-    vim.lsp.enable("typst")
-    vim.lsp.config["bash"] = {
-        cmd = { "bash-language-server", "start" },
-        filetypes = { "bash", "sh" },
-    }
-    vim.lsp.enable("bash")
-    vim.lsp.config["js"] = {
-        cmd = { "vtsls", "--stdio" },
-        root_markers = { ".git", "package.json", "tsconfig.json", "jsconfig.json" },
-        filetypes = {
-            "javascript",
-            "javascriptreact",
-            "javascript.jsx",
-            "typescript",
-            "typescriptreact",
-            "typescript.tsx",
-        },
-        settings = {
-            complete_function_calls = true,
-            vtsls = {
-                enableMoveToFileCodeAction = true,
-                autoUseWorkspaceTsdk = true,
-                experimental = {
-                    maxInlayHintLength = 30,
-                    completion = {
-                        enableServerSideFuzzyMatch = true,
-                    },
-                },
-            },
-            javascript = {
-                updateImportsOnFileMove = { enabled = "always" },
-                suggest = {
-                    completeFunctionCalls = true,
-                },
-                inlayHints = {
-                    enumMemberValues = { enabled = true },
-                    functionLikeReturnTypes = { enabled = true },
-                    parameterNames = { enabled = "literals" },
-                    parameterTypes = { enabled = true },
-                    propertyDeclarationTypes = { enabled = true },
-                    variableTypes = { enabled = false },
-                },
-            },
-            typescript = {
-                updateImportsOnFileMove = { enabled = "always" },
-                suggest = {
-                    completeFunctionCalls = true,
-                },
-                inlayHints = {
-                    enumMemberValues = { enabled = true },
-                    functionLikeReturnTypes = { enabled = true },
-                    parameterNames = { enabled = "literals" },
-                    parameterTypes = { enabled = true },
-                    propertyDeclarationTypes = { enabled = true },
-                    variableTypes = { enabled = false },
-                },
-            },
-        },
-    }
-    vim.lsp.enable("js")
-end
-lspsetup()
-
--- ----------------------------------------
 -- SPECS
 -- ----------------------------------------
 
@@ -530,6 +284,117 @@ local function makespecs_themes()
         },
         "tomasr/molokai",
         "jnurmine/Zenburn",
+    }
+end
+
+local function makespec_lspconfig()
+    return {
+        "neovim/nvim-lspconfig",
+        lazy = false,
+        dependencies = { { "j-hui/fidget.nvim", opts = {} } },
+        event = { "BufReadPost", "BufNewFile" },
+        cmd = { "LspInfo", "LspRestart", "LspStart", "LspStop" },
+        keys = { { "<F3>", "<cmd>LspInfo<cr>", noremap = true } },
+        config = function()
+            local lspconfig = require("lspconfig")
+            lspconfig.tinymist.setup({})
+            lspconfig.bashls.setup({})
+            lspconfig.lua_ls.setup({
+                cmd = { "lua-language-server" },
+                settings = {
+                    Lua = {
+                        workspace = {
+                            checkThirdParty = false,
+                            library = { vim.env.VIMRUNTIME },
+                        },
+                        telemetry = { enable = false },
+                        diagnostics = { globals = { "vim" } },
+                        format = { enable = false },
+                        runtime = { version = "LuaJIT" },
+                    },
+                },
+            })
+            lspconfig.html.setup({
+                cmd = { "vscode-html-language-server", "--stdio" },
+                settings = {
+                    html = {
+                        format = {
+                            templating = true,
+                            wrapLineLength = 120,
+                            wrapAttributes = "auto",
+                        },
+                        hover = { documentation = true, references = true },
+                    },
+                },
+            })
+            lspconfig.yamlls.setup({
+                settings = {
+                    yaml = {
+                        schemas = { kubernetes = "/home/hjalmarlucius/src/hjarl/system/manifests/*.yaml" },
+                        -- schemaStore = { enable = false, url = "" },
+                    },
+                },
+            })
+            lspconfig.pyright.setup({
+                cmd = { "pyright-langserver", "--stdio", "--threads", "20" },
+                filetypes = { "python" },
+                settings = {
+                    python = {
+                        analysis = {
+                            -- logLevel = "Trace",
+                            autoImportCompletions = false,
+                            diagnosticMode = "openFilesOnly",
+                            useLibraryCodeForTypes = false,
+                            -- logTypeEvaluationTime = true,
+                            -- typeEvaluationTimeThreshold = 5000,
+                        },
+                    },
+                },
+            })
+            lspconfig.vtsls.setup({
+                settings = {
+                    complete_function_calls = true,
+                    vtsls = {
+                        enableMoveToFileCodeAction = true,
+                        autoUseWorkspaceTsdk = true,
+                        experimental = {
+                            maxInlayHintLength = 30,
+                            completion = {
+                                enableServerSideFuzzyMatch = true,
+                            },
+                        },
+                    },
+                    javascript = {
+                        updateImportsOnFileMove = { enabled = "always" },
+                        suggest = {
+                            completeFunctionCalls = true,
+                        },
+                        inlayHints = {
+                            enumMemberValues = { enabled = true },
+                            functionLikeReturnTypes = { enabled = true },
+                            parameterNames = { enabled = "literals" },
+                            parameterTypes = { enabled = true },
+                            propertyDeclarationTypes = { enabled = true },
+                            variableTypes = { enabled = false },
+                        },
+                    },
+                    typescript = {
+                        updateImportsOnFileMove = { enabled = "always" },
+                        suggest = {
+                            completeFunctionCalls = true,
+                        },
+                        inlayHints = {
+                            enumMemberValues = { enabled = true },
+                            functionLikeReturnTypes = { enabled = true },
+                            parameterNames = { enabled = "literals" },
+                            parameterTypes = { enabled = true },
+                            propertyDeclarationTypes = { enabled = true },
+                            variableTypes = { enabled = false },
+                        },
+                    },
+                },
+            })
+        end,
     }
 end
 
@@ -1395,6 +1260,7 @@ local lazyspecs = {
 for _, spec in ipairs({
     makespec_snacks(),
     makespec_conform(), -- autoformat
+    makespec_lspconfig(),
     makespec_treesitter(),
     makespec_todocomments(),
     makespec_trouble(),
