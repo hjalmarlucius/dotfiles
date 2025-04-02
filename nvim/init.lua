@@ -340,11 +340,6 @@ local function makespecs_themes()
         },
         "morhetz/gruvbox",
         {
-            "sonph/onehalf",
-            lazy = false,
-            config = function(plugin) vim.opt.rtp:append(plugin.dir .. "/vim") end,
-        },
-        {
             "catppuccin/nvim",
             lazy = false,
             name = "catppuccin",
@@ -386,6 +381,18 @@ local function makespec_lspconfig()
                         runtime = { version = "LuaJIT" },
                     },
                 },
+            })
+            lspconfig.clangd.setup({
+                cmd = {
+                    "clangd",
+                    "--background-index",
+                    "--clang-tidy",
+                    "--header-insertion=iwyu",
+                    "--completion-style=detailed",
+                    "--function-arg-placeholders",
+                    "--fallback-style=llvm",
+                },
+                filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
             })
             lspconfig.html.setup({
                 cmd = { "vscode-html-language-server", "--stdio" },
@@ -839,10 +846,6 @@ local function makespec_whichkey()
                 desc = "Window Hydra Mode (which-key)",
             },
         },
-        config = function(_, opts)
-            local wk = require("which-key")
-            wk.setup(opts)
-        end,
     }
 end
 
@@ -945,6 +948,7 @@ local function makespec_snacks()
             { "<leader>su", function() Snacks.picker.undo() end, desc = "Undo History" },
         },
         init = function()
+            -- stylua: ignore
             vim.api.nvim_create_autocmd("User", {
                 pattern = "VeryLazy",
                 callback = function()
@@ -954,12 +958,8 @@ local function makespec_snacks()
                     vim.print = _G.dd -- Override print to use snacks for `:=` command
 
                     Snacks.toggle.indent():map("<leader>u<tab>")
-                    Snacks.toggle
-                        .option("background", { off = "light", on = "dark", name = "Dark Background" })
-                        :map("<leader>ub")
-                    Snacks.toggle
-                        .option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 })
-                        :map("<leader>uc")
+                    Snacks.toggle.option("background", { off = "light", on = "dark", name = "Dark Background" }):map("<leader>ub")
+                    Snacks.toggle.option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 }):map("<leader>uc")
                     Snacks.toggle.diagnostics():map("<leader>ud")
                     Snacks.toggle.dim():map("<leader>uD")
                     Snacks.toggle.inlay_hints():map("<leader>ui")
@@ -1108,21 +1108,12 @@ local function makespec_flash()
     return {
         "folke/flash.nvim",
         opts = {},
+        -- stylua: ignore
         keys = {
-            { "<cr>", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
-            {
-                "<M-cr>",
-                mode = { "n", "o", "x" },
-                function() require("flash").treesitter() end,
-                desc = "Flash Treesitter",
-            },
+            { "<cr>", mode = { "n", "o", "x" }, function() require("flash").jump() end, desc = "Flash" },
+            { "<M-cr>", mode = { "n", "o", "x" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
             { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
-            {
-                "R",
-                mode = { "o", "x" },
-                function() require("flash").treesitter_search() end,
-                desc = "Treesitter Search",
-            },
+            { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
             { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
         },
     }
@@ -1176,7 +1167,7 @@ local function makespec_treesitter()
                 -- incremental_selection done by flash plugin
             },
         },
-        config = function() vim.opt.foldexpr = "nvim_treesitter#foldexpr()" end,
+        init = function() vim.opt.foldexpr = "nvim_treesitter#foldexpr()" end,
     }
 end
 
