@@ -82,6 +82,23 @@ vim.o.number = true
 vim.o.relativenumber = true
 
 vim.opt.termguicolors = true
+vim.diagnostic.config({
+    severity_sort = true,
+    underline = true,
+    virtual_text = {
+        spacing = vim.o.shiftwidth,
+        source = "if_many",
+        severity = {
+            max = vim.diagnostic.severity.WARN,
+        },
+    },
+    virtual_lines = {
+        current_line = true,
+        spacing = vim.o.shiftwidth,
+        severity = { min = vim.diagnostic.severity.ERROR },
+    },
+    float = { source = true },
+})
 
 -- ----------------------------------------
 -- MAPS
@@ -217,18 +234,11 @@ map({ "n", "x" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" 
 -- map("n", "<leader>cs", vim.lsp.buf.document_symbol, { desc = "Document Symbols" })
 -- map("n", "<leader>cw", vim.lsp.buf.workspace_symbol, { desc = "Workspace Symbols" })
 
--- VISUALS
--- https://codeyarns.com/tech/2011-07-29-vim-chart-of-color-names.html
-vim.api.nvim_create_autocmd("ColorScheme", {
-    pattern = { "*" },
-    callback = function()
-        vim.api.nvim_set_hl(0, "CustomCursor", { fg = "salmon1", bg = "cyan" })
-        vim.api.nvim_set_hl(0, "CustomICursor", { fg = "salmon1", bg = "cyan" })
-        vim.api.nvim_set_hl(0, "ColorColumn", { bg = "salmon4" })
-    end,
-})
+-- ----------------------------------------
+-- AUTOCMD
+-- ----------------------------------------
 
--- reload
+-- auto reload files
 vim.api.nvim_create_autocmd("FocusGained", {
     desc = "Reload files from disk when we focus vim",
     pattern = "*",
@@ -268,13 +278,39 @@ vim.api.nvim_create_autocmd("FileType", {
 
 -- wrap and check for spell in text filetypes
 vim.api.nvim_create_autocmd("FileType", {
-  group = vim.api.nvim_create_augroup("wrap_spell", { clear = true }),
-  pattern = { "text", "plaintex", "typst", "gitcommit", "markdown" },
-  callback = function()
-    vim.opt_local.wrap = true
-    vim.opt_local.spell = true
-  end,
+    group = vim.api.nvim_create_augroup("wrap_spell", { clear = true }),
+    pattern = { "text", "plaintex", "typst", "gitcommit", "markdown" },
+    callback = function()
+        vim.opt_local.wrap = true
+        vim.opt_local.spell = true
+    end,
 })
+
+-- ----------------------------------------
+-- USER COMMANDS
+-- ----------------------------------------
+
+vim.api.nvim_create_user_command("ConvertEOL", function(opts)
+    local fmt = opts.args
+    if fmt ~= "unix" and fmt ~= "dos" and fmt ~= "mac" then
+        vim.notify("Unsupported file format: " .. fmt, vim.log.levels.ERROR, {
+            title = "ConvertEOL",
+        })
+    end
+    vim.bo.fileformat = fmt
+    vim.cmd([[write]])
+    vim.notify("File converted to: " .. fmt, vim.log.levels.INFO, {
+        title = "ConvertEOL",
+    })
+end, { nargs = 1 })
+
+-- fix diff colors on some color schemes
+-- https://codeyarns.com/tech/2011-07-29-vim-chart-of-color-names.html
+vim.api.nvim_create_user_command("FixColors", function()
+    vim.api.nvim_set_hl(0, "CustomCursor", { fg = "salmon1", bg = "cyan" })
+    vim.api.nvim_set_hl(0, "CustomICursor", { fg = "salmon1", bg = "cyan" })
+    vim.api.nvim_set_hl(0, "ColorColumn", { bg = "salmon4" })
+end, {})
 
 -- ----------------------------------------
 -- SPECS
