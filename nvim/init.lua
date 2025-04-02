@@ -211,7 +211,7 @@ map("n", "<leader>ll", "<cmd>e ~/.local/state/nvim/lsp.log<cr>")
 map("n", "<leader>lc", "<cmd>checkhealth<cr>")
 local diagnostic_goto = function(count, severity)
     severity = severity and vim.diagnostic.severity[severity] or nil
-    return function() vim.diagnostic.jump({ severity, float = true, count = count }) end
+    return function() vim.diagnostic.jump({ severity, count = count }) end
 end
 map("n", "<M-i>", function() vim.diagnostic.open_float({ source = true }) end)
 map("n", "<M-n>", diagnostic_goto(1), { desc = "Next Diagnostic" })
