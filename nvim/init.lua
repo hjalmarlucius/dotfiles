@@ -547,8 +547,8 @@ local function makespec_oil()
             view_options = { show_hidden = true },
         },
         keys = {
-            { "<leader>fe", "<cmd>Oil .<cr>", desc = "Oil Explorer (buffer)" },
-            { "<leader>ff", "<cmd>Oil --float .<cr>", desc = "Oil Explorer (float)" },
+            { "<leader>fE", "<cmd>Oil .<cr>", desc = "Oil Explorer (buffer)" },
+            { "<leader>fe", "<cmd>Oil --float .<cr>", desc = "Oil Explorer (float)" },
         },
         init = function()
             vim.api.nvim_create_autocmd("User", {
@@ -571,7 +571,7 @@ local function makespec_neotree()
             cmd = { "Neotree" },
             dependencies = { "nvim-lua/plenary.nvim", "mini.icons", "MunifTanjim/nui.nvim" },
             opts = { hijack_netrw_behavior = "disabled" },
-            keys = { { "<leader>ft", "<cmd>Neotree<cr>", desc = "Neotree Explorer (sidebar)" } },
+            keys = { { "<leader>ff", "<cmd>Neotree<cr>", desc = "Neotree Explorer (sidebar)" } },
         },
     }
 end
