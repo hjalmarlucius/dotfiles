@@ -191,6 +191,7 @@ map(
 
 -- LSP
 map("n", "<leader>ll", "<cmd>e ~/.local/state/nvim/lsp.log<cr>")
+map("n", "<leader>lc", "<cmd>checkhealth<cr>")
 local diagnostic_goto = function(count, severity)
     severity = severity and vim.diagnostic.severity[severity] or nil
     return function() vim.diagnostic.jump({ severity, float = true, count = count }) end
@@ -237,6 +238,42 @@ vim.api.nvim_create_autocmd("BufEnter", {
     desc = "Every time we enter an unmodified buffer, check if it changed on disk",
     pattern = "*",
     command = "if &buftype == '' && !&modified && expand('%') != '' | exec 'checktime ' . expand('<abuf>') | endif",
+})
+-- Close some filetypes with <q>
+vim.api.nvim_create_autocmd("FileType", {
+    group = vim.api.nvim_create_augroup("close_with_q", { clear = true }),
+    pattern = {
+        "PlenaryTestPopup",
+        "checkhealth",
+        "floggraph",
+        "fugitive",
+        "gitsigns-blame",
+        "grug-far",
+        "help",
+        "lspinfo",
+        "notify",
+        "oil",
+        "qf",
+    },
+    callback = function(event)
+        vim.bo[event.buf].buflisted = false
+        vim.schedule(function()
+            vim.keymap.set("n", "q", function()
+                vim.cmd("close")
+                pcall(vim.api.nvim_buf_delete, event.buf, { force = true })
+            end, { buffer = event.buf, silent = true, desc = "Quit Buffer" })
+        end)
+    end,
+})
+
+-- wrap and check for spell in text filetypes
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("wrap_spell", { clear = true }),
+  pattern = { "text", "plaintex", "typst", "gitcommit", "markdown" },
+  callback = function()
+    vim.opt_local.wrap = true
+    vim.opt_local.spell = true
+  end,
 })
 
 -- ----------------------------------------
