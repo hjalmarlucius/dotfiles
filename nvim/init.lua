@@ -1,12 +1,12 @@
 vim.g.mapleader = vim.keycode("<space>")
-vim.g.maplocalleader = vim.keycode("<cr>")
+vim.g.maplocalleader = vim.keycode("/")
 vim.o.langmap = "ø:"
 
 -- general options
 vim.o.shell = "/usr/bin/zsh"
 vim.g.BASH_Ctrl_j = "off"
 vim.g.BASH_Ctrl_l = "off"
-vim.opt.clipboard = vim.opt.clipboard + { "unnamedplus" }
+vim.opt.clipboard:append("unnamedplus")
 vim.o.guicursor = "n-v-c:block-CustomCursor,i:ver100-CustomICursor,n-v-c:blinkon0,i:blinkwait10"
 vim.o.cursorline = true
 vim.o.list = true
@@ -18,11 +18,14 @@ vim.opt.shortmess:append({ W = true, I = true, c = true, C = true })
 vim.o.cmdheight = 0
 vim.o.showmode = false
 vim.o.sidescrolloff = 8
-vim.o.timeoutlen = 300
+vim.o.timeoutlen = 700
 vim.o.virtualedit = "block"
 vim.o.wildmode = "longest:full,full"
 vim.o.wrap = false
 vim.opt.diffopt:append("linematch:60") -- second stage diff to align lines
+vim.opt.diffopt:append("hiddenoff")
+vim.opt.diffopt:append("vertical")
+vim.opt.diffopt:append("algorithm:histogram")
 
 -- File History
 vim.o.undofile = true
@@ -105,9 +108,6 @@ vim.diagnostic.config({
 -- ----------------------------------------
 
 local map = vim.keymap.set
--- swap ;:
-map({ "n", "v" }, ";", ":")
-map({ "n", "v" }, ":", ";")
 
 -- better esc
 map({ "i", "n", "s" }, "<esc>", function()
@@ -144,6 +144,15 @@ map("n", "<c-p>", "wildmenumode() ? '<c-p>' : '<up>'", { expr = true, desc = "Pr
 map("i", ",", ",<c-g>u")
 map("i", ".", ".<c-g>u")
 map("i", ";", ";<c-g>u")
+
+-- save file
+map({ "i", "x", "n", "s" }, "<leader>ww", "<cmd>w<cr><esc>", { desc = "Save File" })
+
+-- quit
+map("n", "<leader>qq", "<cmd>q<cr>", { desc = "Close Window" })
+map("n", "<leader>qQ", "<cmd>qa<cr>", { desc = "Quit All" })
+map("n", "<leader>qw", "<cmd>wq<cr>", { desc = "Write And Close Window" })
+map("n", "<leader>qW", "<cmd>wqa<cr>", { desc = "Write And Quit All" })
 
 --keywordprg
 map("n", "<leader>K", "<cmd>norm! K<cr>", { desc = "Keywordprg" })
@@ -195,7 +204,7 @@ map("n", "<leader><tab>d", "<cmd>tabclose<cr>", { desc = "Close Tab" })
 map("n", "<leader><tab>p", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
 
 -- other
-map("n", "<leader>ww", [[:cd %:p:h<cr>]], { desc = "Set Workspace To Buffer Path" })
+map("n", "<leader>cw", [[:cd %:p:h<cr>]], { desc = "Set Workspace To Buffer Path" })
 map("n", "<leader>o", "m`o<Esc>``", { desc = "Insert Newline" })
 map("n", "\\", "n.", { noremap = true, silent = true, desc = "Repeat And Goto Next" })
 map("n", "<F2>", "<cmd>Lazy<cr>", { desc = "Lazy" })
@@ -257,6 +266,7 @@ vim.api.nvim_create_autocmd("FileType", {
         "checkhealth",
         "floggraph",
         "fugitive",
+        "git",
         "gitsigns-blame",
         "grug-far",
         "help",
@@ -321,6 +331,14 @@ local function makespecs_themes()
         "NLKNguyen/papercolor-theme",
         "junegunn/seoul256.vim",
         {
+            "mcauley-penney/phobos-anomaly.nvim",
+            priority = 1000,
+            config = function()
+                vim.cmd("colorscheme phobos-anomaly")
+                vim.api.nvim_set_hl(0, "Visual", { bg = "#3c3f4e" })
+            end,
+        },
+        {
             "mhartington/oceanic-next",
             config = function()
                 local customthemegroup = vim.api.nvim_create_augroup("customthemegroup", {})
@@ -344,7 +362,6 @@ local function makespecs_themes()
             lazy = false,
             name = "catppuccin",
             priority = 1000,
-            config = function() vim.cmd([[colorscheme catppuccin-mocha]]) end,
         },
         {
             "Shatur/neovim-ayu",
@@ -362,7 +379,7 @@ local function makespec_lspconfig()
         dependencies = { { "j-hui/fidget.nvim", opts = {} } },
         event = { "BufReadPost", "BufNewFile" },
         cmd = { "LspInfo", "LspRestart", "LspStart", "LspStop" },
-        keys = { { "<F3>", "<cmd>LspInfo<cr>", noremap = true } },
+        keys = { { "<F4>", "<cmd>LspInfo<cr>", noremap = true } },
         config = function()
             local lspconfig = require("lspconfig")
             lspconfig.tinymist.setup({})
@@ -514,9 +531,7 @@ local function makespec_lualine()
                     {
                         "buffers",
                         symbols = { alternate_file = "" },
-                        buffers_color = {
-                            active = { bg = "goldenrod" },
-                        },
+                        buffers_color = { active = { bg = "goldenrod" } },
                     },
                 },
                 lualine_b = {},
@@ -527,9 +542,7 @@ local function makespec_lualine()
                     {
                         "tabs",
                         mode = 2,
-                        tabs_color = {
-                            active = { bg = "goldenrod" },
-                        },
+                        tabs_color = { active = { bg = "goldenrod" } },
                     },
                 },
             },
@@ -714,8 +727,8 @@ local function makespec_fugitive()
         end,
         keys = {
             { "<leader>gg", "<cmd>vertical Git<cr>", desc = "Fugitive" },
-            { "<leader>gp", "<cmd>Git! push<cr>", desc = "Git Push" },
-            { "<leader>gP", "<cmd>Git! push -f<cr>", desc = "Git Force Push" },
+            { "<leader>gp", "<cmd>Git push<cr>", desc = "Git Push" },
+            { "<leader>gP", "<cmd>Git push -f<cr>", desc = "Git Force Push" },
         },
     }
 end
@@ -747,25 +760,25 @@ local function makespec_gitsigns()
         bmap("n", "<leader>gb", function() gs.blame_line({ full = true }) end, "Blame Line")
 
         -- Hunk
-        bmap("n", "<leader>hp", gs.preview_hunk_inline, "Preview Hunk Inline")
-        bmap("n", "<leader>hi", gs.preview_hunk, "Preview Hunk")
-        bmap("n", "<leader>hq", gs.setqflist, "File Hunks to QuickFix")
-        bmap("n", "<leader>hQ", function() gs.setqflist("all") end, "All Hunks to QuickFix")
-        bmap("n", "<leader>hx", gs.reset_hunk, "Reset Hunk")
-        bmap("v", "<leader>hx", function() gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Reset Hunk")
-        bmap("n", "<leader>hR", gs.reset_buffer, "Reset Buffer")
-        bmap("n", "<leader>hs", gs.stage_hunk, "Stage Hunk")
-        bmap("v", "<leader>hs", function() gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Stage Hunk")
-        bmap("n", "<leader>hS", gs.stage_buffer, "Stage Buffer")
-        bmap("n", "<leader>hu", gs.undo_stage_hunk, "Undo Stage Hunk")
-        bmap({ "n", "v" }, "<leader>hv", gs.select_hunk, "Select Hunk")
+        bmap("n", "<leader>gI", gs.preview_hunk_inline, "Preview Hunk Inline")
+        bmap("n", "<leader>gi", gs.preview_hunk, "Preview Hunk")
+        bmap("n", "<leader>gq", gs.setqflist, "File Hunks to QuickFix")
+        bmap("n", "<leader>gQ", function() gs.setqflist("all") end, "All Hunks to QuickFix")
+        bmap("n", "<leader>gx", gs.reset_hunk, "Reset Hunk")
+        bmap("v", "<leader>gx", function() gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Reset Hunk")
+        bmap("n", "<leader>gR", gs.reset_buffer, "Reset Buffer")
+        bmap("n", "<leader>gs", gs.stage_hunk, "Stage Hunk")
+        bmap("v", "<leader>gs", function() gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Stage Hunk")
+        bmap("n", "<leader>gS", gs.stage_buffer, "Stage Buffer")
+        bmap("n", "<leader>gu", gs.undo_stage_hunk, "Undo Stage Hunk")
+        bmap({ "n", "v" }, "<leader>gv", gs.select_hunk, "Select Hunk")
 
         -- Toggles
-        bmap("n", "<leader>hd", gs.toggle_deleted, "Toggle Show Deleted Lines")
-        bmap("n", "<leader>hl", gs.toggle_linehl, "Toggle Diff Line Highlight")
-        bmap("n", "<leader>hb", gs.toggle_current_line_blame, "Toggle Line Blame")
-        bmap("n", "<leader>hh", gs.toggle_word_diff, "Toggle Diff Word Colors")
-        bmap("n", "<leader>hn", gs.toggle_numhl, "Toggle Diff Line Number Highlight")
+        bmap("n", "<leader>gtd", gs.toggle_deleted, "Toggle Show Deleted Lines")
+        bmap("n", "<leader>gtl", gs.toggle_linehl, "Toggle Diff Line Highlight")
+        bmap("n", "<leader>gtb", gs.toggle_current_line_blame, "Toggle Line Blame")
+        bmap("n", "<leader>gth", gs.toggle_word_diff, "Toggle Diff Word Colors")
+        bmap("n", "<leader>gtn", gs.toggle_numhl, "Toggle Diff Line Number Highlight")
 
         -- Text object, e.g. for dih to delete hunk
         bmap({ "o", "x" }, "ih", "<cmd>Gitsigns select_hunk<CR>")
@@ -812,9 +825,10 @@ local function makespec_whichkey()
                     { "<leader>c", group = "code/content" },
                     { "<leader>f", group = "file/find" },
                     { "<leader>g", group = "git" },
-                    { "<leader>h", group = "hunks" },
+                    { "<leader>gt", group = "toggles" },
                     { "<leader>l", group = "logs" },
                     { "<leader>p", group = "autoformat" },
+                    { "<leader>q", group = "quit" },
                     { "<leader>s", group = "search" },
                     { "<leader>u", group = "ui", icon = { icon = "󰙵 ", color = "cyan" } },
                     { "[", group = "prev" },
@@ -912,7 +926,8 @@ local function makespec_snacks()
         -- stylua: ignore
         keys = {
             { "<leader>fr", function() Snacks.rename.rename_file() end, desc = "Rename File" },
-            { "<leader>d", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
+            { "<M-d>", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
+            { "<leader>qd", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
             { "<leader>gl", function() Snacks.lazygit() end, desc = "Launch Lazygit" },
             { "<leader>.", function() Snacks.scratch.open() end, desc = "Scratch Buffer" },
             -- find
@@ -1107,7 +1122,24 @@ end
 local function makespec_flash()
     return {
         "folke/flash.nvim",
-        opts = {},
+        event = "VeryLazy",
+        opts = {
+            label = { uppercase = false },
+            jump = { autojump = true },
+            modes = {
+                char = {
+                    jump = { autojump = true },
+                    char_actions = function(motion)
+                        return {
+                            [";"] = "right", -- set to `right` to always go right
+                            [","] = "left", -- set to `left` to always go left
+                            [motion:lower()] = "next",
+                            [motion:upper()] = "prev",
+                        }
+                    end,
+                },
+            },
+        },
         -- stylua: ignore
         keys = {
             { "<cr>", mode = { "n", "o", "x" }, function() require("flash").jump() end, desc = "Flash" },
