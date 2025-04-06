@@ -97,3 +97,5 @@ yay -S i3status \
 
 # firefox windowed fullscreen
 # can be achieved by setting full-screen-api.ignore-widgets to true in about:config
+
+wget -P ~/.local/share/fonts/ https://raw.githubusercontent.com/SUNET/static_sunet_se/refs/heads/master/fonts/Akkurat-Mono.otf

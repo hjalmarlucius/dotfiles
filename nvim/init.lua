@@ -18,7 +18,7 @@ vim.opt.shortmess:append({ W = true, I = true, c = true, C = true })
 vim.o.cmdheight = 0
 vim.o.showmode = false
 vim.o.sidescrolloff = 8
-vim.o.timeoutlen = 700
+vim.o.timeoutlen = 500
 vim.o.virtualedit = "block"
 vim.o.wildmode = "longest:full,full"
 vim.o.wrap = false
@@ -102,6 +102,7 @@ vim.diagnostic.config({
     },
     float = { source = true },
 })
+vim.lsp.set_log_level(2)
 
 -- ----------------------------------------
 -- MAPS
@@ -149,10 +150,10 @@ map("i", ";", ";<c-g>u")
 map({ "x", "n", "s" }, "<leader>ww", "<cmd>w<cr><esc>", { desc = "Save File" })
 
 -- quit
-map("n", "<leader>qq", "<cmd>q<cr>", { desc = "Close Window" })
-map("n", "<leader>qQ", "<cmd>qa<cr>", { desc = "Quit All" })
+map("n", "<leader>q", "<cmd>q<cr>", { desc = "Close Window" })
+map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit All" })
 map("n", "<leader>qw", "<cmd>wq<cr>", { desc = "Write And Close Window" })
-map("n", "<leader>qW", "<cmd>wqa<cr>", { desc = "Write And Quit All" })
+map("n", "<leader>qwa", "<cmd>wqa<cr>", { desc = "Write And Quit All" })
 
 --keywordprg
 map("n", "<leader>K", "<cmd>norm! K<cr>", { desc = "Keywordprg" })
@@ -442,8 +443,8 @@ local function makespec_lspconfig()
                             autoImportCompletions = false,
                             diagnosticMode = "openFilesOnly",
                             useLibraryCodeForTypes = false,
-                            -- logTypeEvaluationTime = true,
-                            -- typeEvaluationTimeThreshold = 5000,
+                            logTypeEvaluationTime = true,
+                            typeEvaluationTimeThreshold = 2000,
                         },
                     },
                 },
@@ -1068,7 +1069,7 @@ local function makespec_todocomments()
                 TEST = { icon = "⏲ ", color = "test" },
             },
             merge_keywords = false, -- when true, custom keywords will be merged with the defaults
-            highlight = { keyword = "bg", pattern = [[.*<(KEYWORDS)\s*:]] },
+            highlight = { keyword = "bg", pattern = [[.*<(KEYWORDS)\s*]] },
             search = { pattern = [[\b(KEYWORDS)\b]] },
             colors = {
                 error = { "#ba1a1a" },
@@ -1124,9 +1125,20 @@ local function makespec_flash()
         "folke/flash.nvim",
         event = "VeryLazy",
         opts = {
+            search = {
+                multi_window = true,
+                mode = "exact",
+                exclude = {
+                    "notify",
+                    "noice",
+                    "flash_prompt",
+                    function(win) return not vim.api.nvim_win_get_config(win).focusable end,
+                },
+            },
             label = { uppercase = false },
             jump = { autojump = true },
             modes = {
+                search = { enabled = true },
                 char = {
                     jump = { autojump = true },
                     char_actions = function(motion)

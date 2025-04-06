@@ -6,6 +6,7 @@ config.color_scheme = "Monokai (dark) (terminal.sexy)"
 config.font_size = 14
 -- config.font = wezterm.font("Noto Sans Mono")
 config.font = wezterm.font_with_fallback({
+    "Akkurat-Mono",
     "Noto Sans Mono",
     "Terminess Nerd Font",
     "Noto Color Emoji",
