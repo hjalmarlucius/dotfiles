@@ -217,7 +217,7 @@ map(
 )
 
 -- LSP
-map("n", "<leader>ll", "<cmd>e ~/.local/state/nvim/lsp.log<cr>")
+map("n", "<leader>ld", "<cmd>e ~/.local/state/nvim/lsp.log<cr>")
 map("n", "<leader>lc", "<cmd>checkhealth<cr>")
 local diagnostic_goto = function(count, severity)
     severity = severity and vim.diagnostic.severity[severity] or nil
@@ -377,7 +377,6 @@ local function makespec_lspconfig()
     return {
         "neovim/nvim-lspconfig",
         lazy = false,
-        dependencies = { { "j-hui/fidget.nvim", opts = {} } },
         event = { "BufReadPost", "BufNewFile" },
         cmd = { "LspInfo", "LspRestart", "LspStart", "LspStop" },
         keys = { { "<F4>", "<cmd>LspInfo<cr>", noremap = true } },
@@ -504,27 +503,33 @@ local function makespec_lualine()
             options = { theme = "auto", globalstatus = false },
             extensions = { "fugitive", "neo-tree", "lazy" },
             sections = {
-                lualine_c = {
-                    { "filename", file_status = true, path = 1, shorting_target = 0 },
-                    { "filetype", icon_only = true, separator = " ", padding = { left = 1, right = 0 } },
-                },
+                lualine_a = { "mode" },
+                lualine_b = {},
+                lualine_c = { { "filename", path = 1, shorting_target = 0 } },
                 lualine_x = {
-                    { 'require("noice").api.status.message.get_hl()' },
-                    { 'require("noice").api.status.command.get()', color = { fg = "#ff9e64" } },
-                    { 'require("noice").api.status.mode.get()', color = { fg = "#ff9e64" } },
+                    { 'require("noice").api.status.message.get()', color = { fg = "#99c794" } },
+                    { 'require("noice").api.status.mode.get()', color = { fg = "#65737e" } },
+                    { 'require("noice").api.status.command.get()', color = { fg = "goldenrod" } },
                 },
-                lualine_y = { "progress", "location" },
-                lualine_z = { { function() return " " .. os.date("%R") end } },
+                lualine_y = {
+                    "encoding",
+                    "filetype",
+                    { "location", separator = "of", padding = { left = 1, right = 1 } },
+                    "vim.api.nvim_buf_line_count(0)",
+                },
+                lualine_z = { { function() return " " .. os.date("%R") end, color = { bg = "goldenrod" } } },
             },
             inactive_sections = {
                 lualine_a = {},
                 lualine_b = {},
                 lualine_c = {
                     { "filename", file_status = true, path = 1, shorting_target = 0 },
-                    { "filetype", icon_only = true, separator = " ", padding = { left = 1, right = 0 } },
                 },
                 lualine_x = {},
-                lualine_y = { "progress", "location" },
+                lualine_y = {
+                    { "location", separator = "of", padding = { left = 1, right = 1 } },
+                    "vim.api.nvim_buf_line_count(0)",
+                },
                 lualine_z = {},
             },
             tabline = {
@@ -938,7 +943,7 @@ local function makespec_snacks()
             { "<leader>fc", function() Snacks.picker.files({ cwd = "/home/hjalmarlucius/dotfiles" }) end, desc = "Find Config" },
             { "<leader>fn", function() Snacks.picker.files({ cwd = "/home/hjalmarlucius/notes" }) end, desc = "Find Note", },
             -- logs
-            { "<leader>lm", function() Snacks.picker.notifications() end, desc = "Notification History" },
+            { "<leader>ll", function() Snacks.picker.notifications() end, desc = "Notification History" },
             -- code
             { "<leader>cS", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
             -- replaced by Trouble
@@ -1308,34 +1313,27 @@ end
 local function makespec_noice()
     return {
         "folke/noice.nvim",
-        dependencies = { "MunifTanjim/nui.nvim" },
+        event = "VeryLazy",
+        dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" },
         opts = {
-            cmdline = { enabled = true, view = "cmdline_popup" },
             messages = {
-                enabled = true, -- enables the Noice messages UI
-                view = "mini", -- default view for messages
-                view_error = "notify", -- view for errors
-                view_warn = "mini", -- view for warnings
-                view_history = "popup", -- view for :messages
+                enabled = true,
+                view = "notify",
+                view_error = "notify",
+                view_warn = "notify",
+                view_history = "popup",
                 view_search = false,
             },
-            popupmenu = { enabled = true },
-            notify = { enabled = true, view = "mini" },
             lsp = {
                 override = {
                     ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
                     ["vim.lsp.util.stylize_markdown"] = true,
                 },
-                progress = { enabled = false },
-                hover = { enabled = true },
-                signature = { enabled = true, auto_open = { enabled = true, throttle = 0 } },
-                message = { enabled = true, view = "notify" },
-                documentation = { view = "hover" },
+                signature = { enabled = true, auto_open = { enabled = true, throttle = 50 } },
             },
-            -- you can enable a preset for easier configuration
             presets = {
-                command_palette = true, -- position the cmdline and popupmenu together
-                long_message_to_split = true, -- long messages will be sent to a split
+                command_palette = true,
+                long_message_to_split = true,
             },
             routes = {
                 { filter = { event = "msg_show", kind = "search_count" }, opts = { skip = true } },
@@ -1343,9 +1341,8 @@ local function makespec_noice()
             },
         },
         keys = {
-            { "<leader>ld", function() require("noice").cmd("dismiss") end, desc = "Noice dismiss" },
-            { "<leader>le", function() require("noice").cmd("errors") end, desc = "Noice errors" },
-            { "<leader>lh", function() require("noice").cmd("history") end, desc = "Noice history" },
+            { "<leader>lx", function() require("noice").cmd("dismiss") end, desc = "Noice dismiss" },
+            { "<leader>lh", function() require("noice").cmd("all") end, desc = "Noice history" },
             { "<leader>ls", function() require("noice").cmd("stats") end, desc = "Noice stats" },
             { "<leader>un", function() require("noice").cmd("enable") end, desc = "Enable Noice" },
             { "<leader>uN", function() require("noice").cmd("disable") end, desc = "Disable Noice" },
