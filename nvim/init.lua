@@ -928,6 +928,12 @@ local function makespec_snacks()
             },
             toggle = { enabled = true },
             words = { enabled = true },
+            styles = {
+                lazygit = {
+                    width = 0,
+                    height = 0,
+                },
+            },
         },
         -- stylua: ignore
         keys = {
@@ -1148,8 +1154,8 @@ local function makespec_flash()
                     jump = { autojump = true },
                     char_actions = function(motion)
                         return {
-                            [";"] = "right", -- set to `right` to always go right
-                            [","] = "left", -- set to `left` to always go left
+                            [";"] = "next", -- set to `right` to always go right
+                            [","] = "prev", -- set to `left` to always go left
                             [motion:lower()] = "next",
                             [motion:upper()] = "prev",
                         }
@@ -1329,7 +1335,7 @@ local function makespec_noice()
                     ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
                     ["vim.lsp.util.stylize_markdown"] = true,
                 },
-                signature = { enabled = true, auto_open = { enabled = true, throttle = 50 } },
+                signature = { enabled = true, auto_open = { enabled = false, throttle = 50 } },
             },
             presets = {
                 command_palette = true,
