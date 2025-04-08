@@ -22,7 +22,7 @@ config.set_environment_variables = { EDITOR = "nvim" }
 
 config.keys = {
     -- font size
-    { key = "+", mods = "CTRL", action = act.IncreaseFontSize },
+    { key = "+", mods = "SHIFT|CTRL", action = act.IncreaseFontSize },
     { key = "-", mods = "CTRL", action = act.DecreaseFontSize },
     { key = "=", mods = "SHIFT|CTRL", action = act.ResetFontSize },
     -- search
