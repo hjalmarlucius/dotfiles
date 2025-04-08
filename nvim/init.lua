@@ -95,6 +95,7 @@ vim.diagnostic.config({
             max = vim.diagnostic.severity.WARN,
         },
     },
+    signs = false,
     virtual_lines = {
         current_line = true,
         spacing = vim.o.shiftwidth,
@@ -150,10 +151,11 @@ map("i", ";", ";<c-g>u")
 map({ "x", "n", "s" }, "<leader>ww", "<cmd>w<cr><esc>", { desc = "Save File" })
 
 -- quit
-map("n", "<leader>q", "<cmd>q<cr>", { desc = "Close Window" })
-map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit All" })
-map("n", "<leader>qw", "<cmd>wq<cr>", { desc = "Write And Close Window" })
-map("n", "<leader>qwa", "<cmd>wqa<cr>", { desc = "Write And Quit All" })
+map("n", "<leader>qq", "<cmd>q<cr>", { desc = "Close Window" })
+map("n", "<leader>qa", "<cmd>qa<cr>", { desc = "Quit All" })
+map("n", "<leader>qA", "<cmd>qa!<cr>", { desc = "Quit All" })
+map("n", "<leader>wq", "<cmd>wq<cr>", { desc = "Write And Close Window" })
+map("n", "<leader>wQ", "<cmd>wqa<cr>", { desc = "Write And Quit All" })
 
 --keywordprg
 map("n", "<leader>K", "<cmd>norm! K<cr>", { desc = "Keywordprg" })
@@ -507,7 +509,7 @@ local function makespec_lualine()
                 lualine_b = {},
                 lualine_c = { { "filename", path = 1, shorting_target = 0 } },
                 lualine_x = {
-                    { 'require("noice").api.status.message.get()', color = { fg = "#99c794" } },
+                    -- { 'require("noice").api.status.message.get()', color = { fg = "#99c794" } },  -- gets too obtrusive
                     { 'require("noice").api.status.mode.get()', color = { fg = "#65737e" } },
                     { 'require("noice").api.status.command.get()', color = { fg = "goldenrod" } },
                 },
@@ -1137,7 +1139,6 @@ local function makespec_flash()
         event = "VeryLazy",
         opts = {
             search = {
-                multi_window = true,
                 mode = "exact",
                 exclude = {
                     "notify",
@@ -1165,8 +1166,8 @@ local function makespec_flash()
         },
         -- stylua: ignore
         keys = {
-            { "<cr>", mode = { "n", "o", "x" }, function() require("flash").jump() end, desc = "Flash" },
-            { "<M-cr>", mode = { "n", "o", "x" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+            { "s", mode = { "n", "o", "x" }, function() require("flash").jump() end, desc = "Flash" },
+            { "S", mode = { "n", "o", "x" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
             { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
             { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
             { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
