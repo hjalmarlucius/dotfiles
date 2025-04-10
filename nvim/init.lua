@@ -387,6 +387,7 @@ local function makespec_lspconfig()
             local lspconfig = require("lspconfig")
             lspconfig.tinymist.setup({})
             lspconfig.bashls.setup({})
+            lspconfig.nushell.setup({})
             lspconfig.lua_ls.setup({
                 cmd = { "lua-language-server" },
                 settings = {
@@ -1267,6 +1268,7 @@ local function makespec_treesitter()
                     "git_rebase",
                     "gitcommit",
                     "lua",
+                    "nu",
                     "python",
                     "regex",
                     "vimdoc",

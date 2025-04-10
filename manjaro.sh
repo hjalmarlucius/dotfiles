@@ -16,15 +16,14 @@ yay -S python-pip pyenv ipython
 yay -S manjaro-pipewire pavucontrol
 
 # terminal and shell
-yay -S wezterm zsh urxvt-resize-font
-chsh -s /usr/bin/zsh
+yay -S wezterm nushell urxvt-resize-font
+chsh -s /usr/bin/nu
 
-# zsh setup
-yay -S zsh-theme-powerlevel10k \
-    zsh-git-prompt \
-    zsh-autosuggestions \
-    zsh-history-substring-search \
-    zsh-syntax-highlighting
+# nushell
+yay -S oh-my-posh argc
+oh-my-posh init nu --config ~/dotfiles/nushell/theme.omp.json
+git clone https://github.com/sigoden/argc-completions.git ~/.local/share/argc-completions/
+wget -P ~/.config/nushell -O theme.omp.json https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/refs/heads/main/themes/free-ukraine.omp.json
 
 # code
 yay -S neovim tmux tig diff-so-fancy ripgrep nvimpager
