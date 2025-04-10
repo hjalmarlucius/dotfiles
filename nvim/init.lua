@@ -333,13 +333,14 @@ local function makespecs_themes()
     return {
         "NLKNguyen/papercolor-theme",
         "junegunn/seoul256.vim",
+        "mcauley-penney/phobos-anomaly.nvim",
+        { "bluz71/vim-moonfly-colors", name = "moonfly", lazy = false },
         {
-            "mcauley-penney/phobos-anomaly.nvim",
-            priority = 1000,
-            config = function()
-                vim.cmd("colorscheme phobos-anomaly")
-                vim.api.nvim_set_hl(0, "Visual", { bg = "#3c3f4e" })
-            end,
+            "uloco/bluloco.nvim",
+            lazy = false,
+            dependencies = { "rktjmp/lush.nvim" },
+            opts = {},
+            config = function() vim.cmd("colorscheme bluloco") end,
         },
         {
             "mhartington/oceanic-next",
@@ -510,8 +511,8 @@ local function makespec_lualine()
                 lualine_c = { { "filename", path = 1, shorting_target = 0 } },
                 lualine_x = {
                     -- { 'require("noice").api.status.message.get()', color = { fg = "#99c794" } },  -- gets too obtrusive
-                    { 'require("noice").api.status.mode.get()', color = { fg = "#65737e" } },
-                    { 'require("noice").api.status.command.get()', color = { fg = "goldenrod" } },
+                    { 'require("noice").api.status.mode.get()', color = "lualine_a_command" },
+                    { 'require("noice").api.status.command.get()', color = "lualine_a_insert" },
                 },
                 lualine_y = {
                     "encoding",
@@ -519,7 +520,7 @@ local function makespec_lualine()
                     { "location", separator = "of", padding = { left = 1, right = 1 } },
                     "vim.api.nvim_buf_line_count(0)",
                 },
-                lualine_z = { { function() return " " .. os.date("%R") end, color = { bg = "goldenrod" } } },
+                lualine_z = { { function() return " " .. os.date("%R") end } },
             },
             inactive_sections = {
                 lualine_a = {},
@@ -539,7 +540,7 @@ local function makespec_lualine()
                     {
                         "buffers",
                         symbols = { alternate_file = "" },
-                        buffers_color = { active = { bg = "goldenrod" } },
+                        buffers_color = { active = "lualine_a_command" },
                     },
                 },
                 lualine_b = {},
@@ -550,7 +551,7 @@ local function makespec_lualine()
                     {
                         "tabs",
                         mode = 2,
-                        tabs_color = { active = { bg = "goldenrod" } },
+                        tabs_color = { active = "lualine_a_command" },
                     },
                 },
             },
@@ -591,7 +592,44 @@ local function makespec_neotree()
             version = false,
             cmd = { "Neotree" },
             dependencies = { "nvim-lua/plenary.nvim", "mini.icons", "MunifTanjim/nui.nvim" },
-            opts = { hijack_netrw_behavior = "disabled" },
+            opts = {
+                hijack_netrw_behavior = "disabled",
+                close_if_last_window = true,
+                filesystem = { follow_current_file = { enabled = true } },
+                commands = {
+                    system_open = function(state)
+                        local node = state.tree:get_node()
+                        local path = node:get_id()
+                        -- macOs: open file in default application in the background.
+                        -- vim.fn.jobstart({ "xdg-open", "-g", path }, { detach = true })
+                        -- Linux: open file in default application
+                        vim.fn.jobstart({ "xdg-open", path }, { detach = true })
+                    end,
+                },
+                window = {
+                    mappings = {
+                        ["O"] = "system_open",
+                        ["h"] = function(state)
+                            local node = state.tree:get_node()
+                            if node.type == "directory" and node:is_expanded() then
+                                require("neo-tree.sources.filesystem").toggle_directory(state, node)
+                            else
+                                require("neo-tree.ui.renderer").focus_node(state, node:get_parent_id())
+                            end
+                        end,
+                        ["l"] = function(state)
+                            local node = state.tree:get_node()
+                            if node.type == "directory" then
+                                if not node:is_expanded() then
+                                    require("neo-tree.sources.filesystem").toggle_directory(state, node)
+                                elseif node:has_children() then
+                                    require("neo-tree.ui.renderer").focus_node(state, node:get_child_ids()[1])
+                                end
+                            end
+                        end,
+                    },
+                },
+            },
             keys = { { "<leader>ff", "<cmd>Neotree<cr>", desc = "Neotree Explorer (sidebar)" } },
         },
     }
@@ -728,8 +766,8 @@ local function makespec_fugitive()
             vim.api.nvim_create_autocmd("User", {
                 pattern = { "FugitiveCommit", "BufReadPost" },
                 callback = function()
-                    vim.opt.foldmethod = "syntax"
-                    vim.opt.foldlevel = 0
+                    vim.opt_local.foldmethod = "syntax"
+                    vim.opt_local.foldlevel = 0
                 end,
             })
         end,
@@ -1027,7 +1065,6 @@ local function makespec_trouble()
                 qflist = { win = { position = "right", size = 100 } },
             },
         },
-        -- TODO FIX
         keys = {
             { "<leader>cc", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics" },
             { "<leader>cd", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics" },
