@@ -512,7 +512,7 @@ local function makespec_lualine()
                 lualine_x = {
                     -- { 'require("noice").api.status.message.get()', color = { fg = "#99c794" } },  -- gets too obtrusive
                     { 'require("noice").api.status.mode.get()', color = "lualine_a_command" },
-                    { 'require("noice").api.status.command.get()', color = "lualine_a_insert" },
+                    { 'require("noice").api.status.command.get()', color = "lualine_a_command" },
                 },
                 lualine_y = {
                     "encoding",
@@ -595,7 +595,10 @@ local function makespec_neotree()
             opts = {
                 hijack_netrw_behavior = "disabled",
                 close_if_last_window = true,
-                filesystem = { follow_current_file = { enabled = true } },
+                filesystem = {
+                    filtered_items = { hide_gitignored = false },
+                    follow_current_file = { enabled = false },
+                },
                 commands = {
                     system_open = function(state)
                         local node = state.tree:get_node()
