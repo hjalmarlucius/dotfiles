@@ -3,7 +3,7 @@ vim.g.maplocalleader = vim.keycode("/")
 vim.o.langmap = "ø:"
 
 -- general options
-vim.o.shell = "/usr/bin/zsh"
+vim.o.shell = "/usr/bin/nu"
 vim.g.BASH_Ctrl_j = "off"
 vim.g.BASH_Ctrl_l = "off"
 vim.opt.clipboard:append("unnamedplus")
