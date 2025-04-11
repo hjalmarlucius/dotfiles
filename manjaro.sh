@@ -22,7 +22,7 @@ chsh -s /usr/bin/nu
 # nushell
 yay -S oh-my-posh argc
 git clone https://github.com/sigoden/argc-completions.git ~/.local/share/argc-completions/
-oh-my-posh init nu --config https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/refs/heads/main/themes/iterm2.omp.json
+oh-my-posh init nu --config https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/refs/heads/main/themes/negligible.omp.json
 
 # code
 yay -S neovim tmux tig diff-so-fancy ripgrep nvimpager

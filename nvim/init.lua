@@ -565,9 +565,12 @@ local function makespec_oil()
         "stevearc/oil.nvim",
         dependencies = { "mini.icons" },
         cmd = { "Oil" },
+        lazy = false,
         opts = {
+            default_file_explorer = true,
             watch_for_changes = true,
             view_options = { show_hidden = true },
+            columns = { "icon", "permissions", "size", "mtime" },
         },
         keys = {
             { "<leader>fE", "<cmd>Oil .<cr>", desc = "Oil Explorer (buffer)" },
