@@ -616,7 +616,7 @@ local function makespec_neotree()
                 local i = tonumber(choice:sub(1, 1))
                 if i then
                     local result = results[i]
-                    vim.fn.setreg('+', result)
+                    vim.fn.setreg("+", result)
                     vim.notify("Copied: " .. result)
                 else
                     vim.notify("Invalid selection")
@@ -883,22 +883,6 @@ local function makespec_gitsigns()
             word_diff = false,
             signs_staged_enable = false,
             on_attach = on_gitsigns_attach,
-            -- extra thin lines
-            signs = {
-                add = { text = "▎" },
-                change = { text = "▎" },
-                delete = { text = "▎" },
-                topdelete = { text = "▎" },
-                changedelete = { text = "▎" },
-                untracked = { text = "▎" },
-            },
-            signs_staged = {
-                add = { text = "▎" },
-                change = { text = "▎" },
-                delete = { text = "▎" },
-                topdelete = { text = "▎" },
-                changedelete = { text = "▎" },
-            },
         },
     }
 end
@@ -1106,7 +1090,21 @@ local function makespecs_mini()
             opts = { options = { basic = true, extra_ui = true }, mappings = { move_with_alt = true } },
         },
         { "echasnovski/mini.icons", opts = {} },
-        { "echasnovski/mini.surround", version = false, opts = {} },
+        {
+            "echasnovski/mini.surround",
+            version = false,
+            opts = {
+                mappings = {
+                    add = "yu", -- Add surrounding in Normal and Visual modes
+                    delete = "du", -- Delete surrounding
+                    find = "]u", -- Find surrounding (to the right)
+                    find_left = "[u", -- Find surrounding (to the left)
+                    highlight = "<leader>uu", -- Highlight surrounding
+                    replace = "cu", -- Replace surrounding
+                    update_n_lines = "", -- Update `n_lines`
+                },
+            },
+        },
     }
 end
 
