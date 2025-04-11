@@ -6,10 +6,8 @@ $env.config = {
     vi_normal: block
   }
   history: {
-    max_size: 100_000
-    sync_on_enter: true
-    file_format: "plaintext"
-    isolation: false
+    file_format: sqlite
+    isolation: true
   }
   keybindings: [
     {
