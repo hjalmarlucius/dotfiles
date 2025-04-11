@@ -21,9 +21,8 @@ chsh -s /usr/bin/nu
 
 # nushell
 yay -S oh-my-posh argc
-oh-my-posh init nu --config ~/dotfiles/nushell/theme.omp.json
 git clone https://github.com/sigoden/argc-completions.git ~/.local/share/argc-completions/
-wget -P ~/.config/nushell -O theme.omp.json https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/refs/heads/main/themes/free-ukraine.omp.json
+oh-my-posh init nu --config https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/refs/heads/main/themes/iterm2.omp.json
 
 # code
 yay -S neovim tmux tig diff-so-fancy ripgrep nvimpager
