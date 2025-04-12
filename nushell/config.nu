@@ -39,6 +39,36 @@ $env.config = {
     }
   ]
 }
+
+# from: https://github.com/nushell/nushell/issues/8166
+def monitor [
+  --duration (-d): duration = 1sec
+  ...args
+] {
+  let args = $args | into string
+  let cmd = $args | str join ' '
+
+  loop {
+      let last_run = (date now)
+      let till = $last_run + $duration
+
+      let out = nu --config $nu.config-path --env-config $nu.env-path --commands $cmd | complete
+
+      if $out.exit_code == 0 {
+        clear
+        print $"Running every ($duration) on '(hostname)': `($cmd)`"
+
+        print $out.stdout
+
+        print $"Last run: ($last_run)"
+        sleep ($till - (date now))
+      } else {
+        print $out.stdout $out.stderr
+        break
+      }
+  }
+}
+
 source ~/.oh-my-posh.nu
 
 # argc-completions
