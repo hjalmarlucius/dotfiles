@@ -444,8 +444,8 @@ local function makespec_lspconfig()
                         analysis = {
                             -- logLevel = "Trace",
                             autoImportCompletions = false,
-                            diagnosticMode = "openFilesOnly",
-                            useLibraryCodeForTypes = false,
+                            diagnosticMode = "workspace",
+                            useLibraryCodeForTypes = true,
                             logTypeEvaluationTime = true,
                             typeEvaluationTimeThreshold = 2000,
                         },

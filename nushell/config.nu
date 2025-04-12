@@ -29,7 +29,14 @@ $env.config = {
               { send: right }
           ]
       }
-  }
+    }
+    {
+      name: delete_one_word_backward
+      modifier: alt
+      keycode: backspace
+      mode: vi_insert
+      event: {edit: backspaceword}
+    }
   ]
 }
 source ~/.oh-my-posh.nu
