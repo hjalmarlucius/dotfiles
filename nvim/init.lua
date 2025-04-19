@@ -1201,22 +1201,26 @@ local function makespec_todocomments()
     }
 end
 
-local function makespec_tmuxnav()
+local function makespec_smartsplits()
     return {
-        -- tmux / vim interop
-        "alexghergh/nvim-tmux-navigation",
-        config = function()
-            require("nvim-tmux-navigation").setup({
-                disable_when_zoomed = true, -- defaults to false
-                keybindings = {
-                    left = "<M-h>",
-                    down = "<M-j>",
-                    up = "<M-k>",
-                    right = "<M-l>",
-                    last_active = "<M-\\>",
-                },
-            })
-        end,
+        "mrjones2014/smart-splits.nvim",
+        lazy = false,
+        -- stylua: ignore
+        keys = {
+            { "<M-h>", function() require("smart-splits").move_cursor_left() end, { desc = "Go to Left Window", remap = true } },
+            { "<M-j>", function() require("smart-splits").move_cursor_down() end, { desc = "Go to Left Window", remap = true } },
+            { "<M-k>", function() require("smart-splits").move_cursor_up() end, { desc = "Go to Left Window", remap = true } },
+            { "<M-l>", function() require("smart-splits").move_cursor_right() end, { desc = "Go to Left Window", remap = true } },
+            { "<M-\\>", function() require("smart-splits").move_cursor_previous() end, { desc = "Go to Previous Window", remap = true } },
+            { "<C-h>", function() require("smart-splits").resize_left() end, { desc = "Resize Window Left", remap = true } },
+            { "<C-j>", function() require("smart-splits").resize_down() end, { desc = "Resize Window Down", remap = true } },
+            { "<C-k>", function() require("smart-splits").resize_up() end, { desc = "Resize Window Up", remap = true } },
+            { "<C-l>", function() require("smart-splits").resize_right() end, { desc = "Resize Window Right", remap = true } },
+            { "<leader><leader>h", function() require("smart-splits").swap_buf_left() end, { desc = "Swap Buffer Left", remap = true } },
+            { "<leader><leader>j", function() require("smart-splits").swap_buf_down() end, { desc = "Swap Buffer Down", remap = true } },
+            { "<leader><leader>k", function() require("smart-splits").swap_buf_up() end, { desc = "Swap Buffer Up", remap = true } },
+            { "<leader><leader>l", function() require("smart-splits").swap_buf_right() end, { desc = "Swap Buffer Right", remap = true } },
+        },
     }
 end
 
@@ -1479,7 +1483,7 @@ for _, spec in ipairs({
     makespec_orgmode(),
     -- navigation
     makespec_whichkey(),
-    makespec_tmuxnav(),
+    makespec_smartsplits(),
     makespec_hlslens(),
     makespec_flash(),
     makespec_grugfar(),
