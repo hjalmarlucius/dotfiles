@@ -18,6 +18,13 @@ $env.config = {
         event: { send: menu name: history_menu }
     }
     {
+        name: history_menu
+        modifier: none
+        keycode: char_/
+        mode: [ vi_normal ]
+        event: { send: menu name: history_menu }
+    }
+    {
       name: move_right_or_take_history_hint
       modifier: control
       keycode: char_f
