@@ -13,10 +13,13 @@ set recolor-lightcolor \#222222
 set guioptions "csv"
 set adjust-open "best-fit"
 set selection-clipboard "clipboard"
+set database "sqlite"
 map [normal]     R rotate rotate-ccw
 map [fullscreen] R rotate rotate-ccw
 map [normal]     c recolor
 map [fullscreen] c recolor
+map [normal]     <F8> recolor
+map [fullscreen] <F8> recolor
 map [normal] f toggle_fullscreen
 map [fullscreen] f toggle_fullscreen
 map [normal] <A-1> set "pages-per-row 1"
