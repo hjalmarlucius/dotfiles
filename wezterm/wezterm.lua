@@ -3,7 +3,7 @@ local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 local act = wezterm.action
 config.color_scheme = "Monokai (dark) (terminal.sexy)"
-config.font_size = 14
+config.font_size = 13
 -- config.font = wezterm.font("Noto Sans Mono")
 config.font = wezterm.font_with_fallback({
     "Akkurat-Mono",
