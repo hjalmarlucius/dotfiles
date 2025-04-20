@@ -26,6 +26,11 @@ vim.opt.diffopt:append("linematch:60") -- second stage diff to align lines
 vim.opt.diffopt:append("hiddenoff")
 vim.opt.diffopt:append("vertical")
 vim.opt.diffopt:append("algorithm:histogram")
+vim.opt.wildignore:append(
+    "blue.vim,darkblue.vim,delek.vim,desert.vim,elflord.vim,evening.vim,habamax.vim,industry.vim,"
+        .. "koehler.vim,lunaperche.vim,morning.vim,murphy.vim,pablo.vim,peachpuff.vim,quiet.vim,retrobox.vim,ron.vim,"
+        .. "shine.vim,slate.vim,sorbet.vim,torte.vim,unokai.vim,vim.lua,wildcharm.vim,zaibatsu.vim,zellner.vim"
+)
 
 -- File History
 vim.o.undofile = true
@@ -334,13 +339,13 @@ local function makespecs_themes()
         "NLKNguyen/papercolor-theme",
         "junegunn/seoul256.vim",
         "mcauley-penney/phobos-anomaly.nvim",
+        "folke/tokyonight.nvim",
         { "bluz71/vim-moonfly-colors", name = "moonfly", lazy = false },
         {
             "uloco/bluloco.nvim",
             lazy = false,
             dependencies = { "rktjmp/lush.nvim" },
             opts = {},
-            config = function() vim.cmd("colorscheme bluloco") end,
         },
         {
             "mhartington/oceanic-next",
@@ -363,9 +368,8 @@ local function makespecs_themes()
         "morhetz/gruvbox",
         {
             "catppuccin/nvim",
-            lazy = false,
             name = "catppuccin",
-            priority = 1000,
+            -- opts = { integrations = { grug_far = true, mason = true, noice = true, snacks = true, which_key = true } },
         },
         {
             "Shatur/neovim-ayu",
@@ -1541,6 +1545,6 @@ end
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
     spec = lazyspecs,
-    install = { colorscheme = { "habamax" } },
     checker = { enabled = true },
 })
+vim.cmd("colorscheme bluloco-dark")
