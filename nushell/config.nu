@@ -25,6 +25,16 @@ $env.config = {
         event: { send: menu name: history_menu }
     }
     {
+      name: clear_everything
+      modifier: control
+      keycode: char_b
+      mode: [ emacs, vi_insert, vi_normal ]
+      event: [
+        { send: clearscreen }
+        { send: clearscrollback }
+      ]
+    }
+    {
       name: move_right_or_take_history_hint
       modifier: control
       keycode: char_f
