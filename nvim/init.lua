@@ -954,6 +954,20 @@ local function makespec_whichkey()
     }
 end
 
+local function makespec_lazydev()
+    return {
+        "folke/lazydev.nvim",
+        ft = "lua",
+        opts = {
+            library = {
+                { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+                { path = "snacks.nvim", words = { "Snacks" } },
+                { path = "lazy.nvim", words = { "LazyVim" } },
+            },
+        },
+    }
+end
+
 local function makespec_snacks()
     local function term_nav(dir)
         ---@param self snacks.terminal
@@ -1031,8 +1045,8 @@ local function makespec_snacks()
             { "<M-f>", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
             { "<leader>fg", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
             { "<leader>fa", function() Snacks.picker.files() end, desc = "Find Files" },
-            { "<leader>fc", function() Snacks.picker.files({ cwd = "/home/hjalmarlucius/dotfiles" }) end, desc = "Find Config" },
-            { "<leader>fn", function() Snacks.picker.files({ cwd = "/home/hjalmarlucius/notes" }) end, desc = "Find Note", },
+            { "<leader>fc", function() Snacks.picker.files({ cwd = "/home/hjalmarlucius/dotfiles", title="Find Configs" }) end, desc = "Find Config" },
+            { "<leader>fn", function() Snacks.picker.files({ cwd = "/home/hjalmarlucius/notes", title="Find Notes" }) end, desc = "Find Note", },
             -- logs
             { "<leader>ll", function() Snacks.picker.notifications() end, desc = "Notification History" },
             -- code
@@ -1052,9 +1066,9 @@ local function makespec_snacks()
             { "<leader>;", function() Snacks.picker.command_history() end, desc = "Command History" },
             { "<leader>sB", function() Snacks.picker.grep_buffers() end, desc = "Grep Buffers" },
             { "<leader>sb", function() Snacks.picker.lines() end, desc = "Grep Buffer" },
-            { "<leader>sc", function() Snacks.picker.grep({ cwd = "/home/hjalmarlucius/dotfiles" }) end, desc = "Grep Configs" },
+            { "<leader>sc", function() Snacks.picker.grep({ cwd = "/home/hjalmarlucius/dotfiles", title="Grep Configs" }) end, desc = "Grep Configs" },
             { "<leader>sl", function() Snacks.picker.loclist() end, desc = "Location List" },
-            { "<leader>sn", function() Snacks.picker.grep({ cwd = "/home/hjalmarlucius/notes" }) end, desc = "Grep Notes", },
+            { "<leader>sn", function() Snacks.picker.grep({ cwd = "/home/hjalmarlucius/notes", title="Grep Notes" }) end, desc = "Grep Notes", },
             { "<leader>sp", function() Snacks.picker.projects() end, desc = "Find Projects" },
             { "<leader>sq", function() Snacks.picker.qflist() end, desc = "Quickfix List" },
             { "<leader>su", function() Snacks.picker.undo() end, desc = "Undo History" },
@@ -1471,6 +1485,7 @@ local lazyspecs = {
     "mbbill/undotree",
 }
 for _, spec in ipairs({
+    makespec_lazydev(), -- nvim lsp helpers
     makespec_snacks(),
     makespec_conform(), -- autoformat
     makespec_lspconfig(),
