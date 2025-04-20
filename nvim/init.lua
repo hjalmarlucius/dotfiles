@@ -830,61 +830,63 @@ local function makespec_gitsigns()
     local function on_gitsigns_attach(bufnr)
         local gs = require("gitsigns")
         local function next_hunk()
-            if vim.wo.diff then return "]c" end
-            vim.schedule(function() gs.nav_hunk("next") end)
-            return "<Ignore>"
+            if vim.wo.diff then
+                vim.cmd.normal({ "]c", bang = true })
+            else
+                gs.nav_hunk("next")
+            end
         end
         local function prev_hunk()
-            if vim.wo.diff then return "[c" end
-            vim.schedule(function() gs.nav_hunk("prev") end)
-            return "<Ignore>"
+            if vim.wo.diff then
+                vim.cmd.normal({ "[c", bang = true })
+            else
+                gs.nav_hunk("prev")
+            end
         end
 
-        local function bmap(mode, l, r, desc) vim.keymap.set(mode, l, r, { buffer = bufnr, desc = desc }) end
+        local function bmap(l, r, desc, mode) vim.keymap.set(mode or "n", l, r, { buffer = bufnr, desc = desc }) end
 
         -- Navigation
-        bmap("n", "<M-,>", next_hunk, "Prev Hunk")
-        bmap("n", "<M-.>", prev_hunk, "Next Hunk")
-        bmap("n", "[h", prev_hunk, "Prev Hunk")
-        bmap("n", "]h", next_hunk, "Next Hunk")
+        bmap("<M-,>", next_hunk, "Prev Hunk")
+        bmap("<M-.>", prev_hunk, "Next Hunk")
+        bmap("[h", prev_hunk, "Prev Hunk")
+        bmap("]h", next_hunk, "Next Hunk")
 
         -- Blame
-        bmap("n", "<leader>gB", gs.blame, "Blame Buffer")
-        bmap("n", "<leader>gb", function() gs.blame_line({ full = true }) end, "Blame Line")
+        bmap("<leader>gB", gs.blame, "Blame Buffer")
+        bmap("<leader>gb", function() gs.blame_line({ full = true }) end, "Blame Line")
 
         -- Hunk
-        bmap("n", "<leader>gI", gs.preview_hunk_inline, "Preview Hunk Inline")
-        bmap("n", "<leader>gi", gs.preview_hunk, "Preview Hunk")
-        bmap("n", "<leader>gq", gs.setqflist, "File Hunks to QuickFix")
-        bmap("n", "<leader>gQ", function() gs.setqflist("all") end, "All Hunks to QuickFix")
-        bmap("n", "<leader>gx", gs.reset_hunk, "Reset Hunk")
-        bmap("v", "<leader>gx", function() gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Reset Hunk")
-        bmap("n", "<leader>gR", gs.reset_buffer, "Reset Buffer")
-        bmap("n", "<leader>gs", gs.stage_hunk, "Stage Hunk")
-        bmap("v", "<leader>gs", function() gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Stage Hunk")
-        bmap("n", "<leader>gS", gs.stage_buffer, "Stage Buffer")
-        bmap("n", "<leader>gu", gs.undo_stage_hunk, "Undo Stage Hunk")
-        bmap({ "n", "v" }, "<leader>gv", gs.select_hunk, "Select Hunk")
+        bmap("<leader>gI", gs.preview_hunk_inline, "Preview Hunk Inline")
+        bmap("<leader>gi", gs.preview_hunk, "Preview Hunk")
+        bmap("<leader>gq", gs.setqflist, "File Hunks to QuickFix")
+        bmap("<leader>gQ", function() gs.setqflist("all") end, "All Hunks to QuickFix")
+        bmap("<leader>gx", gs.reset_hunk, "Reset Hunk")
+        bmap("<leader>gx", function() gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Reset Hunk", "v")
+        bmap("<leader>gR", gs.reset_buffer, "Reset Buffer")
+        bmap("<leader>gs", gs.stage_hunk, "Stage Hunk")
+        bmap("<leader>gs", function() gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Stage Hunk", "v")
+        bmap("<leader>gS", gs.stage_buffer, "Stage Buffer")
+        bmap("<leader>gv", gs.select_hunk, "Select Hunk", { "n", "v" })
 
         -- Toggles
-        bmap("n", "<leader>gtd", gs.toggle_deleted, "Toggle Show Deleted Lines")
-        bmap("n", "<leader>gtl", gs.toggle_linehl, "Toggle Diff Line Highlight")
-        bmap("n", "<leader>gtb", gs.toggle_current_line_blame, "Toggle Line Blame")
-        bmap("n", "<leader>gth", gs.toggle_word_diff, "Toggle Diff Word Colors")
-        bmap("n", "<leader>gtn", gs.toggle_numhl, "Toggle Diff Line Number Highlight")
+        bmap("<leader>gtw", gs.toggle_word_diff, "Toggle Diff Word Colors")
+        bmap("<leader>gtl", gs.toggle_linehl, "Toggle Diff Line Highlight")
+        bmap("<leader>gtb", gs.toggle_current_line_blame, "Toggle Line Blame")
+        bmap("<leader>gtn", gs.toggle_numhl, "Toggle Diff Line Number Highlight")
 
         -- Text object, e.g. for dih to delete hunk
-        bmap({ "o", "x" }, "ih", "<cmd>Gitsigns select_hunk<CR>")
+        bmap("ih", "<cmd>Gitsigns select_hunk<CR>", "Select Hunk", { "o", "x" })
     end
 
     return {
         "lewis6991/gitsigns.nvim",
         opts = {
             signcolumn = true,
-            numhl = true,
+            numhl = false,
             linehl = false,
             word_diff = false,
-            signs_staged_enable = false,
+            signs_staged_enable = true,
             on_attach = on_gitsigns_attach,
         },
     }
