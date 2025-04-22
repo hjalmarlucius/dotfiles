@@ -194,6 +194,8 @@ map("t", "<C-_>", "<cmd>close<cr>", { desc = "which_key_ignore" })
 -- windows
 map("n", "<M-v>", "<cmd>vsplit<cr>", { desc = "Split Window Right", remap = true })
 map("n", "<M-s>", "<cmd>split<cr>", { desc = "Split Window Below", remap = true })
+map("n", "<M-V>", "<cmd>vnew<cr>", { desc = "New Window Right", remap = true })
+map("n", "<M-S>", "<cmd>new<cr>", { desc = "New Window Below", remap = true })
 
 -- buffers
 map("n", "<M-K>", "<cmd>bprev<cr>")
