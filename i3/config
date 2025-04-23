@@ -33,12 +33,11 @@ exec --no-startup-id nitrogen --restore
 exec --no-startup-id pamac-tray
 exec --no-startup-id xautolock -time 10 -locker blurlock
 exec --no-startup-id blueman-applet
-exec_always --no-startup-id sbxkb
 exec_always --no-startup-id fix_xcursor
 
 # HB STARTUP ADDITIONS
 exec --no-startup-id setxkbmap -layout us -model pc105 -variant altgr-weur -option caps:escape
-exec --no-startup-id redshift-gtk -l 59.91:10.76
+exec --no-startup-id redshift-qt -l 59.91:10.76
 exec --no-startup-id nvidia-settings -a GPUFanControlState=1 -a GPUTargetFanSpeed=60
 
 # div bindings
@@ -89,7 +88,7 @@ bindsym $mod+Shift+x --release exec --no-startup-id xkill
 
 bindsym $mod+F1 exec wezterm -e htop
 bindsym $mod+F2 exec qutebrowser
-bindsym $mod+F5 exec pavucontrol
+bindsym $mod+F5 exec pavucontrol-qt
 bindsym $mod+F6 exec quodlibet
 bindsym $mod+F7 exec wezterm -e ncspot
 bindsym $mod+F10 exec dunstctl history-pop
@@ -98,7 +97,7 @@ bindsym $mod+F11 exec setxkbmap -layout no -model pc105 -variant nodeadkeys -opt
 bindsym $mod+F12 exec setxkbmap -layout us -model pc105 -variant altgr-weur -option caps:escape
 bindsym $mod+p exec pcmanfm
 bindsym $mod+Shift+p exec wezterm -e ranger
-bindsym $mod+c exec qalculate-gtk
+bindsym $mod+c exec qalculate-qt
 
 bindsym $mod+Shift+e mode "$mode_system"
 bindsym $mod+z mode "resize"
@@ -114,16 +113,18 @@ for_window [class="qutebrowser"] border pixel 1
 
 # Open specific applications in floating mode
 for_window [class="GParted"] floating enable border normal
-for_window [class="Lightdm-settings"] floating enable
-for_window [class="Qalculate-gtk"] floating enable sticky enable border normal
-for_window [class="Zulip"] floating enable sticky enable border normal
-for_window [class="Lxappearance"] floating enable sticky enable border normal
-for_window [class="Manjaro-hello"] floating enable
-for_window [class="Manjaro Settings Manager"] floating enable border normal
-for_window [class="Nitrogen"] floating enable sticky enable border normal
-for_window [class="Pamac-manager"] floating enable
-for_window [class="Pavucontrol"] floating enable
+for_window [class="qalculate-qt"] floating enable border normal
+for_window [class="manjaro-hello"] floating enable border normal
+for_window [class="pamac-manager"] floating enable border normal
+for_window [class="pavucontrol-qt"] floating enable border normal
+for_window [class="manjaro-settings-manager"] floating enable border normal
+for_window [class="lightdm-settings"] floating enable border normal
+
+# Open visual settings in sticky floating mode
+for_window [class="nitrogen"] floating enable sticky enable border normal
+for_window [class="lxappearance"] floating enable sticky enable border normal
 for_window [class="qt5ct"] floating enable sticky enable border normal
+for_window [class="qt6ct"] floating enable sticky enable border normal
 
 # https://github.com/ValveSoftware/steam-for-linux/issues/1040
 for_window [class="^steam$"] floating enable
