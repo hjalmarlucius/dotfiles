@@ -4,7 +4,7 @@ set -e
 # general
 sudo systemctl enable --now sshd.service
 sudo systemctl enable --now fstrim.timer
-yay -S plymouth tldextract go nodejs unzip exa
+yay -S plymouth tldextract go nodejs unzip exa pcmanfm-qt
 
 # nvidia
 yay -S cuda nvidia-settings nvidia-docker
@@ -13,7 +13,12 @@ yay -S cuda nvidia-settings nvidia-docker
 yay -S python-pip pyenv ipython
 
 # sound
-yay -S manjaro-pipewire pavucontrol
+yay -S manjaro-pipewire pavucontrol-qt
+
+# theme
+yay -S mint-themes mint-y-icons
+yay -S lxappearance-gtk3
+yay -S lxinput-gtk3 qt6ct pamac-gtk3
 
 # terminal and shell
 yay -S wezterm nushell urxvt-resize-font
@@ -61,13 +66,6 @@ yay -S sioyek zathura zathura-pdf-mupdf zathura-djvu zathura-ps
 # fonts
 yay -S noto-fonts-emoji ttf-hack
 
-# browser
-
-# zerotier
-yay -S zerotier-one
-sudo systemctl enable --now zerotier-one.service
-sudo zerotier-cli join d5e5fb653797795b
-
 # coolercontrol
 yay -S coolercontrol
 sudo systemctl enable --now coolercontrold.service
@@ -83,11 +81,11 @@ yay -S i3status \
     firefox \
     rofi \
     mutt \
-    redshift \
+    redshift-qt \
     discord \
     teamviewer \
     zerotier-one \
-    qalculate \
+    qalculate-qt \
     quodlibet \
     ncspot \
     steam \

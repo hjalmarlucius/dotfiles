@@ -1,3 +1,7 @@
+$env.config.buffer_editor = "/usr/bin/nvim"
+$env.SYSTEMD_EDITOR = "/usr/bin/nvim"
+$env.EDITOR = "/usr/bin/nvim"
+$env.VISUAL = "/usr/bin/nvim"
 $env.config.show_banner = false
 $env.config.edit_mode = 'vi'
 $env.config = {
