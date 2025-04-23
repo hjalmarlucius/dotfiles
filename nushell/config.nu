@@ -92,9 +92,27 @@ def monitor [
 
 source ~/.oh-my-posh.nu
 
-# argc-completions
-$env.ARGC_COMPLETIONS_ROOT = '/home/hjalmarlucius/.local/share/argc-completions'
-$env.ARGC_COMPLETIONS_PATH = ($env.ARGC_COMPLETIONS_ROOT + '/completions/linux:' + $env.ARGC_COMPLETIONS_ROOT + '/completions')
-$env.PATH = ($env.PATH | prepend ($env.ARGC_COMPLETIONS_ROOT + '/bin'))
-argc --argc-completions nushell | save -f '/home/hjalmarlucius/.local/share/argc-completions/tmp/argc-completions.nu'
-source '/home/hjalmarlucius/.local/share/argc-completions/tmp/argc-completions.nu'
+let carapace_completer = {|spans|
+    carapace $spans.0 nushell ...$spans | from json
+    # carapace doesn't give completions if you don't give it any additional
+    # args
+    mut spans = $spans
+    if ($spans | is-empty) {
+        $spans = [""]
+    }
+
+    carapace $spans.0 nushell ...$spans | from json
+        # sort by color
+        | sort-by {
+            let fg = $in | get -i style.fg
+            let attr = $in | get -i style.attr
+
+            # the ~ there to make "empty" results appear at the end
+            $"($fg)~($attr)"
+        }
+}
+$env.config.completions.external = {
+    enable: true
+    max_results: 100
+    completer: $carapace_completer
+}
