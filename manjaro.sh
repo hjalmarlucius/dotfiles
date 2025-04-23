@@ -25,8 +25,7 @@ yay -S wezterm nushell urxvt-resize-font
 chsh -s /usr/bin/nu
 
 # nushell
-yay -S oh-my-posh argc
-git clone https://github.com/sigoden/argc-completions.git ~/.local/share/argc-completions/
+yay -S oh-my-posh carapace-bin
 oh-my-posh init nu --config https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/refs/heads/main/themes/peru.omp.json
 
 # code
