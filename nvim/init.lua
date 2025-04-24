@@ -1287,7 +1287,7 @@ local function makespec_flash()
                 },
             },
             label = { uppercase = false },
-            jump = { autojump = true },
+            jump = { autojump = false },
             modes = {
                 search = { enabled = true },
                 char = {
@@ -1469,7 +1469,7 @@ local function makespec_conform()
                 bash = { "shfmt" },
                 typescript = { "eslint_d" },
                 typst = { "typstyle" },
-                yaml = { "yamlfix", "yamlfmt" },
+                yaml = { "yamlfmt" },
             },
             default_format_opts = {
                 timeout_ms = 3000,
@@ -1480,7 +1480,7 @@ local function makespec_conform()
                 stylua = { append_args = { "--indent-type", "Spaces", "--collapse-simple-statement", "Always" } },
                 ruff_fix = { append_args = { "--select", "I,F,UP" } },
                 yamlfmt = {
-                    append_args = {
+                    prepend_args = {
                         "-formatter",
                         "indentless_arrays=true,retain_line_breaks=true,line_ending=lf,max_line_length=100,pad_line_comments=2",
                     },
