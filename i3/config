@@ -61,7 +61,9 @@ bindsym $mod+Shift+space floating toggle
 bindsym $mod+Ctrl+space sticky toggle
 
 bindsym $mod+slash scratchpad show
-bindsym $mod+question move scratchpad
+bindsym $mod+minus scratchpad show
+bindsym $mod+Shift+slash move scratchpad
+bindsym $mod+Shift+minus move scratchpad
 
 bindsym $mod+h focus left
 bindsym $mod+j focus down
