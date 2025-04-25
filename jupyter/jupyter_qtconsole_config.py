@@ -1,2 +1,3 @@
 c.ConsoleWidget.include_other_output = True
-c.JupyterWidget.syntax_style = 'monokai'
+c.ConsoleWidget.font_family = 'Akkurat-Mono'
+c.JupyterWidget.syntax_style = 'one-dark'

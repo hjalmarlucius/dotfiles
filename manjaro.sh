@@ -16,7 +16,7 @@ yay -S python-pip pyenv ipython
 yay -S manjaro-pipewire pavucontrol-qt
 
 # theme
-yay -S mint-themes mint-y-icons
+yay -S mint-themes mint-y-icons darkly breeze-grub breeze-gtk breeze-icons
 yay -S lxappearance-gtk3
 yay -S lxinput-gtk3 qt6ct pamac-gtk3
 
