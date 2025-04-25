@@ -557,7 +557,7 @@ local function makespec_lualine()
                 lualine_z = {
                     {
                         "tabs",
-                        mode = 2,
+                        mode = 0,
                         tabs_color = { active = "lualine_a_command" },
                     },
                 },
