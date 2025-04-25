@@ -1120,13 +1120,13 @@ local function makespecs_mini()
             version = false,
             opts = {
                 mappings = {
-                    add = "yu", -- Add surrounding in Normal and Visual modes
-                    delete = "du", -- Delete surrounding
-                    find = "]u", -- Find surrounding (to the right)
-                    find_left = "[u", -- Find surrounding (to the left)
-                    highlight = "<leader>uu", -- Highlight surrounding
-                    replace = "cu", -- Replace surrounding
-                    update_n_lines = "", -- Update `n_lines`
+                    add = "gsa", -- Add surrounding in Normal and Visual modes
+                    delete = "gsd", -- Delete surrounding
+                    find = "gsf", -- Find surrounding (to the right)
+                    find_left = "gsF", -- Find surrounding (to the left)
+                    highlight = "gsh", -- Highlight surrounding
+                    replace = "gsr", -- Replace surrounding
+                    update_n_lines = "gsn", -- Update `n_lines`
                 },
             },
         },
