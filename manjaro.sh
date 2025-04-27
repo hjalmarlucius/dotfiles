@@ -13,7 +13,7 @@ yay -S cuda nvidia-settings nvidia-docker
 yay -S python-pip pyenv ipython
 
 # sound
-yay -S manjaro-pipewire pavucontrol-qt
+yay -S manjaro-pipewire pavucontrol-qt pasystray
 
 # theme
 yay -S mint-themes mint-y-icons darkly breeze-grub breeze-gtk breeze-icons
