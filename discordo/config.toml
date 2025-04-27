@@ -1,0 +1,58 @@
+mouse = true
+hide_blocked_users = true
+messages_limit = 50
+editor = "default"
+timestamps = true
+timestamps_format = "01-02 15:04:05 (Z07:00)"
+show_attachment_links = false
+
+[keys]
+  focus_guilds_tree = "Ctrl+O"
+  focus_messages_text = "Ctrl+P"
+  focus_message_input = "Ctrl+N"
+  toggle_guilds_tree = "Ctrl+P"
+  select_previous = "Rune[k]"
+  select_next = "Rune[j]"
+  select_first = "Rune[g]"
+  select_last = "Rune[G]"
+  logout = "Ctrl+Shift+D"
+  quit = "Ctrl+C"
+  [keys.guilds_tree]
+    select_current = "Enter"
+  [keys.messages_text]
+    select_reply = "Rune[s]"
+    select_pin = "Rune[p]"
+    reply = "Rune[r]"
+    reply_mention = "Rune[R]"
+    delete = "Rune[d]"
+    yank = "Rune[y]"
+    open = "Rune[o]"
+  [keys.message_input]
+    send = "Enter"
+    editor = "Ctrl+E"
+    cancel = "Ctrl+D"
+
+[notifications]
+  enabled = true
+  duration = 500
+  [notifications.sound]
+    enabled = true
+    only_on_ping = false
+
+[theme]
+  border_color = "default"
+  border_padding = [0, 0, 1, 1]
+  title_color = "default"
+  background_color = "default"
+  [theme.guilds_tree]
+    auto_expand_folders = true
+    channel_color = "white"
+    graphics = true
+    guild_color = "white"
+    private_channel_color = "white"
+  [theme.messages_text]
+    author_color = "aqua"
+    content_color = "white"
+    emoji_color = "green"
+    link_color = "blue"
+    attachment_color = "yellow"

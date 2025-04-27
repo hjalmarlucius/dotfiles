@@ -87,6 +87,7 @@ yay -S i3status \
     qalculate-qt \
     quodlibet \
     ncspot \
+    discordo-git \
     steam \
     qbittorrent
 
