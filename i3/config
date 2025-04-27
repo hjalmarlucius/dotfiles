@@ -33,6 +33,7 @@ exec --no-startup-id nitrogen --restore
 exec --no-startup-id pamac-tray
 exec --no-startup-id xautolock -time 10 -locker blurlock
 exec --no-startup-id blueman-applet
+exec --no-startup-id pasystray
 exec_always --no-startup-id fix_xcursor
 
 # HB STARTUP ADDITIONS
