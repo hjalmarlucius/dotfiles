@@ -98,7 +98,7 @@ bindsym $mod+F10 exec dunstctl history-pop
 bindsym $mod+Shift+F10 exec dunstctl close-all
 bindsym $mod+F11 exec setxkbmap -layout no -model pc105 -variant nodeadkeys -option caps:escape
 bindsym $mod+F12 exec setxkbmap -layout us -model pc105 -variant altgr-weur -option caps:escape
-bindsym $mod+p exec pcmanfm
+bindsym $mod+p exec pcmanfm-qt
 bindsym $mod+Shift+p exec wezterm -e ranger
 bindsym $mod+c exec qalculate-qt
 
@@ -117,15 +117,15 @@ for_window [class="qutebrowser"] border pixel 1
 # Open specific applications in floating mode
 for_window [class="GParted"] floating enable border normal
 for_window [class="qalculate-qt"] floating enable border normal
-for_window [class="manjaro-hello"] floating enable border normal
+for_window [class="Manjaro-hello"] floating enable border normal
 for_window [class="pamac-manager"] floating enable border normal
 for_window [class="pavucontrol-qt"] floating enable border normal
-for_window [class="manjaro-settings-manager"] floating enable border normal
-for_window [class="lightdm-settings"] floating enable border normal
+for_window [class="Manjaro Settings Manager"] floating enable border normal
+for_window [class="Lightdm-settings"] floating enable border normal
 
 # Open visual settings in sticky floating mode
-for_window [class="nitrogen"] floating enable sticky enable border normal
-for_window [class="lxappearance"] floating enable sticky enable border normal
+for_window [class="Nitrogen"] floating enable sticky enable border normal
+for_window [class="Lxappearance"] floating enable sticky enable border normal
 for_window [class="qt5ct"] floating enable sticky enable border normal
 for_window [class="qt6ct"] floating enable sticky enable border normal
 
