@@ -43,7 +43,7 @@ vim.o.expandtab = true
 vim.o.shiftround = true
 vim.o.shiftwidth = 2
 vim.o.tabstop = 2
-vim.o.smartindent = true
+vim.o.smartindent = false
 
 -- Session options
 vim.opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }
@@ -1279,19 +1279,10 @@ local function makespec_flash()
         "folke/flash.nvim",
         event = "VeryLazy",
         opts = {
-            search = {
-                mode = "exact",
-                exclude = {
-                    "notify",
-                    "noice",
-                    "flash_prompt",
-                    function(win) return not vim.api.nvim_win_get_config(win).focusable end,
-                },
-            },
             label = { uppercase = false },
             jump = { autojump = false },
             modes = {
-                search = { enabled = true },
+                search = { enabled = false },
                 char = {
                     jump = { autojump = true },
                     char_actions = function(motion)
