@@ -15,18 +15,39 @@ $env.config = {
   }
   keybindings: [
     {
-        name: history_menu
-        modifier: control
-        keycode: char_r
-        mode: [ emacs, vi_insert, vi_normal ]
-        event: { send: menu name: history_menu }
+      name: fuzzy_history_fzf
+      modifier: control
+      keycode: char_r
+      mode: [emacs, vi_normal, vi_insert]
+      event: {
+        send: ExecuteHostCommand
+        cmd: "commandline edit --insert (
+          history
+          | where exit_status == 0
+          | get command
+          | reverse
+          | uniq
+          | str join (char -i 0)
+          | fzf 
+            --preview '{}'
+            --preview-window 'bottom:3:wrap'
+            --scheme history
+            --read0
+            --layout reverse
+            --bind alt-up:preview-up,alt-down:preview-down
+            --height 70%
+            --query (commandline)
+          | decode utf-8
+          | str trim
+        )"
+      }
     }
     {
-        name: history_menu
-        modifier: none
-        keycode: char_/
-        mode: [ vi_normal ]
-        event: { send: menu name: history_menu }
+      name: fuzzy_history_fzf
+      modifier: none
+      keycode: char_/
+      mode: [ vi_normal ]
+      event: { send: menu name: fuzzy_history_fzf }
     }
     {
       name: clear_everything
@@ -44,11 +65,11 @@ $env.config = {
       keycode: char_f
       mode: [ emacs, vi_insert, vi_normal ]
       event: {
-          until: [
-              { send: historyhintcomplete }
-              { send: menuright }
-              { send: right }
-          ]
+        until: [
+          { send: historyhintcomplete }
+          { send: menuright }
+          { send: right }
+        ]
       }
     }
     {
@@ -70,49 +91,49 @@ def monitor [
   let cmd = $args | str join ' '
 
   loop {
-      let last_run = (date now)
-      let till = $last_run + $duration
+    let last_run = (date now)
+    let till = $last_run + $duration
 
-      let out = nu --config $nu.config-path --env-config $nu.env-path --commands $cmd | complete
+    let out = nu --config $nu.config-path --env-config $nu.env-path --commands $cmd | complete
 
-      if $out.exit_code == 0 {
-        clear
-        print $"Running every ($duration) on '(hostname)': `($cmd)`"
+    if $out.exit_code == 0 {
+      clear
+      print $"Running every ($duration) on '(hostname)': `($cmd)`"
 
-        print $out.stdout
+      print $out.stdout
 
-        print $"Last run: ($last_run)"
-        sleep ($till - (date now))
-      } else {
-        print $out.stdout $out.stderr
-        break
-      }
+      print $"Last run: ($last_run)"
+      sleep ($till - (date now))
+    } else {
+      print $out.stdout $out.stderr
+      break
+    }
   }
 }
 
 source ~/.oh-my-posh.nu
 
 let carapace_completer = {|spans|
-    carapace $spans.0 nushell ...$spans | from json
-    # carapace doesn't give completions if you don't give it any additional
-    # args
-    mut spans = $spans
-    if ($spans | is-empty) {
-        $spans = [""]
+  carapace $spans.0 nushell ...$spans | from json
+  # carapace doesn't give completions if you don't give it any additional
+  # args
+  mut spans = $spans
+  if ($spans | is-empty) {
+    $spans = [""]
+  }
+
+  carapace $spans.0 nushell ...$spans | from json
+    # sort by color
+    | sort-by {
+      let fg = $in | get -i style.fg
+      let attr = $in | get -i style.attr
+
+      # the ~ there to make "empty" results appear at the end
+      $"($fg)~($attr)"
     }
-
-    carapace $spans.0 nushell ...$spans | from json
-        # sort by color
-        | sort-by {
-            let fg = $in | get -i style.fg
-            let attr = $in | get -i style.attr
-
-            # the ~ there to make "empty" results appear at the end
-            $"($fg)~($attr)"
-        }
 }
 $env.config.completions.external = {
-    enable: true
-    max_results: 100
-    completer: $carapace_completer
+  enable: true
+  max_results: 100
+  completer: $carapace_completer
 }
