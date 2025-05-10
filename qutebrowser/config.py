@@ -84,7 +84,7 @@ c.content.tls.certificate_errors = "ask-block-thirdparty"
 c.downloads.position = "bottom"
 c.downloads.prevent_mixed_content = False
 c.editor.command = [
-    "urxvt",
+    "foot",
     "-title",
     "scratchpad",
     "-geometry",

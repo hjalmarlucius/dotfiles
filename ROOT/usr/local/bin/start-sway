@@ -1,0 +1,19 @@
+#!/bin/sh
+# Session
+export XDG_SESSION_TYPE=wayland
+export XDG_SESSION_DESKTOP=sway
+export XDG_CURRENT_DESKTOP=sway
+
+# Environment
+# Source environmental variable from all files in PATH_ENVIRONMENT
+# file should be named *.conf and have KEY=value format use # for comment
+PATH_ENVIRONMENT=$HOME/.config/environment.d
+if [ -d "$PATH_ENVIRONMENT" ]; then
+  for i in "$PATH_ENVIRONMENT"/*.conf ; do
+    if [ -f "$i" ]; then
+      set -a; . "$i"; set +a
+    fi
+  done
+fi
+
+exec sway "$@"

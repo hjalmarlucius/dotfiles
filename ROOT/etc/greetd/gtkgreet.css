@@ -1,0 +1,10 @@
+window {
+   background-image: url("file:///usr/share/backgrounds/default.png");
+   background-size: cover;
+   background-position: center;
+}
+
+box#body {
+   border-radius: 20px;
+   padding: 50px;
+}
