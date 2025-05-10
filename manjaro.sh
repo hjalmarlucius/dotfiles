@@ -4,7 +4,13 @@ set -e
 # general
 sudo systemctl enable --now sshd.service
 sudo systemctl enable --now fstrim.timer
-yay -S plymouth tldextract go nodejs unzip exa pcmanfm-qt
+yay -S plymouth tldextract go nodejs unzip exa topgrade
+
+# display manager
+yay -S greetd gtkgreet
+
+# sway
+yay -S manjaro-sway-settings swaytools swaylock pamac-tray-plasma unipicker mako ly wlsunset pcmanfm-qt wev gtklock
 
 # nvidia
 yay -S cuda nvidia-settings nvidia-docker
@@ -13,15 +19,14 @@ yay -S cuda nvidia-settings nvidia-docker
 yay -S python-pip pyenv ipython
 
 # sound
-yay -S manjaro-pipewire pavucontrol-qt pasystray
+yay -S manjaro-pipewire pavucontrol-qt
 
 # theme
-yay -S mint-themes mint-y-icons darkly breeze-grub breeze-gtk breeze-icons
-yay -S lxappearance-gtk3
+yay -S mint-themes mint-y-icons kvantum-theme-catppuccin-git catppuccin-gtk-theme-latte catppuccin-gtk-theme-mocha breeze-grub breeze-gtk breeze-icons
 yay -S lxinput-gtk3 qt6ct pamac-gtk3
 
 # terminal and shell
-yay -S wezterm nushell urxvt-resize-font
+yay -S wezterm nushell
 chsh -s /usr/bin/nu
 
 # nushell
@@ -32,18 +37,18 @@ oh-my-posh init nu --config https://raw.githubusercontent.com/JanDeDobbeleer/oh-
 yay -S neovim tmux tig diff-so-fancy ripgrep nvimpager
 git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
 # git
-yay -S git-secret git-delta git-lfs
+yay -S git-secret git-delta git-lfs lazygit
 # formatters
 yay -S python-black python-blackdoc python-pyment python-isort \
     eslint_d eslint jq yamlfmt shfmt prettierd
 
 # file sync
 yay -S syncthings rclone
-sudo systemctl edit syncthing@hjalmarlucius.service  # uncomment AmbientCapabilities
+sudo systemctl edit syncthing@hjalmarlucius.service # uncomment AmbientCapabilities
 sudo setcap CAP_CHOWN,CAP_FOWNER=pe /usr/bin/syncthing
 sudo systemctl enable --now syncthing@hjalmarlucius.service
 systemctl --user daemon-reload
-rclone config  # follow instructions and paste creds from https://console.cloud.google.com/apis/credentials
+rclone config # follow instructions and paste creds from https://console.cloud.google.com/apis/credentials
 systemctl --user enable --now rclone-gdrive.service
 
 # docker incl non-root daemon
@@ -57,7 +62,7 @@ sudo systemctl enable --now docker.service
 yay -S manajaro-printer samsung-unified-driver-printer
 
 # monitors
-yay -S iftop bpytop nvtop
+yay -S iftop btop nvtop lazyjournal isd
 
 # pdf
 yay -S sioyek zathura zathura-pdf-mupdf zathura-djvu zathura-ps
@@ -75,21 +80,20 @@ yay -S vlc protobuf yt-dlp
 yay -S castnow
 
 # div applications
-yay -S i3status \
-    qutebrowser \
-    firefox \
-    rofi \
-    mutt \
-    redshift-qt \
+yay -S calcurse python-httplib2 \
     discord \
-    teamviewer \
-    zerotier-one \
-    qalculate-qt \
-    quodlibet \
-    ncspot \
     discordo-git \
+    firefox \
+    i3status \
+    mutt \
+    ncspot \
+    qalculate-qt \
+    qbittorrent \
+    quodlibet \
+    qutebrowser \
+    rofi \
     steam \
-    qbittorrent
+    teamviewer
 
 # firefox windowed fullscreen
 # can be achieved by setting full-screen-api.ignore-widgets to true in about:config
