@@ -338,6 +338,7 @@ end, {})
 
 local function makespecs_themes()
     return {
+        { "aktersnurra/no-clown-fiesta.nvim", opts = { transparent = false } },
         "NLKNguyen/papercolor-theme",
         "junegunn/seoul256.vim",
         "mcauley-penney/phobos-anomaly.nvim",
@@ -1073,7 +1074,7 @@ local function makespec_snacks()
             { "<leader>sa", function() Snacks.picker.grep({ untracked = true }) end, desc = "Grep Files" },
             { "<leader>*", function() Snacks.picker.grep_word() end, desc = "Visual selection or word", mode = { "n", "x" }, },
             { "<leader>/", function() Snacks.picker.search_history() end, desc = "Search History" },
-            { "<leader>;", function() Snacks.picker.command_history() end, desc = "Command History" },
+            { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
             { "<leader>sB", function() Snacks.picker.grep_buffers() end, desc = "Grep Buffers" },
             { "<leader>sb", function() Snacks.picker.lines() end, desc = "Grep Buffer" },
             { "<leader>sc", function() Snacks.picker.grep({ cwd = "/home/hjalmarlucius/dotfiles", title="Grep Configs" }) end, desc = "Grep Configs" },
@@ -1267,7 +1268,7 @@ end
 
 local function makespec_mason()
     return {
-        "williamboman/mason.nvim",
+        "mason-org/mason.nvim",
         lazy = false,
         opts = {},
         keys = { { "<F3>", "<cmd>Mason<cr>", desc = "Mason" } },
