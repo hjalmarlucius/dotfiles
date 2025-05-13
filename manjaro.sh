@@ -43,13 +43,14 @@ yay -S python-black python-blackdoc python-pyment python-isort \
     eslint_d eslint jq yamlfmt shfmt prettierd
 
 # file sync
-yay -S syncthings rclone
+yay -S syncthings rclone dropbox
 sudo systemctl edit syncthing@hjalmarlucius.service # uncomment AmbientCapabilities
 sudo setcap CAP_CHOWN,CAP_FOWNER=pe /usr/bin/syncthing
 sudo systemctl enable --now syncthing@hjalmarlucius.service
 systemctl --user daemon-reload
 rclone config # follow instructions and paste creds from https://console.cloud.google.com/apis/credentials
 systemctl --user enable --now rclone-gdrive.service
+systemctl --user enable --now dropbox.service
 
 # docker incl non-root daemon
 yay -S docker docker-compose dry-bin nvidia-docker docker-buildx
