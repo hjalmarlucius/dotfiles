@@ -7,7 +7,7 @@ sudo systemctl enable --now fstrim.timer
 yay -S plymouth tldextract go nodejs unzip exa topgrade
 
 # display manager
-yay -S greetd gtkgreet
+yay -S greetd qtgreet
 
 # sway
 yay -S manjaro-sway-settings swaytools swaylock pamac-tray-plasma unipicker mako ly wlsunset pcmanfm-qt wev gtklock

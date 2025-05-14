@@ -1,0 +1,12 @@
+# `-l` activates layer-shell mode. Notice that `swaymsg exit` will run after gtkgreet.
+exec "qtgreet; swaymsg exit"
+
+bindsym Mod4+shift+e exec swaynag \
+-t warning \
+-m 'What do you want to do?' \
+-b 'Poweroff' 'sudo poweroff' \
+-b 'Reboot' 'sudo reboot'
+
+output DP-1 resolution 5120x1440
+
+# include /etc/sway/config.d/*
