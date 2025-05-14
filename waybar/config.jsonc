@@ -18,7 +18,19 @@
         "tooltip": false
     },
 
-    "modules-left": ["systemd-failed-units", "memory", "load", "temperature", "custom/nvidia", "disk#disk1", "disk#disk2", "network"],
+    "modules-left": ["systemd-failed-units", "memory", "load", "custom/cputemp", "custom/nvidia", "disk#disk1", "disk#disk2", "network"],
+    "custom/cputemp": {
+      "exec": "sensors | grep 'CPU:' | awk '{print substr($2,2); }'",
+      "format": "  {}",
+      "on-click": "swaymsg exec 'footclient --app-id floating_shell --window-size-chars 80x45 watch sensors'",
+      "interval": 1
+    },
+    "custom/nvidia": {
+      "exec": "nvidia-smi --query-gpu=utilization.gpu,memory.used,temperature.gpu --format=csv,nounits,noheader | sed 's/\\([0-9]\\+\\), \\([0-9]\\+\\), \\([0-9]\\+\\)/\\1% \\2MB \\3°C/g'",
+      "format": "󰓅  {}",
+      "on-click": "swaymsg exec 'footclient --app-id floating_shell --window-size-chars 120x45 nvtop'",
+      "interval": 1
+    },
     "load": {
         "interval": 1,
         "format": "󰘚  {load1}%",
