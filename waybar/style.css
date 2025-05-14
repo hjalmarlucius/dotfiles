@@ -36,6 +36,7 @@ window#waybar:first-child > box {
 }
 
 #clock,
+#custom-cputemp,
 #custom-scratchpad,
 #custom-nvidia,
 #custom-theme,
@@ -47,7 +48,6 @@ window#waybar:first-child > box {
 #pulseaudio,
 #sway-mode,
 #systemd-failed-units,
-#temperature,
 #tray {
   color: #88c0d0;
   padding-right: 16px;
