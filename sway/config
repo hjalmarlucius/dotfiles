@@ -1,9 +1,36 @@
 include /etc/sway/config.d/10-service.conf
 include /etc/sway/config.d/50-systemd-user.conf
 
-# DEFINITIONS
-# theme definitions must come before $rofi_theme
-include ~/.config/sway/definitions.d/*
+# THEME
+set $background /usr/share/backgrounds/wallpapers-juhraya/Austria_by_Rutger_Heijmerikx.jpg
+set $gui-font Cozette 10
+set $term-font Akkurat Mono
+# light
+# set $cursor-theme xcursor-breeze-snow
+# set $gtk-theme catppuccin-latte-teal-standard+default
+# set $icon-theme Papirus
+# set $kvantum-theme catppuccin-latte-teal
+# set $gtk-color-scheme prefer-light
+# dark
+set $cursor-theme xcursor-breeze
+set $gtk-theme catppuccin-mocha-teal-standard+default
+set $icon-theme Papirus-Dark
+set $kvantum-theme catppuccin-mocha-teal
+set $gtk-color-scheme prefer-dark
+# colors
+set $background-color #1E1E2E
+set $text-color #CDD6F4
+set $accent-color #89B4FA
+# target                title   bg      text    indicator
+client.focused          #556064 #F9CE5C #000000 #FDF6E3
+client.focused_inactive #CB4B16 #2F3D44 #1ABC9C #454948
+client.unfocused        #556064 #2F3D44 #1ABC9C #454948
+client.urgent           #CB4B16 #FDF6E3 #1ABC9C #268BD2
+client.placeholder      #000000 #0C0C0C #ffffff #000000
+client.background       #2B2C2B
+
+# DEFINIIONS
+# controls
 set $mod Mod4
 set $left h
 set $down j
@@ -20,7 +47,6 @@ set $ws7 number 7
 set $ws8 number 8
 set $ws9 number 9
 set $ws10 number 10
-
 # scripts
 set $script_path /usr/share/sway/scripts
 # terminal editor
@@ -58,46 +84,7 @@ set $screenshot_selection $pipe_selection | $swappy && $notify_paste
 set $screenshot_selection_upload $pipe_selection | $upload_pipe
 
 # AUTOSTART APPLICATIONS
-exec {
-    pamac-tray-plasma
-    blueman-applet
-    wlsunset -l 59.91:10.76
-    flashfocus
-    swayidle -w \
-        timeout 1200 'swaymsg exec "/usr/share/sway/scripts/keyboard-backlight-switch.sh off"' resume 'swaymsg exec "/usr/share/sway/scripts/keyboard-backlight-switch.sh on"' \
-        timeout 1200 'swaymsg exec "$locking"' \
-        timeout 1200 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
-        timeout 1200 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
-        before-sleep 'swaymsg exec "$locking"' \
-        after-resume 'swaymsg "output * dpms on"' \
-        idlehint '240'
-    # swappy notify
-    $script_path/screenshot-notify.sh
-    # don't lock during movies
-    systemctl --now --user enable idlehack
-    # dynamic workspace names
-    systemctl --now --user enable sworkstyle
-    # preload file browser
-    systemctl --now --user enable pcmanfm
-    # foot-server
-    systemctl --now --user enable foot-server.socket
-    systemctl --now --user enable foot-server
-}
 exec_always {
-    nm-applet
-    calcurse --daemon
-    # persist clipboard after close
-    pkill -x wl-clip-persist
-    'wl-clip-persist --clipboard regular --all-mime-type-regex \'(?i)^(?!image/x-inkscape-svg).+\''
-    # mako daemon
-    pkill -x mako
-    $script_path/mako.sh --font "$term-font" --text-color "$text-color" --border-color "$accent-color" --background-color "$background-color" --border-size 3 --width 400 --height 200 --padding 20 --margin 20 --default-timeout 15000
-    # enable noisetorch
-    noisetorch -u
-    noisetorch -i
-    # update rofi theme
-    mkdir -p $HOME/.config/rofi/
-    "echo $rofi_theme > $HOME/.config/rofi/config.rasi"
     # theming (from manjaro sway desktop config)
     /usr/share/sway/scripts/enable-gtk-theme.sh "$gtk-theme"
     /usr/share/sway/scripts/fontconfig.sh "monospace" "$term-font"
@@ -110,9 +97,47 @@ exec_always {
     gsettings set org.gnome.desktop.interface color-scheme "$gtk-color-scheme"
     kvantummanager --set "$kvantum-theme"
 }
+exec {
+    pamac-tray-plasma
+    blueman-applet
+    wlsunset -l 59.91:10.76
+    swayidle -w \
+        timeout 1200 'swaymsg exec "/usr/share/sway/scripts/keyboard-backlight-switch.sh off"' resume 'swaymsg exec "/usr/share/sway/scripts/keyboard-backlight-switch.sh on"' \
+        timeout 1200 'swaymsg exec "$locking"' \
+        timeout 1200 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
+        timeout 1200 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+        before-sleep 'swaymsg exec "$locking"' \
+        after-resume 'swaymsg "output * dpms on"' \
+        idlehint '240'
+    idlehack
+    # focus switch animations
+    flashfocus
+    # usb automount
+    pcmanfm -d
+    # workspace icons
+    sworkstyle -d -l error
+    # swappy notify
+    $script_path/screenshot-notify.sh
+}
+exec_always {
+    nm-applet
+    calcurse --daemon
+    # persist clipboard after close
+    pkill -x wl-clip-persist
+    wl-clip-persist --clipboard regular --all-mime-type-regex '(?i)^(?!image/x-inkscape-svg).+'
+    # mako daemon
+    pkill -x mako
+    $script_path/mako.sh --font "$term-font" --text-color "$text-color" --border-color "$accent-color" --background-color "$background-color" --border-size 3 --width 400 --height 200 --padding 20 --margin 20 --default-timeout 15000
+    # enable noisetorch
+    noisetorch -u
+    noisetorch -i
+    # update rofi theme
+    mkdir -p $HOME/.config/rofi/
+    echo $rofi_theme > $HOME/.config/rofi/config.rasi
+}
 
 # CONFIGS
-font xft:Cozette 12
+font $gui-font
 focus_follows_mouse no
 mouse_warping none
 workspace_auto_back_and_forth no
@@ -225,7 +250,7 @@ mode "$mode_system" {
 bindsym $mod+Shift+e mode "$mode_system"
 
 # config tools
-set $mode_config (b) bt, (c) cooling, (d) display, (g) gparted, (k) kvantum, (l) lxappearance, (m) manjaro, (p) packages, (q) qt5, (Q) qt6, (s) sound, (t) theme, (u) upgrade
+set $mode_config (b) bt, (c) cooling, (d) display, (g) gparted, (k) kvantum, (l) lxappearance, (m) manjaro, (p) packages, (q) qt5, (Q) qt6, (s) sound, (u) upgrade
 mode "$mode_config" {
     # bindsym b exec --no-startup-id blueman-manager, mode "default"
     bindsym c exec --no-startup-id coolercontrol, mode "default"
@@ -238,7 +263,6 @@ mode "$mode_config" {
     bindsym q exec --no-startup-id qt5ct, mode "default"
     bindsym Shift+q exec --no-startup-id qt6ct, mode "default"
     bindsym s exec --no-startup-id pavucontrol-qt, mode "default"
-    bindsym t exec --no-startup-id manjaro-sway-theme, mode "default"
     bindsym u exec --no-startup-id $term_float topgrade --only config_update --only system, mode "default"
 
     bindsym Return mode "default"
@@ -261,7 +285,6 @@ mode "$mode_monitor" {
 bindsym $mod+m mode "$mode_monitor"
 
 # WINDOWS
-include /etc/sway/config.d/98-application-defaults.conf
 for_window [all] title_format "%app_id - %title"
 
 # set floating mode for generated windows
@@ -301,7 +324,7 @@ for_window [app_id="floating_shell"] floating enable, border pixel 1
 seat * shortcuts_inhibitor disable
 
 # IO
-output * bg /usr/share/backgrounds/wallpapers-juhraya/Austria_by_Rutger_Heijmerikx.jpg fill
+output * bg $background fill
 input type:keyboard {
     xkb_layout "us"
     xkb_variant "altgr-weur"

@@ -10,7 +10,12 @@ yay -S plymouth tldextract go nodejs unzip exa topgrade
 yay -S greetd qtgreet
 
 # sway
-yay -S manjaro-sway-settings swaytools swaylock pamac-tray-plasma unipicker mako ly wlsunset pcmanfm-qt wev gtklock
+yay -S manjaro-sway-settings swaytools swaylock pamac-tray-plasma unipicker mako ly wlsunset pcmanfm-qt wev gtklock idlehack sworkstyle foot
+systemctl --now --user enable foot-server.socket
+# systemctl --now --user enable foot-server
+# systemctl --now --user enable idlehack
+# systemctl --now --user enable sworkstyle
+# systemctl --now --user enable pcmanfm
 
 # nvidia
 yay -S cuda nvidia-settings nvidia-docker
@@ -49,8 +54,8 @@ sudo setcap CAP_CHOWN,CAP_FOWNER=pe /usr/bin/syncthing
 sudo systemctl enable --now syncthing@hjalmarlucius.service
 systemctl --user daemon-reload
 rclone config # follow instructions and paste creds from https://console.cloud.google.com/apis/credentials
-systemctl --user enable --now rclone-gdrive.service
-systemctl --user enable --now dropbox.service
+systemctl --now --user enable rclone-gdrive
+systemctl --now --user enable dropbox
 
 # docker incl non-root daemon
 yay -S docker docker-compose dry-bin nvidia-docker docker-buildx
@@ -100,3 +105,5 @@ yay -S calcurse python-httplib2 \
 # can be achieved by setting full-screen-api.ignore-widgets to true in about:config
 
 wget -P ~/.local/share/fonts/ https://raw.githubusercontent.com/SUNET/static_sunet_se/refs/heads/master/fonts/Akkurat-Mono.otf
+sudo mkdir -p /usr/share/backgrounds/ultrawide/
+sudo wget -O rainbowsmoke.jpg -P /usr/share/backgrounds/ultrawide https://superultrawidewallpaper.com/wp-content/uploads/2022/02/rainbow-smoke-3840x1080-1860x523.jpg
