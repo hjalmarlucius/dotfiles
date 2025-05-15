@@ -3,7 +3,7 @@ include /etc/sway/config.d/50-systemd-user.conf
 
 # THEME
 set $background /usr/share/backgrounds/wallpapers-juhraya/Austria_by_Rutger_Heijmerikx.jpg
-set $gui-font Cozette 10
+set $gui-font Noto Sans 10
 set $term-font Akkurat Mono
 # light
 # set $cursor-theme xcursor-breeze-snow
