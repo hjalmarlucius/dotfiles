@@ -26,7 +26,7 @@ yay -S mint-themes mint-y-icons kvantum-theme-catppuccin-git catppuccin-gtk-them
 yay -S lxinput-gtk3 qt6ct pamac-gtk3
 
 # terminal and shell
-yay -S wezterm nushell
+yay -S nushell
 chsh -s /usr/bin/nu
 
 # nushell
