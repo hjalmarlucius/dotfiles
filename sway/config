@@ -58,8 +58,6 @@ set $locking swaylock --screenshots --clock --grace 10 --fade-in 0.5 --effect-bl
 set $scale_up $script_path/scale.sh up
 set $scale_down $script_path/scale.sh down
 set $scale_default $script_path/scale.sh default
-# calendar
-set $calendar $term_float calcurse
 # audio
 set $pulseaudio $term_float pulsemixer
 set $sink_volume pactl get-sink-volume @DEFAULT_SINK@ | grep '^Volume:' | cut -d / -f 2 | tr -d ' ' | sed 's/%//'
@@ -205,6 +203,7 @@ bindsym $mod+Shift+n exec makoctl dismiss -a
 bindsym $mod+p exec pcmanfm-qt
 bindsym $mod+Shift+p exec $term_float ranger
 bindsym $mod+u exec unipicker --command "rofi -dmenu | wl-copy"
+bindsym $mod+period exec $term_float calcurse
 
 # Special keys
 bindsym --locked XF86AudioMute exec $volume_mute
