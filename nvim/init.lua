@@ -506,6 +506,15 @@ local function makespec_lspconfig()
     }
 end
 
+local function makespec_hexokinase()
+    return {
+        -- coloring of colornames
+        "rrethy/vim-hexokinase",
+        build = "cd /home/hjalmarlucius/.local/share/nvim/lazy/vim-hexokinase && make hexokinase",
+        config = function() vim.g.Hexokinase_highlighters = { "virtual" } end,
+    }
+end
+
 local function makespec_lualine()
     return {
         "nvim-lualine/lualine.nvim",
@@ -1555,6 +1564,7 @@ for _, spec in ipairs({
     makespec_flash(),
     makespec_grugfar(),
     -- visuals
+    makespec_hexokinase(),
     makespec_lualine(),
     makespec_noice(),
     -- file browsers
