@@ -99,23 +99,19 @@ exec_always {
 }
 exec {
     pamac-tray-plasma
-    blueman-applet
     wlsunset -l 59.91:10.76
-    swayidle -w \
-        timeout 1200 'swaymsg exec "/usr/share/sway/scripts/keyboard-backlight-switch.sh off"' resume 'swaymsg exec "/usr/share/sway/scripts/keyboard-backlight-switch.sh on"' \
-        timeout 1200 'swaymsg exec "$locking"' \
-        timeout 1200 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
-        timeout 1200 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
-        before-sleep 'swaymsg exec "$locking"' \
-        after-resume 'swaymsg "output * dpms on"' \
-        idlehint '240'
-    idlehack
+    systemctl --user enable --now blueman-applet
+    # idle lock
+    systemctl --user enable --now swayidle
+    systemctl --user enable --now idlehack
     # focus switch animations
-    flashfocus
+    systemctl --user enable --now flashfocus
     # usb automount
-    pcmanfm -d
+    systemctl --user enable --now pcmanfm
     # workspace icons
-    sworkstyle -d -l error
+    systemctl --user enable --now sworkstyle
+    # foot server
+    systemctl --user enable --now foot-server
     # swappy notify
     $script_path/screenshot-notify.sh
 }
