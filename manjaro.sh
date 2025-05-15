@@ -90,6 +90,7 @@ yay -S calcurse python-httplib2 \
     discord \
     discordo-git \
     firefox \
+    font-manager \
     i3status \
     mutt \
     ncspot \
