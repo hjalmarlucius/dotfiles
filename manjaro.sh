@@ -86,7 +86,7 @@ yay -S vlc protobuf yt-dlp
 yay -S castnow
 
 # div applications
-yay -S calcurse python-httplib2 \
+yay -S khal vdirsyncer python-aiohttp-oauthlib \
     discord \
     discordo-git \
     firefox \
@@ -108,3 +108,6 @@ yay -S calcurse python-httplib2 \
 wget -P ~/.local/share/fonts/ https://raw.githubusercontent.com/SUNET/static_sunet_se/refs/heads/master/fonts/Akkurat-Mono.otf
 sudo mkdir -p /usr/share/backgrounds/ultrawide/
 sudo wget -O rainbowsmoke.jpg -P /usr/share/backgrounds/ultrawide https://superultrawidewallpaper.com/wp-content/uploads/2022/02/rainbow-smoke-3840x1080-1860x523.jpg
+
+# set up vdirsyncer with google calendar using
+# https://vdirsyncer.pimutils.org/en/stable/config.html#google

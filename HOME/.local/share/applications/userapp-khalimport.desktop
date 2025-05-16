@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=khalimport
+Exec=xterm -bg "#1E1E2e" -fg "#CDD6F4" -e "/usr/bin/khal import -a purelymail %s %f"
+Categories=Other;
+NoDisplay=true
+MimeType=text/calendar
+Terminal=false

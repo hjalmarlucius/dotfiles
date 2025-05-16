@@ -1,0 +1,35 @@
+[default]
+
+default_calendar = purelymail
+highlight_event_days = true
+
+[view]
+
+dynamic_days= true
+
+[locale]
+
+unicode_symbols = false
+local_timezone = Europe/Oslo
+default_timezone = Europe/Oslo
+timeformat = %H:%M
+dateformat = %d.%m
+longdateformat = %d.%m.%Y
+
+[calendars]
+
+[[purelymail]]
+  path = ~/.config/vdirsyncer/calendars/purelymail/
+  color = yellow
+  priority = 10
+
+[[google]]
+  path = ~/.config/vdirsyncer/calendars/google/bakken.henrik@gmail.com
+  color = light magenta
+  priority = 5
+
+[[holidays]]
+  path = ~/.config/vdirsyncer/calendars/holidays/
+  color = dark cyan
+  readonly = True
+  priority = 0

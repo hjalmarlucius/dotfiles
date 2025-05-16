@@ -27,6 +27,6 @@ application/pdf=org.pwmt.zathura.desktop;
 application/x-bittorrent=org.qbittorrent.qBittorrent.desktop;
 inode/directory=ranger.desktop;
 x-scheme-handler/msteams=teams.desktop;
-text/calendar=firefox.desktop;
+text/calendar=userapp-khalimport.desktop;
 
 [Added Associations]

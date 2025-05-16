@@ -199,7 +199,7 @@ bindsym $mod+Shift+n exec makoctl dismiss -a
 bindsym $mod+p exec pcmanfm-qt
 bindsym $mod+Shift+p exec $term_float ranger
 bindsym $mod+u exec unipicker --command "rofi -dmenu | wl-copy"
-bindsym $mod+period exec $term_float calcurse
+bindsym $mod+period exec $term_float khal interactive
 
 # Special keys
 bindsym --locked XF86AudioMute exec $volume_mute
