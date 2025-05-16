@@ -99,6 +99,6 @@
         "interval": 1,
         "tooltip-format": "<tt>{calendar}</tt>",
         "format": "  {:%Y-%m-%d %H:%M:%S}",
-        "on-click": "swaymsg exec 'footclient --app-id floating_shell --window-size-chars 120x45 calcurse'"
+        "on-click": "swaymsg exec 'footclient --app-id floating_shell --window-size-chars 120x45 khal interactive'"
     }
 }
