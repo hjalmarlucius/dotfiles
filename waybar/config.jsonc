@@ -1,3 +1,4 @@
+// MAYBE add kubernetes status
 {
     // Basic config
     "layer": "bottom",
