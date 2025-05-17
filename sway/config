@@ -80,6 +80,7 @@ set $screenshot_selection $pipe_selection | $swappy && $notify_paste
 set $screenshot_selection_upload $pipe_selection | $upload_pipe
 
 # AUTOSTART APPLICATIONS
+exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec_always {
     # theming (from manjaro sway desktop config)
     /usr/share/sway/scripts/enable-gtk-theme.sh "$gtk-theme"
