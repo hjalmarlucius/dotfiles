@@ -1,0 +1,21 @@
+# vim:filetype=msmtp
+defaults
+auth on
+tls on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+logfile /home/hjalmarlucius/.config/msmtp/msmtp.log
+
+account henrik@hjarl.com
+host smtp.purelymail.com
+port 465
+tls_starttls off
+from henrik@hjarl.com
+user henrik@hjarl.com
+passwordeval "pass henrik@hjarl.com"
+
+account bakken.henrik@gmail.com
+host smtp.gmail.com
+port 587
+from bakken.henrik@gmail.com
+user bakken.henrik
+passwordeval "pass bakken.henrik@gmail.com"
