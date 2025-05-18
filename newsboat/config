@@ -1,0 +1,87 @@
+# ttrss
+ttrss-flag-publish "b"
+ttrss-flag-star "a"
+ttrss-login "admin"
+ttrss-mode "multi"
+ttrss-passwordeval "pass show ttrss"
+ttrss-url "https://rss.hjarl.com/"
+urls-source "ttrss"
+
+# data
+cache-file "~/.cache/newsboat/cache.db"
+cookie-cache "~/.cache/newsboat/cookies.txt"
+
+# feeds
+auto-reload yes
+delete-read-articles-on-quit yes
+feed-sort-order unreadarticlecount-asc
+prepopulate-query-feeds yes
+reload-threads 11
+reload-time 30
+
+# display
+article-sort-order date
+datetime-format "%D %R"
+download-full-page yes
+external-url-viewer "urlscan"
+html-renderer "w3m -dump -T text/html"
+show-read-articles yes
+show-read-feeds no
+text-width 72
+
+# navigation
+browser "$BROWSER %u >/dev/null 2>&1 &"
+#browser "w3m %u"
+goto-next-feed no
+goto-first-unread no
+mark-as-read-on-hover yes
+
+# bindings
+# original bindings here https://raw.githubusercontent.com/newsboat/newsboat/master/src/keymap.cpp
+# unbind
+unbind-key f
+unbind-key F
+unbind-key C
+unbind-key n
+unbind-key p
+unbind-key ^k
+unbind-key ,
+# bind
+bind-key SPACE macro-prefix
+bind-key l open
+bind-key h quit
+bind-key j down
+bind-key k up
+bind-key J next-feed
+bind-key K prev-feed
+bind-key J next article
+bind-key K prev article
+bind-key n next
+bind-key p prev
+bind-key g home
+bind-key G end
+bind-key ^F halfpagedown
+bind-key ^B halfpageup
+bind-key ^D pagedown
+bind-key ^U pageup
+bind-key d delete-article
+bind-key D delete-all-articles
+bind-key $ purge-deleted
+bind-key a mark-all-above-as-read
+bind-key A mark-feed-read
+bind-key ^A mark-all-feeds-read
+bind-key i sort
+bind-key I rev-sort
+bind-key T set-tag
+bind-key t toggle-article-read
+bind-key b toggle-source-view
+bind-key U toggle-show-read-feeds
+
+# macros
+macro w set browser "w3m %u"; open-in-browser ; set browser "$BROWSER %u >/dev/null 2>&1 &"
+macro l set browser "links %u"; open-in-browser ; set browser "$BROWSER %u >/dev/null 2>&1 &"
+macro m set browser "mpv %u"; open-in-browser ; set browser "$BROWSER %u >/dev/null 2>&1 &"
+
+# format
+articlelist-format  "%4i %f %D   %?T?|%-20T|  ?%t"
+include "~/.config/newsboat/themes/catppuccin.dark"
