@@ -1,9 +1,0 @@
-text/html; $BROWSER %s
-text/html; w3m -I %{charset} -T text/html -dump; copiousoutput;
-text/calendar; /home/hjalmarlucius/src/mutt_dotfiles/bin/render-calendar-attachment.py %s; copiousoutput;
-image/*; imv %s &
-video/*; mpv --autofit-larger=90\%x90\% %s; needsterminal;
-video/*; setsid mpv --quiet %s &; copiousoutput
-application/pdf; zathura %s &
-application/vnd.openxmlformats-officedocument.wordprocessingml.document; libreoffice %s & disown
-application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; sc-im %s; needsterminal
