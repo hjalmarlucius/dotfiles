@@ -4,11 +4,9 @@ default_calendar = purelymail
 highlight_event_days = true
 
 [view]
-
-dynamic_days= true
+dynamic_days = true
 
 [locale]
-
 unicode_symbols = false
 local_timezone = Europe/Oslo
 default_timezone = Europe/Oslo

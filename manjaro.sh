@@ -85,9 +85,8 @@ sudo systemctl edit coolercontrold.service # set log level to WARN
 yay -S vlc protobuf yt-dlp
 yay -S castnow
 
-# cal+email
-yay -S khal vdirsyncer python-aiohttp-oauthlib
-yay -S neomutt urlscan mutt-ics sc-im pandoc w3m python-icalendar notmuch msmtp mbsync-git pandoc
+# cal+email+contacts
+yay -S khard aerc khal vdirsyncer python-aiohttp-oauthlib pandoc
 
 # div applications
 yay -S \
@@ -109,7 +108,6 @@ yay -S \
 # can be achieved by setting full-screen-api.ignore-widgets to true in about:config
 
 wget -P ~/.local/share/fonts/ https://raw.githubusercontent.com/SUNET/static_sunet_se/refs/heads/master/fonts/Akkurat-Mono.otf
-wget -O mutt-trim -P ~/.local/bin https://raw.githubusercontent.com/Konfekt/mutt-trim/refs/heads/master/mutt-trim
 sudo mkdir -p /usr/share/backgrounds/ultrawide/
 sudo wget -O rainbowsmoke.jpg -P /usr/share/backgrounds/ultrawide https://superultrawidewallpaper.com/wp-content/uploads/2022/02/rainbow-smoke-3840x1080-1860x523.jpg
 

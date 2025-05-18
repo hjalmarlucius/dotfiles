@@ -201,7 +201,7 @@ bindsym $mod+p exec pcmanfm-qt
 bindsym $mod+Shift+p exec $term_float ranger
 bindsym $mod+u exec unipicker --command "rofi -dmenu | wl-copy"
 bindsym $mod+period exec $term_float khal interactive
-bindsym $mod+comma exec $term_float neomutt
+bindsym $mod+comma exec $term_float aerc
 
 # Special keys
 bindsym --locked XF86AudioMute exec $volume_mute

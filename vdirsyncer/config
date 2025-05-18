@@ -37,6 +37,24 @@ token_file = "~/.config/vdirsyncer/google_calendar_token"
 client_id = "46299105873-2qbog08khdujcgvecbnjeql1r1rb0nir.apps.googleusercontent.com"
 client_secret = "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"
 
+[pair google_contacts]
+a = "google_contacts_local"
+b = "google_contacts_remote"
+collections = ["from a", "from b"]
+conflict_resolution = "b wins"
+metadata = ["color"]
+
+[storage google_contacts_local]
+type = "filesystem"
+path = "~/.config/vdirsyncer/contacts/google/"
+fileext = ".vcf"
+
+[storage google_contacts_remote]
+type = "google_contacts"
+token_file = "~/.config/vdirsyncer/google_contacts_token"
+client_id = "46299105873-2qbog08khdujcgvecbnjeql1r1rb0nir.apps.googleusercontent.com"
+client_secret = "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"
+
 [pair holidays]
 a = "holidays_local"
 b = "holidays_remote"
