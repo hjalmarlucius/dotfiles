@@ -1,0 +1,13 @@
+# https://ricoberger.de/cheat-sheets/yazi/
+[manager]
+linemode     = "size"
+show_hidden  = true
+sort_by      = "natural"
+
+[preview]
+wrap       = "yes"
+max_width  = 1500
+max_height = 1500
+
+[input]
+cursor_blink = true

@@ -25,7 +25,7 @@ image/png=imv.desktop;
 image/svg+xml=imv.desktop;
 application/pdf=org.pwmt.zathura.desktop;
 application/x-bittorrent=org.qbittorrent.qBittorrent.desktop;
-inode/directory=ranger.desktop;
+inode/directory=yazi.desktop;
 x-scheme-handler/msteams=teams.desktop;
 text/calendar=userapp-khalimport.desktop;
 

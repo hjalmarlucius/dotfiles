@@ -90,8 +90,7 @@ yay -S khard aerc khal vdirsyncer python-aiohttp-oauthlib pandoc
 
 # div applications
 yay -S \
-    discord \
-    discordo-git \
+    vesktop \
     firefox \
     font-manager \
     i3status \
@@ -102,7 +101,8 @@ yay -S \
     qutebrowser \
     rofi \
     steam \
-    teamviewer
+    teamviewer \
+    yazi
 
 # firefox windowed fullscreen
 # can be achieved by setting full-screen-api.ignore-widgets to true in about:config
