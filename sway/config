@@ -198,7 +198,7 @@ bindsym $mod+F4 exec $term_float ncspot
 bindsym $mod+n exec makoctl dismiss
 bindsym $mod+Shift+n exec makoctl dismiss -a
 bindsym $mod+p exec pcmanfm-qt
-bindsym $mod+Shift+p exec $term_float ranger
+bindsym $mod+Shift+p exec $term_float yazi
 bindsym $mod+u exec unipicker --command "rofi -dmenu | wl-copy"
 bindsym $mod+period exec $term_float khal interactive
 bindsym $mod+comma exec $term_float aerc
