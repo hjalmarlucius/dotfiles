@@ -91,6 +91,7 @@ yay -S khard aerc khal vdirsyncer python-aiohttp-oauthlib pandoc
 # div applications
 yay -S \
     vesktop \
+    qimgview-git \
     firefox \
     font-manager \
     i3status \
