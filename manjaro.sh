@@ -31,11 +31,8 @@ yay -S mint-themes mint-y-icons kvantum-theme-catppuccin-git catppuccin-gtk-them
 yay -S lxinput-gtk3 qt6ct pamac-gtk3
 
 # terminal and shell
-yay -S nushell
+yay -S nushell oh-my-posh carapace-bin zoxide
 chsh -s /usr/bin/nu
-
-# nushell
-yay -S oh-my-posh carapace-bin
 oh-my-posh init nu --config https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/refs/heads/main/themes/peru.omp.json
 
 # code

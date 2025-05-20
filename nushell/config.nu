@@ -1,17 +1,43 @@
-$env.config.buffer_editor = "/usr/bin/nvim"
 $env.SYSTEMD_EDITOR = "/usr/bin/nvim"
 $env.EDITOR = "/usr/bin/nvim"
 $env.VISUAL = "/usr/bin/nvim"
-$env.config.show_banner = false
-$env.config.edit_mode = 'vi'
 $env.config = {
+  buffer_editor: "/usr/bin/nvim"
+  completions: {
+    external: {
+      enable: true
+      max_results: 100
+      completer: {|spans|
+        let carapace_completer = {|spans: list<string>|
+            carapace $spans.0 nushell ...$spans
+            | from json
+            | if ($in | default [] | where value =~ '^-.*ERR$' | is-empty) { $in } else { null }
+        }
+
+        match $spans.0 {
+          _ => $carapace_completer
+        } | do $in $spans
+      }
+    }
+  }
   cursor_shape: {
     vi_insert: line
     vi_normal: block
   }
+  edit_mode: 'vi'
   history: {
     file_format: sqlite
     isolation: true
+  }
+  hooks: {
+    env_change: {
+      PWD: [
+        {
+          __zoxide_hook: true,
+          code: {|_, dir| zoxide add -- $dir} 
+        }
+      ]
+    }
   }
   keybindings: [
     {
@@ -23,12 +49,12 @@ $env.config = {
         send: ExecuteHostCommand
         cmd: "commandline edit --insert (
           history
-          | where exit_status == 0
+          # | where exit_status == 0
           | get command
           | reverse
           | uniq
           | str join (char -i 0)
-          | fzf 
+          | fzf
             --preview '{}'
             --preview-window 'bottom:3:wrap'
             --scheme history
@@ -80,6 +106,7 @@ $env.config = {
       event: {edit: backspaceword}
     }
   ]
+  show_banner: false
 }
 
 # from: https://github.com/nushell/nushell/issues/8166
@@ -111,29 +138,33 @@ def monitor [
   }
 }
 
-source ~/.oh-my-posh.nu
-
-let carapace_completer = {|spans|
-  carapace $spans.0 nushell ...$spans | from json
-  # carapace doesn't give completions if you don't give it any additional
-  # args
-  mut spans = $spans
-  if ($spans | is-empty) {
-    $spans = [""]
-  }
-
-  carapace $spans.0 nushell ...$spans | from json
-    # sort by color
-    | sort-by {
-      let fg = $in | get -i style.fg
-      let attr = $in | get -i style.attr
-
-      # the ~ there to make "empty" results appear at the end
-      $"($fg)~($attr)"
+# Jump to a directory using only keywords.
+def --env --wrapped z [...rest: string@zoxide_completer] {
+  let path = match $rest {
+    [] => {'~'},
+    [ '-' ] => {'-'},
+    [ $arg ] if ($arg | path type) == 'dir' => {$arg}
+    _ => {
+      zoxide query --exclude $env.PWD -- ...$rest | str trim -r -c "\n"
     }
+  }
+  cd $path
 }
-$env.config.completions.external = {
-  enable: true
-  max_results: 100
-  completer: $carapace_completer
+# Jump to a directory using interactive search.
+def --env --wrapped zi [...rest:string] {
+  cd $'(zoxide query --interactive -- ...$rest | str trim -r -c "\n")'
 }
+def zoxide_completer [context: string] {
+  let parts = $context | split row " " | skip 1
+  {
+    options: {
+      sort: false
+      completion_algorithm: prefix
+      positional: false
+      case_sensitive: false
+    }
+    completions: (zoxide query --list --exclude $env.PWD -- ...$parts | lines)
+  }
+}
+
+source ~/.oh-my-posh.nu
