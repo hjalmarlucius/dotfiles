@@ -35,6 +35,12 @@ statusline_success.bold=true
 
 completion_default.selected.bg=#363a4f
 
+part_*.fg=#cad3f5
+part_mimetype.fg=#cad3f5
+part_*.selected.fg=#cad3f5
+part_*.selected.bg=#24273a
+part_filename.selected.bold=true
+
 [viewer]
 url.fg=#8aadf4
 url.underline=true
