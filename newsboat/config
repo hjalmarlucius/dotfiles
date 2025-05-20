@@ -25,14 +25,14 @@ datetime-format "%D %R"
 download-full-page yes
 external-url-viewer "urlscan"
 html-renderer "w3m -dump -T text/html"
-show-read-articles yes
+show-read-articles no
 show-read-feeds no
 text-width 72
 
 # navigation
 browser "$BROWSER %u >/dev/null 2>&1 &"
 #browser "w3m %u"
-goto-next-feed no
+goto-next-feed yes
 goto-first-unread no
 mark-as-read-on-hover yes
 
@@ -83,5 +83,15 @@ macro l set browser "links %u"; open-in-browser ; set browser "$BROWSER %u >/dev
 macro m set browser "mpv %u"; open-in-browser ; set browser "$BROWSER %u >/dev/null 2>&1 &"
 
 # format
-articlelist-format  "%4i %f %D   %?T?|%-20T|  ?%t"
+feedlist-title-format "(%u unread, %t total) Your feeds%?T? - tag ‘%T’&?"
+articlelist-title-format "(%u unread, %t total) Articles in feed %T - %U"
+searchresult-title-format "(%u unread, %t total) Search result"
+itemview-title-format "(%u unread, %t total) Article %T"
+filebrowser-title-format "%?O?Open File&Save File? - %f"
+help-title-format "Help"
+selecttag-title-format "Select Tag"
+selectfilter-title-format "Select Filter"
+urlview-title-format "URLs"
+dialogs-title-format "Dialogs"
+
 include "~/.config/newsboat/themes/catppuccin.dark"
