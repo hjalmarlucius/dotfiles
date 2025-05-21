@@ -154,6 +154,7 @@ map("i", ";", ";<c-g>u")
 
 -- save file
 map({ "x", "n", "s" }, "<leader>ww", "<cmd>w<cr><esc>", { desc = "Save File" })
+map({ "x", "n", "s" }, "<leader>wa", "<cmd>wa<cr><esc>", { desc = "Save Files" })
 
 -- quit
 map("n", "<leader>qq", "<cmd>q<cr>", { desc = "Close Window" })
