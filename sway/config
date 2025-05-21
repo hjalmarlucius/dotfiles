@@ -137,7 +137,7 @@ bar {
 }
 # don't show gaps if there's only one window on the desktop
 smart_gaps on
-gaps inner 20
+gaps inner 5
 # borders
 default_border normal
 default_floating_border normal
@@ -152,6 +152,7 @@ bindsym $mod+d exec $menu
 floating_modifier $mod normal
 bindsym $mod+r reload
 bindsym $mod+a focus parent
+bindsym $mod+Shift+a focus child
 # Moving around
 bindsym $mod+$left focus left
 bindsym $mod+$down focus down
@@ -323,7 +324,7 @@ input type:keyboard {
     xkb_variant "altgr-weur"
     xkb_options "caps:escape"
     repeat_delay 400
-    repeat_rate 50
+    repeat_rate 30
 }
 input type:mouse {
     accel_profile "flat"
