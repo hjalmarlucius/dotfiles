@@ -1,0 +1,53 @@
+theme = "catppuccin_mocha"
+
+[editor]
+bufferline = "multiple"
+true-color = true
+line-number = "relative"
+rulers = [100]
+insert-final-newline = false
+cursorline = true
+   
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"
+select = "underline"
+
+[editor.file-picker]
+git-ignore = false
+
+[editor.indent-guides]
+character = "│"
+render = true
+
+[editor.lsp]
+auto-signature-help = false
+display-messages = true
+
+[editor.soft-wrap]
+enable = false
+# wrap-at-text-width = true
+wrap-indicator = "↩ "
+
+[editor.statusline]
+left = ["mode", "spinner", "version-control", "file-name", "read-only-indicator", "file-modification-indicator"]
+right = ["diagnostics", "selections", "register", "position", "position-percentage", "file-encoding", "file-line-ending"]
+
+
+[editor.whitespace.characters]
+space = " "
+nbsp = "⍽"    # Non breaking space
+tab = "→"
+newline = "⏎"
+tabpad = "·"
+
+[editor.whitespace.render]
+space = "all"
+tab = "all"
+newline = "none"
+
+[keys.normal]
+X = ["extend_line_up", "extend_to_line_bounds"]
+
+[keys.select]
+X = ["extend_line_up", "extend_to_line_bounds"]
