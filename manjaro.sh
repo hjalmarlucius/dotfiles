@@ -111,3 +111,6 @@ sudo wget -O rainbowsmoke.jpg -P /usr/share/backgrounds/ultrawide https://superu
 
 # set up vdirsyncer with google calendar using
 # https://vdirsyncer.pimutils.org/en/stable/config.html#google
+
+# yazi plugins
+ya pack -a 'pirafrank/what-size'
