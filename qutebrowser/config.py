@@ -7,21 +7,6 @@ if TYPE_CHECKING:
     c: Any = None
 
 config.load_autoconfig(True)
-config.set(
-    "content.register_protocol_handler",
-    True,
-    "https://mail.google.com?extsrc=mailto&url=%25s",
-)
-config.set(
-    "content.register_protocol_handler",
-    True,
-    "https://calendar.google.com?cid=%25s",
-)
-config.set("content.desktop_capture", True, "https://meet.google.com")
-config.set("content.media.audio_video_capture", True, "https://meet.google.com")
-config.set("content.media.video_capture", True, "https://meet.google.com")
-config.set("content.media.audio_capture", True, "https://meet.google.com")
-
 config.bind("<", "tab-move -")
 config.bind("<Ctrl+Shift+Tab>", "tab-prev")
 config.bind("<Ctrl+Tab>", "tab-next")
@@ -60,11 +45,6 @@ config.unbind("M", mode="normal")  # add bookmark
 config.unbind("gb", mode="normal")  # load bookmark
 config.unbind("gB", mode="normal")  # load bookmark
 config.unbind("wB", mode="normal")  # load bookmark
-config.set(
-    "content.headers.user_agent",
-    "Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25",
-    "*://*.youtube.com/*",
-)
 
 c.auto_save.session = True
 c.completion.open_categories = [
@@ -75,11 +55,40 @@ c.completion.open_categories = [
 ]
 c.completion.web_history.max_items = 10000
 c.completion.height = "100%"
+config.set("content.desktop_capture", True, "https://meet.google.com")
+config.set(
+    "content.headers.user_agent",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25",
+    "*://*.youtube.com/*",
+)
 c.content.javascript.clipboard = "ask"
+config.set(
+    "content.javascript.clipboard",
+    "access-paste",
+    "https://mail.google.com",
+)
+config.set(
+    "content.javascript.clipboard",
+    "access-paste",
+    "https://monitor.hjarl.com",
+)
 c.content.autoplay = False
 c.content.geolocation = False
 c.content.cache.size = 52428800
+config.set("content.media.audio_video_capture", True, "https://meet.google.com")
+config.set("content.media.video_capture", True, "https://meet.google.com")
+config.set("content.media.audio_capture", True, "https://meet.google.com")
 c.content.notifications.enabled = False
+config.set(
+    "content.register_protocol_handler",
+    True,
+    "https://mail.google.com?extsrc=mailto&url=%25s",
+)
+config.set(
+    "content.register_protocol_handler",
+    True,
+    "https://calendar.google.com?cid=%25s",
+)
 c.content.tls.certificate_errors = "ask-block-thirdparty"
 c.downloads.position = "bottom"
 c.downloads.prevent_mixed_content = False
@@ -103,6 +112,7 @@ c.qt.args = [
 ]
 c.scrolling.bar = "always"
 c.session.lazy_restore = False
+c.session.default_name = "hb"
 c.statusbar.padding = {"bottom": 10, "left": 10, "right": 10, "top": 10}
 c.statusbar.position = "bottom"
 c.statusbar.show = "always"
