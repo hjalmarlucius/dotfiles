@@ -18,6 +18,7 @@ feed-sort-order unreadarticlecount-asc
 prepopulate-query-feeds yes
 reload-threads 11
 reload-time 30
+scrolloff 15
 
 # display
 article-sort-order date
@@ -47,35 +48,35 @@ unbind-key p
 unbind-key ^k
 unbind-key ,
 # bind
-bind-key SPACE macro-prefix
-bind-key l open
-bind-key h quit
-bind-key j down
-bind-key k up
-bind-key J next-feed
-bind-key K prev-feed
-bind-key J next article
-bind-key K prev article
-bind-key n next
-bind-key p prev
-bind-key g home
-bind-key G end
-bind-key ^F halfpagedown
-bind-key ^B halfpageup
-bind-key ^D pagedown
-bind-key ^U pageup
-bind-key d delete-article
-bind-key D delete-all-articles
-bind-key $ purge-deleted
-bind-key a mark-all-above-as-read
-bind-key A mark-feed-read
-bind-key ^A mark-all-feeds-read
-bind-key i sort
-bind-key I rev-sort
-bind-key T set-tag
-bind-key t toggle-article-read
-bind-key b toggle-source-view
-bind-key U toggle-show-read-feeds
+bind SPACE everywhere macro-prefix
+bind l everywhere open
+bind h everywhere quit
+bind j everywhere down
+bind k everywhere up
+bind J everywhere next-feed
+bind K everywhere prev-feed
+bind J article next
+bind K article prev
+bind n everywhere next
+bind p everywhere prev
+bind g everywhere home
+bind G everywhere end
+bind ^F everywhere halfpagedown
+bind ^B everywhere halfpageup
+bind ^D everywhere pagedown
+bind ^U everywhere pageup
+bind d everywhere delete-article
+bind D everywhere delete-all-articles
+bind $ everywhere purge-deleted
+bind a everywhere mark-all-above-as-read
+bind A everywhere mark-feed-read
+bind ^A everywhere mark-all-feeds-read
+bind i everywhere sort
+bind I everywhere rev-sort
+bind T everywhere set-tag
+bind t everywhere toggle-article-read
+bind b everywhere toggle-source-view
+bind U everywhere toggle-show-read-feeds
 
 # macros
 macro w set browser "w3m %u"; open-in-browser ; set browser "$BROWSER %u >/dev/null 2>&1 &"
