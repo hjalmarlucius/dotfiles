@@ -34,8 +34,8 @@ fileext = ".ics"
 [storage google_calendar_remote]
 type = "google_calendar"
 token_file = "~/.config/vdirsyncer/google_calendar_token"
-client_id = "46299105873-2qbog08khdujcgvecbnjeql1r1rb0nir.apps.googleusercontent.com"
-client_secret = "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"
+client_id = "46299105873-hli2csm2rdgmtdnobmbsdcquajceli76.apps.googleusercontent.com"
+client_secret = "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"
 
 [pair google_contacts]
 a = "google_contacts_local"
@@ -52,8 +52,8 @@ fileext = ".vcf"
 [storage google_contacts_remote]
 type = "google_contacts"
 token_file = "~/.config/vdirsyncer/google_contacts_token"
-client_id = "46299105873-2qbog08khdujcgvecbnjeql1r1rb0nir.apps.googleusercontent.com"
-client_secret = "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"
+client_id = "46299105873-hli2csm2rdgmtdnobmbsdcquajceli76.apps.googleusercontent.com"
+client_secret = "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"
 
 [pair holidays]
 a = "holidays_local"

@@ -1,8 +1,9 @@
 [Desktop Entry]
+Version=1.0
+Name=Khal Import
+Comment=Imports ICS files into Khal
 Type=Application
-Name=khalimport
-Exec=xterm -bg "#1E1E2e" -fg "#CDD6F4" -e "/usr/bin/khal import -a purelymail %s %f"
-Categories=Other;
-NoDisplay=true
-MimeType=text/calendar
 Terminal=false
+Exec=xdg-terminal-exec khal import %F
+MimeType=text/calendar;
+NoDisplay=true
