@@ -1,13 +1,15 @@
 # https://ricoberger.de/cheat-sheets/yazi/
 [manager]
-linemode     = "size"
+linemode     = "mtime"
 show_hidden  = true
 sort_by      = "natural"
+ratio        = [1, 4, 5]
 
 [preview]
-wrap       = "yes"
-max_width  = 1500
-max_height = 1500
+wrap        = "yes"
+image_delay = 50
+max_width   = 1500
+max_height  = 1500
 
 [input]
 cursor_blink = true
