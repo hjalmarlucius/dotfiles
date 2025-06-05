@@ -85,6 +85,9 @@ yay -S castnow
 # cal+email+contacts
 yay -S khard aerc khal vdirsyncer python-aiohttp-oauthlib pandoc
 
+# latex
+yay texlive-latexextra
+
 # div applications
 yay -S \
     vesktop \
