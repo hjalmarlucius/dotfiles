@@ -116,4 +116,10 @@ sudo wget -O rainbowsmoke.jpg -P /usr/share/backgrounds/ultrawide https://superu
 # https://vdirsyncer.pimutils.org/en/stable/config.html#google
 
 # yazi plugins
-ya pack -a 'pirafrank/what-size'
+ya pkg add yazi-rs/plugins:chmod
+ya pkg add yazi-rs/plugins:git
+ya pkg add yazi-rs/plugins:mount
+ya pkg add yazi-rs/plugins:piper
+ya pkg add yazi-rs/plugins:smart-enter
+ya pkg add yazi-rs/plugins:smart-filter
+ya pkg add yazi-rs/plugins:toggle-pane
