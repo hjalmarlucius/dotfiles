@@ -4,6 +4,6 @@ Name=Khal Import
 Comment=Imports ICS files into Khal
 Type=Application
 Terminal=false
-Exec=xdg-terminal-exec khal import %F
+Exec=footclient --app-id floating_shell --window-size-chars 80x45 khal import %F
 MimeType=text/calendar;
 NoDisplay=true
