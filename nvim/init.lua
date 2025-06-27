@@ -138,10 +138,6 @@ map("n", "<C-j>", "<cmd>resize -2<cr>", { desc = "Decrease Window Height" })
 map("n", "<C-h>", "<cmd>vertical resize -2<cr>", { desc = "Decrease Window Width" })
 map("n", "<C-l>", "<cmd>vertical resize +2<cr>", { desc = "Increase Window Width" })
 
--- Move Lines
-map("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move Down" })
-map("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move Up" })
-
 -- https://github.com/mhinz/vim-galore#tips-1
 -- smarter next/prev in command line
 map("n", "<c-n>", "wildmenumode() ? '<c-n>' : '<down>'", { expr = true, desc = "Next" })
@@ -905,7 +901,7 @@ local function makespec_gitsigns()
             numhl = false,
             linehl = false,
             word_diff = false,
-            signs_staged_enable = true,
+            signs_staged_enable = false,
             on_attach = on_gitsigns_attach,
         },
     }
