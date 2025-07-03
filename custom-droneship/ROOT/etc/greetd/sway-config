@@ -7,6 +7,6 @@ bindsym Mod4+shift+e exec swaynag \
 -b 'Poweroff' 'sudo poweroff' \
 -b 'Reboot' 'sudo reboot'
 
-output DP-0 resolution 2560x1440 position 0 0
+output DP-1 resolution 2560x1440 position 0 0
 
 # include /etc/sway/config.d/*
