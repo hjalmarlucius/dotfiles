@@ -28,5 +28,6 @@ application/x-bittorrent=org.qbittorrent.qBittorrent.desktop;
 inode/directory=yazi.desktop;
 x-scheme-handler/msteams=teams.desktop;
 text/calendar=userapp-khalimport.desktop;
+x-scheme-handler/discord=vesktop.desktop:
 
 [Added Associations]

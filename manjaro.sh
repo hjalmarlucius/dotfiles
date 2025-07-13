@@ -10,7 +10,7 @@ yay -S plymouth tldextract go nodejs unzip exa topgrade
 yay -S greetd qtgreet
 
 # sway
-yay -S manjaro-sway-settings swaytools swaylock pamac-tray-plasma unipicker mako ly wlsunset pcmanfm-qt wev gtklock idlehack sworkstyle foot
+yay -S manjaro-sway-settings swaytools swaylock-effects pamac-tray-plasma unipicker mako ly wlsunset pcmanfm-qt wev gtklock idlehack sworkstyle foot
 systemctl --now --user enable foot-server.socket
 # systemctl --now --user enable foot-server
 # systemctl --now --user enable idlehack
@@ -100,6 +100,7 @@ yay -S \
     qbittorrent \
     quodlibet \
     qutebrowser \
+    pass \
     rofi \
     steam \
     teamviewer \
