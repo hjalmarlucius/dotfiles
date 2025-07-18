@@ -1,6 +1,6 @@
 #!/bin/bash
 LOC=$1
-echo "/srv/nfs/state 10.0.0.0/16(rw,async,no_subtree_check,no_root_squash)" | sudo bash -c "cat >> /etc/exports"
+echo "/srv/nfs/state *.hjarl.com(rw,async,no_subtree_check,no_root_squash) 10.0.0.0/16(rw,async,no_subtree_check,no_root_squash)" | sudo bash -c "cat >> /etc/exports"
 sudo hostnamectl set-hostname ${LOC}
 sudo apt install nfs-kernel-server
 sudo systemctl enable --now nfs-kernel-server

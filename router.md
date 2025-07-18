@@ -1,3 +1,11 @@
+# amtm scripts:
+
+- skynet
+- merlinAU
+- uiDivStats
+- connmon
+- scMerlin
+
 # Asus merlin ddns
 
 link: https://github.com/RMerl/asuswrt-merlin.ng/wiki/Custom-DDNS
