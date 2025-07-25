@@ -60,6 +60,8 @@ docker plugin install grafana/loki-docker-driver --alias loki --grant-all-permis
 sudo groupadd docker && sudo usermod -aG docker $USER
 sudo systemctl enable --now containerd.service
 sudo systemctl enable --now docker.service
+# docker multi-platform build
+yay -S qemu-user-static-binfmt qemu-user-static
 
 # printer
 yay -S manajaro-printer samsung-unified-driver-printer
