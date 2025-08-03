@@ -9,7 +9,6 @@ ufw default deny incoming
 ufw default allow outgoing
 ufw allow "SSH"
 ufw allow "qBittorrent"
-ufw allow "syncthing"
 ufw allow "WWW Full"
 
 ufw allow in 10000:10100/tcp comment "generic tcp"
