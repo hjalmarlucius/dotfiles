@@ -284,14 +284,11 @@ vim.api.nvim_create_autocmd("FileType", {
     },
     callback = function(event)
         vim.bo[event.buf].buflisted = false
-        vim.schedule(function()
-            vim.keymap.set(
-                "n",
-                "q",
-                "<cmd>q<cr>",
-                { buffer = event.buf, silent = true, desc = "Quit Buffer" }
-            )
-        end)
+        vim.schedule(
+            function()
+                vim.keymap.set("n", "q", "<cmd>q<cr>", { buffer = event.buf, silent = true, desc = "Quit Buffer" })
+            end
+        )
     end,
 })
 
@@ -519,24 +516,19 @@ local function makespec_lualine()
         "nvim-lualine/lualine.nvim",
         dependencies = { "echasnovski/mini.icons", "folke/noice.nvim" },
         opts = {
-            options = { theme = "auto", globalstatus = false },
+            options = { theme = "auto", globalstatus = false, always_divide_middle = false },
             extensions = { "fugitive", "neo-tree", "lazy" },
             sections = {
                 lualine_a = { "mode" },
                 lualine_b = {},
                 lualine_c = { { "filename", path = 1, shorting_target = 0 } },
-                lualine_x = {
-                    -- { 'require("noice").api.status.message.get()', color = { fg = "#99c794" } },  -- gets too obtrusive
-                    { 'require("noice").api.status.mode.get()', color = "lualine_a_command" },
-                    { 'require("noice").api.status.command.get()', color = "lualine_a_command" },
-                },
+                lualine_x = {},
                 lualine_y = {
-                    "encoding",
                     "filetype",
-                    { "location", separator = "of", padding = { left = 1, right = 1 } },
+                    { "location", separator = "/", padding = { left = 1, right = 1 } },
                     "vim.api.nvim_buf_line_count(0)",
                 },
-                lualine_z = { { function() return " " .. os.date("%R") end } },
+                lualine_z = {},
             },
             inactive_sections = {
                 lualine_a = {},
@@ -546,7 +538,7 @@ local function makespec_lualine()
                 },
                 lualine_x = {},
                 lualine_y = {
-                    { "location", separator = "of", padding = { left = 1, right = 1 } },
+                    { "location", separator = "/", padding = { left = 1, right = 1 } },
                     "vim.api.nvim_buf_line_count(0)",
                 },
                 lualine_z = {},
@@ -561,15 +553,19 @@ local function makespec_lualine()
                 },
                 lualine_b = {},
                 lualine_c = {},
-                lualine_x = {},
-                lualine_y = {},
-                lualine_z = {
+                lualine_x = {
+                    -- { 'require("noice").api.status.message.get()', color = { fg = "#99c794" } },  -- gets too obtrusive
+                    { 'require("noice").api.status.mode.get()', color = "lualine_a_command" },
+                    { 'require("noice").api.status.command.get()', color = "lualine_a_command" },
+                },
+                lualine_y = {
                     {
                         "tabs",
                         mode = 0,
-                        tabs_color = { active = "lualine_a_command" },
+                        tabs_color = { active = "lualine_b_command" },
                     },
                 },
+                lualine_z = { { function() return " " .. os.date("%R") end } },
             },
         },
     }
