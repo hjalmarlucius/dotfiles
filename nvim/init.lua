@@ -69,10 +69,10 @@ vim.o.grepformat = "%f:%l:%c:%m"
 vim.o.grepprg = "rg --vimgrep"
 
 -- Search/subsitute settings
-vim.o.ignorecase = false
 vim.o.inccommand = "nosplit"
 vim.o.jumpoptions = "view"
-vim.o.smartcase = false
+vim.o.ignorecase = true
+vim.o.smartcase = true
 
 -- Spelling
 vim.opt.spelllang = { "en" }
@@ -199,8 +199,8 @@ map("n", "<M-K>", "<cmd>bprev<cr>")
 map("n", "<M-J>", "<cmd>bnext<cr>")
 
 -- quickfix window
-map("n", "<C-p>", "<cmd>lprev<cr>")
-map("n", "<C-n>", "<cmd>lnext<cr>")
+map("n", "<C-p>", "<cmd>cprev<cr>")
+map("n", "<C-n>", "<cmd>cnext<cr>")
 
 -- tabs
 map("n", "<leader><tab>l", "<cmd>tablast<cr>", { desc = "Last Tab" })
