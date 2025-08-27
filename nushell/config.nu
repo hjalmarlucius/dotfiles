@@ -1,6 +1,7 @@
 $env.SYSTEMD_EDITOR = "/usr/bin/nvim"
 $env.EDITOR = "/usr/bin/nvim"
 $env.VISUAL = "/usr/bin/nvim"
+$env.path ++= ["~/.local/bin"]
 $env.config = {
   buffer_editor: "/usr/bin/nvim"
   completions: {
