@@ -47,6 +47,8 @@ config.bind("D", "tab-close")
 config.bind(",m", "hint links spawn mpv {hint-url}", mode="normal")
 config.bind(",M", "spawn mpv {url}", mode="normal")
 config.unbind("co")  # close all tabs except this one
+config.unbind("<Ctrl+x>")  # navigate decrement
+config.unbind("<Ctrl+a>")  # navigate increment
 config.unbind("<Ctrl+v>")  # delete tab
 config.unbind("d", mode="normal")  # delete tab
 config.unbind("q", mode="normal")  # macro recording
