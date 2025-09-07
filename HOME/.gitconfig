@@ -83,3 +83,5 @@
     whitespace = red reverse
 [safe]
 	directory = /tmp
+[credential]
+	helper = store
