@@ -1464,6 +1464,7 @@ local function makespec_conform()
                 markdown = { "prettierd", "prettier", stop_after_first = true },
                 python = { "ruff_format", "ruff_fix", "ruff_organize_imports" },
                 sh = { "shfmt" },
+                toml = { "pyproject-fmt" },
                 bash = { "shfmt" },
                 typescript = { "eslint_d" },
                 typst = { "typstyle" },
