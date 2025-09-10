@@ -13,8 +13,8 @@
     required = true
 [interactive]
     diffFilter = delta --color-only
-[merge]
-    conflictstyle = diff3
+; [merge]
+;     conflictstyle = diff3
 [delta]
     navigate = true
     light = false
