@@ -442,6 +442,18 @@ local function makespec_lspconfig()
             lspconfig.pyright.setup({
                 cmd = { "pyright-langserver", "--stdio", "--threads", "20" },
                 filetypes = { "python" },
+                root_dir = function(fname)
+                    local root_files = {
+                        ".git",
+                        "pyproject.toml",
+                        "setup.py",
+                        "setup.cfg",
+                        "requirements.txt",
+                        "Pipfile",
+                        "pyrightconfig.json",
+                    }
+                    return lspconfig.util.root_pattern(unpack(root_files))(fname)
+                end,
                 settings = {
                     python = {
                         analysis = {
