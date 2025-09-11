@@ -915,20 +915,6 @@ local function makespec_gitsigns()
     }
 end
 
-local function makespec_orgmode()
-    return {
-        "nvim-orgmode/orgmode",
-        event = "VeryLazy",
-        config = function()
-            -- Setup orgmode
-            require("orgmode").setup({
-                org_agenda_files = "~/notes/orgfiles/**/*",
-                org_default_notes_file = "~/notes/orgfiles/refile.org",
-            })
-        end,
-    }
-end
-
 local function makespec_whichkey()
     return {
         "folke/which-key.nvim",
@@ -1564,7 +1550,6 @@ for _, spec in ipairs({
     makespec_autotag(),
     makespec_lint(),
     makespec_mason(),
-    makespec_orgmode(),
     -- navigation
     makespec_whichkey(),
     makespec_smartsplits(),
