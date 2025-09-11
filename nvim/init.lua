@@ -518,7 +518,7 @@ local function makespec_hexokinase()
     return {
         -- coloring of colornames
         "rrethy/vim-hexokinase",
-        build = "cd /home/hjalmarlucius/.local/share/nvim/lazy/vim-hexokinase && make hexokinase",
+        build = "cd /home/hjalmarlucius/.local/share/nvim/lazy/vim-hexokinase; make hexokinase",
         config = function() vim.g.Hexokinase_highlighters = { "virtual" } end,
     }
 end
