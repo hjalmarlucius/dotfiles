@@ -439,8 +439,36 @@ local function makespec_lspconfig()
                     },
                 },
             })
-            lspconfig.pyright.setup({
-                cmd = { "pyright-langserver", "--stdio", "--threads", "20" },
+            lspconfig.pylsp.setup({
+                filetypes = { "python" },
+                root_dir = function(fname)
+                    local root_files = {
+                        ".git",
+                        "pyproject.toml",
+                        "setup.py",
+                        "setup.cfg",
+                        "requirements.txt",
+                        "Pipfile",
+                        "pyrightconfig.json",
+                    }
+                    return lspconfig.util.root_pattern(unpack(root_files))(fname)
+                end,
+                settings = {
+                    pylsp = {
+                        plugins = {
+                            pylsp_mypy = {
+                                enabled = true,
+                                dmypy = true,
+                            },
+                            pycodestyle = { enabled = false },
+                            mccabe = { enabled = false },
+                        },
+                    },
+                },
+                -- Other lspconfig options like on_attach, capabilities can be set here
+            })
+            lspconfig.basedpyright.setup({
+                cmd = { "basedpyright-langserver", "--stdio", "--threads", "20" },
                 filetypes = { "python" },
                 root_dir = function(fname)
                     local root_files = {
@@ -460,7 +488,6 @@ local function makespec_lspconfig()
                             -- logLevel = "Trace",
                             autoImportCompletions = false,
                             diagnosticMode = "workspace",
-                            useLibraryCodeForTypes = true,
                             logTypeEvaluationTime = true,
                             typeEvaluationTimeThreshold = 2000,
                         },
@@ -1061,9 +1088,8 @@ local function makespec_snacks()
             { "<leader>ll", function() Snacks.picker.notifications() end, desc = "Notification History" },
             -- code
             { "<leader>cS", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
-            -- replaced by Trouble
-            -- { "<leader>cW", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
-            -- { "<leader>cd", function() Snacks.picker.diagnostics() end, desc = "Diagnostics" },
+            { "<leader>cW", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
+            { "<leader>cd", function() Snacks.picker.diagnostics() end, desc = "Diagnostics" },
             -- terminal
             { "<C-/>", function() Snacks.terminal.toggle() end, desc = "Snacks Terminal", mode={"n", "t"} },
             { "<C-_>", function() Snacks.terminal.toggle() end, desc = "which_key_ignore", mode={'n', "t"} },
@@ -1153,7 +1179,6 @@ local function makespec_trouble()
         },
         keys = {
             { "<leader>cc", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics" },
-            { "<leader>cd", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics" },
             { "<leader>cr", "<cmd>Trouble lsp_references toggle<cr>", desc = "References" },
             { "<leader>cs", "<cmd>Trouble symbols toggle<cr>", desc = "Document Symbols" },
             { "<leader>ca", "<cmd>Trouble lsp toggle<cr>", desc = "LSP references/definitions/..." },
