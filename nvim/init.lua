@@ -691,6 +691,11 @@ local function makespec_neotree()
                 filesystem = {
                     filtered_items = { hide_gitignored = false },
                     follow_current_file = { enabled = false },
+                    window = {
+                        mappings = {
+                            ["/"] = false, -- disable fancy and annoying filter, just search instead
+                        },
+                    },
                 },
                 commands = {
                     system_open = function(state)
