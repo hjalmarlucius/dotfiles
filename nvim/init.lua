@@ -380,6 +380,20 @@ local function makespecs_themes()
 end
 
 local function makespec_lspconfig()
+    local rootdirfix = function(root_markers)
+        return function(bufnr, on_dir)
+            on_dir(require("lspconfig").util.root_pattern(unpack(root_markers))(vim.fn.bufname(bufnr)))
+        end
+    end
+    local pyroot = {
+        ".git",
+        "pyproject.toml",
+        "setup.py",
+        "setup.cfg",
+        "requirements.txt",
+        "Pipfile",
+        "pyrightconfig.json",
+    }
     return {
         "neovim/nvim-lspconfig",
         lazy = false,
@@ -387,11 +401,7 @@ local function makespec_lspconfig()
         cmd = { "LspInfo", "LspRestart", "LspStart", "LspStop" },
         keys = { { "<F4>", "<cmd>LspInfo<cr>", noremap = true } },
         config = function()
-            local lspconfig = require("lspconfig")
-            lspconfig.tinymist.setup({})
-            lspconfig.bashls.setup({})
-            lspconfig.nushell.setup({})
-            lspconfig.lua_ls.setup({
+            vim.lsp.config("lua_ls", {
                 cmd = { "lua-language-server" },
                 settings = {
                     Lua = {
@@ -406,7 +416,7 @@ local function makespec_lspconfig()
                     },
                 },
             })
-            lspconfig.clangd.setup({
+            vim.lsp.config("clangd", {
                 cmd = {
                     "clangd",
                     "--background-index",
@@ -418,7 +428,7 @@ local function makespec_lspconfig()
                 },
                 filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
             })
-            lspconfig.html.setup({
+            vim.lsp.config("html", {
                 cmd = { "vscode-html-language-server", "--stdio" },
                 settings = {
                     html = {
@@ -431,7 +441,7 @@ local function makespec_lspconfig()
                     },
                 },
             })
-            lspconfig.yamlls.setup({
+            vim.lsp.config("yamlls", {
                 settings = {
                     yaml = {
                         schemas = { kubernetes = "/home/hjalmarlucius/src/hjarl/system/manifests/*.yaml" },
@@ -439,49 +449,10 @@ local function makespec_lspconfig()
                     },
                 },
             })
-            lspconfig.pylsp.setup({
-                filetypes = { "python" },
-                root_dir = function(fname)
-                    local root_files = {
-                        ".git",
-                        "pyproject.toml",
-                        "setup.py",
-                        "setup.cfg",
-                        "requirements.txt",
-                        "Pipfile",
-                        "pyrightconfig.json",
-                    }
-                    return lspconfig.util.root_pattern(unpack(root_files))(fname)
-                end,
-                settings = {
-                    pylsp = {
-                        plugins = {
-                            pylsp_mypy = {
-                                enabled = true,
-                                dmypy = true,
-                            },
-                            pycodestyle = { enabled = false },
-                            mccabe = { enabled = false },
-                        },
-                    },
-                },
-                -- Other lspconfig options like on_attach, capabilities can be set here
-            })
-            lspconfig.basedpyright.setup({
+            vim.lsp.config("basedpyright", {
                 cmd = { "basedpyright-langserver", "--stdio", "--threads", "20" },
                 filetypes = { "python" },
-                root_dir = function(fname)
-                    local root_files = {
-                        ".git",
-                        "pyproject.toml",
-                        "setup.py",
-                        "setup.cfg",
-                        "requirements.txt",
-                        "Pipfile",
-                        "pyrightconfig.json",
-                    }
-                    return lspconfig.util.root_pattern(unpack(root_files))(fname)
-                end,
+                root_dir = rootdirfix(pyroot),
                 settings = {
                     python = {
                         analysis = {
@@ -494,7 +465,7 @@ local function makespec_lspconfig()
                     },
                 },
             })
-            lspconfig.vtsls.setup({
+            vim.lsp.config("vtsls", {
                 settings = {
                     complete_function_calls = true,
                     vtsls = {
@@ -537,6 +508,17 @@ local function makespec_lspconfig()
                     },
                 },
             })
+
+            vim.lsp.enable("bashls")
+            vim.lsp.enable("clangd")
+            vim.lsp.enable("html")
+            vim.lsp.enable("lua_ls")
+            vim.lsp.enable("nushell")
+            vim.lsp.enable("pylsp")
+            vim.lsp.enable("basedpyright")
+            vim.lsp.enable("tinymist")
+            vim.lsp.enable("vtsls")
+            vim.lsp.enable("yamlls")
         end,
     }
 end
