@@ -449,6 +449,27 @@ local function makespec_lspconfig()
                     },
                 },
             })
+            vim.lsp.config("pyrefly", {
+                cmd = { "pyrefly", "lsp" },
+                filetypes = { "python" },
+                root_dir = rootdirfix(pyroot),
+            })
+            vim.lsp.config("pylsp", {
+                filetypes = { "python" },
+                root_dir = rootdirfix(pyroot),
+                settings = {
+                    pylsp = {
+                        plugins = {
+                            pylsp_mypy = {
+                                enabled = true,
+                                dmypy = true,
+                            },
+                            pycodestyle = { enabled = false },
+                            mccabe = { enabled = false },
+                        },
+                    },
+                },
+            })
             vim.lsp.config("basedpyright", {
                 cmd = { "basedpyright-langserver", "--stdio", "--threads", "20" },
                 filetypes = { "python" },
@@ -514,6 +535,7 @@ local function makespec_lspconfig()
             vim.lsp.enable("html")
             vim.lsp.enable("lua_ls")
             vim.lsp.enable("nushell")
+            -- vim.lsp.enable("pyrefly")
             vim.lsp.enable("pylsp")
             vim.lsp.enable("basedpyright")
             vim.lsp.enable("tinymist")
