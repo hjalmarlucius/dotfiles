@@ -382,15 +382,6 @@ local function makespec_lspconfig()
             on_dir(require("lspconfig").util.root_pattern(unpack(root_markers))(vim.fn.bufname(bufnr)))
         end
     end
-    local pyroot = {
-        ".git",
-        "pyproject.toml",
-        "setup.py",
-        "setup.cfg",
-        "requirements.txt",
-        "Pipfile",
-        "pyrightconfig.json",
-    }
     return {
         "neovim/nvim-lspconfig",
         lazy = false,
@@ -446,14 +437,20 @@ local function makespec_lspconfig()
                     },
                 },
             })
+            vim.lsp.config("ty", {
+                cmd = { "ty", "server" },
+                filetypes = { "python" },
+                root_dir = rootdirfix({ ".git", "pyproject.toml", "setup.py", "setup.cfg" }),
+                settings = { ty = { experimental = { rename = true } } },
+            })
             vim.lsp.config("pyrefly", {
                 cmd = { "pyrefly", "lsp" },
                 filetypes = { "python" },
-                root_dir = rootdirfix(pyroot),
+                root_dir = rootdirfix({ ".git", "pyproject.toml", "setup.py", "setup.cfg", "pyrefly.toml" }),
             })
             vim.lsp.config("pylsp", {
                 filetypes = { "python" },
-                root_dir = rootdirfix(pyroot),
+                root_dir = rootdirfix({ ".git", "pyproject.toml", "setup.py", "setup.cfg" }),
                 settings = {
                     pylsp = {
                         plugins = {
@@ -470,7 +467,7 @@ local function makespec_lspconfig()
             vim.lsp.config("basedpyright", {
                 cmd = { "basedpyright-langserver", "--stdio", "--threads", "20" },
                 filetypes = { "python" },
-                root_dir = rootdirfix(pyroot),
+                root_dir = rootdirfix({ ".git", "pyproject.toml", "setup.py", "setup.cfg", "pyrightconfig.json" }),
                 settings = {
                     python = {
                         analysis = {
@@ -532,9 +529,10 @@ local function makespec_lspconfig()
             vim.lsp.enable("html")
             vim.lsp.enable("lua_ls")
             vim.lsp.enable("nushell")
+            vim.lsp.enable("ty")
             -- vim.lsp.enable("pyrefly")
-            vim.lsp.enable("pylsp")
-            vim.lsp.enable("basedpyright")
+            -- vim.lsp.enable("pylsp")
+            -- vim.lsp.enable("basedpyright")
             vim.lsp.enable("tinymist")
             vim.lsp.enable("vtsls")
             vim.lsp.enable("yamlls")
