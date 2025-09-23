@@ -246,9 +246,6 @@ map({ "n", "i" }, "<M-x>", vim.lsp.buf.signature_help)
 map("n", "K", vim.lsp.buf.hover)
 map("n", "<M-r>", vim.lsp.buf.rename)
 map({ "n", "x" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" })
--- replaced by Trouble
--- map("n", "<leader>cs", vim.lsp.buf.document_symbol, { desc = "Document Symbols" })
--- map("n", "<leader>cw", vim.lsp.buf.workspace_symbol, { desc = "Workspace Symbols" })
 
 -- ----------------------------------------
 -- AUTOCMD
@@ -1096,8 +1093,10 @@ local function makespec_snacks()
             -- logs
             { "<leader>ll", function() Snacks.picker.notifications() end, desc = "Notification History" },
             -- code
-            { "<leader>cS", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
-            { "<leader>cW", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
+            { "<leader>cs", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
+            { "<leader>cw", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
+            { "<leader>cr", function() Snacks.picker.lsp_references() end, desc = "LSP References" },
+            { "<leader>cc", function() Snacks.picker.diagnostics_buffer() end, desc = "Buffer Diagnostics" },
             { "<leader>cd", function() Snacks.picker.diagnostics() end, desc = "Diagnostics" },
             -- terminal
             { "<C-/>", function() Snacks.terminal.toggle() end, desc = "Snacks Terminal", mode={"n", "t"} },
@@ -1173,64 +1172,6 @@ local function makespecs_mini()
     }
 end
 
-local function makespec_trouble()
-    return {
-        "folke/trouble.nvim",
-        cmd = { "Trouble" },
-        opts = {
-            modes = {
-                lsp = { win = { position = "right", size = 100 } },
-                diagnostics = { win = { position = "right", size = 100 } },
-                symbols = { win = { position = "right", size = 100 } },
-                loclist = { win = { position = "right", size = 100 } },
-                qflist = { win = { position = "right", size = 100 } },
-            },
-        },
-        keys = {
-            { "<leader>cc", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics" },
-            { "<leader>cr", "<cmd>Trouble lsp_references toggle<cr>", desc = "References" },
-            { "<leader>cs", "<cmd>Trouble symbols toggle<cr>", desc = "Document Symbols" },
-            { "<leader>ca", "<cmd>Trouble lsp toggle<cr>", desc = "LSP references/definitions/..." },
-            { "<leader>cl", "<cmd>Trouble loclist toggle<cr>", desc = "Location List" },
-            { "<leader>cq", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List" },
-            {
-                "[x",
-                function()
-                    if require("trouble").is_open() then
-                        require("trouble").prev({ skip_groups = true, jump = true })
-                    else
-                        local ok, err = pcall(vim.cmd.cprev)
-                        if not ok then vim.notify(err, vim.log.levels.ERROR) end
-                    end
-                end,
-                desc = "Previous Trouble/Quickfix Item",
-            },
-            {
-                "]x",
-                function()
-                    if require("trouble").is_open() then
-                        require("trouble").next({ skip_groups = true, jump = true })
-                    else
-                        local ok, err = pcall(vim.cmd.cnext)
-                        if not ok then vim.notify(err, vim.log.levels.ERROR) end
-                    end
-                end,
-                desc = "Next Trouble/Quickfix Item",
-            },
-        },
-        specs = {
-            "folke/snacks.nvim",
-            opts = function(_, opts)
-                return vim.tbl_deep_extend("force", opts or {}, {
-                    picker = {
-                        actions = require("trouble.sources.snacks").actions,
-                        win = { input = { keys = { ["<c-t>"] = { "trouble_open", mode = { "n", "i" } } } } },
-                    },
-                })
-            end,
-        },
-    }
-end
 local function makespec_todocomments()
     return {
         "folke/todo-comments.nvim",
@@ -1263,12 +1204,8 @@ local function makespec_todocomments()
         keys = {
             { "]t", function() require("todo-comments").jump_next() end, desc = "Next Todo Comment" },
             { "[t", function() require("todo-comments").jump_prev() end, desc = "Previous Todo Comment" },
-            { "<leader>ct", "<cmd>Trouble todo toggle<cr>", desc = "Comments list" },
-            {
-                "<leader>cT",
-                "<cmd>Trouble todo toggle filter = {tag = {TODO,FIX,FIXME}}<cr>",
-                desc = "Todo/Fix/Fixme list",
-            },
+            { "<leader>ct", "<cmd>TodoQuickFix keywords=TODO,MAYBE,FIX<cr>", desc = "Todo/Fix/Fixme list" },
+            { "<leader>cT", "<cmd>TodoQuickFix<cr>", desc = "Comments list" },
             { "<leader>st", function() Snacks.picker.todo_comments() end, desc = "Todo" },
             {
                 "<leader>sT",
@@ -1580,7 +1517,6 @@ for _, spec in ipairs({
     makespec_lspconfig(),
     makespec_treesitter(),
     makespec_todocomments(),
-    makespec_trouble(),
     makespec_autotag(),
     makespec_lint(),
     makespec_mason(),
