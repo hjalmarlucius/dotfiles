@@ -1501,7 +1501,6 @@ end
 -- ----------------------------------------
 
 local lazyspecs = {
-    "dhruvasagar/vim-table-mode", -- tables
     "itchyny/vim-qfedit", -- editable quickfix list
     { "ethanholz/nvim-lastplace", opts = {} }, -- keep location upon reopening
     "tpope/vim-eunuch", -- Move, Rename etc
