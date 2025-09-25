@@ -1,40 +1,51 @@
 [mgr]
-linemode     = "mtime"
-show_hidden  = true
-sort_by      = "natural"
-ratio        = [1, 4, 5]
+linemode = "mtime"
+show_hidden = true
+sort_by = "natural"
+ratio = [ 1, 4, 5 ]
 
 [preview]
-wrap        = "yes"
+wrap = "yes"
 image_delay = 50
-max_width   = 1500
-max_height  = 1500
+max_width = 1500
+max_height = 1500
+
+[open]
+prepend_rules = [
+  { name = "*.csv", use = "text" },
+]
+
+[opener]
+text = [
+  { run = "bat $@", block = true, desc = "bat" },
+  { run = "nvim $@", block = true, desc = "nvim" },
+]
 
 [input]
 cursor_blink = true
 
 [[plugin.prepend_fetchers]]
-id   = "git"
+id = "git"
 name = "*"
-run  = "git"
+run = "git"
 
 [[plugin.prepend_fetchers]]
-id   = "git"
+id = "git"
 name = "*/"
-run  = "git"
+run = "git"
 
 [[plugin.prepend_previewers]]
 name = "*.tar*"
-run  = 'piper --format=url -- tar tf "$1"'
+run = 'piper --format=url -- tar tf "$1"'
 
 [[plugin.prepend_previewers]]
 name = "*.csv"
-run  = 'piper -- bat -p --color=always "$1"'
+run = 'piper -- bat -p --color=always "$1"'
 
 [[plugin.prepend_previewers]]
 name = "*.md"
-run  = 'piper -- CLICOLOR_FORCE=1 glow -w=$w -s=dark "$1"'
+run = 'piper -- CLICOLOR_FORCE=1 glow -w=$w -s=dark "$1"'
 
 [[plugin.prepend_previewers]]
 name = "*/"
-run  = 'piper -- eza -TL=3 --color=always --icons=always --group-directories-first --no-quotes "$1"'
+run = 'piper -- eza -TL=3 --color=always --icons=always --group-directories-first --no-quotes "$1"'
