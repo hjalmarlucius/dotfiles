@@ -64,7 +64,7 @@ yay -S qemu-user-static-binfmt qemu-user-static
 yay -S manajaro-printer samsung-unified-driver-printer
 
 # monitors
-yay -S iftop btop nvtop lazyjournal isd
+yay -S iftop btop nvtop lazyjournal isd bandwhich
 
 # pdf
 yay -S sioyek zathura zathura-pdf-mupdf zathura-djvu zathura-ps
