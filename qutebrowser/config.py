@@ -80,6 +80,7 @@ c.completion.web_history.max_items = 10000
 c.completion.height = "100%"
 c.confirm_quit = ["multiple-tabs", "downloads"]
 c.content.javascript.clipboard = "ask"
+c.content.local_content_can_access_remote_urls = True
 c.content.autoplay = False
 c.content.geolocation = False
 c.content.cache.size = 52428800
