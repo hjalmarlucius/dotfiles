@@ -49,7 +49,7 @@ vim.o.smartindent = false
 vim.opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }
 
 -- Completion Window/Popup settings
-vim.o.completeopt = "menu,menuone,popup,fuzzy"
+vim.o.completeopt = "menu,popup,preview"
 vim.o.pumblend = 10
 vim.o.pumheight = 10
 vim.o.winminwidth = 5
@@ -1229,10 +1229,6 @@ local function makespec_smartsplits()
             { "<C-j>", function() require("smart-splits").resize_down() end, { desc = "Resize Window Down", remap = true } },
             { "<C-k>", function() require("smart-splits").resize_up() end, { desc = "Resize Window Up", remap = true } },
             { "<C-l>", function() require("smart-splits").resize_right() end, { desc = "Resize Window Right", remap = true } },
-            { "<leader><leader>h", function() require("smart-splits").swap_buf_left() end, { desc = "Swap Buffer Left", remap = true } },
-            { "<leader><leader>j", function() require("smart-splits").swap_buf_down() end, { desc = "Swap Buffer Down", remap = true } },
-            { "<leader><leader>k", function() require("smart-splits").swap_buf_up() end, { desc = "Swap Buffer Up", remap = true } },
-            { "<leader><leader>l", function() require("smart-splits").swap_buf_right() end, { desc = "Swap Buffer Right", remap = true } },
         },
     }
 end
@@ -1417,7 +1413,8 @@ local function makespec_conform()
         cmd = { "ConformInfo" },
         keys = {
             { "<leader>p", function() require("conform").format() end, silent = true, desc = "Autoformat" },
-            { "<leader>lp", "<cmd>e ~/.local/state/nvim/conform.log<cr>", desc = "Conform log" },
+            { "<leader>lp", "<cmd>ConformInfo<cr>", desc = "Conform log" },
+            { "<leader>lP", "<cmd>e ~/.local/state/nvim/conform.log<cr>", desc = "Conform log" },
         },
         opts = {
             formatters_by_ft = {
