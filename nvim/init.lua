@@ -280,7 +280,6 @@ vim.api.nvim_create_autocmd("FileType", {
         "qf",
     },
     callback = function(event)
-        vim.bo[event.buf].buflisted = false
         vim.schedule(
             function()
                 vim.keymap.set("n", "q", "<cmd>q<cr>", { buffer = event.buf, silent = true, desc = "Quit Buffer" })
@@ -874,8 +873,8 @@ local function makespec_fugitive()
         end,
         keys = {
             { "<leader>gg", "<cmd>vertical Git<cr>", desc = "Fugitive" },
-            { "<leader>gp", "<cmd>Git push<cr>", desc = "Git Push" },
-            { "<leader>gP", "<cmd>Git push -f<cr>", desc = "Git Force Push" },
+            { "<leader>gp", "<cmd>Git! push<cr>", desc = "Git Push" },
+            { "<leader>gP", "<cmd>Git! push -f<cr>", desc = "Git Force Push" },
         },
     }
 end
