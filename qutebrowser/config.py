@@ -134,8 +134,13 @@ c.input.insert_mode.auto_leave = False
 c.input.insert_mode.plugins = True
 c.messages.timeout = 5000
 c.qt.args = [
-    "enable-accelerated-video-decode",
+    "disable-features=PermissionElement",
+    "ozone-platform-hint=wayland",
+    "ignore-gpu-blocklist",
     "enable-gpu-rasterization",
+    "enable-accelerated-video-decode",
+    "enable-quic",
+    "enable-zero-copy",
 ]
 c.qt.highdpi = True
 c.scrolling.bar = "always"
