@@ -26,6 +26,9 @@ yay -S python-pip pyenv ipython
 # sound
 yay -S manjaro-pipewire pavucontrol-qt
 
+# video sharing
+yay -S wireplumber xdg-desktop-portal xdg-desktop-portal-wlr
+
 # theme
 yay -S mint-themes mint-y-icons kvantum-theme-catppuccin-git catppuccin-gtk-theme-latte catppuccin-gtk-theme-mocha breeze-grub breeze-gtk breeze-icons
 yay -S lxinput-gtk3 qt6ct pamac-gtk3
