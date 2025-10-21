@@ -178,8 +178,6 @@ c.url.start_pages = "http://www.google.com/search?hl=en&source=hp&ie=ISO-8859-l"
 c.url.default_page = "http://www.google.com/search?hl=en&source=hp&ie=ISO-8859-l"
 c.url.searchengines = dict(
     DEFAULT="http://www.google.com/search?hl=en&source=hp&ie=ISO-8859-l&q={}",
-    cg="https://chatgpt.com/?q={}",
-    kg="https://kagi.com/search/?q={}",
     aw="https://wiki.archlinux.org/?search={}",
     ap="https://www.archlinux.org/packages/?sort=&q={}",
     gh="https://github.com/search?q={}&type=Code",
