@@ -39,7 +39,7 @@ chsh -s /usr/bin/nu
 oh-my-posh init nu --config https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/refs/heads/main/themes/peru.omp.json
 
 # code
-yay -S neovim tmux tig diff-so-fancy ripgrep nvimpager urlscan
+yay -S neovim tmux tig diff-so-fancy ripgrep urlscan
 git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
 # git
 yay -S git-secret git-delta git-lfs lazygit
@@ -93,7 +93,7 @@ yay texlive-latexextra
 # div applications
 yay -S \
     vesktop \
-    qimgview-git \
+    qimgv \
     firefox \
     font-manager \
     i3status \
@@ -106,7 +106,8 @@ yay -S \
     rofi \
     steam \
     teamviewer \
-    yazi
+    yazi \
+    eza
 
 # firefox windowed fullscreen
 # can be achieved by setting full-screen-api.ignore-widgets to true in about:config
