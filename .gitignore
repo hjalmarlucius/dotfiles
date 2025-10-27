@@ -1,3 +1,4 @@
 .gitsecret/keys/random_seed
 !*.secret
 homeassistant/SERVICE_ACCOUNT.JSON
+vdirsyncer/config

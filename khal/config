@@ -1,6 +1,6 @@
 [default]
 
-default_calendar = purelymail
+default_calendar = henrik@hjarl.com
 highlight_event_days = true
 
 [view]
@@ -16,18 +16,18 @@ longdateformat = %d.%m.%Y
 
 [calendars]
 
-[[purelymail]]
-  path = ~/.config/vdirsyncer/calendars/purelymail/
+[[henrik@hjarl.com]]
+  path = ~/Calendars/henrik@hjarl.com/
   color = yellow
   priority = 10
 
-[[google]]
-  path = ~/.config/vdirsyncer/calendars/google/bakken.henrik@gmail.com
+[[bakken.henrik@gmail.com]]
+  path = ~/Calendars/google/bakken.henrik@gmail.com
   color = light magenta
   priority = 5
 
 [[holidays]]
-  path = ~/.config/vdirsyncer/calendars/holidays/
+  path = ~/Calendars/holidays/
   color = dark cyan
   readonly = True
   priority = 0
