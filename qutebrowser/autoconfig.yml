@@ -6,10 +6,6 @@
 
 config_version: 2
 settings:
-  colors.webpage.darkmode.enabled:
-    global: false
-  content.fullscreen.window:
-    global: true
   downloads.location.directory:
     global: /home/hjalmarlucius/Downloads
   session.default_name:

@@ -65,6 +65,7 @@ c.completion.open_categories = [
     "filesystem",
 ]
 c.content.blocking.enabled = True
+c.content.fullscreen.window = True
 c.content.blocking.method = "both"
 c.content.blocking.adblock.lists = [
     "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt",
@@ -174,13 +175,13 @@ c.tabs.tabs_are_windows = False
 c.tabs.title.format = "{index}.{current_title}"
 c.tabs.undo_stack_size = 1000
 c.tabs.width = "15%"
-c.url.start_pages = "http://www.google.com/search?hl=en&source=hp&ie=ISO-8859-l"
-c.url.default_page = "http://www.google.com/search?hl=en&source=hp&ie=ISO-8859-l"
+c.url.start_pages = "http://www.google.com/search?hl=en&source=hp"
+c.url.default_page = "http://www.google.com/search?hl=en&source=hp"
 c.url.searchengines = dict(
-    DEFAULT="http://www.google.com/search?hl=en&source=hp&ie=ISO-8859-l&q={}",
+    DEFAULT="http://www.google.com/search?hl=en&source=hp&q={}",
     aw="https://wiki.archlinux.org/?search={}",
-    ap="https://www.archlinux.org/packages/?sort=&q={}",
-    gh="https://github.com/search?q={}&type=Code",
+    ap="https://www.archlinux.org/packages/?q={}",
+    gh="https://github.com/search?q={}&type=repositories",
     ip="https://iplocation.io/ip/{}",
     sh="https://explainshell.com/explain?cmd={}",
     wi="https://en.wikipedia.org/w/index.php?search={}",
