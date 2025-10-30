@@ -2,7 +2,7 @@ add_newline = true
 right_format = """$cmd_duration"""
 
 [line_break]
-disabled = true
+disabled = false
 
 [time]
 disabled = false
@@ -14,18 +14,11 @@ show_milliseconds = true
 
 [directory]
 truncation_length = 5
+truncate_to_repo = false
 truncation_symbol = '…/'
 repo_root_style = "red"
-repo_root_format = ' [$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) '
-
-[git_branch]
-symbol = " "
+before_repo_root_style = "cyan"
+repo_root_format = '[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) '
 
 [git_status]
-disabled = true
-
-[package]
-disabled = true
-
-[python]
 disabled = true
