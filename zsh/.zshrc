@@ -1,50 +1,68 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+# --- env ---
+export SYSTEMD_EDITOR=nvim
+export EDITOR=nvim
+export VISUAL=nvim
+export PAGER="bat --style=header,rule,snip"
+export PATH=~/.local/bin:$PATH
+export BROWSER=/usr/bin/qutebrowser
+export HISTFILE=~/.config/zsh/history
+export HISTSIZE=200000
+export SAVEHIST=200000
+
+# --- aliases ---
+alias ls='ls --color=auto -Ah'
+alias ..='cd ..'
+alias ...='cd ../..'
+
+# --- basic keybinds ---
+bindkey '^[[Z' reverse-menu-complete  # shift-tab
+bindkey '^[^M' self-insert-unmeta  # alt+enter newline
+bindkey "^[^?" backward-kill-word  # alt+backspace
+
+# --- options ---
+setopt HIST_IGNORE_ALL_DUPS HIST_IGNORE_SPACE SHARE_HISTORY EXTENDED_HISTORY
+setopt AUTO_CD AUTO_MENU
+setopt AUTO_PUSHD PUSHD_SILENT PUSHD_TO_HOME
+setopt NO_NOMATCH
+WORDCHARS='_-*?.[]~=&;!#$%^(){}<>'
+
+# --- command line to EDITOR ---
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey '^X^E' edit-command-line
+
+# --- autocompletion ---
+autoload -Uz compinit
+compinit -d "~/.config/zsh/zcompdump"
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' 'r:|[._-]=** r:|=**'
+zstyle ':completion:*' list-colors ''
+if command -v kubectl >/dev/null 2>&1; then
+  source <(kubectl completion zsh)
 fi
 
-# Lines configured by zsh-newuser-install
-HISTFILE=~/.zsh_history
-HISTSIZE=200000
-SAVEHIST=200000
-# End of lines configured by zsh-newuser-install
+# --- div plugins ---
+# autosuggestions must come before atuin
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+eval "$(zoxide init zsh)"
+eval "$(starship init zsh)"
 
-# The following lines were added by compinstall
-zstyle :compinstall filename "/home/hjalmarlucius/.zshrc"
-autoload -Uz compinit
-compinit
-# End of lines added by compinstall
-
-setopt HIST_EXPIRE_DUPS_FIRST
-setopt HIST_IGNORE_DUPS
-setopt HIST_IGNORE_ALL_DUPS
-setopt HIST_IGNORE_SPACE
-setopt HIST_FIND_NO_DUPS
-setopt HIST_SAVE_NO_DUPS
-source <(kubectl completion zsh)
-source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
-source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
-source /usr/share/zsh/plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh
-alias ls="ls --color=auto"
+# --- vi mode ---
 bindkey -v
-bindkey "^F" autosuggest-accept  # ctrl+f
-bindkey "^[[1;3C" forward-word  # alt+right
-bindkey "^[[1;3D" backward-word  # alt+left
-bindkey "[[3~" delete-char  # delete
-bindkey "^[^?" backward-kill-word  # alt+backspace
-bindkey '^[[Z' reverse-menu-complete
-bindkey '^[^M' self-insert-unmeta  # alt+enter newline
+source /usr/share/zsh/plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 
-# substring search
-bindkey "^[[A" history-substring-search-up # up
-bindkey "^[[B" history-substring-search-down # down
-HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1
+# --- search ---
+# fzf: Ctrl-T, Alt-C
+source /usr/share/fzf/key-bindings.zsh
+source /usr/share/fzf/completion.zsh
+# atuin: Ctrl+R, /
+eval "$(atuin init zsh)"
+# handle collisions
+function zvm_after_init() {
+  bindkey -M vicmd '^R' redo
+  bindkey -M viins '^R' atuin-search
+}
 
-zstyle ':completion:*' menu select
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# ---  syntax hl ---
+# must be the last plugins sourced
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

@@ -31,7 +31,17 @@ DOTFILES = HOME / "dotfiles"
 CUSTOMDIR = DOTFILES / f"custom-{open('/etc/hostname').read().strip()}"
 installmap = dict(
     fonts=("noto-fonts-emoji", "ttf-hack", "font-manager"),
-    nushell=("nushell", "oh-my-posh", "carapace-bin", "zoxide"),
+    zsh=(
+        "zsh",
+        "zsh-autosuggestions",
+        "zsh-syntax-highlighting",
+        "zsh-vi-mode",
+        "atuin",
+        "fzf",
+        "git-delta",
+        "starship",
+        "zoxide",
+    ),
     tmux=("tmux", "urlscan"),
     nvim=("neovim", "ripgrep"),
     utils=("uv", "bat", "ncdu", "unzip", "jq"),
@@ -169,12 +179,15 @@ def install_fonts(reinstall: bool) -> None:
     helper_install(*installmap["fonts"], reinstall=reinstall)
 
 
-def install_nushell(overwrite: bool, reinstall: bool) -> None:
-    helper_install(*installmap["nushell"], reinstall=reinstall)
-    helper_symlink_contents(DOTFILES / "nushell", CFG / "nushell", overwrite)
-    run("sudo chsh -s /usr/bin/nu".split())
-    url = "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/refs/heads/main/themes/peru.omp.json"
-    run(["oh-my-posh", "init", "nu", "--config", url])
+def install_zsh(overwrite: bool, reinstall: bool) -> None:
+    helper_install(*installmap["zsh"], reinstall=reinstall)
+    helper_symlink_contents(DOTFILES / "zsh", CFG / "zsh", overwrite)
+    run("sudo chsh -s /usr/bin/zsh".split())
+    helper_maybe_symlink(DOTFILES / "starship.toml", CFG / "starship.toml", overwrite)
+    helper_maybe_symlink(DOTFILES / "HOME/.zshenv", HOME / ".zshenv", overwrite)
+    helper_maybe_symlink(
+        DOTFILES / "atuin/config.toml", CFG / "atuin/config.toml", overwrite
+    )
 
 
 def install_tmux(overwrite: bool, reinstall: bool) -> None:
@@ -273,8 +286,8 @@ def installer(
         print("removed cliphist")
     install_fonts(reinstall)
     print("installed fonts")
-    install_nushell(overwrite, reinstall)
-    print("installed nushell")
+    install_zsh(overwrite, reinstall)
+    print("installed zsh")
     install_tmux(overwrite, reinstall)
     print("installed tmux")
     install_nvim(overwrite, reinstall)
