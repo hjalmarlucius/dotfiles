@@ -3,7 +3,7 @@ vim.g.maplocalleader = vim.keycode("/")
 vim.o.langmap = "ø:"
 
 -- general options
-vim.o.shell = "/usr/bin/nu"
+vim.o.shell = "/usr/bin/zsh"
 vim.g.BASH_Ctrl_j = "off"
 vim.g.BASH_Ctrl_l = "off"
 vim.opt.clipboard:append("unnamedplus")
@@ -527,7 +527,6 @@ local function makespec_lspconfig()
             vim.lsp.enable("clangd")
             vim.lsp.enable("html")
             vim.lsp.enable("lua_ls")
-            vim.lsp.enable("nushell")
             vim.lsp.enable("ty")
             -- vim.lsp.enable("pyrefly")
             -- vim.lsp.enable("pylsp")
@@ -1345,7 +1344,6 @@ local function makespec_treesitter()
                     "git_rebase",
                     "gitcommit",
                     "lua",
-                    "nu",
                     "python",
                     "regex",
                     "vimdoc",
