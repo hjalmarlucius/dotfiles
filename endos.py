@@ -254,6 +254,7 @@ def install_emailcalrss(overwrite: bool, reinstall: bool) -> None:
 
 def install_swaytools(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["swaytools"], reinstall=reinstall)
+    run("systemctl --user enable --now flashfocus".split())
     for base in [DOTFILES, CUSTOMDIR]:
         sub = "sway/config.d"
         helper_symlink_contents(base / sub, CFG / sub, overwrite)
