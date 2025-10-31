@@ -1,0 +1,15 @@
+{
+    "modules-right": [
+        "idle_inhibitor",
+        "cpu",
+        "custom/cputemp",
+        "memory",
+        "disk#root",
+        "backlight",
+        "pulseaudio",
+        "battery",
+        "clock",
+        "tray",
+        "custom/power"
+    ]
+}

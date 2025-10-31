@@ -1,0 +1,359 @@
+# ------------------------------------------
+# THEME
+# ------------------------------------------
+# Apply gtk theming
+exec_always ~/.config/sway/scripts/import-gsettings
+
+# mouse settings: don't refocus, don't move with output
+focus_follows_mouse no
+mouse_warping none
+
+# Set inner/outer gaps
+smart_gaps on
+gaps inner 2
+gaps outer 0
+
+# Hide titlebar on windows:
+default_border pixel 1
+
+# Default Font
+font pango:Noto Sans Regular 10
+
+# Thin borders:
+smart_borders on
+
+# Title format for windows
+for_window [shell="xdg_shell"] title_format "%title (%app_id)"
+for_window [shell="x_wayland"] title_format "%class - %title"
+
+# class                 border  bground text    indicator child_border
+client.focused          #556064 #F9CE5C #000000 #CB4B16   #FDF6E3
+client.focused_inactive #CB4B16 #2F3D44 #1ABC9C #454948   #454948
+client.unfocused        #556064 #2F3D44 #1ABC9C #454948   #454948
+client.urgent           #CB4B16 #FDF6E3 #1ABC9C #268BD2   #268BD2
+client.placeholder      #000000 #0C0C0C #ffffff #000000   #000000
+client.background       #2B2C2B
+
+# Status Bar:
+bar {
+    swaybar_command waybar
+}
+# ------------------------------------------
+# DEFINITIONS
+# ------------------------------------------
+# Logo key. Use Mod1 for Alt.
+set $mod Mod4
+
+# Add Vim key support
+set $left h
+set $down j
+set $up k
+set $right l
+
+# Set default terminal emulator
+set $term footclient
+
+# Application launcher
+set $launcher fuzzel
+
+# Application menu
+set $menu nwg-drawer
+
+# Power Menu
+set $powermenu ~/.config/sway/scripts/power_menu.sh
+
+# ------------------------------------------
+# BINDINGS
+# ------------------------------------------
+# Launch the terminal
+bindsym $mod+Return exec $term
+bindsym $mod+Shift+Return exec foot
+# Kill focused window
+bindsym $mod+Shift+q kill
+# Lock screen
+bindsym $mod+f1 exec gtklock
+# Reload the configuration file
+bindsym $mod+Shift+c reload
+
+# menus
+bindsym {
+  # Open the power menu
+  $mod+Shift+e exec $powermenu
+  # Start your launcher
+  $mod+d exec $launcher
+  # Menu
+  $mod+Shift+d exec $menu
+  # Activities
+  $mod+p exec ~/.config/sway/scripts/window_switcher.sh
+}
+
+# move around
+bindsym {
+    # Change window focus
+    $mod+Left focus left
+    $mod+Down focus down
+    $mod+Up focus up
+    $mod+Right focus right
+    # Vim key support
+    $mod+$left focus left
+    $mod+$down focus down
+    $mod+$up focus up
+    $mod+$right focus right
+
+    # Move the focused window
+    $mod+Shift+Left move left
+    $mod+Shift+Down move down
+    $mod+Shift+Up move up
+    $mod+Shift+Right move right
+    # Vim key support
+    $mod+Shift+$left move left
+    $mod+Shift+$down move down
+    $mod+Shift+$up move up
+    $mod+Shift+$right move right
+}
+
+# layout
+bindsym {
+    # Set how the current window will be split
+    $mod+s splitv
+    $mod+v splith
+    $mod+q split toggle
+
+    # Switch the current container between different layout styles
+    $mod+w layout stacking
+    $mod+t layout tabbed
+    $mod+e layout toggle split
+
+    # Make the current focus fullscreen
+    $mod+f fullscreen
+
+    # Toggle between tiling and floating mode
+    $mod+Shift+space floating toggle
+    $mod+Ctrl+space sticky toggle
+
+    # Swap focus between the tiling area and the floating area
+    $mod+space focus mode_toggle
+
+    # Move focus to the parent container
+    $mod+a focus parent
+    # Move focus to the child container
+    $mod+Shift+a focus child
+}
+
+# scratchpad
+bindsym {
+    # Move the currently focused window to the scratchpad
+    $mod+Shift+minus move scratchpad
+
+    # Show the next scratchpad window or hide the focused scratchpad window.
+    # If there are multiple scratchpad windows, this command cycles through them.
+    $mod+minus scratchpad show
+}
+
+# resize
+# Move windows by holding down $mod and left mouse button.
+# Resize them with right mouse button + $mod.
+# Change "normal" to "inverse" to switch left and right
+floating_modifier $mod normal
+bindsym {
+    # Resize with arrow keys
+    $mod+ctrl+Right resize shrink width 10 px
+    $mod+ctrl+Up resize grow height 10 px
+    $mod+ctrl+Down resize shrink height 10 px
+    $mod+ctrl+Left resize grow width 10 px
+    # Resize with Vim keys
+    $mod+ctrl+$right resize shrink width 10 px
+    $mod+ctrl+$up resize grow height 10 px
+    $mod+ctrl+$down resize shrink height 10 px
+    $mod+ctrl+$left resize grow width 10 px
+}
+# Resize floating windows with mouse scroll
+bindsym --whole-window --border {
+    # Resize vertically
+    $mod+button4 resize shrink height 5 px or 5 ppt
+    $mod+button5 resize grow height 5 px or 5 ppt
+    # Resize horizontally
+    $mod+Shift+button4 resize shrink width 5 px or 5 ppt
+    $mod+Shift+button5 resize grow width 5 px or 5 ppt
+}
+
+# media keys
+bindsym {
+    # Volume
+    XF86AudioRaiseVolume exec pamixer -ui 2
+    XF86AudioLowerVolume exec pamixer -ud 2
+    XF86AudioMute exec pamixer --toggle-mute
+    Pause exec pamixer -ui 2
+    Print exec pamixer -ud 2
+    Scroll_Lock exec pamixer --toggle-mute
+
+    # Player
+    XF86AudioPlay exec playerctl play-pause
+    XF86AudioNext exec playerctl next
+    XF86AudioPrev exec playerctl previous
+
+    # Backlight
+    XF86MonBrightnessUp exec brightnessctl -c backlight set +5%
+    XF86MonBrightnessDown exec brightnessctl -c backlight set 5%-
+}
+
+# workspaces
+set {
+    $ws1 number 1
+    $ws2 number 2
+    $ws3 number 3
+    $ws4 number 4
+    $ws5 number 5
+    $ws6 number 6
+    $ws7 number 7
+    $ws8 number 8
+    $ws9 number 9
+    $ws10 number 10
+}
+include $HOME/.config/sway/local_config
+
+# apps
+bindsym {
+    # Snip a selection and pipe to swappy
+    $mod+Shift+s exec grim -g "$(slurp)" - | swappy -f -
+
+    # unicode picker
+    $mod+u exec unipicker --command "fuzzel --dmenu | wl-copy"
+
+    # Launch the browser
+    $mod+i exec qutebrowser
+
+    # Launch the file explorer
+    $mod+o exec pcmanfm
+
+    # Dismiss message
+    $mod+n exec makoctl dismiss
+    $mod+Shift+n exec makoctl dismiss -a
+}
+
+# config tools
+set $mode_monitor (b) btop, (h) htop, (s) isd, (j) journal, (n) nvtop
+mode "$mode_monitor" {
+    bindsym b exec footclient --app-id floating_shell --window-size-chars 140x50 btop, mode "default"
+    bindsym h exec footclient --app-id floating_shell --window-size-chars 140x50 htop, mode "default"
+    bindsym s exec footclient --app-id floating_shell --window-size-chars 140x50 isd, mode "default"
+    bindsym j exec footclient --app-id floating_shell --window-size-chars 140x50 lazyjournal, mode "default"
+    bindsym n exec footclient --app-id floating_shell --window-size-chars 140x50 nvtop, mode "default"
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+m mode "$mode_monitor"
+
+# ------------------------------------------
+# AUTOSTART
+# ------------------------------------------
+# Auth with polkit-gnome
+exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+
+# Import environment variables for user systemd service manager
+exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
+
+# Update dbus environments with display variables
+exec hash dbus-update-activation-environment 2>/dev/null && \
+     dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
+
+# Idle configuration
+exec swayidle idlehint 1
+exec_always swayidle -w before-sleep "gtklock -d"
+
+# Start foot server
+exec_always --no-startup-id foot --server
+
+exec {
+    # Desktop notifications
+    exec mako
+
+    # Set wallpaper
+    ~/.azotebg
+
+    # Network Applet
+    nm-applet --indicator
+
+    # automount usb
+    pcmanfm --daemon-mode
+
+    # Bluetooth Applet
+    blueman-applet
+
+    # night-time color shift
+    wlsunset -l 59.91:10.76
+}
+
+exec_always {
+    # nwg-drawer
+    nwg-drawer -r -c 7 -is 90 -mb 10 -ml 50 -mr 50 -mt 10
+
+    # flashfocus
+    systemctl --user start flashfocus
+
+    # persist clipboard after close
+    pkill -x wl-clip-persist
+    wl-clip-persist --clipboard regular --all-mime-type-regex '(?i)^(?!image/x-inkscape-svg).+'
+
+    # enable noisetorch
+    noisetorch -u
+    noisetorch -i
+}
+
+# ------------------------------------------
+# WINDOWS
+# ------------------------------------------
+# Custom windowing rules
+for_window [class="Yad" instance="yad"] floating enable
+for_window [app_id="yad"] floating enable
+for_window [app_id="blueman-manager"] floating enable,  resize set width 40 ppt height 30 ppt
+for_window [app_id="pavucontrol" ] floating enable, resize set width 40 ppt height 30 ppt
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="bubble"] floating enable
+for_window [window_role="task_dialog"] floating enable
+for_window [window_role="Preferences"] floating enable
+for_window [window_type="dialog"] floating enable
+for_window [window_type="menu"] floating enable
+for_window [window_role="About"] floating enable
+for_window [title="File Operation Progress"] floating enable, border pixel 1, sticky enable, resize set width 40 ppt height 30 ppt
+for_window [app_id="floating_shell"] floating enable, border pixel 1, sticky enable
+for_window [title="Picture in picture"] floating enable, sticky enable
+for_window [title="Save File"] floating enable
+for_window [app_id="firefox" title="Firefox — Sharing Indicator"] kill
+
+# steam
+# https://github.com/ValveSoftware/steam-for-linux/issues/1040
+for_window [app_id="^steam$"] floating enable
+for_window [app_id="^Steam$"] floating enable
+for_window [app_id="^steam$" title="^Steam$"] floating disable
+
+# Inhibit idle
+for_window [app_id="firefox"] inhibit_idle fullscreen
+for_window [app_id="Chromium"] inhibit_idle fullscreen
+
+# Don't allow applications to inhibit shortcuts, i.e. grab total control of the
+# keyboard. Chrome currently abuses this by enabling it for all "--app=..." shortcuts.
+seat * shortcuts_inhibitor disable
+
+# ------------------------------------------
+# IO
+# ------------------------------------------
+input type:touchpad {
+    dwt enabled
+    tap disabled
+    natural_scroll enabled
+    accel_profile "adaptive"
+}
+
+input type:keyboard {
+    xkb_layout "us"
+    xkb_variant "altgr-weur"
+    xkb_options "caps:escape"
+}
+
+input type:mouse {
+    accel_profile "flat"
+    pointer_accel 0.5
+}
+

@@ -1,0 +1,30 @@
+{
+    "disk#hdd1": {
+        "path": "/mnt/hdd1",
+        "interval": 30,
+        "format": "  /mnt/hdd1 {specific_free:0.0f} of {specific_total:0.0f} GB free",
+        "unit": "GB",
+        "on-click": "swaymsg exec 'footclient --app-id floating_shell --window-size-chars 80x45 ncdu -x /mnt/hdd1/'"
+    },
+    "custom/nvidia": {
+      "exec": "nvidia-smi --query-gpu=utilization.gpu,memory.used,temperature.gpu --format=csv,nounits,noheader | sed 's/\\([0-9]\\+\\), \\([0-9]\\+\\), \\([0-9]\\+\\)/\\1% \\2MB \\3°C/g'",
+      "format": "󰓅  {}",
+      "on-click": "swaymsg exec 'footclient --app-id floating_shell --window-size-chars 120x45 nvtop'",
+      "interval": 1
+    },
+    "modules-right": [
+        "idle_inhibitor",
+        "cpu",
+        "custom/cputemp",
+        "memory",
+        "custom/nvidia",
+        "disk#root",
+        "disk#hdd1",
+        "backlight",
+        "pulseaudio",
+        "battery",
+        "clock",
+        "tray",
+        "custom/power"
+    ]
+}
