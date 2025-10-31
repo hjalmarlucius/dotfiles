@@ -9,8 +9,6 @@ input type:keyboard {
     xkb_layout "us"
     xkb_variant "altgr-weur"
     xkb_options "caps:escape"
-    repeat_delay 400
-    repeat_rate 30
 }
 
 input type:mouse {
