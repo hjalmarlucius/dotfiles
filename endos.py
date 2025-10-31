@@ -6,31 +6,37 @@
 # ]
 # ///
 # TODO
-# add or deprecate
-# - ROOT/etc/[greetd|qtgreet]
-# - ROOT/usr/local/bin/start-sway
-# - custom-droneship
-# - custom-mothership
-# - homeassistant + musicassistant
-# - environment.d
-# - HOME/.profile
-# - waybar
-# - mypy
-# - mako
-# - helix
-# - nushell
+# fix btop colors
+# pre-luks remote ssh
+# modify /etc/greetd/regreet.toml  WLR_NO_HARDWARE_CURSORS
+# add
+# - sudo ufw allow 22/tcp comment "ssh"
+# - sudo ufw default allow FORWARD
+# - sudo ufw allow 2222
+# - ... etc
+# - sudo enable ufw
 from difflib import unified_diff
 from os.path import lexists
 from pathlib import Path
+from shutil import rmtree
 from subprocess import run
 from urllib.request import urlretrieve
 
-HOME = Path("~").expanduser()
-CFG = HOME / ".config"
-DOTFILES = HOME / "dotfiles"
-CUSTOMDIR = DOTFILES / f"custom-{open('/etc/hostname').read().strip()}"
+HOSTNAME = open("/etc/hostname").read().strip()
+HOME_TGT = Path("~").expanduser()
+ROOT_TGT = Path("/")
+DOTFILES = HOME_TGT / "dotfiles"
+HOME_SRC = DOTFILES / "HOME"
+ROOT_SRC = DOTFILES / "ROOT"
+CFG_TGT = HOME_TGT / ".config"
+CFG_SRC = DOTFILES / "CONFIG"
+CUSTOM_SRC = DOTFILES / f"custom-{HOSTNAME}"
 installmap = dict(
-    fonts=("noto-fonts-emoji", "ttf-hack", "font-manager"),
+    fonts=(
+        "noto-fonts-emoji",
+        "ttf-hack",
+        "font-manager",
+    ),
     zsh=(
         "zsh",
         "zsh-autosuggestions",
@@ -44,16 +50,58 @@ installmap = dict(
         "bat",
     ),
     tmux=("tmux", "urlscan"),
-    nvim=("neovim", "ripgrep"),
-    utils=("uv", "bat", "ncdu", "unzip", "jq"),
-    gittools=("tig", "diff-so-fancy", "git-secret", "git-delta", "git-lfs", "lazygit", "bat"),
+    editors=(
+        "neovim",
+        "helix",
+        "ripgrep",
+        "npm",  # required for nvim plugins
+        "go",  # required for vim-hexokinase build
+    ),
+    utils=("uv", "ncdu", "unzip", "jq"),
+    gittools=(
+        "tig",
+        "diff-so-fancy",
+        "git-secret",
+        "git-delta",
+        "git-lfs",
+        "lazygit",
+        "bat",
+    ),
     pdftools=("sioyek", "zathura", "zathura-pdf-mupdf", "zathura-djvu", "zathura-ps"),
-    media=("vlc", "mpv", "protobuf", "yt-dlp", "quodlibet", "qimgv"),
-    filebrowsers=("pcmanfm", "yazi", "ranger", "zoxide", "eza"),
+    mediaviewers=(
+        # video
+        "vlc",
+        "mpv",
+        "protobuf",
+        "yt-dlp",
+        "v4l-utils",
+        # photos
+        "qimgv",
+        # music
+        "quodlibet",
+        # audio
+        "pamixer",
+        "noisetorch",
+    ),
+    filebrowsers=(
+        "yazi",
+        "ranger",
+        "pcmanfm",
+        "thunar",
+        "gparted",
+        "sshfs",
+        "file-roller",
+        "zoxide",  # quick search
+        "eza",  # pretty alternative to `ls`
+        "glow",  # markdown renderer
+    ),
     netbrowsers=(
         "qutebrowser",
         "firefox",
-        "python-adblock",
+        "google-chrome",
+        "microsoft-edge-stable-bin",
+        "w3m",
+        "python-adblock",  # for qutebrowser ad blocker
         "python-tldextract",
         "bitwarden-cli",  # for qutebrowser autofill
     ),
@@ -71,42 +119,45 @@ installmap = dict(
         "python-aiohttp-oauthlib",  # for google vdirsyncer
     ),
     monitors=(
+        "htop",  # hardware
         "btop",  # hardware
         "nvtop",  # gpu
         "lazyjournal",  # journald
         "isd",  # systemd
         "bandwhich",  # network
+        "sysstat",
     ),
-    apps=("bitwarden", "qalculate-gtk", "vesktop"),
-    swaytools=(
-        "flashfocus",  # quick flash when changing app in focus
-        "noisetorch",  # noise cancellation
-        "unipicker",  # unicode symbol selector
-        "wl-clip-persist",  # keep clipboard after close
+    apps=("keepassxc", "bitwarden", "qalculate-gtk", "vesktop"),
+    sway=(
+        # visuals
         "wlsunset",  # eye saver
-        "blueman",  # bluetooth
         "wdisplays",  # ui for display settings
+        "flashfocus",  # quick flash when changing app in focus
+        # clipboard
+        "wl-clip-persist",  # keep clipboard after close
+        # div
+        "unipicker",  # unicode symbol selector
+        "blueman",  # bluetooth
         "wev",  # debugging of ui
-        "gtklock",  # lock screen
     ),
     remotedata=("rclone", "dropbox", "minio-client"),
-    screensharing=(
-        "wireplumber",
-        "xdg-desktop-portal",
-        "xdg-desktop-portal-wlr",
-    ),
-    optional_nvidia=("cuda", "nvidia-settings"),
-    optional_coolercontrol=("coolercontrol",),
-    optional_containers=(
+    screensharing=("wireplumber",),
+    nvidia=("cuda", "nvidia-settings"),
+    coolercontrol=("coolercontrol",),
+    docker=(
         "docker",
-        "docker-compose",
+        "dry-bin",  # docker tui
+    ),
+    k8s=(
         "docker-buildx",  # advanced build
         "qemu-user-static-binfmt",  # build arm64
         "qemu-user-static",  # build arm64
-        "dry-bin",  # docker tui
         "k9s",  # kubernetes tui
+        "wireguard-tools",  # includes wg-quick
+        "sops",  # secret mgmt
+        "flux-bin",
+        "open-iscsi",  # required by longhorn
     ),
-    optional_nvidia_containers=("nvidia-docker",),
 )
 
 
@@ -125,9 +176,12 @@ def compare(src: Path, tgt: Path) -> str:
         return "".join(unified_diff(srcdata, tgtdata, str(src), str(tgt)))
 
 
-def helper_maybe_symlink(src: Path, tgt: Path, overwrite: bool) -> bool:
-    src = src.expanduser()
-    tgt = tgt.expanduser()
+def helper_maybe_copy(
+    src_folder: Path, tgt_folder: Path, sub: str, overwrite: bool, symlink: bool
+) -> bool:
+    src = src_folder.expanduser() / sub
+    tgt = tgt_folder.expanduser() / sub
+    assert src.exists()
     tgt.parent.mkdir(exist_ok=True)
     if lexists(tgt):
         if not overwrite:
@@ -138,27 +192,28 @@ def helper_maybe_symlink(src: Path, tgt: Path, overwrite: bool) -> bool:
         if tgt.is_file() or tgt.is_symlink():
             tgt.unlink()
         else:
-            tgt.rmdir()
+            rmtree(str(tgt))
     tgt.symlink_to(src)
     return True
 
 
-def helper_symlink_contents(
-    src_folder: Path, tgt_folder: Path, overwrite: bool
+def helper_symlink_foldercontent(
+    src_parent: Path, tgt_parent: Path, folder: str, overwrite: bool
 ) -> None:
-    src_folder = src_folder.expanduser()
-    tgt_folder = tgt_folder.expanduser()
+    src_folder = src_parent.expanduser() / folder
+    tgt_folder = tgt_parent.expanduser() / folder
     tgt_folder.mkdir(exist_ok=True)
     assert src_folder.is_dir()
     assert tgt_folder.is_dir() or tgt_folder.is_symlink()
     for src in src_folder.iterdir():
-        if src.name.endswith(".secret"):  # git-secret item
+        name = src.name
+        if name.endswith(".secret"):  # git-secret item
             continue
-        helper_maybe_symlink(src, tgt_folder / src.name, overwrite)
+        helper_maybe_copy(src_folder, tgt_folder, name, overwrite, symlink=True)
 
 
 def helper_check_if_installed(pkg: str) -> bool:
-    return run(["yay", "-Qs", pkg], capture_output=True).returncode == 0
+    return run(["pacman", "-Q", pkg], capture_output=True).returncode == 0
 
 
 def helper_uninstall(*pkgs: str) -> None:
@@ -173,58 +228,63 @@ def helper_install(*pkgs: str, reinstall: bool) -> None:
 
 
 def install_fonts(reinstall: bool) -> None:
+    tgt = Path("~/.local/share/fonts/Akkurat-Mono.otf").expanduser()
+    tgt.parent.mkdir(exist_ok=True)
     urlretrieve(
         "https://raw.githubusercontent.com/SUNET/static_sunet_se/refs/heads/master/fonts/Akkurat-Mono.otf",
-        Path("~/.local/share/fonts/Akkurat-Mono.otf").expanduser(),
+        tgt,
     )
     helper_install(*installmap["fonts"], reinstall=reinstall)
 
 
 def install_zsh(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["zsh"], reinstall=reinstall)
-    helper_symlink_contents(DOTFILES / "zsh", CFG / "zsh", overwrite)
-    run("sudo chsh -s /usr/bin/zsh".split())
-    helper_maybe_symlink(DOTFILES / "starship.toml", CFG / "starship.toml", overwrite)
-    helper_maybe_symlink(DOTFILES / "HOME/.zshenv", HOME / ".zshenv", overwrite)
-    helper_maybe_symlink(
-        DOTFILES / "atuin/config.toml", CFG / "atuin/config.toml", overwrite
-    )
+    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "zsh", overwrite)
+    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "atuin", overwrite)
+    run("chsh -s /usr/bin/zsh".split())
+    helper_maybe_copy(CFG_SRC, CFG_TGT, "starship.toml", overwrite, symlink=True)
+    helper_maybe_copy(HOME_SRC, HOME_TGT, ".zshenv", overwrite, symlink=True)
 
 
 def install_tmux(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["tmux"], reinstall=reinstall)
-    helper_symlink_contents(DOTFILES / "tmux", CFG / "tmux", overwrite)
-    tpmpath = CFG / "tmux/plugins/tpm"
+    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "tmux", overwrite)
+    tpmpath = CFG_TGT / "tmux/plugins/tpm"
     if overwrite or not lexists(tpmpath):
         if lexists(tpmpath):
             if tpmpath.is_symlink():
                 tpmpath.unlink()
             else:
-                tpmpath.rmdir()
+                rmtree(str(tpmpath))
         run(["git", "clone", "https://github.com/tmux-plugins/tpm", tpmpath])
 
 
-def install_nvim(overwrite: bool, reinstall: bool) -> None:
-    helper_install(*installmap["nvim"], reinstall=reinstall)
-    helper_symlink_contents(DOTFILES / "nvim", CFG / "nvim", overwrite)
+def install_editors(overwrite: bool, reinstall: bool) -> None:
+    helper_install(*installmap["editors"], reinstall=reinstall)
+    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "nvim", overwrite)
+    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "helix", overwrite)
 
 
 def install_gittools(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["gittools"], reinstall=reinstall)
-    helper_symlink_contents(DOTFILES / "tig", CFG / "tig", overwrite)
-    helper_maybe_symlink(DOTFILES / "HOME/.gitconfig", Path("~/.gitconfig"), overwrite)
+    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "tig", overwrite)
+    helper_maybe_copy(HOME_SRC, HOME_TGT, ".gitconfig", overwrite, symlink=True)
 
 
 def install_pdftools(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["pdftools"], reinstall=reinstall)
-    helper_symlink_contents(DOTFILES / "sioyek", CFG / "sioyek", overwrite)
-    helper_symlink_contents(DOTFILES / "zathura", CFG / "zathura", overwrite)
+    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "sioyek", overwrite)
+    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "zathura", overwrite)
+
+
+def install_mediaviewers(reinstall: bool) -> None:
+    helper_install(*installmap["mediaviewers"], reinstall=reinstall)
 
 
 def install_filebrowsers(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["filebrowsers"], reinstall=reinstall)
-    helper_symlink_contents(DOTFILES / "ranger", CFG / "ranger", overwrite)
-    helper_symlink_contents(DOTFILES / "yazi", CFG / "yazi", overwrite)
+    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "ranger", overwrite)
+    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "yazi", overwrite)
     for plugin in [
         "chmod",
         "git",
@@ -237,73 +297,116 @@ def install_filebrowsers(overwrite: bool, reinstall: bool) -> None:
         run(f"ya pkg add yazi-rs/plugins:{plugin}".split())
 
 
+def install_netbrowsers(overwrite: bool, reinstall: bool) -> None:
+    helper_install(*installmap["netbrowsers"], reinstall=reinstall)
+    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "qutebrowser", overwrite)
+    helper_maybe_copy(HOME_SRC, HOME_TGT, ".w3m/keymap", overwrite, symlink=True)
+    (HOME_TGT / "Downloads").mkdir(exist_ok=True)
+
+
 def install_chat(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["chat"], reinstall=reinstall)
-    helper_symlink_contents(DOTFILES / "discordo", CFG / "discordo", overwrite)
-    helper_symlink_contents(DOTFILES / "gurk", CFG / "gurk", overwrite)
+    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "discordo", overwrite)
+    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "gurk", overwrite)
 
 
 def install_emailcalrss(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["emailcalrss"], reinstall=reinstall)
     for tgt in ["vdirsyncer", "khard", "khal", "aerc", "newsboat"]:
-        helper_symlink_contents(DOTFILES / tgt, CFG / tgt, overwrite)
-    for sub in [".local/share/applications/userapp-khalimport.des", ".w3m/keymap"]:
-        helper_maybe_symlink(DOTFILES / "HOME" / sub, HOME / sub, overwrite)
-    run(f"chmod 600 {CFG / 'aerc/accounts.conf'}".split())
+        helper_symlink_foldercontent(CFG_SRC, CFG_TGT, tgt, overwrite)
+    run("systemctl enable --user --now vdirsyncer.timer".split())
+    helper_maybe_copy(
+        HOME_SRC / ".local/share/applications/",
+        HOME_TGT / ".local/share/applications/",
+        "userapp-khalimport.desktop",
+        overwrite,
+        symlink=True,
+    )
+    run(f"chmod 600 {CFG_TGT / 'aerc/accounts.conf'}".split())
+    (HOME_TGT / ".cache/newsboat").mkdir(exist_ok=True)
+    (HOME_TGT / "Calendars").mkdir(exist_ok=True)
+    (HOME_TGT / "Contacts").mkdir(exist_ok=True)
 
 
-def install_swaytools(overwrite: bool, reinstall: bool) -> None:
-    helper_install(*installmap["swaytools"], reinstall=reinstall)
-    for base in [DOTFILES, CUSTOMDIR]:
-        sub = "sway/config.d"
-        helper_symlink_contents(base / sub, CFG / sub, overwrite)
-        run("sudo systemctl enable --now bluetooth".split())
+def install_sway(overwrite: bool, reinstall: bool) -> None:
+    # sudo
+    helper_uninstall("autotiling", "cliphist")
+    helper_install(*installmap["sway"], reinstall=reinstall)
     for sub in [
         "etc/systemd/logind.conf.d/suspend.conf",
         "etc/systemd/sleep.conf.d/hibernate.conf",
+        "etc/greetd/sway.cfg",
     ]:
-        run(["sudo", "cp", str(DOTFILES / "ROOT" / sub), str(Path("/") / sub)])
+        src = CUSTOM_SRC / "ROOT" / sub
+        tgt = ROOT_TGT / sub
+        run(["sudo", "mkdir", "-p", str(tgt.parent)])
+        if tgt.exists():
+            if diff := compare(src, tgt):
+                print("DIFF:\n" + diff)
+                if input("overwrite? (y/n) ") == "n":
+                    continue
+            run(["sudo", "rm", str(tgt)])
+        run(["sudo", "cp", str(src), str(tgt)])
     run("sudo systemctl enable --now bluetooth".split())
+    # user
+    run("systemctl --user enable --now flashfocus".split())
+    if (tgt := CFG_TGT / "waybar/config").exists():
+        tgt.unlink()
+    for sub in ["sway", "waybar", "gtk-3.0", "mako", "fuzzel", "nwg-drawer"]:
+        helper_symlink_foldercontent(CFG_SRC, CFG_TGT, sub, overwrite)
+    helper_symlink_foldercontent(CUSTOM_SRC / "CONFIG", CFG_TGT, "sway", overwrite)
+    helper_symlink_foldercontent(CUSTOM_SRC / "CONFIG", CFG_TGT, "waybar", overwrite)
+    helper_maybe_copy(CFG_SRC, CFG_TGT, "mimeapps.list", overwrite, symlink=True)
+    helper_symlink_foldercontent(
+        HOME_SRC,
+        HOME_TGT,
+        ".local/share/applications",
+        overwrite,
+    )
+    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "foot", overwrite)
 
 
 def configure_pytools(overwrite: bool) -> None:
     for sub in [".ipython/profile_default", ".jupyter"]:
-        helper_symlink_contents(DOTFILES / "HOME" / sub, HOME / sub, overwrite)
+        tgt = HOME_TGT / sub
+        run(["mkdir", "-p", str(tgt)])
+        helper_symlink_foldercontent(HOME_SRC, HOME_TGT, sub, overwrite)
 
 
-def configure_foot(overwrite: bool) -> None:
-    helper_symlink_contents(DOTFILES / "foot", CFG / "foot", overwrite)
+def install_k8sreqs(overwrite: bool, reinstall: bool) -> None:
+    # sudo
+    helper_install(*installmap["k8s"], reinstall=reinstall)
+    run("sudo systemctl enable --now docker.service".split())
+    sub = "etc/modules-load.d/br_netfilter.conf"
+    run(["sudo", "cp", str(ROOT_SRC / sub), str(ROOT_TGT / sub)])
+    # user
+    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "k9s", overwrite)
 
 
 def installer(
+    *,
     overwrite: bool = False,
     reinstall: bool = False,
-    with_gpu: bool = False,
-    with_containers: bool = False,
-    with_coolercontrol: bool = False,
 ) -> None:
-    if helper_check_if_installed("cliphist"):
-        helper_uninstall("cliphist")
-        print("removed cliphist")
     install_fonts(reinstall)
     print("installed fonts")
     install_zsh(overwrite, reinstall)
     print("installed zsh")
     install_tmux(overwrite, reinstall)
     print("installed tmux")
-    install_nvim(overwrite, reinstall)
-    print("installed nvim")
+    install_editors(overwrite, reinstall)
+    print("installed editors")
     helper_install(*installmap["utils"], reinstall=reinstall)
     print("installed utils")
     install_gittools(overwrite, reinstall)
     print("installed gittools")
     install_pdftools(overwrite, reinstall)
     print("installed pdftools")
-    helper_install(*installmap["media"], reinstall=reinstall)
-    print("installed media")
+    install_mediaviewers(reinstall)
+    print("installed mediaviewers")
     install_filebrowsers(overwrite, reinstall)
     print("installed filebrowsers")
-    helper_install(*installmap["netbrowsers"], reinstall=reinstall)
+    install_netbrowsers(overwrite, reinstall)
     print("installed netbrowsers")
     install_emailcalrss(overwrite, reinstall)
     print("installed emailcalrss")
@@ -313,7 +416,7 @@ def installer(
     print("installed monitors")
     helper_install(*installmap["apps"], reinstall=reinstall)
     print("installed apps")
-    install_swaytools(overwrite, reinstall)
+    install_sway(overwrite, reinstall)
     print("installed sway")
     helper_install(*installmap["remotedata"], reinstall=reinstall)
     print("installed remotedata")
@@ -321,37 +424,51 @@ def installer(
     print("installed screensharing")
     configure_pytools(overwrite=overwrite)
     print("configured python tools")
-    configure_foot(overwrite=overwrite)
-    print("configured foot")
-    if with_gpu:
-        helper_install(*installmap["optional_nvidia"], reinstall=reinstall)
+    if HOSTNAME in ["mothership", "droneship"]:
+        helper_install(*installmap["nvidia"], reinstall=reinstall)
         print("installed nvidia")
-    if with_containers:
-        helper_install(*installmap["optional_containers"], reinstall=reinstall)
-        run("sudo systemctl enable --now docker.service".split())
-        helper_symlink_contents(DOTFILES / "k9s", CFG / "k9s", overwrite)
-        print("installed containers")
-    if with_gpu and with_containers:
-        helper_install(*installmap["optional_nvidia_containers"], reinstall=reinstall)
-        print("installed nvidia containers")
-    if with_coolercontrol:
-        helper_install(*installmap["optional_coolercontrol"], reinstall=reinstall)
+    if HOSTNAME in ["mothership", "droneship"]:
+        install_k8sreqs(overwrite, reinstall)
+        print("installed k8s requirements")
+    if HOSTNAME in ["mothership", "droneship"]:
+        helper_install(*installmap["coolercontrol"], reinstall=reinstall)
         run("sudo systemctl enable --now coolercontrold.service".split())
         print("installed coolercontrol")
+    if HOSTNAME in ["mothership"]:
+        helper_install(*installmap["docker"], reinstall=reinstall)
+        for file in ["configuration.yaml", "SERVICE_ACCOUNT.JSON"]:
+            helper_maybe_copy(
+                CFG_SRC,
+                CFG_TGT,
+                f"homeassistant/{file}",
+                overwrite,
+                symlink=False,
+            )
+        print("installed docker + home assistant")
     print("""
     MANUAL NEXT STEPS:
 
-    set up vdirsyncer with google calendar using
-    https://vdirsyncer.pimutils.org/en/stable/config.html#google
+    # vdirsyncer
+    - set up with google calendar using
+      https://vdirsyncer.pimutils.org/en/stable/config.html#google
+    - run `vdirsyncer discover` then `vdiscover sync`
 
-    allow firefox windowed fullscreen by setting full-screen-api.ignore-widgets
-    to true in about:config
+    # firefox
+    - allow windowed fullscreen by setting full-screen-api.ignore-widgets to
+      true in about:config
 
-    set coolercontrold log level to WARN:
-    `sudo systemctl edit coolercontrold.service`
+    # coolercontrol
+    - set coolercontrold log level to WARN: `sudo systemctl edit
+      coolercontrold.service`
 
-    docker with non-root daemon
-    `sudo groupadd docker && sudo usermod -aG docker $USER`
+    # k8s
+    - configure `/etc/hosts`
+    - run `hjarl-system/k8s.py` scripts
+
+    # docker / home assistant
+    - docker with non-root daemon 
+      `sudo groupadd docker && sudo usermod -aG docker $USER`
+    - run home assistant and music assistant scripts to start docker services
     """)
 
 
