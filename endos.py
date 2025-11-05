@@ -57,7 +57,7 @@ installmap = dict(
         "npm",  # required for nvim plugins
         "go",  # required for vim-hexokinase build
     ),
-    utils=("uv", "ncdu", "unzip", "jq"),
+    utils=("uv", "ncdu", "unzip", "jq", "bluetui"),
     gittools=(
         "tig",
         "diff-so-fancy",
