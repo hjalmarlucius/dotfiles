@@ -67,7 +67,14 @@ installmap = dict(
         "lazygit",
         "bat",
     ),
-    pdftools=("sioyek", "zathura", "zathura-pdf-mupdf", "zathura-djvu", "zathura-ps"),
+    readers=(
+        "sioyek",
+        "zathura",
+        "zathura-pdf-mupdf",
+        "zathura-djvu",
+        "zathura-ps",
+        "doxx",  # terminal viewer for word docs
+    ),
     mediaviewers=(
         # video
         "vlc",
@@ -272,8 +279,8 @@ def install_gittools(overwrite: bool, reinstall: bool) -> None:
     helper_maybe_copy(HOME_SRC, HOME_TGT, ".gitconfig", overwrite, symlink=True)
 
 
-def install_pdftools(overwrite: bool, reinstall: bool) -> None:
-    helper_install(*installmap["pdftools"], reinstall=reinstall)
+def install_readers(overwrite: bool, reinstall: bool) -> None:
+    helper_install(*installmap["readers"], reinstall=reinstall)
     helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "sioyek", overwrite)
     helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "zathura", overwrite)
 
@@ -402,8 +409,8 @@ def installer(
     print("installed utils")
     install_gittools(overwrite, reinstall)
     print("installed gittools")
-    install_pdftools(overwrite, reinstall)
-    print("installed pdftools")
+    install_readers(overwrite, reinstall)
+    print("installed readers")
     install_mediaviewers(reinstall)
     print("installed mediaviewers")
     install_filebrowsers(overwrite, reinstall)
