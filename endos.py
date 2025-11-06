@@ -91,6 +91,7 @@ installmap = dict(
         "gparted",
         "sshfs",
         "file-roller",
+        "7zip",  # explore zip files
         "zoxide",  # quick search
         "eza",  # pretty alternative to `ls`
         "glow",  # markdown renderer
@@ -286,15 +287,16 @@ def install_filebrowsers(overwrite: bool, reinstall: bool) -> None:
     helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "ranger", overwrite)
     helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "yazi", overwrite)
     for plugin in [
-        "chmod",
-        "git",
-        "mount",
-        "piper",
-        "smart-enter",
-        "smart-filter",
-        "toggle-pane",
+        "yazi-rs/plugins:chmod",
+        "yazi-rs/plugins:git",
+        "yazi-rs/plugins:mount",
+        "yazi-rs/plugins:piper",
+        "yazi-rs/plugins:smart-enter",
+        "yazi-rs/plugins:smart-filter",
+        "yazi-rs/plugins:toggle-pane",
+        "boydaihungst/file-extra-metadata",
     ]:
-        run(f"ya pkg add yazi-rs/plugins:{plugin}".split())
+        run(f"ya pkg add {plugin}".split())
 
 
 def install_netbrowsers(overwrite: bool, reinstall: bool) -> None:
