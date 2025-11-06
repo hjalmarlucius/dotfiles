@@ -13,7 +13,7 @@ case $SELECTION in
         gtklock;;
     *"󰤄 Suspend"*)
         if confirm_action "Suspend"; then
-            systemctl suspend
+            systemctl suspend-then-hibernate
         fi;;
     *"󰍃 Log out"*)
         if confirm_action "Log out"; then
