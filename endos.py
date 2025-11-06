@@ -345,8 +345,11 @@ def install_sway(overwrite: bool, reinstall: bool) -> None:
         "etc/systemd/logind.conf.d/suspend.conf",
         "etc/systemd/sleep.conf.d/hibernate.conf",
         "etc/greetd/sway.cfg",
+        "lib/systemd/system-sleep/iptsd.sh",
     ]:
         src = CUSTOM_SRC / "ROOT" / sub
+        if not src.exists():
+            continue
         tgt = ROOT_TGT / sub
         run(["sudo", "mkdir", "-p", str(tgt.parent)])
         if tgt.exists():
