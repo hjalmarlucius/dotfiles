@@ -53,8 +53,10 @@ source /usr/share/zsh/plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 
 # --- search ---
 # fzf: Ctrl-T, Alt-C
-source /usr/share/fzf/key-bindings.zsh
-source /usr/share/fzf/completion.zsh
+FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git' \
+  FZF_CTRL_R_COMMAND= \
+  FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND" \
+  source <(fzf --zsh)
 # atuin: Ctrl+R, /
 eval "$(atuin init zsh)"
 # handle collisions
