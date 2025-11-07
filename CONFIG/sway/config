@@ -259,8 +259,13 @@ exec hash dbus-update-activation-environment 2>/dev/null && \
      dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
 
 # Idle configuration
-exec swayidle idlehint 1
-exec_always swayidle -w before-sleep "gtklock -d"
+exec_always swayidle -w \
+    timeout 240 'brightnessctl set 1' resume 'brightnessctl -r' \
+    timeout 1200 'gtklock -d' \
+    timeout 2400 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
+    before-sleep 'gtklock -d' \
+    after-resume 'swaymsg reload' \
+    idlehint 240
 
 # Start foot server
 exec_always --no-startup-id foot --server
