@@ -86,6 +86,7 @@ installmap = dict(
         "qimgv",
         # music
         "quodlibet",
+        "gst-plugins-good",  # required deb
         # audio
         "pamixer",
         "noisetorch",
