@@ -320,6 +320,11 @@ def install_chat(overwrite: bool, reinstall: bool) -> None:
     helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "gurk", overwrite)
 
 
+def install_monitors(overwrite: bool, reinstall: bool) -> None:
+    helper_install(*installmap["monitors"], reinstall=reinstall)
+    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "btop", overwrite)
+
+
 def install_emailcalrss(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["emailcalrss"], reinstall=reinstall)
     for tgt in ["vdirsyncer", "khard", "khal", "aerc", "newsboat"]:
@@ -425,7 +430,7 @@ def installer(
     print("installed emailcalrss")
     install_chat(overwrite, reinstall)
     print("installed chat")
-    helper_install(*installmap["monitors"], reinstall=reinstall)
+    install_monitors(overwrite, reinstall)
     print("installed monitors")
     helper_install(*installmap["apps"], reinstall=reinstall)
     print("installed apps")
