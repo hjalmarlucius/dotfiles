@@ -25,7 +25,7 @@ config.bind("<Shift+Escape>", "mode-enter passthrough", mode="insert")
 config.bind(">", "tab-move +")
 config.bind("K", "tab-prev")
 config.bind("J", "tab-next")
-fuzzelargs = "--dmenu-invocation 'fuzzel --dmenu -p Bitwarden' --password-prompt-invocation 'fuzzel --dmenu -p MasterPwd --password --lines 0'"
+fuzzelargs = """--dmenu-invocation 'fuzzel --dmenu -p "Bitwarden"' --password-prompt-invocation 'fuzzel --dmenu -p "Master Password: " --password --lines 0'"""
 config.bind("pww", f"spawn --userscript qute-bitwarden {fuzzelargs}")
 config.bind("pwu", f"spawn --userscript qute-bitwarden {fuzzelargs} --username-only")
 config.bind("pwp", f"spawn --userscript qute-bitwarden {fuzzelargs} --password-only")
