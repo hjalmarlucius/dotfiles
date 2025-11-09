@@ -1,0 +1,30 @@
+- id: "1733842664884"
+  alias: Varmestyring
+  description: ""
+  use_blueprint:
+    path: MikaelUlvesjo/nordpool_simple_blueprint.yaml
+    input:
+      grid_area: sensor.nordpool_kwh_no1_nok_3_095_025
+      hour_rank: 16
+      turnon:
+        - action: climate.set_temperature
+          metadata: {}
+          data:
+            temperature: 19.5
+          target:
+            device_id:
+              - b65d14f7ef6300f4939db8935072b756
+              - ca85a2f25f3d48681e8d7e32d9de5e8e
+              - 2e1665d98e2051ea6f30e0b6ea31e7c5
+      turnoff:
+        - action: climate.set_temperature
+          metadata: {}
+          data:
+            temperature: 18
+          target:
+            device_id:
+              - b65d14f7ef6300f4939db8935072b756
+              - ca85a2f25f3d48681e8d7e32d9de5e8e
+              - 2e1665d98e2051ea6f30e0b6ea31e7c5
+      allways_off: 5
+      allways_on: 1

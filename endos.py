@@ -202,12 +202,19 @@ def helper_maybe_copy(
             tgt.unlink()
         else:
             rmtree(str(tgt))
-    tgt.symlink_to(src)
+    if symlink:
+        tgt.symlink_to(src)
+    else:
+        run(["cp", str(src), str(tgt)])
     return True
 
 
-def helper_symlink_foldercontent(
-    src_parent: Path, tgt_parent: Path, folder: str, overwrite: bool
+def helper_clone_foldercontents(
+    src_parent: Path,
+    tgt_parent: Path,
+    folder: str,
+    overwrite: bool,
+    symlink: bool = True,
 ) -> None:
     src_folder = src_parent.expanduser() / folder
     tgt_folder = tgt_parent.expanduser() / folder
@@ -218,7 +225,7 @@ def helper_symlink_foldercontent(
         name = src.name
         if name.endswith(".secret"):  # git-secret item
             continue
-        helper_maybe_copy(src_folder, tgt_folder, name, overwrite, symlink=True)
+        helper_maybe_copy(src_folder, tgt_folder, name, overwrite, symlink=symlink)
 
 
 def helper_check_if_installed(pkg: str) -> bool:
@@ -248,8 +255,8 @@ def install_fonts(reinstall: bool) -> None:
 
 def install_zsh(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["zsh"], reinstall=reinstall)
-    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "zsh", overwrite)
-    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "atuin", overwrite)
+    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "zsh", overwrite)
+    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "atuin", overwrite)
     run("chsh -s /usr/bin/zsh".split())
     helper_maybe_copy(CFG_SRC, CFG_TGT, "starship.toml", overwrite, symlink=True)
     helper_maybe_copy(HOME_SRC, HOME_TGT, ".zshenv", overwrite, symlink=True)
@@ -257,7 +264,7 @@ def install_zsh(overwrite: bool, reinstall: bool) -> None:
 
 def install_tmux(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["tmux"], reinstall=reinstall)
-    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "tmux", overwrite)
+    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "tmux", overwrite)
     tpmpath = CFG_TGT / "tmux/plugins/tpm"
     if overwrite or not lexists(tpmpath):
         if lexists(tpmpath):
@@ -270,20 +277,20 @@ def install_tmux(overwrite: bool, reinstall: bool) -> None:
 
 def install_editors(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["editors"], reinstall=reinstall)
-    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "nvim", overwrite)
-    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "helix", overwrite)
+    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "nvim", overwrite)
+    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "helix", overwrite)
 
 
 def install_gittools(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["gittools"], reinstall=reinstall)
-    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "tig", overwrite)
+    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "tig", overwrite)
     helper_maybe_copy(HOME_SRC, HOME_TGT, ".gitconfig", overwrite, symlink=True)
 
 
 def install_readers(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["readers"], reinstall=reinstall)
-    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "sioyek", overwrite)
-    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "zathura", overwrite)
+    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "sioyek", overwrite)
+    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "zathura", overwrite)
 
 
 def install_mediaviewers(reinstall: bool) -> None:
@@ -292,8 +299,8 @@ def install_mediaviewers(reinstall: bool) -> None:
 
 def install_filebrowsers(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["filebrowsers"], reinstall=reinstall)
-    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "ranger", overwrite)
-    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "yazi", overwrite)
+    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "ranger", overwrite)
+    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "yazi", overwrite)
     for plugin in [
         "yazi-rs/plugins:chmod",
         "yazi-rs/plugins:git",
@@ -309,26 +316,26 @@ def install_filebrowsers(overwrite: bool, reinstall: bool) -> None:
 
 def install_netbrowsers(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["netbrowsers"], reinstall=reinstall)
-    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "qutebrowser", overwrite)
+    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "qutebrowser", overwrite)
     helper_maybe_copy(HOME_SRC, HOME_TGT, ".w3m/keymap", overwrite, symlink=True)
     (HOME_TGT / "Downloads").mkdir(exist_ok=True)
 
 
 def install_chat(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["chat"], reinstall=reinstall)
-    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "discordo", overwrite)
-    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "gurk", overwrite)
+    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "discordo", overwrite)
+    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "gurk", overwrite)
 
 
 def install_monitors(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["monitors"], reinstall=reinstall)
-    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "btop", overwrite)
+    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "btop", overwrite)
 
 
 def install_emailcalrss(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["emailcalrss"], reinstall=reinstall)
     for tgt in ["vdirsyncer", "khard", "khal", "aerc", "newsboat"]:
-        helper_symlink_foldercontent(CFG_SRC, CFG_TGT, tgt, overwrite)
+        helper_clone_foldercontents(CFG_SRC, CFG_TGT, tgt, overwrite)
     run("systemctl enable --user --now vdirsyncer.timer".split())
     helper_maybe_copy(
         HOME_SRC / ".local/share/applications/",
@@ -371,24 +378,24 @@ def install_sway(overwrite: bool, reinstall: bool) -> None:
     if (tgt := CFG_TGT / "waybar/config").exists():
         tgt.unlink()
     for sub in ["sway", "waybar", "gtk-3.0", "mako", "fuzzel", "nwg-drawer"]:
-        helper_symlink_foldercontent(CFG_SRC, CFG_TGT, sub, overwrite)
-    helper_symlink_foldercontent(CUSTOM_SRC / "CONFIG", CFG_TGT, "sway", overwrite)
-    helper_symlink_foldercontent(CUSTOM_SRC / "CONFIG", CFG_TGT, "waybar", overwrite)
+        helper_clone_foldercontents(CFG_SRC, CFG_TGT, sub, overwrite)
+    helper_clone_foldercontents(CUSTOM_SRC / "CONFIG", CFG_TGT, "sway", overwrite)
+    helper_clone_foldercontents(CUSTOM_SRC / "CONFIG", CFG_TGT, "waybar", overwrite)
     helper_maybe_copy(CFG_SRC, CFG_TGT, "mimeapps.list", overwrite, symlink=True)
-    helper_symlink_foldercontent(
+    helper_clone_foldercontents(
         HOME_SRC,
         HOME_TGT,
         ".local/share/applications",
         overwrite,
     )
-    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "foot", overwrite)
+    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "foot", overwrite)
 
 
 def configure_pytools(overwrite: bool) -> None:
     for sub in [".ipython/profile_default", ".jupyter"]:
         tgt = HOME_TGT / sub
         run(["mkdir", "-p", str(tgt)])
-        helper_symlink_foldercontent(HOME_SRC, HOME_TGT, sub, overwrite)
+        helper_clone_foldercontents(HOME_SRC, HOME_TGT, sub, overwrite)
 
 
 def install_k8sreqs(overwrite: bool, reinstall: bool) -> None:
@@ -398,7 +405,7 @@ def install_k8sreqs(overwrite: bool, reinstall: bool) -> None:
     sub = "etc/modules-load.d/br_netfilter.conf"
     run(["sudo", "cp", str(ROOT_SRC / sub), str(ROOT_TGT / sub)])
     # user
-    helper_symlink_foldercontent(CFG_SRC, CFG_TGT, "k9s", overwrite)
+    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "k9s", overwrite)
 
 
 def installer(
@@ -454,14 +461,9 @@ def installer(
         print("installed coolercontrol")
     if HOSTNAME in ["mothership"]:
         helper_install(*installmap["docker"], reinstall=reinstall)
-        for file in ["configuration.yaml", "SERVICE_ACCOUNT.JSON"]:
-            helper_maybe_copy(
-                CFG_SRC,
-                CFG_TGT,
-                f"homeassistant/{file}",
-                overwrite,
-                symlink=False,
-            )
+        helper_clone_foldercontents(
+            CFG_SRC, CFG_TGT, "homeassistant", overwrite, symlink=False
+        )
         print("installed docker + home assistant")
     print("""
     MANUAL NEXT STEPS:
