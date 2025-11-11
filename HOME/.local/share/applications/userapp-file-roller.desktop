@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=file-roller
+Exec=file-roller %f
+Categories=FileTools;FileManager;
+MimeType=application/zip
+Terminal=false
