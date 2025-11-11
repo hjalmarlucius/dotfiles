@@ -29,5 +29,10 @@ inode/directory=yazi.desktop;
 x-scheme-handler/msteams=teams.desktop;
 text/calendar=userapp-khalimport.desktop;
 x-scheme-handler/discord=vesktop.desktop:
+application/vnd.openxmlformats-officedocument.wordprocessingml.document=org.kde.okular.desktop;
+text/markdown=org.kde.okular.desktop;
+application/zip=userapp-file-roller.desktop
 
 [Added Associations]
+
+[Removed Associations]

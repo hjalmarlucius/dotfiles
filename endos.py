@@ -8,7 +8,6 @@
 # TODO
 # fix btop colors
 # pre-luks remote ssh
-# modify /etc/greetd/regreet.toml  WLR_NO_HARDWARE_CURSORS
 # add
 # - sudo ufw allow 22/tcp comment "ssh"
 # - sudo ufw default allow FORWARD
@@ -73,7 +72,10 @@ installmap = dict(
         "zathura-pdf-mupdf",
         "zathura-djvu",
         "zathura-ps",
-        "doxx",  # terminal viewer for word docs
+        "typst",
+        "okular",
+        "calligra",
+        "libreoffice-fresh",
     ),
     mediaviewers=(
         # video
@@ -312,6 +314,8 @@ def install_filebrowsers(overwrite: bool, reinstall: bool) -> None:
         "boydaihungst/file-extra-metadata",
     ]:
         run(f"ya pkg add {plugin}".split())
+    tgt = ".local/share/applications/userapp-file-roller.desktop"
+    helper_maybe_copy(HOME_SRC, HOME_TGT, tgt, overwrite, symlink=True)
 
 
 def install_netbrowsers(overwrite: bool, reinstall: bool) -> None:
@@ -336,14 +340,9 @@ def install_emailcalrss(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["emailcalrss"], reinstall=reinstall)
     for tgt in ["vdirsyncer", "khard", "khal", "aerc", "newsboat"]:
         helper_clone_foldercontents(CFG_SRC, CFG_TGT, tgt, overwrite)
+    tgt = ".local/share/applications/userapp-khalimport.desktop"
+    helper_maybe_copy(HOME_SRC, HOME_TGT, tgt, overwrite, symlink=True)
     run("systemctl enable --user --now vdirsyncer.timer".split())
-    helper_maybe_copy(
-        HOME_SRC / ".local/share/applications/",
-        HOME_TGT / ".local/share/applications/",
-        "userapp-khalimport.desktop",
-        overwrite,
-        symlink=True,
-    )
     run(f"chmod 600 {CFG_TGT / 'aerc/accounts.conf'}".split())
     (HOME_TGT / ".cache/newsboat").mkdir(exist_ok=True)
     (HOME_TGT / "Calendars").mkdir(exist_ok=True)
