@@ -168,6 +168,7 @@ installmap = dict(
         "sops",  # secret mgmt
         "flux-bin",
         "open-iscsi",  # required by longhorn
+        "kubectl-cnpg",
     ),
 )
 
@@ -403,6 +404,7 @@ def install_k8sreqs(overwrite: bool, reinstall: bool) -> None:
     run("sudo systemctl enable --now docker.service".split())
     sub = "etc/modules-load.d/br_netfilter.conf"
     run(["sudo", "cp", str(ROOT_SRC / sub), str(ROOT_TGT / sub)])
+    run("sudo systemctl enable --now iscsid".split())
     # user
     helper_clone_foldercontents(CFG_SRC, CFG_TGT, "k9s", overwrite)
 
