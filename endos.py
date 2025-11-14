@@ -76,6 +76,7 @@ installmap = dict(
         "okular",
         "calligra",
         "libreoffice-fresh",
+        "xournalpp",
     ),
     mediaviewers=(
         # video
