@@ -8,7 +8,7 @@
 # TODO
 # fix btop colors
 # pre-luks remote ssh
-# add
+# add ufw setup
 # - sudo ufw allow 22/tcp comment "ssh"
 # - sudo ufw default allow FORWARD
 # - sudo ufw allow 2222
@@ -172,6 +172,9 @@ installmap = dict(
         "flux-bin",
         "open-iscsi",  # required by longhorn
         "kubectl-cnpg",
+        # ssh for luks unlocking
+        "dracut-crypt-ssh",
+        "dropbear",
     ),
 )
 
@@ -424,6 +427,11 @@ def install_k8sreqs(overwrite: bool, reinstall: bool) -> None:
     run("sudo systemctl enable --now iscsid".split())
     # user
     helper_clone_foldercontents(CFG_SRC, CFG_TGT, "k9s", overwrite)
+    # luks
+    run("sudo mkdir -p /root/.ssh".split())
+    run("sudo chmod 700 /root/.ssh".split())
+    run("sudo touch /root/.ssh/authorized_keys".split())
+    run("sudo chmod 600 /root/.ssh/authorized_keys".split())
 
 
 def installer(
@@ -500,7 +508,13 @@ def installer(
       coolercontrold.service`
 
     # k8s
-    - configure `/etc/hosts`
+    - configure /etc/hosts
+    - /etc/hosts: configure
+    - /root/.ssh/authorized_keys: add permitted ssh keys
+    - /etc/dracut.conf.d/crypt-ssh.conf: set port + 'unlock' helper
+    - /etc/dracut.conf.d/eos-defaults.conf: don't omit network
+    - /etc/kernel/cmdline: add `rd.neednet=1 ip=dhcp` arguments
+    - `sudo dracut-rebuild`
     - run `hjarl-system/k8s.py` scripts
 
     # docker / home assistant
