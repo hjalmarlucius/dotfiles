@@ -386,13 +386,17 @@ def install_sway(overwrite: bool, reinstall: bool) -> None:
     for sub in [
         "sway",
         "waybar",
+        "gtklock",
         "gtk-3.0",
         "mako",
         "fuzzel",
         "nwg-drawer",
         "xdg-desktop-portal-wlr",
+        "foot",
     ]:
         helper_clone_foldercontents(CFG_SRC, CFG_TGT, sub, overwrite)
+    helper_maybe_copy(CFG_SRC, CFG_TGT, "xdg-terminals.list", overwrite, symlink=True)
+    helper_maybe_copy(CFG_SRC, CFG_TGT, "mimeapps.list", overwrite, symlink=True)
     # custom sway configs
     helper_clone_foldercontents(CUSTOM_SRC / "CONFIG", CFG_TGT, "sway", overwrite)
     # custom waybar configs
@@ -404,11 +408,6 @@ def install_sway(overwrite: bool, reinstall: bool) -> None:
         ".local/share/applications",
         overwrite,
     )
-    # foot terminal
-    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "foot", overwrite)
-    helper_maybe_copy(CFG_SRC, CFG_TGT, "xdg-terminals.list", overwrite, symlink=True)
-    # file associations
-    helper_maybe_copy(CFG_SRC, CFG_TGT, "mimeapps.list", overwrite, symlink=True)
 
 
 def configure_pytools(overwrite: bool) -> None:
