@@ -378,9 +378,17 @@ def install_sway(overwrite: bool, reinstall: bool) -> None:
     run("sudo systemctl enable --now bluetooth".split())
     # div app configs
     run("systemctl --user enable --now flashfocus".split())
-    if (tgt := CFG_TGT / "waybar/config").exists():  # name has precedence over config.jsonc
+    if (tgt := CFG_TGT / "waybar/config").exists():  # precedence over config.jsonc
         tgt.unlink()
-    for sub in ["sway", "waybar", "gtk-3.0", "mako", "fuzzel", "nwg-drawer"]:
+    for sub in [
+        "sway",
+        "waybar",
+        "gtk-3.0",
+        "mako",
+        "fuzzel",
+        "nwg-drawer",
+        "xdg-desktop-portal-wlr",
+    ]:
         helper_clone_foldercontents(CFG_SRC, CFG_TGT, sub, overwrite)
     # custom sway configs
     helper_clone_foldercontents(CUSTOM_SRC / "CONFIG", CFG_TGT, "sway", overwrite)
