@@ -142,6 +142,7 @@ installmap = dict(
     ),
     apps=("keepassxc", "bitwarden", "qalculate-gtk", "vesktop"),
     sway=(
+        "xdg-terminal-exec",
         # visuals
         "wlsunset",  # eye saver
         "wdisplays",  # ui for display settings
@@ -353,9 +354,9 @@ def install_emailcalrss(overwrite: bool, reinstall: bool) -> None:
 
 
 def install_sway(overwrite: bool, reinstall: bool) -> None:
-    # sudo
     helper_uninstall("autotiling", "cliphist")
     helper_install(*installmap["sway"], reinstall=reinstall)
+    # sudo stuff
     for sub in [
         "etc/systemd/logind.conf.d/suspend.conf",
         "etc/systemd/sleep.conf.d/hibernate.conf",
@@ -375,22 +376,28 @@ def install_sway(overwrite: bool, reinstall: bool) -> None:
             run(["sudo", "rm", str(tgt)])
         run(["sudo", "cp", str(src), str(tgt)])
     run("sudo systemctl enable --now bluetooth".split())
-    # user
+    # div app configs
     run("systemctl --user enable --now flashfocus".split())
-    if (tgt := CFG_TGT / "waybar/config").exists():
+    if (tgt := CFG_TGT / "waybar/config").exists():  # name has precedence over config.jsonc
         tgt.unlink()
     for sub in ["sway", "waybar", "gtk-3.0", "mako", "fuzzel", "nwg-drawer"]:
         helper_clone_foldercontents(CFG_SRC, CFG_TGT, sub, overwrite)
+    # custom sway configs
     helper_clone_foldercontents(CUSTOM_SRC / "CONFIG", CFG_TGT, "sway", overwrite)
+    # custom waybar configs
     helper_clone_foldercontents(CUSTOM_SRC / "CONFIG", CFG_TGT, "waybar", overwrite)
-    helper_maybe_copy(CFG_SRC, CFG_TGT, "mimeapps.list", overwrite, symlink=True)
+    # desktop entries
     helper_clone_foldercontents(
         HOME_SRC,
         HOME_TGT,
         ".local/share/applications",
         overwrite,
     )
+    # foot terminal
     helper_clone_foldercontents(CFG_SRC, CFG_TGT, "foot", overwrite)
+    helper_maybe_copy(CFG_SRC, CFG_TGT, "xdg-terminals.list", overwrite, symlink=True)
+    # file associations
+    helper_maybe_copy(CFG_SRC, CFG_TGT, "mimeapps.list", overwrite, symlink=True)
 
 
 def configure_pytools(overwrite: bool) -> None:
