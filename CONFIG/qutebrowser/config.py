@@ -65,6 +65,7 @@ c.completion.open_categories = [
     "history",
     "filesystem",
 ]
+c.content.register_protocol_handler = False
 c.content.blocking.enabled = True
 c.content.fullscreen.window = True
 c.content.blocking.method = "both"
@@ -105,12 +106,6 @@ urlconfigs: dict[str, list[tuple[str, bool | str | dict[str, str]]]] = {
             {"X-YouTube-Client-Name": "85", "X-YouTube-Client-Version": "2.0"},
         )
     ],
-    # "https://mail.google.com?extsrc=mailto&url=%25s": [
-    #     ("content.register_protocol_handler", True)
-    # ],
-    # "https://calendar.google.com?cid=%25s": [
-    #     ("content.register_protocol_handler", True)
-    # ],
 }
 for url, urlconfig in urlconfigs.items():
     for setting, value in urlconfig:
@@ -135,15 +130,6 @@ c.input.insert_mode.auto_load = True
 c.input.insert_mode.auto_leave = False
 c.input.insert_mode.plugins = True
 c.messages.timeout = 5000
-c.qt.args = [
-    "disable-features=PermissionElement",
-    "ozone-platform-hint=wayland",
-    "ignore-gpu-blocklist",
-    "enable-gpu-rasterization",
-    "enable-accelerated-video-decode",
-    "enable-quic",
-    "enable-zero-copy",
-]
 c.qt.highdpi = True
 c.scrolling.bar = "always"
 c.scrolling.smooth = False
