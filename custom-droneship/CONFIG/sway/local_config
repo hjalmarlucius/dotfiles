@@ -1,70 +1,23 @@
+# output
 set $out-left DP-1
 set $out-right DP-2
 output $out-left resolution 2560x1440 position 0 0
 output $out-right resolution 3840x2160 position 2560 0
 
 # switch to workspace
-workspace $ws1 output $out-left
-workspace $ws2 output $out-right
-workspace $ws3 output $out-left
-workspace $ws4 output $out-right
-workspace $ws5 output $out-left
-workspace $ws6 output $out-right
-workspace $ws7 output $out-left
-workspace $ws8 output $out-right
-workspace $ws9 output $out-left
-workspace $ws10 output $out-right
-
-# switch to workspace
-bindsym $mod+1 workspace $ws1
-bindsym $mod+2 workspace $ws2
-bindsym $mod+3 workspace $ws3
-bindsym $mod+4 workspace $ws4
-bindsym $mod+5 workspace $ws5
-bindsym $mod+6 workspace $ws6
-bindsym $mod+7 workspace $ws7
-bindsym $mod+8 workspace $ws8
-bindsym $mod+9 workspace $ws9
-bindsym $mod+0 workspace $ws10
-bindsym $mod+Insert workspace $ws5
-bindsym $mod+Delete workspace $ws6
-bindsym $mod+Home workspace $ws7
-bindsym $mod+End workspace $ws8
-bindsym $mod+Prior workspace $ws9
-bindsym $mod+Next workspace $ws10
-
-# Move focused container to workspace
-bindsym $mod+Ctrl+1 move container to workspace $ws1
-bindsym $mod+Ctrl+2 move container to workspace $ws2
-bindsym $mod+Ctrl+3 move container to workspace $ws3
-bindsym $mod+Ctrl+4 move container to workspace $ws4
-bindsym $mod+Ctrl+5 move container to workspace $ws5
-bindsym $mod+Ctrl+6 move container to workspace $ws6
-bindsym $mod+Ctrl+7 move container to workspace $ws7
-bindsym $mod+Ctrl+8 move container to workspace $ws8
-bindsym $mod+Ctrl+9 move container to workspace $ws9
-bindsym $mod+Ctrl+0 move container to workspace $ws10
-bindsym $mod+Ctrl+Insert move container to workspace $ws5
-bindsym $mod+Ctrl+Delete move container to workspace $ws6
-bindsym $mod+Ctrl+Home move container to workspace $ws7
-bindsym $mod+Ctrl+End move container to workspace $ws8
-bindsym $mod+Ctrl+Prior move container to workspace $ws9
-bindsym $mod+Ctrl+Next move container to workspace $ws10
-
-# Move to workspace with focused container
-bindsym $mod+Shift+1 move container to workspace $ws1; workspace $ws1
-bindsym $mod+Shift+2 move container to workspace $ws2; workspace $ws2
-bindsym $mod+Shift+3 move container to workspace $ws3; workspace $ws3
-bindsym $mod+Shift+4 move container to workspace $ws4; workspace $ws4
-bindsym $mod+Shift+5 move container to workspace $ws5; workspace $ws5
-bindsym $mod+Shift+6 move container to workspace $ws6; workspace $ws6
-bindsym $mod+Shift+7 move container to workspace $ws7; workspace $ws7
-bindsym $mod+Shift+8 move container to workspace $ws8; workspace $ws8
-bindsym $mod+Shift+9 move container to workspace $ws9; workspace $ws9
-bindsym $mod+Shift+0 move container to workspace $ws10; workspace $ws10
-bindsym $mod+Shift+Insert move container to workspace $ws5; workspace $ws5
-bindsym $mod+Shift+Delete move container to workspace $ws8; workspace $ws6
-bindsym $mod+Shift+Home move container to workspace $ws6; workspace $ws7
-bindsym $mod+Shift+End move container to workspace $ws9; workspace $ws8
-bindsym $mod+Shift+Prior move container to workspace $ws7; workspace $ws9
-bindsym $mod+Shift+Next move container to workspace $ws10; workspace $ws10
+workspace 1 output $out-left
+workspace 2 output $out-left
+workspace 3 output $out-left
+workspace 4 output $out-left
+workspace 5 output $out-left
+workspace 6 output $out-right
+workspace 7 output $out-right
+workspace 8 output $out-right
+workspace 9 output $out-right
+workspace 10 output $out-right
+workspace INS output $out-left
+workspace DEL output $out-right
+workspace HOM output $out-left
+workspace END output $out-right
+workspace PUp output $out-left
+workspace PDn output $out-right

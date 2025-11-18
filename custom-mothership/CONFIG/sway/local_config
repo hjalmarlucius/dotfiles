@@ -8,31 +8,19 @@ output HEADLESS-1 resolution 2560x1440 position 5120 0
 bindsym $mod+x output create HEADLESS-1
 bindsym $mod+Shift+x output HEADLESS-1 unplug
 
-# workspaces
-bindsym {
-    # Switch to workspace
-    $mod+1 workspace $ws1
-    $mod+2 workspace $ws2
-    $mod+3 workspace $ws3
-    $mod+4 workspace $ws4
-    $mod+5 workspace $ws5
-    $mod+6 workspace $ws6
-    $mod+7 workspace $ws7
-    $mod+8 workspace $ws8
-    $mod+9 workspace $ws9
-    $mod+0 workspace $ws10
-    $mod+equal workspace $wsX
-
-    # Move focused container to workspace
-    $mod+Shift+1 move container to workspace $ws1
-    $mod+Shift+2 move container to workspace $ws2
-    $mod+Shift+3 move container to workspace $ws3
-    $mod+Shift+4 move container to workspace $ws4
-    $mod+Shift+5 move container to workspace $ws5
-    $mod+Shift+6 move container to workspace $ws6
-    $mod+Shift+7 move container to workspace $ws7
-    $mod+Shift+8 move container to workspace $ws8
-    $mod+Shift+9 move container to workspace $ws9
-    $mod+Shift+0 move container to workspace $ws10
-    $mod+plus move container to workspace $wsX
-}
+workspace 1 output DP-1
+workspace 2 output DP-1
+workspace 3 output DP-1
+workspace 4 output DP-1
+workspace 5 output DP-1
+workspace 6 output DP-1
+workspace 7 output DP-1
+workspace 8 output DP-1
+workspace 9 output DP-1
+workspace 10 output DP-1
+workspace INS output HEADLESS-1
+workspace DEL output HEADLESS-1
+workspace HOM output HEADLESS-1
+workspace END output HEADLESS-1
+workspace PUp output HEADLESS-1
+workspace PDn output HEADLESS-1
