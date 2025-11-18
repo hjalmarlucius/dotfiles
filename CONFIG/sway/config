@@ -198,19 +198,45 @@ bindsym {
 }
 
 # workspaces
-set {
-    $ws1 number 1
-    $ws2 number 2
-    $ws3 number 3
-    $ws4 number 4
-    $ws5 number 5
-    $ws6 number 6
-    $ws7 number 7
-    $ws8 number 8
-    $ws9 number 9
-    $ws10 number 10
-    $wsX number 11
+bindsym {
+    # Switch to workspace
+    $mod+1 workspace 1
+    $mod+2 workspace 2
+    $mod+3 workspace 3
+    $mod+4 workspace 4
+    $mod+5 workspace 5
+    $mod+6 workspace 6
+    $mod+7 workspace 7
+    $mod+8 workspace 8
+    $mod+9 workspace 9
+    $mod+0 workspace 10
+    $mod+Insert workspace INS
+    $mod+Delete workspace DEL
+    $mod+Home workspace HOM
+    $mod+End workspace END
+    $mod+Prior workspace PUp
+    $mod+Next workspace Pdn
+
+    # Move focused container to workspace
+    $mod+Shift+1 move container to workspace 1
+    $mod+Shift+2 move container to workspace 2
+    $mod+Shift+3 move container to workspace 3
+    $mod+Shift+4 move container to workspace 4
+    $mod+Shift+5 move container to workspace 5
+    $mod+Shift+6 move container to workspace 6
+    $mod+Shift+7 move container to workspace 7
+    $mod+Shift+8 move container to workspace 8
+    $mod+Shift+9 move container to workspace 9
+    $mod+Shift+0 move container to workspace 10
+    $mod+Shift+Insert move container to workspace INS
+    $mod+Shift+Delete move container to workspace DEL
+    $mod+Shift+Home move container to workspace HOM
+    $mod+Shift+End move container to workspace END
+    $mod+Shift+Prior move container to workspace PUp
+    $mod+Shift+Next move container to workspace Pdn
 }
+
+# local config
 include $HOME/.config/sway/local_config
 
 # apps
