@@ -321,9 +321,6 @@ exec_always {
     # nwg-drawer
     nwg-drawer -r -c 7 -is 90 -mb 10 -ml 50 -mr 50 -mt 10
 
-    # flashfocus
-    systemctl --user start flashfocus
-
     # persist clipboard after close
     pkill -x wl-clip-persist
     wl-clip-persist --clipboard regular --all-mime-type-regex '(?i)^(?!image/x-inkscape-svg).+'
