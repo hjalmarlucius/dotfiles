@@ -146,7 +146,6 @@ installmap = dict(
         # visuals
         "wlsunset",  # eye saver
         "wdisplays",  # ui for display settings
-        "flashfocus",  # quick flash when changing app in focus
         # clipboard
         "wl-clip-persist",  # keep clipboard after close
         # div
@@ -380,7 +379,6 @@ def install_sway(overwrite: bool, reinstall: bool) -> None:
         run(["sudo", "cp", str(src), str(tgt)])
     run("sudo systemctl enable --now bluetooth".split())
     # div app configs
-    run("systemctl --user enable --now flashfocus".split())
     if (tgt := CFG_TGT / "waybar/config").exists():  # precedence over config.jsonc
         tgt.unlink()
     for sub in [
