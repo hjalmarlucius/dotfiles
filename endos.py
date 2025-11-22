@@ -87,7 +87,7 @@ installmap = dict(
         "v4l-utils",
         # photos
         "qimgv",
-        "digicam",
+        "digikam",
         # music
         "quodlibet",
         "gst-plugins-good",  # required deb
