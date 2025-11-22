@@ -1,4 +1,14 @@
 {
+    "network": {
+        "format-disabled": " Disabled",
+        "format-wifi": " {bandwidthDownBits:>} 󰶡 {bandwidthUpBits:>} 󰶣 ({signalStrength}%)",
+        "tooltip-format-wifi": "{essid}",
+        "format-ethernet": "󰈀 {bandwidthDownBits:>} 󰶡 {bandwidthUpBits:>} 󰶣",
+        "tooltip-format-ethernet": "{ifname}: {ipaddr}/{cidr}",
+        "format-disconnected": " Disconnected",
+        "on-click": "footclient --app-id floating_shell --window-size-chars 60x45 -e nmtui",
+        "interval": 2
+    },
     "modules-right": [
         "idle_inhibitor",
         "cpu",
