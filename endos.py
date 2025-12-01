@@ -175,6 +175,18 @@ installmap = dict(
         "dracut-crypt-ssh",
         "dropbear",
     ),
+    virtwin=(
+        "qemu-full",  # the emulator itself
+        "libvirt",  # the backend manager - handles running qemu
+        "virt-manager",  # the graphical dashboard
+        "virt-viewer",  # the display window
+        "iptables-nft",  # for using iptables instead of nft
+        "dnsmasq",  # lightweight DHCP and DNS server
+        "bridge-utils",  # tools for creating network bridges
+        "vde2",  # networking plumbing
+        "openbsd-netcat",  # networking plumbing
+        "swtpm",  # win11 requirement
+    ),
 )
 
 
@@ -415,6 +427,14 @@ def configure_pytools(overwrite: bool) -> None:
         helper_clone_foldercontents(HOME_SRC, HOME_TGT, sub, overwrite)
 
 
+def install_virtwin(overwrite: bool, reinstall: bool) -> None:
+    helper_install(*installmap["virtwin"], reinstall=reinstall)
+    run("sudo usermod -aG libvirt $USER".split())
+    run("sudo virsh net-start default".split())
+    run("sudo virsh net-autostart default".split())
+    run("systemctl enable --now libvirtd".split())
+
+
 def install_k8sreqs(overwrite: bool, reinstall: bool) -> None:
     # sudo
     helper_install(*installmap["k8s"], reinstall=reinstall)
@@ -484,6 +504,7 @@ def installer(
         print("installed coolercontrol")
     if HOSTNAME in ["mothership"]:
         helper_install(*installmap["docker"], reinstall=reinstall)
+        install_virtwin(overwrite, reinstall)
         helper_clone_foldercontents(
             CFG_SRC, CFG_TGT, "homeassistant", overwrite, symlink=False
         )
@@ -518,6 +539,15 @@ def installer(
     - docker with non-root daemon 
       `sudo groupadd docker && sudo usermod -aG docker $USER`
     - run home assistant and music assistant scripts to start docker services
+
+    # virtual machine
+    - /etc/libvirt/network.conf: set `firewall_backend = "iptables"` and restart libvirtd
+    - download windows + virtio driver ISOs
+    - vm setup:
+      - CPUs: Uncheck "Copy host CPU configuration" and select host-passthrough
+      - Disk (IDE/SATA): Change the "Disk bus" to VirtIO
+      - NIC (Network): Change "Device model" to virtio
+      - Add Hardware: Click "Add Hardware" -> "Storage" -> Select "CDROM" -> select virtio driver iso
     """)
 
 
