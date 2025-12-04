@@ -17,6 +17,7 @@ config.bind("<Ctrl+t>", "tab-clone -t")
 config.bind("<Ctrl+Shift+r>", "restart", mode="normal")
 config.bind("<Ctrl+h>", "history")
 config.bind("<F8>", "config-cycle colors.webpage.darkmode.enabled true false")
+config.bind("<F2>", "edit-url")
 config.bind("<F11>", "config-cycle tabs.position top left")
 config.bind("<F12>", "devtools")
 config.bind("<Shift+F12>", "view-source")
@@ -114,12 +115,11 @@ for url, urlconfig in urlconfigs.items():
 c.downloads.position = "bottom"
 c.downloads.prevent_mixed_content = False
 c.editor.command = [
-    "foot",
-    "-title",
-    "scratchpad",
-    "-geometry",
-    "86x24+40+60",
-    "-e",
+    "footclient",
+    "--app-id",
+    "floating_shell",
+    "--window-size-chars",
+    "80x45",
     "nvim",
     "-f",
     "{}",
