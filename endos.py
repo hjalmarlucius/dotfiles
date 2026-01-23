@@ -309,6 +309,7 @@ def install_gittools(overwrite: bool, reinstall: bool) -> None:
 
 def install_readers(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["readers"], reinstall=reinstall)
+    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "xournalpp", overwrite)
     helper_clone_foldercontents(CFG_SRC, CFG_TGT, "sioyek", overwrite)
     helper_clone_foldercontents(CFG_SRC, CFG_TGT, "zathura", overwrite)
 
