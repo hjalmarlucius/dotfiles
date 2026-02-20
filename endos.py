@@ -6,7 +6,6 @@
 # ]
 # ///
 # TODO
-# fix btop colors
 # pre-luks remote ssh
 # add ufw setup
 # - sudo ufw allow 22/tcp comment "ssh"
@@ -404,6 +403,7 @@ def install_sway(overwrite: bool, reinstall: bool) -> None:
         "nwg-drawer",
         "xdg-desktop-portal-wlr",
         "foot",
+        "xkb/symbols",
     ]:
         helper_clone_foldercontents(CFG_SRC, CFG_TGT, sub, overwrite)
     helper_maybe_copy(CFG_SRC, CFG_TGT, "xdg-terminals.list", overwrite, symlink=True)

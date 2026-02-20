@@ -1,0 +1,15 @@
+partial alphanumeric_keys
+xkb_symbols "basic" {
+  include "us(basic)"
+  name[Group1]= "US Custom Norwegian";
+
+  key <AD01> { [         q,          Q,           aring,             Aring ] };
+  key <AD11> { [ bracketleft, braceleft,          aring,             Aring ] };
+  key <AD02> { [         w,          W,              ae,                AE ] };
+  key <AC11> { [apostrophe,   quotedbl,              ae,                AE ] };
+  key <AD05> { [         t,          T,          oslash,            Oslash ] };
+  key <AC10> { [ semicolon,      colon,          oslash,            Oslash ] };
+  key <AC03> { [         d,          D,          eacute,            Eacute ] };
+
+  include "level3(ralt_switch)"
+};
