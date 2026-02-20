@@ -213,7 +213,12 @@ map("n", "<leader><tab>p", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
 -- other
 map("n", "<leader>cw", [[:cd %:p:h<cr>]], { desc = "Set Workspace To Buffer Path" })
 map("n", "<leader>o", "m`o<Esc>``", { desc = "Insert Newline" })
-map("n", "\\", "n.", { noremap = true, silent = true, desc = "Repeat And Goto Next" })
+map(
+    "n",
+    "\\",
+    function() vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("n.", true, true, true), "n", true) end,
+    { noremap = true, silent = true, desc = "Repeat And Goto Next" }
+)
 map("n", "<F2>", "<cmd>Lazy<cr>", { desc = "Lazy" })
 map(
     "n",
