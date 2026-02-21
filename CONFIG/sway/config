@@ -287,7 +287,6 @@ exec hash dbus-update-activation-environment 2>/dev/null && \
 
 # Idle configuration
 exec_always swayidle -w \
-    timeout 240 'brightnessctl set 1' resume 'brightnessctl -r' \
     timeout 1200 'gtklock -d' \
     timeout 2400 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
     before-sleep 'gtklock -d' \
