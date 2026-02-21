@@ -210,7 +210,7 @@ def helper_maybe_copy(
     src = src_folder.expanduser() / sub
     tgt = tgt_folder.expanduser() / sub
     assert src.exists()
-    tgt.parent.mkdir(exist_ok=True)
+    tgt.parent.mkdir(exist_ok=True, parents=True)
     if lexists(tgt):
         if not overwrite:
             if diff := compare(src, tgt):
@@ -237,7 +237,7 @@ def helper_clone_foldercontents(
 ) -> None:
     src_folder = src_parent.expanduser() / folder
     tgt_folder = tgt_parent.expanduser() / folder
-    tgt_folder.mkdir(exist_ok=True)
+    tgt_folder.mkdir(exist_ok=True, parents=True)
     assert src_folder.is_dir()
     assert tgt_folder.is_dir() or tgt_folder.is_symlink()
     for src in src_folder.iterdir():
@@ -264,7 +264,7 @@ def helper_install(*pkgs: str, reinstall: bool) -> None:
 
 def install_fonts(reinstall: bool) -> None:
     tgt = Path("~/.local/share/fonts/Akkurat-Mono.otf").expanduser()
-    tgt.parent.mkdir(exist_ok=True)
+    tgt.parent.mkdir(exist_ok=True, parents=True)
     urlretrieve(
         "https://raw.githubusercontent.com/SUNET/static_sunet_se/refs/heads/master/fonts/Akkurat-Mono.otf",
         tgt,
