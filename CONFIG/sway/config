@@ -375,7 +375,7 @@ input type:touchpad {
 }
 
 input type:keyboard {
-    xkb_layout "us,us_norwegian"
+    xkb_layout "us_custom,us_norwegian"
     xkb_options "grp:shifts_toggle,caps:escape"
 }
 

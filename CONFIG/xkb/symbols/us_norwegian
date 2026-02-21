@@ -3,6 +3,7 @@ xkb_symbols "basic" {
   include "us(basic)"
   name[Group1]= "US Custom Norwegian";
 
+  key <MENU> { [ Super_L ] };
   key <AD01> { [         q,          Q,           aring,             Aring ] };
   key <AD11> { [ bracketleft, braceleft,          aring,             Aring ] };
   key <AD02> { [         w,          W,              ae,                AE ] };
