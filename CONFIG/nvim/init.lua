@@ -1117,9 +1117,8 @@ local function makespec_snacks()
             -- search
             { "<F1>", function() Snacks.picker.help() end, desc = "Help Pages" },
             { "<F9>", function() Snacks.picker.colorschemes() end, desc = "Colorschemes" },
-            { "<M-/>", function() Snacks.picker.git_grep() end, desc = "Grep Git Files" },
-            { "<leader>sg", function() Snacks.picker.git_grep() end, desc = "Grep Git Files" },
-            { "<M-?>", function() Snacks.picker.grep({ untracked = true }) end, desc = "Grep Files" },
+            { "<M-/>", function() Snacks.picker.git_grep({ ignorecase = true }) end, desc = "Grep Git Files" },
+            { "<leader>sg", function() Snacks.picker.git_grep({ ignorecase = true }) end, desc = "Grep Git Files" },
             { "<leader>sa", function() Snacks.picker.grep({ untracked = true }) end, desc = "Grep Files" },
             { "<leader>*", function() Snacks.picker.grep_word() end, desc = "Visual selection or word", mode = { "n", "x" }, },
             { "<leader>/", function() Snacks.picker.search_history() end, desc = "Search History" },
