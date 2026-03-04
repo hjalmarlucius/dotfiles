@@ -949,6 +949,18 @@ local function makespec_gitsigns()
     }
 end
 
+local function makespec_atone()
+    return {
+        "XXiaoA/atone.nvim",
+        cmd = "Atone",
+        opts = {
+            ui = {
+                compact = true,
+            },
+        },
+    }
+end
+
 local function makespec_whichkey()
     return {
         "folke/which-key.nvim",
@@ -1504,7 +1516,6 @@ local lazyspecs = {
     { "ethanholz/nvim-lastplace", opts = {} }, -- keep location upon reopening
     "tpope/vim-eunuch", -- Move, Rename etc
     "tpope/vim-sleuth", -- do the right thing with tabstop and softtabstop
-    "mbbill/undotree",
 }
 for _, spec in ipairs({
     makespec_lazydev(), -- nvim lsp helpers
@@ -1517,6 +1528,7 @@ for _, spec in ipairs({
     makespec_lint(),
     makespec_mason(),
     -- navigation
+    makespec_atone(),
     makespec_whichkey(),
     makespec_smartsplits(),
     makespec_hlslens(),
