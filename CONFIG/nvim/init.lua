@@ -22,10 +22,7 @@ vim.o.timeoutlen = 500
 vim.o.virtualedit = "block"
 vim.o.wildmode = "longest:full,full"
 vim.o.wrap = false
-vim.opt.diffopt:append("linematch:60") -- second stage diff to align lines
-vim.opt.diffopt:append("hiddenoff")
-vim.opt.diffopt:append("vertical")
-vim.opt.diffopt:append("algorithm:histogram")
+vim.opt.diffopt = "internal,filler,closeoff,hiddenoff,vertical,algorithm:histogram"
 vim.opt.wildignore:append(
     "blue.vim,darkblue.vim,delek.vim,desert.vim,elflord.vim,evening.vim,habamax.vim,industry.vim,"
         .. "koehler.vim,lunaperche.vim,morning.vim,murphy.vim,pablo.vim,peachpuff.vim,quiet.vim,retrobox.vim,ron.vim,"
