@@ -13,6 +13,14 @@ export SAVEHIST=200000
 alias ls='ls --color=auto -Ah'
 alias ..='cd ..'
 alias ...='cd ../..'
+catai () {
+  rg --files --hidden --glob '!.git/*' "$@" | while read -r f; do
+    printf "\n── %s ──\n" "$f"
+    echo '```'
+    cat "$f"
+    echo '```'
+  done
+}
 
 # --- basic keybinds ---
 bindkey '^[[Z' reverse-menu-complete  # shift-tab
