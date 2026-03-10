@@ -14,6 +14,7 @@
 # - ... etc
 # - sudo enable ufw
 from difflib import unified_diff
+from getpass import getuser
 from os.path import lexists
 from pathlib import Path
 from shutil import rmtree
@@ -21,14 +22,15 @@ from subprocess import run
 from urllib.request import urlretrieve
 
 HOSTNAME = open("/etc/hostname").read().strip()
-HOME_TGT = Path("~").expanduser()
+HOME_TGT = Path.home()
 ROOT_TGT = Path("/")
-DOTFILES = HOME_TGT / "dotfiles"
+DOTFILES = Path(__file__).resolve().parent
 HOME_SRC = DOTFILES / "HOME"
 ROOT_SRC = DOTFILES / "ROOT"
 CFG_TGT = HOME_TGT / ".config"
 CFG_SRC = DOTFILES / "CONFIG"
 CUSTOM_SRC = DOTFILES / f"custom-{HOSTNAME}"
+USERNAME = getuser()
 installmap = dict(
     fonts=(
         "noto-fonts-emoji",
@@ -430,7 +432,7 @@ def configure_pytools(overwrite: bool) -> None:
 
 def install_virtwin(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["virtwin"], reinstall=reinstall)
-    run("sudo usermod -aG libvirt $USER".split())
+    run(["sudo", "usermod", "-aG", "libvirt", USERNAME])
     run("sudo virsh net-start default".split())
     run("sudo virsh net-autostart default".split())
     run("systemctl enable --now libvirtd".split())

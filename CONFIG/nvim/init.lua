@@ -137,8 +137,8 @@ map("n", "<C-l>", "<cmd>vertical resize +2<cr>", { desc = "Increase Window Width
 
 -- https://github.com/mhinz/vim-galore#tips-1
 -- smarter next/prev in command line
-map("n", "<c-n>", "wildmenumode() ? '<c-n>' : '<down>'", { expr = true, desc = "Next" })
-map("n", "<c-p>", "wildmenumode() ? '<c-p>' : '<up>'", { expr = true, desc = "Prev" })
+map("c", "<c-n>", "wildmenumode() ? '<c-n>' : '<down>'", { expr = true, desc = "Next" })
+map("c", "<c-p>", "wildmenumode() ? '<c-p>' : '<up>'", { expr = true, desc = "Prev" })
 
 -- Add undo break-points
 map("i", ",", ",<c-g>u")
@@ -179,11 +179,11 @@ map("n", "<leader>uI", function()
     vim.api.nvim_input("I")
 end, { desc = "Inspect Tree" })
 
--- Terminal Mappings
-map("n", "<C-/>", "<cmd>terminal<cr>", { desc = "Show Terminal" })
-map("t", "<C-/>", "<cmd>close<cr>", { desc = "Hide Terminal" })
-map("n", "<C-_>", "<cmd>terminal<cr>", { desc = "which_key_ignore" })
-map("t", "<C-_>", "<cmd>close<cr>", { desc = "which_key_ignore" })
+-- Terminal Mappings overridden by Snacks.terminal
+-- map("n", "<C-/>", "<cmd>terminal<cr>", { desc = "Show Terminal" })
+-- map("t", "<C-/>", "<cmd>close<cr>", { desc = "Hide Terminal" })
+-- map("n", "<C-_>", "<cmd>terminal<cr>", { desc = "which_key_ignore" })
+-- map("t", "<C-_>", "<cmd>close<cr>", { desc = "which_key_ignore" })
 
 -- windows
 map("n", "<M-v>", "<cmd>vsplit<cr>", { desc = "Split Window Right", remap = true })
@@ -208,7 +208,7 @@ map("n", "<leader><tab>d", "<cmd>tabclose<cr>", { desc = "Close Tab" })
 map("n", "<leader><tab>p", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
 
 -- other
-map("n", "<leader>cw", [[:cd %:p:h<cr>]], { desc = "Set Workspace To Buffer Path" })
+map("n", "<leader>cW", [[:cd %:p:h<cr>]], { desc = "Set Workspace To Buffer Path" })
 map("n", "<leader>o", "m`o<Esc>``", { desc = "Insert Newline" })
 map(
     "n",
@@ -293,7 +293,7 @@ vim.api.nvim_create_autocmd("FileType", {
 -- wrap and check for spell in text filetypes
 vim.api.nvim_create_autocmd("FileType", {
     group = vim.api.nvim_create_augroup("wrap_spell", { clear = true }),
-    pattern = { "text", "plaintex", "typst", "gitcommit", "markdown" },
+    pattern = { "text", "plaintext", "typst", "gitcommit", "markdown" },
     callback = function()
         vim.opt_local.wrap = true
         vim.opt_local.spell = true
@@ -310,6 +310,7 @@ vim.api.nvim_create_user_command("ConvertEOL", function(opts)
         vim.notify("Unsupported file format: " .. fmt, vim.log.levels.ERROR, {
             title = "ConvertEOL",
         })
+        return
     end
     vim.bo.fileformat = fmt
     vim.cmd([[write]])
@@ -544,7 +545,9 @@ local function makespec_hexokinase()
     return {
         -- coloring of colornames
         "rrethy/vim-hexokinase",
-        build = "cd /home/hjalmarlucius/.local/share/nvim/lazy/vim-hexokinase; make hexokinase",
+        build = function(plugin)
+            vim.system({ "make", "hexokinase" }, { cwd = plugin.dir }):wait()
+        end,
         config = function() vim.g.Hexokinase_highlighters = { "virtual" } end,
     }
 end
@@ -967,6 +970,7 @@ local function makespec_whichkey()
             spec = {
                 {
                     mode = { "n", "v" },
+                    { "<leader>a", group = "ai" },
                     { "<leader>c", group = "code/content" },
                     { "<leader>f", group = "file/find" },
                     { "<leader>g", group = "git" },
@@ -1144,7 +1148,7 @@ local function makespec_snacks()
                     Snacks.toggle.option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 }):map("<leader>uc")
                     Snacks.toggle.diagnostics():map("<leader>ud")
                     Snacks.toggle.dim():map("<leader>uD")
-                    Snacks.toggle.inlay_hints():map("<leader>ui")
+                    -- Snacks.toggle.inlay_hints():map("<leader>ui")  -- using vim.show_pos instead
                     Snacks.toggle.line_number():map("<leader>ul")
                     Snacks.toggle.option("relativenumber", { name = "Relative Number" }):map("<leader>uL")
                     Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
@@ -1349,23 +1353,36 @@ local function makespec_treesitter()
         "nvim-treesitter/nvim-treesitter",
         build = ":TSUpdate",
         opts = {
-            {
-                ensure_installed = {
-                    "bash",
-                    "c",
-                    "cpp",
-                    "git_rebase",
-                    "gitcommit",
-                    "lua",
-                    "python",
-                    "regex",
-                    "vimdoc",
-                },
-                auto_install = true,
-                highlight = { enable = true },
-                indent = { enable = true, disable = { "python" }, additional_vim_regex_highlighting = { "python" } },
-                -- incremental_selection done by flash plugin
+            ensure_installed = {
+                "bash",
+                "c",
+                "cpp",
+                "css",
+                "diff",
+                "git_rebase",
+                "gitcommit",
+                "gitignore",
+                "html",
+                "javascript",
+                "json",
+                "json5",
+                "lua",
+                "markdown",
+                "markdown_inline",
+                "python",
+                "regex",
+                "toml",
+                "tsx",
+                "typescript",
+                "typst",
+                "vim",
+                "vimdoc",
+                "yaml",
             },
+            auto_install = true,
+            highlight = { enable = true },
+            indent = { enable = true, disable = { "python" } },
+            -- incremental_selection done by flash plugin
         },
         init = function() vim.opt.foldexpr = "nvim_treesitter#foldexpr()" end,
     }
@@ -1463,6 +1480,78 @@ local function makespec_conform()
     }
 end
 
+local function makespec_avante()
+    return {
+        "yetone/avante.nvim",
+        event = "VeryLazy",
+        lazy = false,
+        version = false,
+        build = "make",
+        opts = {
+            provider = "openai",
+            auto_suggestions_provider = "openai",
+            providers = {
+                openai = {
+                    model = "gpt-4.1",
+                    extra_request_body = {
+                        temperature = 0,
+                    },
+                    max_tokens = 4096,
+                },
+                gemini = {
+                    model = "gemini-2.5-flash",
+                    extra_request_body = {
+                        temperature = 0,
+                        max_tokens = 4096,
+                    },
+                },
+            },
+            ignore_patterns = {
+                ".git",
+                "node_modules",
+                "dist",
+                "build",
+                "target",
+                ".cache",
+                ".venv",
+                "venv",
+                "__pycache__",
+                ".pytest_cache",
+                ".mypy_cache",
+                ".ruff_cache",
+                ".DS_Store",
+                "*.lock",
+                "*.png",
+                "*.jpg",
+                "*.jpeg",
+                "*.gif",
+                "*.webp",
+                "*.pdf",
+                "*.svg",
+                "*.zip",
+                "*.tar",
+                "*.gz",
+                "*.min.js",
+                "*.map",
+                "*.secret",
+                "*.whl",
+                "*.data",
+            },
+        },
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "MunifTanjim/nui.nvim",
+            "echasnovski/mini.icons",
+            "nvim-treesitter/nvim-treesitter",
+        },
+        keys = {
+            { "<leader>ai", "<cmd>AvanteAsk<cr>", desc = "AI Ask", mode = { "n", "v" } },
+            { "<leader>ae", "<cmd>AvanteEdit<cr>", desc = "AI Edit Selection", mode = "v" },
+            { "<leader>ar", "<cmd>AvanteRefresh<cr>", desc = "AI Refresh Context" },
+        },
+    }
+end
+
 local function makespec_noice()
     return {
         "folke/noice.nvim",
@@ -1523,6 +1612,7 @@ for _, spec in ipairs({
     makespec_autotag(),
     makespec_lint(),
     makespec_mason(),
+    -- makespec_avante(),
     -- navigation
     makespec_atone(),
     makespec_whichkey(),
