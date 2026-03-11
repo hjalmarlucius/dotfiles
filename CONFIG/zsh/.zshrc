@@ -14,7 +14,7 @@ alias ls='ls --color=auto -Ah'
 alias ..='cd ..'
 alias ...='cd ../..'
 catai () {
-  rg --files --hidden --glob '!.git/*' "$@" | while read -r f; do
+  rg -l --hidden --glob '!.git/*' '^' -- "$@" | while IFS= read -r f; do
     printf "\n── %s ──\n" "$f"
     echo '```'
     cat "$f"
