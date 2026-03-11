@@ -86,7 +86,6 @@ vim.o.termguicolors = true
 vim.o.number = true
 vim.o.relativenumber = true
 
-vim.opt.termguicolors = true
 vim.diagnostic.config({
     severity_sort = true,
     underline = true,
@@ -99,7 +98,7 @@ vim.diagnostic.config({
     },
     signs = false,
     virtual_lines = {
-        current_line = true,
+        only_current_line = true,
         spacing = vim.o.shiftwidth,
         severity = { min = vim.diagnostic.severity.ERROR },
     },
@@ -164,10 +163,6 @@ map("v", "<", "<gv")
 map("v", ">", ">gv")
 map("v", "<Tab>", ">gv")
 map("v", "<S-Tab>", "<gv")
-
--- commenting
-map("n", "gco", "o<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Below" })
-map("n", "gcO", "O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Above" })
 
 -- new file
 map("n", "<leader>n", "<cmd>enew<cr>", { desc = "New File" })
@@ -545,9 +540,7 @@ local function makespec_hexokinase()
     return {
         -- coloring of colornames
         "rrethy/vim-hexokinase",
-        build = function(plugin)
-            vim.system({ "make", "hexokinase" }, { cwd = plugin.dir }):wait()
-        end,
+        build = function(plugin) vim.system({ "make", "hexokinase" }, { cwd = plugin.dir }):wait() end,
         config = function() vim.g.Hexokinase_highlighters = { "virtual" } end,
     }
 end
@@ -743,7 +736,7 @@ local function makespecs_previewers()
     return {
         {
             "chomosuke/typst-preview.nvim",
-            lazy = false, -- or ft = 'typst'
+            lazy = false,
             version = "1.*",
             opts = {
                 -- debug = true,
@@ -1059,12 +1052,7 @@ local function makespec_snacks()
             image = { enabled = true },
             indent = { enabled = true },
             lazygit = { enabled = vim.fn.has("lazygit") == 1 },
-            notifier = {
-                enabled = true,
-                style = "minimal",
-                refresh = 500,
-                top_down = false,
-            },
+            notifier = { enabled = true, style = "minimal", refresh = 500, top_down = false },
             ---@class snacks.picker
             picker = {
                 formatters = { file = { filename_first = true } },
@@ -1084,12 +1072,7 @@ local function makespec_snacks()
                 },
             },
             toggle = { enabled = true },
-            styles = {
-                lazygit = {
-                    width = 0,
-                    height = 0,
-                },
-            },
+            styles = { lazygit = { width = 0, height = 0 } },
         },
         -- stylua: ignore
         keys = {
@@ -1235,15 +1218,15 @@ local function makespec_smartsplits()
         lazy = false,
         -- stylua: ignore
         keys = {
-            { "<M-h>", function() require("smart-splits").move_cursor_left() end, { desc = "Go to Left Window", remap = true } },
-            { "<M-j>", function() require("smart-splits").move_cursor_down() end, { desc = "Go to Left Window", remap = true } },
-            { "<M-k>", function() require("smart-splits").move_cursor_up() end, { desc = "Go to Left Window", remap = true } },
-            { "<M-l>", function() require("smart-splits").move_cursor_right() end, { desc = "Go to Left Window", remap = true } },
-            { "<M-\\>", function() require("smart-splits").move_cursor_previous() end, { desc = "Go to Previous Window", remap = true } },
-            { "<C-h>", function() require("smart-splits").resize_left() end, { desc = "Resize Window Left", remap = true } },
-            { "<C-j>", function() require("smart-splits").resize_down() end, { desc = "Resize Window Down", remap = true } },
-            { "<C-k>", function() require("smart-splits").resize_up() end, { desc = "Resize Window Up", remap = true } },
-            { "<C-l>", function() require("smart-splits").resize_right() end, { desc = "Resize Window Right", remap = true } },
+            { "<M-h>", function() require("smart-splits").move_cursor_left() end, desc = "Go to Left Window" },
+            { "<M-j>", function() require("smart-splits").move_cursor_down() end, desc = "Go to Lower Window" },
+            { "<M-k>", function() require("smart-splits").move_cursor_up() end, desc = "Go to Upper Window" },
+            { "<M-l>", function() require("smart-splits").move_cursor_right() end, desc = "Go to Right Window" },
+            { "<M-\\>", function() require("smart-splits").move_cursor_previous() end, desc = "Go to Previous Window" },
+            { "<C-h>", function() require("smart-splits").resize_left() end, desc = "Resize Window Left" },
+            { "<C-j>", function() require("smart-splits").resize_down() end, desc = "Resize Window Down" },
+            { "<C-k>", function() require("smart-splits").resize_up() end, desc = "Resize Window Up" },
+            { "<C-l>", function() require("smart-splits").resize_right() end, desc = "Resize Window Right" },
         },
     }
 end
@@ -1305,7 +1288,7 @@ local function makespec_flash()
                                         exclude = {
                                             function(win)
                                                 return vim.bo[vim.api.nvim_win_get_buf(win)].filetype
-                                                    ~= "snacks_picker_list"
+                                                    == "snacks_picker_list"
                                             end,
                                         },
                                     },
@@ -1381,8 +1364,10 @@ local function makespec_treesitter()
             },
             auto_install = true,
             highlight = { enable = true },
-            indent = { enable = true, disable = { "python" } },
-            -- incremental_selection done by flash plugin
+            indent = {
+                enable = true,
+                disable = function(lang, buf) return lang == "python" end,
+            },
         },
         init = function() vim.opt.foldexpr = "nvim_treesitter#foldexpr()" end,
     }
@@ -1461,10 +1446,7 @@ local function makespec_conform()
                 typst = { "typstyle" },
                 yaml = { "yamlfmt" },
             },
-            default_format_opts = {
-                timeout_ms = 3000,
-                lsp_format = "fallback",
-            },
+            default_format_opts = { timeout_ms = 3000, lsp_format = "fallback" },
             formatters = {
                 javascript = { require_cwd = true },
                 stylua = { append_args = { "--indent-type", "Spaces", "--collapse-simple-statement", "Always" } },
@@ -1493,17 +1475,12 @@ local function makespec_avante()
             providers = {
                 openai = {
                     model = "gpt-4.1",
-                    extra_request_body = {
-                        temperature = 0,
-                    },
+                    extra_request_body = { temperature = 0 },
                     max_tokens = 4096,
                 },
                 gemini = {
                     model = "gemini-2.5-flash",
-                    extra_request_body = {
-                        temperature = 0,
-                        max_tokens = 4096,
-                    },
+                    extra_request_body = { temperature = 0, max_tokens = 4096 },
                 },
             },
             ignore_patterns = {
@@ -1573,10 +1550,7 @@ local function makespec_noice()
                 },
                 signature = { enabled = true, auto_open = { enabled = false, throttle = 50 } },
             },
-            presets = {
-                command_palette = true,
-                long_message_to_split = true,
-            },
+            presets = { command_palette = true, long_message_to_split = true },
             routes = {
                 { filter = { event = "msg_show", kind = "search_count" }, opts = { skip = true } },
                 { filter = { kind = "", min_height = 2 }, view = "split" },
