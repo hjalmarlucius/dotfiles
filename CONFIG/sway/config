@@ -349,6 +349,8 @@ for_window [app_id="floating_shell"] floating enable, border pixel 1, sticky ena
 for_window [title="Picture in picture"] floating enable, sticky enable
 for_window [title="Save File"] floating enable
 for_window [app_id="firefox" title="Firefox — Sharing Indicator"] kill
+# only thunderbird main window as float
+for_window [app_id="org.mozilla.Thunderbird" title="^((?!Mozilla Thunderbird).)*$"] floating enable
 
 # steam
 # https://github.com/ValveSoftware/steam-for-linux/issues/1040
