@@ -103,9 +103,7 @@ vim.lsp.set_log_level(2)
 vim.api.nvim_create_autocmd("FileType", {
     desc = "Disable auto-commenting on new line",
     pattern = "*",
-    callback = function()
-        vim.opt_local.formatoptions:remove({ "r", "o" })
-    end,
+    callback = function() vim.opt_local.formatoptions:remove({ "r", "o" }) end,
 })
 
 -- ----------------------------------------
@@ -216,29 +214,52 @@ map(
 )
 
 -- LSP
-map("n", "<leader>ld", "<cmd>e ~/.local/state/nvim/lsp.log<cr>")
-map("n", "<leader>lc", "<cmd>checkhealth<cr>")
+-- Global Diagnostic mappings (Diagnostics work independently of LSP)
 local diagnostic_goto = function(count, severity)
     severity = severity and vim.diagnostic.severity[severity] or nil
-    return function() vim.diagnostic.jump({ severity, count = count }) end
+    return function() vim.diagnostic.jump({ severity = severity, count = count }) end
 end
-map("n", "<M-i>", function() vim.diagnostic.open_float({ source = true }) end)
+
+map("n", "<leader>ld", "<cmd>e ~/.local/state/nvim/lsp.log<cr>", { desc = "LSP Log" })
+map("n", "<leader>lc", "<cmd>checkhealth<cr>", { desc = "Checkhealth" })
+map("n", "<M-i>", function() vim.diagnostic.open_float({ source = true }) end, { desc = "Line Diagnostics" })
 map("n", "<M-n>", diagnostic_goto(1), { desc = "Next Diagnostic" })
 map("n", "<M-p>", diagnostic_goto(-1), { desc = "Prev Diagnostic" })
 map("n", "[e", diagnostic_goto(-1, "ERROR"), { desc = "Prev Error" })
 map("n", "[w", diagnostic_goto(-1, "WARN"), { desc = "Prev Warning" })
 map("n", "]e", diagnostic_goto(1, "ERROR"), { desc = "Next Error" })
 map("n", "]w", diagnostic_goto(1, "WARN"), { desc = "Next Warning" })
-map("n", "gd", vim.lsp.buf.definition, { desc = "Goto Definition" })
-map("n", "gD", vim.lsp.buf.type_definition, { desc = "Goto Type Definition" })
-map("n", "gi", vim.lsp.buf.declaration, { desc = "Goto Declaration" })
-map("n", "gI", vim.lsp.buf.implementation, { desc = "Goto Implementation" })
 map("n", "gl", vim.diagnostic.setloclist, { desc = "Diagnostics to Location List" })
-map("n", "gr", function() vim.lsp.buf.references({ includeDeclaration = false }) end, { desc = "Goto References" })
-map({ "n", "i" }, "<M-x>", vim.lsp.buf.signature_help)
-map("n", "K", vim.lsp.buf.hover)
-map("n", "<M-r>", vim.lsp.buf.rename)
-map({ "n", "x" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" })
+
+-- Buffer-local LSP mappings
+vim.api.nvim_create_autocmd("LspAttach", {
+    group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+    callback = function(ev)
+        local bmap = function(mode, keys, func, desc) vim.keymap.set(mode, keys, func, { buffer = ev.buf, desc = desc }) end
+
+        bmap("n", "gd", vim.lsp.buf.definition, "Goto Definition")
+        bmap("n", "gD", vim.lsp.buf.type_definition, "Goto Type Definition")
+        bmap("n", "gi", vim.lsp.buf.declaration, "Goto Declaration")
+        bmap("n", "gI", vim.lsp.buf.implementation, "Goto Implementation")
+        bmap("n", "gr", function() vim.lsp.buf.references({ includeDeclaration = false }) end, "Goto References")
+
+        bmap({ "n", "i" }, "<M-x>", vim.lsp.buf.signature_help, "Signature Help")
+        bmap("n", "<M-r>", vim.lsp.buf.rename, "Rename Symbol")
+        bmap({ "n", "x" }, "<leader>ca", vim.lsp.buf.code_action, "Code Action")
+
+        -- K is automatically mapped to vim.lsp.buf.hover() in Neovim 0.10+
+        -- If your LSP supports inlay hints, you can add a toggle here:
+        local client = vim.lsp.get_client_by_id(ev.data.client_id)
+        if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
+            bmap(
+                "n",
+                "<leader>uh",
+                function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end,
+                "Toggle Inlay Hints"
+            )
+        end
+    end,
+})
 
 -- ----------------------------------------
 -- AUTOCMD
@@ -546,7 +567,12 @@ local function makespec_lualine()
         "nvim-lualine/lualine.nvim",
         dependencies = { "echasnovski/mini.icons", "folke/noice.nvim" },
         opts = {
-            options = { theme = "auto", globalstatus = false, always_divide_middle = false },
+            options = {
+                theme = "auto",
+                globalstatus = false,
+                always_divide_middle = false,
+                disabled_filetypes = { statusline = { "snacks_picker_list" } },
+            },
             extensions = { "fugitive", "neo-tree", "lazy" },
             sections = {
                 lualine_a = { "mode" },
@@ -584,7 +610,6 @@ local function makespec_lualine()
                 lualine_b = {},
                 lualine_c = {},
                 lualine_x = {
-                    -- { 'require("noice").api.status.message.get()', color = { fg = "#99c794" } },  -- gets too obtrusive
                     { 'require("noice").api.status.mode.get()', color = "lualine_a_command" },
                     { 'require("noice").api.status.command.get()', color = "lualine_a_command" },
                 },
@@ -856,16 +881,17 @@ local function makespec_fugitive()
             "GBrowse",
         },
         config = function()
-            vim.api.nvim_create_autocmd("User", {
-                pattern = { "FugitiveCommit", "BufReadPost" },
+            vim.api.nvim_create_autocmd("FileType", {
+                group = vim.api.nvim_create_augroup("fugitive_folds", { clear = true }),
+                pattern = { "fugitive", "gitcommit" },
                 callback = function()
                     vim.opt_local.foldmethod = "syntax"
-                    vim.opt_local.foldlevel = 0
+                    vim.opt_local.foldlevel = 99
                 end,
             })
         end,
         keys = {
-            { "<leader>gg", "<cmd>vertical Git<cr>", desc = "Fugitive" },
+            { "<leader>gg", "<cmd>vertical Git<cr>", desc = "Fugitive Status" },
             { "<leader>gp", "<cmd>Git! push<cr>", desc = "Git Push" },
             { "<leader>gP", "<cmd>Git! push -f<cr>", desc = "Git Force Push" },
         },
@@ -874,7 +900,7 @@ end
 
 local function makespec_gitsigns()
     local function on_gitsigns_attach(bufnr)
-        local gs = require("gitsigns")
+        local gs = package.loaded.gitsigns
         local function next_hunk()
             if vim.wo.diff then
                 vim.cmd.normal({ "]c", bang = true })
@@ -890,43 +916,45 @@ local function makespec_gitsigns()
             end
         end
 
-        local function bmap(l, r, desc, mode) vim.keymap.set(mode or "n", l, r, { buffer = bufnr, desc = desc }) end
+        local function bmap(mode, l, r, desc) vim.keymap.set(mode, l, r, { buffer = bufnr, desc = desc }) end
 
         -- Navigation
-        bmap("<M-,>", next_hunk, "Prev Hunk")
-        bmap("<M-.>", prev_hunk, "Next Hunk")
-        bmap("[h", prev_hunk, "Prev Hunk")
-        bmap("]h", next_hunk, "Next Hunk")
+        bmap("n", "<M-,>", next_hunk, "Prev Hunk")
+        bmap("n", "<M-.>", prev_hunk, "Next Hunk")
+        bmap("n", "[h", prev_hunk, "Prev Hunk")
+        bmap("n", "]h", next_hunk, "Next Hunk")
 
         -- Blame
-        bmap("<leader>gB", gs.blame, "Blame Buffer")
-        bmap("<leader>gb", function() gs.blame_line({ full = true }) end, "Blame Line")
+        bmap("n", "<leader>gB", gs.blame, "Blame Buffer")
+        bmap("n", "<leader>gb", function() gs.blame_line({ full = true }) end, "Blame Line")
 
         -- Hunk
-        bmap("<leader>gI", gs.preview_hunk_inline, "Preview Hunk Inline")
-        bmap("<leader>gi", gs.preview_hunk, "Preview Hunk")
-        bmap("<leader>gq", gs.setqflist, "File Hunks to QuickFix")
-        bmap("<leader>gQ", function() gs.setqflist("all") end, "All Hunks to QuickFix")
-        bmap("<leader>gx", gs.reset_hunk, "Reset Hunk")
-        bmap("<leader>gx", function() gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Reset Hunk", "v")
-        bmap("<leader>gR", gs.reset_buffer, "Reset Buffer")
-        bmap("<leader>gs", gs.stage_hunk, "Stage Hunk")
-        bmap("<leader>gs", function() gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Stage Hunk", "v")
-        bmap("<leader>gS", gs.stage_buffer, "Stage Buffer")
-        bmap("<leader>gv", gs.select_hunk, "Select Hunk", { "n", "v" })
+        bmap("n", "<leader>gi", gs.preview_hunk_inline, "Preview Hunk Inline")
+        bmap("n", "<leader>gp", gs.preview_hunk, "Preview Hunk")
+        bmap("n", "<leader>gq", gs.setqflist, "File Hunks to QuickFix")
+        bmap("n", "<leader>gQ", function() gs.setqflist("all") end, "All Hunks to QuickFix")
+        bmap("n", "<leader>gx", gs.reset_hunk, "Reset Hunk")
+        bmap("v", "<leader>gx", function() gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Reset Selection")
+        bmap("n", "<leader>gR", gs.reset_buffer, "Reset Buffer")
+        bmap("n", "<leader>gs", gs.stage_hunk, "Stage Hunk")
+        bmap("v", "<leader>gs", function() gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Stage Selection")
+        bmap("n", "<leader>gS", gs.stage_buffer, "Stage Buffer")
+        bmap({ "n", "v" }, "<leader>gv", gs.select_hunk, "Select Hunk")
 
         -- Toggles
-        bmap("<leader>gtw", gs.toggle_word_diff, "Toggle Diff Word Colors")
-        bmap("<leader>gtl", gs.toggle_linehl, "Toggle Diff Line Highlight")
-        bmap("<leader>gtb", gs.toggle_current_line_blame, "Toggle Line Blame")
-        bmap("<leader>gtn", gs.toggle_numhl, "Toggle Diff Line Number Highlight")
+        bmap("n", "<leader>gtw", gs.toggle_word_diff, "Toggle Diff Word Colors")
+        bmap("n", "<leader>gtl", gs.toggle_linehl, "Toggle Diff Line Highlight")
+        bmap("n", "<leader>gtn", gs.toggle_numhl, "Toggle Diff Line Number Highlight")
+        bmap("n", "<leader>gtb", gs.toggle_current_line_blame, "Toggle Line Blame")
+        bmap("n", "<leader>gtd", gs.toggle_deleted, "Toggle Deleted")
 
         -- Text object, e.g. for dih to delete hunk
-        bmap("ih", "<cmd>Gitsigns select_hunk<CR>", "Select Hunk", { "o", "x" })
+        bmap({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "Select Hunk")
     end
 
     return {
         "lewis6991/gitsigns.nvim",
+        event = { "BufReadPre", "BufNewFile" },
         opts = {
             signcolumn = true,
             numhl = false,
@@ -1398,16 +1426,26 @@ end
 local function makespec_lint()
     return {
         "mfussenegger/nvim-lint",
+        event = { "BufReadPre", "BufNewFile" },
         config = function()
-            require("lint").linters_by_ft = {
+            local lint = require("lint")
+            lint.linters_by_ft = {
                 javascript = { "eslint_d" },
                 typescript = { "eslint_d" },
                 html = { "tidy", "eslint_d" },
                 go = { "golangcilint" },
                 sh = { "shellcheck" },
             }
+
+            local lint_augroup = vim.api.nvim_create_augroup("nvim_lint", { clear = true })
+
+            -- Use a timer to debounce linting to prevent UI stutter
+            local timer = vim.uv.new_timer()
             vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
-                callback = function() require("lint").try_lint() end,
+                group = lint_augroup,
+                callback = function()
+                    timer:start(200, 0, vim.schedule_wrap(function() lint.try_lint() end))
+                end,
             })
         end,
     }
@@ -1416,14 +1454,26 @@ end
 local function makespec_conform()
     return {
         "stevearc/conform.nvim",
-        lazy = true,
+        -- Load conform right before you save a file, or when you trigger a keymap
+        event = { "BufWritePre" },
         cmd = { "ConformInfo" },
         keys = {
-            { "<leader>p", function() require("conform").format() end, silent = true, desc = "Autoformat" },
+            {
+                "<leader>p",
+                function() require("conform").format({ async = true, lsp_format = "fallback" }) end,
+                mode = { "n", "v" },
+                desc = "Autoformat",
+            },
             { "<leader>lp", "<cmd>ConformInfo<cr>", desc = "Conform log" },
-            { "<leader>lP", "<cmd>e ~/.local/state/nvim/conform.log<cr>", desc = "Conform log" },
+            { "<leader>lP", "<cmd>e ~/.local/state/nvim/conform.log<cr>", desc = "Conform log file" },
         },
         opts = {
+            -- format_on_save = function(bufnr)
+            --     -- Disable with a global or buffer-local variable
+            --     if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then return end
+            --     return { timeout_ms = 3000, lsp_format = "fallback" }
+            -- end,
+
             formatters_by_ft = {
                 ["_"] = { "trim_whitespace" },
                 css = { "prettierd", "prettier", stop_after_first = true },
@@ -1441,7 +1491,9 @@ local function makespec_conform()
                 typst = { "typstyle" },
                 yaml = { "yamlfmt" },
             },
-            default_format_opts = { timeout_ms = 3000, lsp_format = "fallback" },
+            default_format_opts = {
+                lsp_format = "fallback",
+            },
             formatters = {
                 javascript = { require_cwd = true },
                 stylua = { append_args = { "--indent-type", "Spaces", "--collapse-simple-statement", "Always" } },
@@ -1528,13 +1580,15 @@ local function makespec_noice()
     return {
         "folke/noice.nvim",
         event = "VeryLazy",
-        dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" },
+        dependencies = { "MunifTanjim/nui.nvim" },
         opts = {
+            -- Disable Noice's notification router so Snacks can handle it
+            notify = { enabled = false },
             messages = {
                 enabled = true,
-                view = "notify",
-                view_error = "notify",
-                view_warn = "notify",
+                view = "mini",
+                view_error = "mini",
+                view_warn = "mini",
                 view_history = "popup",
                 view_search = false,
             },
@@ -1542,19 +1596,24 @@ local function makespec_noice()
                 override = {
                     ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
                     ["vim.lsp.util.stylize_markdown"] = true,
+                    ["cmp.entry.get_documentation"] = true,
                 },
                 signature = { enabled = true, auto_open = { enabled = false, throttle = 50 } },
             },
-            presets = { command_palette = true, long_message_to_split = true },
+            presets = {
+                bottom_search = true,
+                command_palette = true,
+                long_message_to_split = true,
+                lsp_doc_border = true,
+            },
             routes = {
                 { filter = { event = "msg_show", kind = "search_count" }, opts = { skip = true } },
-                { filter = { kind = "", min_height = 2 }, view = "split" },
             },
         },
         keys = {
-            { "<leader>lx", function() require("noice").cmd("dismiss") end, desc = "Noice dismiss" },
-            { "<leader>lh", function() require("noice").cmd("all") end, desc = "Noice history" },
-            { "<leader>ls", function() require("noice").cmd("stats") end, desc = "Noice stats" },
+            { "<leader>lx", function() require("noice").cmd("dismiss") end, desc = "Dismiss All" },
+            { "<leader>lh", function() require("noice").cmd("all") end, desc = "Noice History" },
+            { "<leader>ls", function() require("noice").cmd("stats") end, desc = "Noice Stats" },
             { "<leader>un", function() require("noice").cmd("enable") end, desc = "Enable Noice" },
             { "<leader>uN", function() require("noice").cmd("disable") end, desc = "Disable Noice" },
         },
