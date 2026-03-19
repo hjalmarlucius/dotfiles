@@ -56,7 +56,7 @@ vim.opt.foldtext = ""
 vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 
 -- Format settings
-vim.opt.formatoptions = "jroqlnt"
+vim.opt.formatoptions = "jqlnt"
 
 -- Grep settings
 vim.opt.grepformat = "%f:%l:%c:%m"
@@ -92,13 +92,21 @@ vim.diagnostic.config({
     },
     signs = false,
     virtual_lines = {
-        only_current_line = true,
+        current_line = true,
         spacing = vim.o.shiftwidth,
         severity = { min = vim.diagnostic.severity.ERROR },
     },
     float = { source = true },
 })
 vim.lsp.set_log_level(2)
+
+vim.api.nvim_create_autocmd("FileType", {
+    desc = "Disable auto-commenting on new line",
+    pattern = "*",
+    callback = function()
+        vim.opt_local.formatoptions:remove({ "r", "o" })
+    end,
+})
 
 -- ----------------------------------------
 -- MAPS
@@ -167,12 +175,6 @@ map("n", "<leader>uI", function()
     vim.treesitter.inspect_tree()
     vim.api.nvim_input("I")
 end, { desc = "Inspect Tree" })
-
--- Terminal Mappings overridden by Snacks.terminal
--- map("n", "<C-/>", "<cmd>terminal<cr>", { desc = "Show Terminal" })
--- map("t", "<C-/>", "<cmd>close<cr>", { desc = "Hide Terminal" })
--- map("n", "<C-_>", "<cmd>terminal<cr>", { desc = "which_key_ignore" })
--- map("t", "<C-_>", "<cmd>close<cr>", { desc = "which_key_ignore" })
 
 -- windows
 map("n", "<M-v>", "<cmd>vsplit<cr>", { desc = "Split Window Right", remap = true })
@@ -1363,7 +1365,6 @@ local function makespec_treesitter()
                 disable = function(lang, buf) return lang == "python" end,
             },
         },
-        init = function() vim.opt.foldexpr = "nvim_treesitter#foldexpr()" end,
     }
 end
 
