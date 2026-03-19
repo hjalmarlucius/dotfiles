@@ -1396,6 +1396,29 @@ local function makespec_treesitter()
     }
 end
 
+local function makespec_treewalker()
+    return {
+        "aaronik/treewalker.nvim",
+        -- Load when you open a file that Treesitter supports
+        event = { "BufReadPost", "BufNewFile" },
+        opts = {
+            -- Briefly highlights the block of code you just jumped to
+            highlight = true,
+        },
+        keys = {
+            -- Normal and Visual mode mappings
+            { "]]", "<cmd>Treewalker Down<cr>", mode = { "n", "v" }, desc = "Next Sibling (Current Level)" },
+            { "[[", "<cmd>Treewalker Up<cr>", mode = { "n", "v" }, desc = "Prev Sibling (Current Level)" },
+            { "((", "<cmd>Treewalker Left<cr>", mode = { "n", "v" }, desc = "Go Out (Parent Level)" },
+            { "))", "<cmd>Treewalker Right<cr>", mode = { "n", "v" }, desc = "Go In (Child Level)" },
+
+            -- Optional: Swap nodes! (Move current block down/up past its sibling)
+            { "<leader>Sj", "<cmd>Treewalker SwapDown<cr>", desc = "Swap Block Down" },
+            { "<leader>Sk", "<cmd>Treewalker SwapUp<cr>", desc = "Swap Block Up" },
+        },
+    }
+end
+
 local function makespec_hlslens()
     return {
         -- search count > 99
@@ -1636,6 +1659,7 @@ for _, spec in ipairs({
     makespec_conform(), -- autoformat
     makespec_lspconfig(),
     makespec_treesitter(),
+    makespec_treewalker(),
     makespec_todocomments(),
     makespec_autotag(),
     makespec_lint(),
