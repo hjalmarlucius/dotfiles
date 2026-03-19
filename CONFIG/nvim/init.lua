@@ -1,91 +1,85 @@
 vim.g.mapleader = vim.keycode("<space>")
 vim.g.maplocalleader = vim.keycode("/")
-vim.o.langmap = "ø:"
+vim.opt.langmap = "ø:"
 
 -- general options
-vim.o.shell = "/usr/bin/zsh"
+vim.opt.shell = "/usr/bin/zsh"
 vim.g.BASH_Ctrl_j = "off"
 vim.g.BASH_Ctrl_l = "off"
 vim.opt.clipboard:append("unnamedplus")
-vim.o.guicursor = "n-v-c:block-CustomCursor,i:ver100-CustomICursor,n-v-c:blinkon0,i:blinkwait10"
-vim.o.cursorline = true
-vim.o.list = true
-vim.o.listchars = "tab:→ ,trail:·,extends:↷,precedes:↶,nbsp:+"
-vim.o.mouse = "a"
-vim.o.ruler = false
-vim.o.scrolloff = 4
+vim.opt.guicursor = "n-v-c:block-CustomCursor,i:ver100-CustomICursor,n-v-c:blinkon0,i:blinkwait10"
+vim.opt.cursorline = true
+vim.opt.list = true
+vim.opt.listchars = { tab = "→ ", trail = "·", extends = "↷", precedes = "↶", nbsp = "+" }
+vim.opt.mouse = "a"
+vim.opt.ruler = false
+vim.opt.scrolloff = 4
 vim.opt.shortmess:append({ W = true, I = true, c = true, C = true })
-vim.o.cmdheight = 0
-vim.o.showmode = false
-vim.o.sidescrolloff = 8
-vim.o.timeoutlen = 500
-vim.o.virtualedit = "block"
-vim.o.wildmode = "longest:full,full"
-vim.o.wrap = false
-vim.opt.diffopt = "internal,filler,closeoff,hiddenoff,vertical,algorithm:histogram"
-vim.opt.wildignore:append(
-    "blue.vim,darkblue.vim,delek.vim,desert.vim,elflord.vim,evening.vim,habamax.vim,industry.vim,"
-        .. "koehler.vim,lunaperche.vim,morning.vim,murphy.vim,pablo.vim,peachpuff.vim,quiet.vim,retrobox.vim,ron.vim,"
-        .. "shine.vim,slate.vim,sorbet.vim,torte.vim,unokai.vim,vim.lua,wildcharm.vim,zaibatsu.vim,zellner.vim"
-)
+vim.opt.cmdheight = 0
+vim.opt.showmode = false
+vim.opt.sidescrolloff = 8
+vim.opt.timeoutlen = 500
+vim.opt.virtualedit = "block"
+vim.opt.wildmode = { "longest:full", "full" }
+vim.opt.wrap = false
+vim.opt.diffopt = { "internal", "filler", "closeoff", "hiddenoff", "vertical", "algorithm:histogram" }
+-- stylua: ignore
+vim.opt.wildignore:append({ "blue.vim", "darkblue.vim", "delek.vim", "desert.vim", "elflord.vim", "evening.vim", "habamax.vim", "industry.vim", "koehler.vim", "lunaperche.vim", "morning.vim", "murphy.vim", "pablo.vim", "peachpuff.vim", "quiet.vim", "retrobox.vim", "ron.vim", "shine.vim", "slate.vim", "sorbet.vim", "torte.vim", "unokai.vim", "vim.lua", "wildcharm.vim", "zaibatsu.vim", "zellner.vim", })
 
 -- File History
-vim.o.undofile = true
-vim.o.undolevels = 100000
-vim.o.undoreload = 100000
-vim.o.updatetime = 200
+vim.opt.undofile = true
+vim.opt.undolevels = 100000
+vim.opt.undoreload = 100000
+vim.opt.updatetime = 200
 
 -- Tab stop
-vim.o.expandtab = true
-vim.o.shiftround = true
-vim.o.shiftwidth = 2
-vim.o.tabstop = 2
-vim.o.smartindent = false
+vim.opt.expandtab = true
+vim.opt.shiftround = true
+vim.opt.shiftwidth = 2
+vim.opt.tabstop = 2
+vim.opt.smartindent = false
 
 -- Session options
 vim.opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }
 
 -- Completion Window/Popup settings
-vim.o.completeopt = "menu,popup,preview"
-vim.o.pumblend = 10
-vim.o.pumheight = 10
-vim.o.winminwidth = 5
+vim.opt.completeopt = { "menu", "popup", "preview" }
+vim.opt.pumblend = 10
+vim.opt.pumheight = 10
+vim.opt.winminwidth = 5
 
 -- Fold settings
 vim.opt.foldlevel = 99
 vim.opt.smoothscroll = true
 vim.opt.foldmethod = "expr"
 vim.opt.foldtext = ""
-vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 
 -- Format settings
-vim.o.formatoptions = "jroqlnt"
+vim.opt.formatoptions = "jroqlnt"
 
 -- Grep settings
-vim.o.grepformat = "%f:%l:%c:%m"
-vim.o.grepprg = "rg --vimgrep"
+vim.opt.grepformat = "%f:%l:%c:%m"
+vim.opt.grepprg = "rg --vimgrep"
 
--- Search/subsitute settings
-vim.o.inccommand = "nosplit"
-vim.o.jumpoptions = "view"
-vim.o.ignorecase = true
-vim.o.smartcase = true
+-- Search/substitute settings
+vim.opt.inccommand = "nosplit"
+vim.opt.jumpoptions = "view"
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
 
 -- Spelling
 vim.opt.spelllang = { "en" }
 
 -- Splits
-vim.o.splitbelow = true
-vim.o.splitkeep = "screen"
-vim.o.splitright = true
+vim.opt.splitbelow = true
+vim.opt.splitkeep = "screen"
+vim.opt.splitright = true
 
--- Terminal
-vim.o.termguicolors = true
-
--- Status Column
-vim.o.number = true
-vim.o.relativenumber = true
-
+-- Terminal & Status Column
+vim.opt.termguicolors = true
+vim.opt.number = true
+vim.opt.relativenumber = true
 vim.diagnostic.config({
     severity_sort = true,
     underline = true,
