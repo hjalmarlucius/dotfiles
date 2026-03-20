@@ -1126,7 +1126,7 @@ local function makespec_snacks()
             { "<leader>fc", function() Snacks.picker.files({ cwd = "/home/hjalmarlucius/dotfiles", title="Find Configs" }) end, desc = "Find Config" },
             { "<leader>fn", function() Snacks.picker.files({ cwd = "/home/hjalmarlucius/notes", title="Find Notes" }) end, desc = "Find Note", },
             -- logs
-            { "<leader>ll", function() Snacks.picker.notifications() end, desc = "Notification History" },
+            { "<leader>ll", function() Snacks.notifier.show_history() end, desc = "Notification History" },
             -- code
             { "<leader>cs", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
             { "<leader>cw", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
