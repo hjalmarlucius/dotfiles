@@ -553,6 +553,29 @@ local function makespec_lspconfig()
     }
 end
 
+local function makespec_smearcursor()
+    return {
+        "sphamba/smear-cursor.nvim",
+        event = "VeryLazy",
+        opts = {
+            enabled = false, -- Dormant on startup
+            stiffness = 0.8,
+            trailing_stiffness = 0.5,
+        },
+    }
+end
+
+local function makespec_neoscroll()
+    return {
+        "karb94/neoscroll.nvim",
+        event = "VeryLazy",
+        config = function()
+            -- Initialize with empty mappings. It is loaded, but completely dormant.
+            require("neoscroll").setup({ mappings = {} })
+        end,
+    }
+end
+
 local function makespec_hexokinase()
     return {
         -- coloring of colornames
@@ -1161,6 +1184,36 @@ local function makespec_snacks()
                     Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
                     Snacks.toggle.treesitter():map("<leader>ut")
                     Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
+                    -- Toggle for Smear Cursor
+                    Snacks.toggle({
+                        name = "Smear Cursor",
+                        get = function() return require("smear_cursor").enabled end,
+                        set = function(state) require("smear_cursor").enabled = state end,
+                    }):map("<leader>uS")
+
+                    -- Toggle for Neoscroll
+                    local ns_keys = { "<C-u>", "<C-d>", "<C-b>", "<C-f>", "<C-y>", "<C-e>", "zt", "zz", "zb" }
+                    vim.g.neoscroll_enabled = false
+
+                    Snacks.toggle({
+                        name = "Smooth Scroll",
+                        get = function() return vim.g.neoscroll_enabled end,
+                        set = function(state)
+                            vim.g.neoscroll_enabled = state
+                            if state then
+                                -- Turn ON: Tell neoscroll to hijack the keys
+                                require("neoscroll").setup({
+                                    mappings = ns_keys,
+                                    hide_cursor = true,
+                                })
+                            else
+                                -- Turn OFF: Delete the hijacks so Neovim returns to default scrolling
+                                for _, key in ipairs(ns_keys) do
+                                    pcall(vim.keymap.del, { "n", "v", "x" }, key)
+                                end
+                            end
+                        end,
+                    }):map("<leader>uN")
                 end,
             })
         end,
@@ -1637,8 +1690,6 @@ local function makespec_noice()
             { "<leader>lx", function() require("noice").cmd("dismiss") end, desc = "Dismiss All" },
             { "<leader>lh", function() require("noice").cmd("all") end, desc = "Noice History" },
             { "<leader>ls", function() require("noice").cmd("stats") end, desc = "Noice Stats" },
-            { "<leader>un", function() require("noice").cmd("enable") end, desc = "Enable Noice" },
-            { "<leader>uN", function() require("noice").cmd("disable") end, desc = "Disable Noice" },
         },
     }
 end
@@ -1673,6 +1724,8 @@ for _, spec in ipairs({
     makespec_flash(),
     makespec_grugfar(),
     -- visuals
+    makespec_neoscroll(),
+    makespec_smearcursor(),
     makespec_hexokinase(),
     makespec_lualine(),
     makespec_noice(),
