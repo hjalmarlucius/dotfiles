@@ -1219,6 +1219,25 @@ local function makespecs_mini()
         },
         { "echasnovski/mini.icons", opts = {} },
         {
+            "echasnovski/mini.bracketed",
+            version = false,
+            event = "VeryLazy",
+            opts = {
+                -- Disabled because your custom LSP mappings (]e, ]w) are better!
+                diagnostic = { suffix = "", options = {} },
+
+                -- These are the heavy hitters. They map [ and ] automatically.
+                buffer = { suffix = "b", options = {} }, -- ]b / [b
+                quickfix = { suffix = "q", options = {} }, -- ]q / [q
+                location = { suffix = "l", options = {} }, -- ]l / [l
+                yank = { suffix = "y", options = {} }, -- ]y / [y (cycle pasted text)
+                indent = { suffix = "i", options = {} }, -- ]i / [i (match indent level)
+                file = { suffix = "f", options = {} }, -- ]f / [f (next file on disk)
+                window = { suffix = "w", options = {} }, -- ]w / [w (cycle windows)
+                undo = { suffix = "u", options = {} }, -- ]u / [u (traverse undo tree)
+            },
+        },
+        {
             "echasnovski/mini.surround",
             version = false,
             opts = {
