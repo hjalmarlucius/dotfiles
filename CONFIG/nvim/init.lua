@@ -908,7 +908,7 @@ local function makespec_fugitive()
                 group = vim.api.nvim_create_augroup("fugitive_folds", { clear = true }),
                 pattern = { "fugitive", "gitcommit" },
                 callback = function()
-                    vim.opt_local.foldmethod = "syntax"
+                    vim.opt_local.foldmethod = "expr"
                     vim.opt_local.foldlevel = 99
                 end,
             })
@@ -1183,7 +1183,22 @@ local function makespec_snacks()
                     }):map("<leader>uS")
 
                     -- Toggle for Neoscroll
-                    local ns_keys = { "<C-u>", "<C-d>", "<C-b>", "<C-f>", "<C-y>", "<C-e>", "zt", "zz", "zb" }
+                    local ns_keys = {
+                        ["<C-u>"] = function() require("neoscroll").ctrl_u({ half_win_duration = 250 }) end,
+                        ["<C-d>"] = function() require("neoscroll").ctrl_d({ half_win_duration = 250 }) end,
+                        ["<C-b>"] = function() require("neoscroll").ctrl_b({ half_win_duration = 450 }) end,
+                        ["<C-f>"] = function() require("neoscroll").ctrl_f({ half_win_duration = 450 }) end,
+                        ["<C-y>"] = function()
+                            require("neoscroll").scroll(-0.1, { move_cursor = false, duration = 100 })
+                        end,
+                        ["<C-e>"] = function()
+                            require("neoscroll").scroll(0.1, { move_cursor = false, duration = 100 })
+                        end,
+                        ["zt"] = function() require("neoscroll").zt({ half_win_duration = 250 }) end,
+                        ["zz"] = function() require("neoscroll").zz({ half_win_duration = 250 }) end,
+                        ["zb"] = function() require("neoscroll").zb({ half_win_duration = 250 }) end,
+                    }
+
                     vim.g.neoscroll_enabled = false
 
                     Snacks.toggle({
@@ -1192,14 +1207,13 @@ local function makespec_snacks()
                         set = function(state)
                             vim.g.neoscroll_enabled = state
                             if state then
-                                -- Turn ON: Tell neoscroll to hijack the keys
-                                require("neoscroll").setup({
-                                    mappings = ns_keys,
-                                    hide_cursor = true,
-                                })
+                                -- Turn ON: Map the keys to Neoscroll's functions
+                                for key, func in pairs(ns_keys) do
+                                    vim.keymap.set({ "n", "v", "x" }, key, func, { desc = "Smooth Scroll " .. key })
+                                end
                             else
-                                -- Turn OFF: Delete the hijacks so Neovim returns to default scrolling
-                                for _, key in ipairs(ns_keys) do
+                                -- Turn OFF: Delete the maps, returning Neovim to default scrolling
+                                for key, _ in pairs(ns_keys) do
                                     pcall(vim.keymap.del, { "n", "v", "x" }, key)
                                 end
                             end
@@ -1526,13 +1540,23 @@ local function makespec_lint()
             }
 
             local lint_augroup = vim.api.nvim_create_augroup("nvim_lint", { clear = true })
+            local timer = vim.uv.new_timer()
 
             -- Use a timer to debounce linting to prevent UI stutter
-            local timer = vim.uv.new_timer()
             vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
                 group = lint_augroup,
-                callback = function()
-                    timer:start(200, 0, vim.schedule_wrap(function() lint.try_lint() end))
+                callback = function(args)
+                    timer:stop()
+                    local bufnr = args.buf
+                    timer:start(
+                        200,
+                        0,
+                        vim.schedule_wrap(function()
+                            if vim.api.nvim_buf_is_valid(bufnr) then
+                                require("lint").try_lint(nil, { bufnr = bufnr })
+                            end
+                        end)
+                    )
                 end,
             })
         end,
