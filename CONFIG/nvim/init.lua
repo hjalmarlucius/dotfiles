@@ -1422,6 +1422,8 @@ local function makespec_treesitter()
     return {
         "nvim-treesitter/nvim-treesitter",
         build = ":TSUpdate",
+        lazy = false,
+        main = "nvim-treesitter.configs",
         opts = {
             ensure_installed = {
                 "bash",
