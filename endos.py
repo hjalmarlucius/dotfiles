@@ -124,12 +124,11 @@ installmap = dict(
         "khard",  # contacts
         "khal",  # calendar
         "aerc",  # email
-        "newsboat",  # rss reader
+        "eilmeldung",  # rss reader
         "vdirsyncer",  # sync calendar+contacts
         "pandoc",  # md2html for aerc
-        "pass",  # password manager for aerc and newsboat
-        "w3m",  # terminal browser for aerc and newsboat
-        "urlscan",  # url finder for newsboat
+        "pass",  # password manager for aerc
+        "w3m",  # terminal browser for aerc
         "python-aiohttp-oauthlib",  # for google vdirsyncer
     ),
     monitors=(
@@ -358,13 +357,12 @@ def install_monitors(overwrite: bool, reinstall: bool) -> None:
 
 def install_emailcalrss(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["emailcalrss"], reinstall=reinstall)
-    for tgt in ["vdirsyncer", "khard", "khal", "aerc", "newsboat"]:
+    for tgt in ["vdirsyncer", "khard", "khal", "aerc"]:
         helper_clone_foldercontents(CFG_SRC, CFG_TGT, tgt, overwrite)
     tgt = ".local/share/applications/userapp-khalimport.desktop"
     helper_maybe_copy(HOME_SRC, HOME_TGT, tgt, overwrite, symlink=True)
     run("systemctl enable --user --now vdirsyncer.timer".split())
     run(f"chmod 600 {CFG_TGT / 'aerc/accounts.conf'}".split())
-    (HOME_TGT / ".cache/newsboat").mkdir(exist_ok=True)
     (HOME_TGT / "Calendars").mkdir(exist_ok=True)
     (HOME_TGT / "Contacts").mkdir(exist_ok=True)
 
