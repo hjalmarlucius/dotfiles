@@ -157,15 +157,15 @@ bindsym {
 floating_modifier $mod normal
 bindsym {
     # Resize with arrow keys
-    $mod+ctrl+Right resize shrink width 10 px
-    $mod+ctrl+Up resize grow height 10 px
-    $mod+ctrl+Down resize shrink height 10 px
-    $mod+ctrl+Left resize grow width 10 px
+    $mod+ctrl+Right resize shrink width 100 px
+    $mod+ctrl+Up resize grow height 100 px
+    $mod+ctrl+Down resize shrink height 100 px
+    $mod+ctrl+Left resize grow width 100 px
     # Resize with Vim keys
-    $mod+ctrl+$right resize shrink width 10 px
-    $mod+ctrl+$up resize grow height 10 px
-    $mod+ctrl+$down resize shrink height 10 px
-    $mod+ctrl+$left resize grow width 10 px
+    $mod+ctrl+$right resize shrink width 100 px
+    $mod+ctrl+$up resize grow height 100 px
+    $mod+ctrl+$down resize shrink height 100 px
+    $mod+ctrl+$left resize grow width 100 px
 }
 # Resize floating windows with mouse scroll
 bindsym --whole-window --border {
@@ -294,7 +294,7 @@ exec_always swayidle -w \
     idlehint 240
 
 # Start foot server
-exec_always --no-startup-id foot --server
+exec systemctl --user enable --now foot-server.service
 
 exec {
     # Desktop notifications

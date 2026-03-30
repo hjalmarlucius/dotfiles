@@ -331,14 +331,6 @@ vim.api.nvim_create_user_command("ConvertEOL", function(opts)
     })
 end, { nargs = 1 })
 
--- fix diff colors on some color schemes
--- https://codeyarns.com/tech/2011-07-29-vim-chart-of-color-names.html
-vim.api.nvim_create_user_command("FixColors", function()
-    vim.api.nvim_set_hl(0, "CustomCursor", { fg = "salmon1", bg = "cyan" })
-    vim.api.nvim_set_hl(0, "CustomICursor", { fg = "salmon1", bg = "cyan" })
-    vim.api.nvim_set_hl(0, "ColorColumn", { bg = "salmon4" })
-end, {})
-
 -- ----------------------------------------
 -- SPECS
 -- ----------------------------------------
