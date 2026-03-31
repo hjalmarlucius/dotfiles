@@ -113,7 +113,6 @@ installmap = dict(
         "qutebrowser",
         "firefox",
         "google-chrome",
-        "microsoft-edge-stable-bin",
         "w3m",
         "python-adblock",  # for qutebrowser ad blocker
         "python-tldextract",
