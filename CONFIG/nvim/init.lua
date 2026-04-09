@@ -98,7 +98,6 @@ vim.diagnostic.config({
     },
     float = { source = true },
 })
-vim.lsp.set_log_level(2)
 
 vim.api.nvim_create_autocmd("FileType", {
     desc = "Disable auto-commenting on new line",
@@ -337,48 +336,20 @@ end, { nargs = 1 })
 
 local function makespecs_themes()
     return {
-        { "aktersnurra/no-clown-fiesta.nvim", opts = { transparent = false } },
-        "NLKNguyen/papercolor-theme",
         "junegunn/seoul256.vim",
         "mcauley-penney/phobos-anomaly.nvim",
         "folke/tokyonight.nvim",
-        { "bluz71/vim-moonfly-colors", name = "moonfly", lazy = false },
         {
             "uloco/bluloco.nvim",
             lazy = false,
             dependencies = { "rktjmp/lush.nvim" },
             opts = {},
         },
-        {
-            "mhartington/oceanic-next",
-            config = function()
-                local customthemegroup = vim.api.nvim_create_augroup("customthemegroup", {})
-                vim.api.nvim_create_autocmd("ColorScheme", {
-                    pattern = { "OceanicNext" },
-                    group = customthemegroup,
-                    callback = function()
-                        vim.api.nvim_set_hl(0, "DiffAdded", { default = false, link = "DiffAdd" })
-                        vim.api.nvim_set_hl(0, "DiffRemoved", { default = false, link = "DiffDelete" })
-                        vim.api.nvim_set_hl(0, "Normal", {})
-                        vim.api.nvim_set_hl(0, "LineNr", {})
-                        vim.api.nvim_set_hl(0, "SignColumn", {})
-                        vim.api.nvim_set_hl(0, "EndOfBuffer", {})
-                    end,
-                })
-            end,
-        },
-        "morhetz/gruvbox",
-        {
-            "catppuccin/nvim",
-            name = "catppuccin",
-            -- opts = { integrations = { grug_far = true, mason = true, noice = true, snacks = true, which_key = true } },
-        },
-        {
-            "Shatur/neovim-ayu",
-            init = function() vim.g.ayu_extended_palette = 1 end,
-        },
-        "tomasr/molokai",
-        "jnurmine/Zenburn",
+        "sainnhe/gruvbox-material",
+        "sainnhe/everforest",
+        "sainnhe/edge",
+        "sainnhe/sonokai",
+        { "catppuccin/nvim", name = "catppuccin", opts = { auto_integrations = true } },
     }
 end
 
@@ -554,17 +525,6 @@ local function makespec_smearcursor()
             stiffness = 0.8,
             trailing_stiffness = 0.5,
         },
-    }
-end
-
-local function makespec_neoscroll()
-    return {
-        "karb94/neoscroll.nvim",
-        event = "VeryLazy",
-        config = function()
-            -- Initialize with empty mappings. It is loaded, but completely dormant.
-            require("neoscroll").setup({ mappings = {} })
-        end,
     }
 end
 
@@ -1173,44 +1133,6 @@ local function makespec_snacks()
                         get = function() return require("smear_cursor").enabled end,
                         set = function(state) require("smear_cursor").enabled = state end,
                     }):map("<leader>uS")
-
-                    -- Toggle for Neoscroll
-                    local ns_keys = {
-                        ["<C-u>"] = function() require("neoscroll").ctrl_u({ half_win_duration = 250 }) end,
-                        ["<C-d>"] = function() require("neoscroll").ctrl_d({ half_win_duration = 250 }) end,
-                        ["<C-b>"] = function() require("neoscroll").ctrl_b({ half_win_duration = 450 }) end,
-                        ["<C-f>"] = function() require("neoscroll").ctrl_f({ half_win_duration = 450 }) end,
-                        ["<C-y>"] = function()
-                            require("neoscroll").scroll(-0.1, { move_cursor = false, duration = 100 })
-                        end,
-                        ["<C-e>"] = function()
-                            require("neoscroll").scroll(0.1, { move_cursor = false, duration = 100 })
-                        end,
-                        ["zt"] = function() require("neoscroll").zt({ half_win_duration = 250 }) end,
-                        ["zz"] = function() require("neoscroll").zz({ half_win_duration = 250 }) end,
-                        ["zb"] = function() require("neoscroll").zb({ half_win_duration = 250 }) end,
-                    }
-
-                    vim.g.neoscroll_enabled = false
-
-                    Snacks.toggle({
-                        name = "Smooth Scroll",
-                        get = function() return vim.g.neoscroll_enabled end,
-                        set = function(state)
-                            vim.g.neoscroll_enabled = state
-                            if state then
-                                -- Turn ON: Map the keys to Neoscroll's functions
-                                for key, func in pairs(ns_keys) do
-                                    vim.keymap.set({ "n", "v", "x" }, key, func, { desc = "Smooth Scroll " .. key })
-                                end
-                            else
-                                -- Turn OFF: Delete the maps, returning Neovim to default scrolling
-                                for key, _ in pairs(ns_keys) do
-                                    pcall(vim.keymap.del, { "n", "v", "x" }, key)
-                                end
-                            end
-                        end,
-                    }):map("<leader>uN")
                 end,
             })
         end,
@@ -1752,7 +1674,6 @@ for _, spec in ipairs({
     makespec_flash(),
     makespec_grugfar(),
     -- visuals
-    makespec_neoscroll(),
     makespec_smearcursor(),
     makespec_hexokinase(),
     makespec_lualine(),
@@ -1793,4 +1714,4 @@ require("lazy").setup({
     spec = lazyspecs,
     checker = { enabled = true },
 })
-vim.cmd("colorscheme bluloco-dark")
+vim.cmd("colorscheme catppuccin-nvim")
