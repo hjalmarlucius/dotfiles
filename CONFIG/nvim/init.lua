@@ -77,7 +77,6 @@ vim.opt.splitkeep = "screen"
 vim.opt.splitright = true
 
 -- Terminal & Status Column
-vim.opt.termguicolors = true
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.diagnostic.config({
@@ -99,7 +98,7 @@ vim.diagnostic.config({
     float = { source = true },
 })
 
-vim.api.nvim_create_autocmd("FileType", {
+vim.api.nvim_create_autocmd("BufEnter", {
     desc = "Disable auto-commenting on new line",
     pattern = "*",
     callback = function() vim.opt_local.formatoptions:remove({ "r", "o" }) end,
@@ -234,6 +233,8 @@ map("n", "gl", vim.diagnostic.setloclist, { desc = "Diagnostics to Location List
 vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("UserLspConfig", {}),
     callback = function(ev)
+        vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
+
         local bmap = function(mode, keys, func, desc) vim.keymap.set(mode, keys, func, { buffer = ev.buf, desc = desc }) end
 
         bmap("n", "gd", vim.lsp.buf.definition, "Goto Definition")
@@ -337,7 +338,6 @@ end, { nargs = 1 })
 local function makespecs_themes()
     return {
         "junegunn/seoul256.vim",
-        "mcauley-penney/phobos-anomaly.nvim",
         "folke/tokyonight.nvim",
         {
             "uloco/bluloco.nvim",
@@ -359,21 +359,18 @@ local function makespec_lspconfig()
             on_dir(require("lspconfig").util.root_pattern(unpack(root_markers))(vim.fn.bufname(bufnr)))
         end
     end
+
     return {
         "neovim/nvim-lspconfig",
         lazy = false,
         event = { "BufReadPost", "BufNewFile" },
-        cmd = { "LspInfo", "LspRestart", "LspStart", "LspStop" },
-        keys = { { "<F4>", "<cmd>LspInfo<cr>", noremap = true } },
+        keys = { { "<F4>", "<cmd>checkhealth vim.lsp<cr>", noremap = true, desc = "LSP Info" } },
         config = function()
+            -- Lua
             vim.lsp.config("lua_ls", {
-                cmd = { "lua-language-server" },
                 settings = {
                     Lua = {
-                        workspace = {
-                            checkThirdParty = false,
-                            library = { vim.env.VIMRUNTIME },
-                        },
+                        workspace = { checkThirdParty = false, library = { vim.env.VIMRUNTIME } },
                         telemetry = { enable = false },
                         diagnostics = { globals = { "vim" } },
                         format = { enable = false },
@@ -409,7 +406,7 @@ local function makespec_lspconfig()
             vim.lsp.config("yamlls", {
                 settings = {
                     yaml = {
-                        schemas = { kubernetes = "/home/hjalmarlucius/src/hjarl/system/manifests/*.yaml" },
+                        schemas = { kubernetes = vim.fn.expand("~/src/hjarl/system/manifests/*.yaml") },
                         -- schemaStore = { enable = false, url = "" },
                     },
                 },
@@ -431,10 +428,7 @@ local function makespec_lspconfig()
                 settings = {
                     pylsp = {
                         plugins = {
-                            pylsp_mypy = {
-                                enabled = true,
-                                dmypy = true,
-                            },
+                            pylsp_mypy = { enabled = true, dmypy = true },
                             pycodestyle = { enabled = false },
                             mccabe = { enabled = false },
                         },
@@ -448,7 +442,6 @@ local function makespec_lspconfig()
                 settings = {
                     python = {
                         analysis = {
-                            -- logLevel = "Trace",
                             autoImportCompletions = false,
                             diagnosticMode = "workspace",
                             logTypeEvaluationTime = true,
@@ -465,16 +458,12 @@ local function makespec_lspconfig()
                         autoUseWorkspaceTsdk = true,
                         experimental = {
                             maxInlayHintLength = 30,
-                            completion = {
-                                enableServerSideFuzzyMatch = true,
-                            },
+                            completion = { enableServerSideFuzzyMatch = true },
                         },
                     },
                     javascript = {
                         updateImportsOnFileMove = { enabled = "always" },
-                        suggest = {
-                            completeFunctionCalls = true,
-                        },
+                        suggest = { completeFunctionCalls = true },
                         inlayHints = {
                             enumMemberValues = { enabled = true },
                             functionLikeReturnTypes = { enabled = true },
@@ -486,9 +475,7 @@ local function makespec_lspconfig()
                     },
                     typescript = {
                         updateImportsOnFileMove = { enabled = "always" },
-                        suggest = {
-                            completeFunctionCalls = true,
-                        },
+                        suggest = { completeFunctionCalls = true },
                         inlayHints = {
                             enumMemberValues = { enabled = true },
                             functionLikeReturnTypes = { enabled = true },
@@ -499,6 +486,18 @@ local function makespec_lspconfig()
                         },
                     },
                 },
+            })
+
+            vim.lsp.config("tinymist", {
+                cmd = { "tinymist" },
+                filetypes = { "typst" },
+                root_dir = rootdirfix({ ".git", "typst.toml" }),
+            })
+
+            vim.lsp.config("bashls", {
+                cmd = { "bash-language-server", "start" },
+                filetypes = { "sh", "bash" },
+                root_dir = rootdirfix({ ".git" }),
             })
 
             vim.lsp.enable("bashls")
@@ -743,16 +742,9 @@ local function makespecs_previewers()
                 get_root = function(filename)
                     local root = os.getenv("TYPST_ROOT")
                     if root then return root end
-                    local dir0 = vim.fn.fnamemodify(filename, ":p:h")
-                    local dir = dir0
-                    for _ = 1, 10 do
-                        if vim.fn.isdirectory(dir .. "/.git/") ~= 0 or vim.fn.filereadable(dir .. "/.git") ~= 0 then
-                            print("root dir: " .. dir)
-                            return dir
-                        end
-                        dir = vim.fn.fnamemodify(dir, ":p:h:h")
-                    end
-                    return dir0
+                    local git_root = vim.fs.root(filename, ".git")
+                    if git_root then return git_root end
+                    return vim.fn.fnamemodify(filename, ":p:h")
                 end,
             },
         },
@@ -1075,8 +1067,8 @@ local function makespec_snacks()
             { "<M-f>", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
             { "<leader>fg", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
             { "<leader>fa", function() Snacks.picker.files() end, desc = "Find Files" },
-            { "<leader>fc", function() Snacks.picker.files({ cwd = "/home/hjalmarlucius/dotfiles", title="Find Configs" }) end, desc = "Find Config" },
-            { "<leader>fn", function() Snacks.picker.files({ cwd = "/home/hjalmarlucius/notes", title="Find Notes" }) end, desc = "Find Note", },
+            { "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.expand("~/dotfiles"), title="Find Configs" }) end, desc = "Find Config" },
+            { "<leader>fn", function() Snacks.picker.files({ cwd = vim.fn.expand("~/notes"), title="Find Notes" }) end, desc = "Find Note", },
             -- logs
             { "<leader>ll", function() Snacks.notifier.show_history() end, desc = "Notification History" },
             -- code
@@ -1714,4 +1706,4 @@ require("lazy").setup({
     spec = lazyspecs,
     checker = { enabled = true },
 })
-vim.cmd("colorscheme catppuccin-nvim")
+vim.cmd("colorscheme catppuccin")
