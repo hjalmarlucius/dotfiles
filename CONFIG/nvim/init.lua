@@ -238,17 +238,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
         local bmap = function(mode, keys, func, desc) vim.keymap.set(mode, keys, func, { buffer = ev.buf, desc = desc }) end
 
         bmap("n", "gd", vim.lsp.buf.definition, "Goto Definition")
-        bmap("n", "gD", vim.lsp.buf.type_definition, "Goto Type Definition")
-        bmap("n", "gi", vim.lsp.buf.declaration, "Goto Declaration")
-        bmap("n", "gI", vim.lsp.buf.implementation, "Goto Implementation")
-        bmap("n", "gr", function() vim.lsp.buf.references({ includeDeclaration = false }) end, "Goto References")
-
+        bmap("n", "gD", vim.lsp.buf.declaration, "Goto Declaration")
+        bmap("n", "gy", vim.lsp.buf.type_definition, "Goto Type Definition")
         bmap({ "n", "i" }, "<M-x>", vim.lsp.buf.signature_help, "Signature Help")
-        bmap("n", "<M-r>", vim.lsp.buf.rename, "Rename Symbol")
-        bmap({ "n", "x" }, "<leader>ca", vim.lsp.buf.code_action, "Code Action")
-
-        -- K is automatically mapped to vim.lsp.buf.hover() in Neovim 0.10+
-        -- If your LSP supports inlay hints, you can add a toggle here:
         local client = vim.lsp.get_client_by_id(ev.data.client_id)
         if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
             bmap(
@@ -967,6 +959,12 @@ local function makespec_whichkey()
                     { "[", group = "prev" },
                     { "]", group = "next" },
                     { "g", group = "goto" },
+                    { "gr", group = "lsp actions", icon = { icon = " ", color = "purple" } },
+                    { "gra", desc = "Code Action" },
+                    { "gri", desc = "Goto Implementation" },
+                    { "grn", desc = "Rename Symbol" },
+                    { "grr", desc = "Goto References" },
+                    { "gy", desc = "Goto Type Definition" },
                     { "gs", group = "surround" },
                     { "z", group = "fold" },
                     { "<leader><tab>", group = "tabs" },
@@ -1705,5 +1703,6 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
     spec = lazyspecs,
     checker = { enabled = true },
+    rocks = { enabled = false },
 })
 vim.cmd("colorscheme catppuccin")
