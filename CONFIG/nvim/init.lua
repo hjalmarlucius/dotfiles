@@ -941,7 +941,6 @@ local function makespec_whichkey()
         "folke/which-key.nvim",
         event = "VeryLazy",
         opts = {
-            defaults = {},
             spec = {
                 {
                     mode = { "n", "v" },
@@ -981,7 +980,7 @@ local function makespec_whichkey()
         keys = {
             {
                 "<leader>?",
-                function() require("which-key").show({ global = false }) end,
+                function() require("which-key").show({ global = true }) end,
                 desc = "Buffer Keymaps (which-key)",
             },
             {
