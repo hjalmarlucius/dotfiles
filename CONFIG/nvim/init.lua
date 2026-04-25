@@ -7,7 +7,6 @@ vim.opt.shell = "/usr/bin/zsh"
 vim.g.BASH_Ctrl_j = "off"
 vim.g.BASH_Ctrl_l = "off"
 vim.opt.clipboard:append("unnamedplus")
-vim.opt.guicursor = "n-v-c:block-CustomCursor,i:ver100-CustomICursor,n-v-c:blinkon0,i:blinkwait10"
 vim.opt.cursorline = true
 vim.opt.list = true
 vim.opt.listchars = { tab = "→ ", trail = "·", extends = "↷", precedes = "↶", nbsp = "+" }
