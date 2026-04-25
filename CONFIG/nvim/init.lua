@@ -1442,24 +1442,9 @@ local function makespec_lint()
             }
 
             local lint_augroup = vim.api.nvim_create_augroup("nvim_lint", { clear = true })
-            local timer = vim.uv.new_timer()
-
-            -- Use a timer to debounce linting to prevent UI stutter
             vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
                 group = lint_augroup,
-                callback = function(args)
-                    timer:stop()
-                    local bufnr = args.buf
-                    timer:start(
-                        200,
-                        0,
-                        vim.schedule_wrap(function()
-                            if vim.api.nvim_buf_is_valid(bufnr) then
-                                require("lint").try_lint(nil, { bufnr = bufnr })
-                            end
-                        end)
-                    )
-                end,
+                callback = function() require("lint").try_lint() end,
             })
         end,
     }
@@ -1703,4 +1688,4 @@ require("lazy").setup({
     checker = { enabled = true },
     rocks = { enabled = false },
 })
-vim.cmd("colorscheme catppuccin")
+vim.cmd("colorscheme sonokai")
