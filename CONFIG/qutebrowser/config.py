@@ -1,17 +1,21 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any
+    from qutebrowser.config.config import ConfigContainer
+    from qutebrowser.config.configfiles import ConfigAPI
 
-    config: Any = None
-    c: Any = None
+c: "ConfigContainer" = c  # type: ignore # noqa: F821
+config: "ConfigAPI" = config  # type: ignore # noqa: F821
+from typing import TYPE_CHECKING
 
 config.load_autoconfig(True)
 config.bind("<", "tab-move -")
 config.bind("<Ctrl+Shift+Tab>", "tab-prev")
 config.bind("<Ctrl+Tab>", "tab-next")
 config.bind("<Ctrl+l>", "cmd-set-text :open {url:pretty}")
-config.bind("<Ctrl+r>", "reload")
+config.unbind("r", mode="normal")
+config.bind("<Ctrl+r>", "reload -f")
+config.bind("R", "reload", mode="normal")
 config.bind("<Ctrl+n>", "tab-clone -w")
 config.bind("<Ctrl+t>", "tab-clone -t")
 config.bind("<Ctrl+Shift+r>", "restart", mode="normal")
@@ -46,8 +50,8 @@ config.bind("wk", "forward -w", mode="normal")
 config.bind("ø", "cmd-set-text :")
 config.bind("m", 'cmd-set-text :quickmark-add {url:pretty} "', mode="normal")
 config.bind("D", "tab-close")
-config.bind(",m", "hint links spawn mpv {hint-url}", mode="normal")
-config.bind(",M", "spawn mpv {url}", mode="normal")
+config.bind(",m", "hint links spawn -d mpv {hint-url}", mode="normal")
+config.bind(",M", "spawn -d mpv {url}", mode="normal")
 config.unbind("co")  # close all tabs except this one
 config.unbind("<Ctrl+x>")  # navigate decrement
 config.unbind("<Ctrl+a>")  # navigate increment
@@ -69,7 +73,7 @@ c.completion.open_categories = [
 c.content.register_protocol_handler = False
 c.content.blocking.enabled = True
 c.content.fullscreen.window = True
-c.content.blocking.method = "both"
+c.content.blocking.method = "adblock"
 c.content.blocking.adblock.lists = [
     "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt",
     "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/badware.txt",
@@ -107,6 +111,14 @@ urlconfigs: dict[str, list[tuple[str, bool | str | dict[str, str]]]] = {
             {"X-YouTube-Client-Name": "85", "X-YouTube-Client-Version": "2.0"},
         )
     ],
+    "https://*.altinn.no": [
+        ("content.cookies.accept", "all"),
+        ("content.javascript.can_open_tabs_automatically", True),
+    ],
+    "https://*.bankid.no": [
+        ("content.cookies.accept", "all"),
+        ("content.javascript.can_open_tabs_automatically", True),
+    ],
 }
 for url, urlconfig in urlconfigs.items():
     for setting, value in urlconfig:
@@ -131,7 +143,6 @@ c.input.insert_mode.auto_leave = False
 c.input.insert_mode.plugins = True
 c.messages.timeout = 5000
 c.qt.force_platform = "wayland"
-c.qt.force_software_rendering = "qt-quick"
 c.qt.highdpi = True
 c.scrolling.bar = "always"
 c.scrolling.smooth = False
