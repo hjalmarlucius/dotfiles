@@ -67,7 +67,7 @@ set $powermenu ~/.config/sway/scripts/power_menu.sh
 # ------------------------------------------
 # Launch the terminal
 bindsym $mod+Return exec $term
-bindsym $mod+Shift+Return exec foot
+bindsym Mod4+Shift+Return exec foot bash
 # Kill focused window
 bindsym $mod+Shift+q kill
 # Lock screen
