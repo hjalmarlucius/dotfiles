@@ -42,7 +42,7 @@ vim.opt.smartindent = false
 vim.opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }
 
 -- Completion Window/Popup settings
-vim.opt.completeopt = { "menu", "popup", "preview" }
+vim.opt.completeopt = { "menu", "menuone", "noselect", "noinsert", "popup", "preview" }
 vim.opt.pumblend = 10
 vim.opt.pumheight = 10
 vim.opt.winminwidth = 5
@@ -228,30 +228,6 @@ map("n", "]e", diagnostic_goto(1, "ERROR"), { desc = "Next Error" })
 map("n", "]w", diagnostic_goto(1, "WARN"), { desc = "Next Warning" })
 map("n", "gl", vim.diagnostic.setloclist, { desc = "Diagnostics to Location List" })
 
--- Buffer-local LSP mappings
-vim.api.nvim_create_autocmd("LspAttach", {
-    group = vim.api.nvim_create_augroup("UserLspConfig", {}),
-    callback = function(ev)
-        vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
-
-        local bmap = function(mode, keys, func, desc) vim.keymap.set(mode, keys, func, { buffer = ev.buf, desc = desc }) end
-
-        bmap("n", "gd", vim.lsp.buf.definition, "Goto Definition")
-        bmap("n", "gD", vim.lsp.buf.declaration, "Goto Declaration")
-        bmap("n", "gy", vim.lsp.buf.type_definition, "Goto Type Definition")
-        bmap({ "n", "i" }, "<M-x>", vim.lsp.buf.signature_help, "Signature Help")
-        local client = vim.lsp.get_client_by_id(ev.data.client_id)
-        if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
-            bmap(
-                "n",
-                "<leader>uh",
-                function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end,
-                "Toggle Inlay Hints"
-            )
-        end
-    end,
-})
-
 -- ----------------------------------------
 -- AUTOCMD
 -- ----------------------------------------
@@ -345,17 +321,8 @@ local function makespecs_themes()
 end
 
 local function makespec_lspconfig()
-    local rootdirfix = function(root_markers)
-        return function(bufnr, on_dir)
-            on_dir(require("lspconfig").util.root_pattern(unpack(root_markers))(vim.fn.bufname(bufnr)))
-        end
-    end
-
     return {
         "neovim/nvim-lspconfig",
-        lazy = false,
-        event = { "BufReadPost", "BufNewFile" },
-        keys = { { "<F4>", "<cmd>checkhealth vim.lsp<cr>", noremap = true, desc = "LSP Info" } },
         config = function()
             -- Lua
             vim.lsp.config("lua_ls", {
@@ -405,17 +372,17 @@ local function makespec_lspconfig()
             vim.lsp.config("ty", {
                 cmd = { "ty", "server" },
                 filetypes = { "python" },
-                root_dir = rootdirfix({ ".git", "pyproject.toml", "setup.py", "setup.cfg" }),
+                root_markers = { ".git" },
                 settings = { ty = { experimental = { rename = true } } },
             })
             vim.lsp.config("pyrefly", {
                 cmd = { "pyrefly", "lsp" },
                 filetypes = { "python" },
-                root_dir = rootdirfix({ ".git", "pyproject.toml", "setup.py", "setup.cfg", "pyrefly.toml" }),
+                root_markers = { ".git" },
             })
             vim.lsp.config("pylsp", {
                 filetypes = { "python" },
-                root_dir = rootdirfix({ ".git", "pyproject.toml", "setup.py", "setup.cfg" }),
+                root_markers = { ".git" },
                 settings = {
                     pylsp = {
                         plugins = {
@@ -429,7 +396,7 @@ local function makespec_lspconfig()
             vim.lsp.config("basedpyright", {
                 cmd = { "basedpyright-langserver", "--stdio", "--threads", "20" },
                 filetypes = { "python" },
-                root_dir = rootdirfix({ ".git", "pyproject.toml", "setup.py", "setup.cfg", "pyrightconfig.json" }),
+                root_markers = { ".git" },
                 settings = {
                     python = {
                         analysis = {
@@ -482,13 +449,13 @@ local function makespec_lspconfig()
             vim.lsp.config("tinymist", {
                 cmd = { "tinymist" },
                 filetypes = { "typst" },
-                root_dir = rootdirfix({ ".git", "typst.toml" }),
+                root_markers = { ".git", "typst.toml" },
             })
 
             vim.lsp.config("bashls", {
                 cmd = { "bash-language-server", "start" },
                 filetypes = { "sh", "bash" },
-                root_dir = rootdirfix({ ".git" }),
+                root_markers = { ".git" },
             })
 
             vim.lsp.enable("bashls")
@@ -502,6 +469,33 @@ local function makespec_lspconfig()
             vim.lsp.enable("tinymist")
             vim.lsp.enable("vtsls")
             vim.lsp.enable("yamlls")
+
+            vim.api.nvim_create_autocmd("LspAttach", {
+                group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
+                callback = function(ev)
+                    local bmap = function(mode, keys, func, desc)
+                        vim.keymap.set(mode, keys, func, { buffer = ev.buf, desc = desc, silent = true })
+                    end
+
+                    bmap("n", "gd", vim.lsp.buf.definition, "Goto Definition")
+                    bmap("n", "gD", vim.lsp.buf.declaration, "Goto Declaration")
+                    bmap("n", "gy", vim.lsp.buf.type_definition, "Goto Type Definition")
+                    bmap({ "n", "i" }, "<M-x>", vim.lsp.buf.signature_help, "Signature Help")
+                    bmap("i", "<C-Space>", "<C-x><C-o>", "Trigger LSP Completion")
+                    bmap("i", "<C-l>", "<C-n>", "Buffer/Keyword Completion")
+                    bmap("i", "<C-f>", "<C-x><C-f>", "File Path Completion")
+
+                    local client = vim.lsp.get_client_by_id(ev.data.client_id)
+                    if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
+                        bmap(
+                            "n",
+                            "<leader>uh",
+                            function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end,
+                            "Toggle Inlay Hints"
+                        )
+                    end
+                end,
+            })
         end,
     }
 end
