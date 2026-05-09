@@ -470,6 +470,15 @@ local function makespec_lspconfig()
             vim.lsp.enable("vtsls")
             vim.lsp.enable("yamlls")
 
+            vim.api.nvim_create_autocmd("FileType", {
+                group = vim.api.nvim_create_augroup("DefeatFtpluginOmnifunc", { clear = true }),
+                pattern = { "python" },
+                callback = function(ev)
+                    vim.schedule(function()
+                        if vim.api.nvim_buf_is_valid(ev.buf) then vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc" end
+                    end)
+                end,
+            })
             vim.api.nvim_create_autocmd("LspAttach", {
                 group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
                 callback = function(ev)
