@@ -373,7 +373,7 @@ local function makespec_lspconfig()
                 cmd = { "ty", "server" },
                 filetypes = { "python" },
                 root_markers = { ".git" },
-                settings = { ty = { experimental = { rename = true } } },
+                settings = { ty = { completions = { autoImport = false }, experimental = { rename = true } } },
             })
             vim.lsp.config("pyrefly", {
                 cmd = { "pyrefly", "lsp" },
