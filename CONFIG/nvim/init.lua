@@ -42,7 +42,7 @@ vim.opt.smartindent = false
 vim.opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }
 
 -- Completion Window/Popup settings
-vim.opt.completeopt = { "menu", "menuone", "noselect", "noinsert", "popup", "preview" }
+vim.opt.completeopt = { "menu", "menuone", "longest", "noselect", "noinsert", "popup", "preview" }
 vim.opt.pumblend = 10
 vim.opt.pumheight = 10
 vim.opt.winminwidth = 5
