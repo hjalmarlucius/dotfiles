@@ -88,6 +88,7 @@ installmap = dict(
         "v4l-utils",
         # photos
         "qimgv",
+        "kimageformats5",  # heif support
         "digikam",
         # music
         "quodlibet",
@@ -139,7 +140,7 @@ installmap = dict(
         "bandwhich",  # network
         "sysstat",
     ),
-    apps=("keepassxc", "bitwarden", "qalculate-gtk", "vesktop"),
+    apps=("keepassxc", "bitwarden", "qalculate-gtk", "discord"),
     sway=(
         "xdg-terminal-exec",
         # visuals
