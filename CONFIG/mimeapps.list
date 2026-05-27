@@ -28,7 +28,7 @@ application/x-bittorrent=org.qbittorrent.qBittorrent.desktop;
 inode/directory=yazi.desktop;
 x-scheme-handler/msteams=teams.desktop;
 text/calendar=userapp-khalimport.desktop;
-x-scheme-handler/discord=vesktop.desktop;
+x-scheme-handler/discord=discord.desktop
 application/vnd.openxmlformats-officedocument.wordprocessingml.document=org.kde.okular.desktop;
 text/markdown=org.kde.okular.desktop;
 application/zip=userapp-file-roller.desktop;
@@ -38,6 +38,7 @@ x-scheme-handler/vnc=org.remmina.Remmina.desktop;
 x-scheme-handler/remmina=org.remmina.Remmina.desktop;
 application/x-remmina=org.remmina.Remmina.desktop;
 application/vnd.openxmlformats-officedocument.wordprocessingml.document=libreoffice-writer.desktop;
+image/heif=qimgv.desktop
 
 [Added Associations]
 
