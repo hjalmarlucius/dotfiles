@@ -7,6 +7,17 @@ vim.opt.shell = "/usr/bin/zsh"
 vim.g.BASH_Ctrl_j = "off"
 vim.g.BASH_Ctrl_l = "off"
 vim.opt.clipboard:append("unnamedplus")
+vim.g.clipboard = {
+    name = "OSC 52",
+    copy = {
+        ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+        ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+    },
+    paste = {
+        ["+"] = require("vim.ui.clipboard.osc52").paste("+"),
+        ["*"] = require("vim.ui.clipboard.osc52").paste("*"),
+    },
+}
 vim.opt.cursorline = true
 vim.opt.list = true
 vim.opt.listchars = { tab = "→ ", trail = "·", extends = "↷", precedes = "↶", nbsp = "+" }
@@ -462,8 +473,8 @@ local function makespec_lspconfig()
             vim.lsp.enable("clangd")
             vim.lsp.enable("html")
             vim.lsp.enable("lua_ls")
-            vim.lsp.enable("ty")
-            -- vim.lsp.enable("pyrefly")
+            -- vim.lsp.enable("ty")
+            vim.lsp.enable("pyrefly")
             -- vim.lsp.enable("pylsp")
             -- vim.lsp.enable("basedpyright")
             vim.lsp.enable("tinymist")
@@ -678,6 +689,7 @@ local function makespec_neotree()
                     window = {
                         mappings = {
                             ["/"] = false, -- disable fancy and annoying filter, just search instead
+                            ["z"] = false, -- disable closing of nodes so view can be centered
                         },
                     },
                 },
@@ -1062,6 +1074,8 @@ local function makespec_snacks()
             { "<leader>qd", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
             { "<leader>gl", function() Snacks.lazygit() end, desc = "Launch Lazygit" },
             { "<leader>.", function() Snacks.scratch.open() end, desc = "Scratch Buffer" },
+            { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
+
             -- find
             { "<M-f>", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
             { "<leader>fg", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
