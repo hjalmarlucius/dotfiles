@@ -84,6 +84,10 @@ c.content.blocking.adblock.lists = [
     "https://easylist.to/easylist/easyprivacy.txt",
     "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=1&mimetype=plaintext",
 ]
+c.content.javascript.log_message.excludes = {
+    "userscript:_qute_js": ["*TrustedHTML*"],
+    "userscript:_qute_stylesheet": ["*Refused to apply inline style because it violates the following Content Security Policy directive: *"]
+}
 c.completion.web_history.max_items = 10000
 c.completion.height = "100%"
 c.confirm_quit = ["multiple-tabs", "downloads"]
@@ -144,6 +148,7 @@ c.input.insert_mode.plugins = True
 c.messages.timeout = 5000
 c.qt.force_platform = "wayland"
 c.qt.highdpi = True
+c.qt.args = ["disable-features=WebAuth"]  # makes BankID work
 c.scrolling.bar = "always"
 c.scrolling.smooth = False
 c.session.lazy_restore = False
