@@ -892,8 +892,8 @@ local function makespec_gitsigns()
         local function bmap(mode, l, r, desc) vim.keymap.set(mode, l, r, { buffer = bufnr, desc = desc }) end
 
         -- Navigation
-        bmap("n", "<M-,>", next_hunk, "Prev Hunk")
-        bmap("n", "<M-.>", prev_hunk, "Next Hunk")
+        bmap("n", "<M-,>", next_hunk, "Next Hunk")
+        bmap("n", "<M-.>", prev_hunk, "Prev Hunk")
         bmap("n", "[h", prev_hunk, "Prev Hunk")
         bmap("n", "]h", next_hunk, "Next Hunk")
 
@@ -1296,7 +1296,8 @@ local function makespec_flash()
                 opts = {
                     picker = {
                         win = {
-                            input = { keys = { ["<a-s>"] = { "flash", mode = { "n", "i" } }, ["s"] = { "flash" } } },
+                            input = { keys = { ["<a-s>"] = { "flash", mode = { "n", "i" } } } },
+                            list = { keys = { ["s"] = { "flash" } } },
                         },
                         actions = {
                             flash = function(picker)
