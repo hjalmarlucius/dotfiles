@@ -56,6 +56,7 @@ installmap = dict(
         "ripgrep",
         "npm",  # required for nvim plugins
         "go",  # required for vim-hexokinase build
+        "tree-sitter-cli",  # required for nvim treesitter
     ),
     utils=("uv", "ncdu", "unzip", "jq", "bluetui"),
     gittools=(
