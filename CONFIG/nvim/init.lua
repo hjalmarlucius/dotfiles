@@ -532,12 +532,16 @@ local function makespec_smearcursor()
     }
 end
 
-local function makespec_hexokinase()
+local function makespec_highlight_colors()
     return {
-        -- coloring of colornames
-        "rrethy/vim-hexokinase",
-        build = function(plugin) vim.system({ "make", "hexokinase" }, { cwd = plugin.dir }):wait() end,
-        config = function() vim.g.Hexokinase_highlighters = { "virtual" } end,
+        "brenoprata10/nvim-highlight-colors",
+        event = "VeryLazy",
+        opts = {
+            render = "virtual",
+            virtual_symbol = "■",
+            enable_named_colors = true,
+            enable_tailwind = false,
+        },
     }
 end
 
@@ -1715,7 +1719,7 @@ local lazyspecs = {
     makespec_grugfar(),
     -- visuals
     makespec_smearcursor(),
-    makespec_hexokinase(),
+    makespec_highlight_colors(),
     makespec_lualine(),
     makespec_noice(),
     -- file browsers
