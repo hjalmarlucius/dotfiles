@@ -3,7 +3,7 @@ export SYSTEMD_EDITOR=nvim
 export EDITOR=nvim
 export VISUAL=nvim
 export PAGER="bat --style=header,rule,snip"
-export PATH=~/.local/bin:$PATH
+export PATH=~/.local/bin:${KREW_ROOT:-$HOME/.krew}/bin:$PATH
 export BROWSER=/usr/bin/qutebrowser
 export HISTFILE=~/.config/zsh/history
 export HISTSIZE=200000
