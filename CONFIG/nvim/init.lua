@@ -1,4 +1,4 @@
-vim.g.mapleader = vim.keycode("<space>")
+vim.g.mapleader = vim.keycode(" ")
 vim.g.maplocalleader = vim.keycode("/")
 vim.opt.langmap = "ø:"
 
@@ -108,7 +108,7 @@ vim.diagnostic.config({
     float = { source = true },
 })
 
-vim.api.nvim_create_autocmd("BufEnter", {
+vim.api.nvim_create_autocmd("FileType", {
     desc = "Disable auto-commenting on new line",
     pattern = "*",
     callback = function() vim.opt_local.formatoptions:remove({ "r", "o" }) end,
@@ -153,8 +153,8 @@ map("i", ".", ".<c-g>u")
 map("i", ";", ";<c-g>u")
 
 -- save file
-map({ "x", "n", "s" }, "<leader>ww", "<cmd>w<cr><esc>", { desc = "Save File" })
-map({ "x", "n", "s" }, "<leader>wa", "<cmd>wa<cr><esc>", { desc = "Save Files" })
+map({ "x", "n", "s" }, "<leader>ww", "<cmd>w<cr>", { desc = "Save File" })
+map({ "x", "n", "s" }, "<leader>wa", "<cmd>wa<cr>", { desc = "Save Files" })
 
 -- quit
 map("n", "<leader>qq", "<cmd>q<cr>", { desc = "Close Window" })
@@ -1150,7 +1150,17 @@ local function makespecs_mini()
             "echasnovski/mini.basics",
             opts = { options = { basic = true, extra_ui = true }, mappings = { move_with_alt = true } },
         },
-        { "echasnovski/mini.icons", opts = {} },
+        {
+            "echasnovski/mini.icons",
+            opts = {},
+            init = function()
+                -- catch nvim-web-devicons
+                package.preload["nvim-web-devicons"] = function()
+                    require("mini.icons").mock_nvim_web_devicons()
+                    return package.loaded["nvim-web-devicons"]
+                end
+            end,
+        },
         {
             "echasnovski/mini.bracketed",
             version = false,
@@ -1355,9 +1365,10 @@ end
 local function makespec_treesitter()
     return {
         "nvim-treesitter/nvim-treesitter",
+        branch = "main",
         build = ":TSUpdate",
         lazy = false,
-        main = "nvim-treesitter.configs",
+        main = "nvim-treesitter.config",
         opts = {
             ensure_installed = {
                 "bash",
@@ -1375,6 +1386,7 @@ local function makespec_treesitter()
                 "lua",
                 "markdown",
                 "markdown_inline",
+                "query", -- for folds
                 "python",
                 "regex",
                 "toml",
@@ -1390,6 +1402,41 @@ local function makespec_treesitter()
             indent = {
                 enable = true,
                 disable = function(lang, buf) return lang == "python" end,
+            },
+        },
+    }
+end
+
+local function makespec_blink()
+    return {
+        "saghen/blink.cmp",
+        version = false,
+        event = "InsertEnter",
+        build = function() require("blink.cmp").build():pwait() end,
+        dependencies = {
+            "saghen/blink.lib",
+        },
+        opts = {
+            keymap = { preset = "default" },
+            completion = {
+                accept = { auto_brackets = { enabled = false } },
+                documentation = { auto_show = true },
+            },
+            fuzzy = { sorts = { "exact", "score", "sort_text" } },
+            sources = {
+                default = { "lsp", "buffer", "path" },
+                providers = {
+                    lsp = {
+                        -- Strip any completion item that tries to inject an auto-import
+                        transform_items = function(_, items)
+                            return vim.tbl_filter(function(item)
+                                -- If the LSP item includes additionalTextEdits, it's mutating
+                                -- lines outside your cursor (e.g., adding an import at the top)
+                                return not (item.additionalTextEdits and #item.additionalTextEdits > 0)
+                            end, items)
+                        end,
+                    },
+                },
             },
         },
     }
@@ -1471,8 +1518,6 @@ end
 local function makespec_conform()
     return {
         "stevearc/conform.nvim",
-        -- Load conform right before you save a file, or when you trigger a keymap
-        event = { "BufWritePre" },
         cmd = { "ConformInfo" },
         keys = {
             {
@@ -1510,6 +1555,7 @@ local function makespec_conform()
             },
             default_format_opts = {
                 lsp_format = "fallback",
+                timeout_ms = 1000,
             },
             formatters = {
                 javascript = { require_cwd = true },
@@ -1613,7 +1659,6 @@ local function makespec_noice()
                 override = {
                     ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
                     ["vim.lsp.util.stylize_markdown"] = true,
-                    ["cmp.entry.get_documentation"] = true,
                 },
                 signature = { enabled = true, auto_open = { enabled = false, throttle = 50 } },
             },
@@ -1644,13 +1689,17 @@ local lazyspecs = {
     { "ethanholz/nvim-lastplace", opts = {} }, -- keep location upon reopening
     "tpope/vim-eunuch", -- Move, Rename etc
     "tpope/vim-sleuth", -- do the right thing with tabstop and softtabstop
-}
-for _, spec in ipairs({
+    {
+        "esmuellert/codediff.nvim",
+        cmd = "CodeDiff",
+        opts = { diff = { compute_moves = true } },
+    },
     makespec_lazydev(), -- nvim lsp helpers
     makespec_snacks(),
     makespec_conform(), -- autoformat
     makespec_lspconfig(),
     makespec_treesitter(),
+    makespec_blink(),
     makespec_treewalker(),
     makespec_todocomments(),
     makespec_autotag(),
@@ -1677,18 +1726,10 @@ for _, spec in ipairs({
     makespec_fugitive(),
     makespec_diffview(),
     makespec_vimflog(),
-}) do
-    table.insert(lazyspecs, spec)
-end
-for _, specs in ipairs({
     makespecs_themes(),
     makespecs_mini(),
     makespecs_previewers(),
-}) do
-    for _, spec in ipairs(specs) do
-        table.insert(lazyspecs, spec)
-    end
-end
+}
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
     vim.fn.system({
