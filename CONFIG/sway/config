@@ -69,7 +69,7 @@ set $powermenu ~/.config/sway/scripts/power_menu.sh
 # ------------------------------------------
 # Launch the terminal
 bindsym $mod+Return exec $term
-bindsym Mod4+Shift+Return exec foot bash
+bindsym $mod+Shift+Return exec foot bash
 # Kill focused window
 bindsym $mod+Shift+q kill
 # Lock screen
@@ -294,11 +294,10 @@ exec hash dbus-update-activation-environment 2>/dev/null && \
 
 # Idle configuration
 exec swayidle -w \
-    timeout 1200 'pgrep -x gtklock || gtklock -d' \
+    timeout 1200 'gtklock -d' \
     timeout 2400 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
-    before-sleep 'pgrep -x gtklock || gtklock -d' \
-    after-resume 'swaymsg reload' \
-    idlehint 240
+    timeout 10 'if pgrep -x gtklock; then swaymsg "output * power off"; fi' \
+    before-sleep 'gtklock -d'
 
 # Start foot server
 exec systemctl --user enable --now foot-server.service
@@ -393,4 +392,3 @@ input type:mouse {
     accel_profile "flat"
     pointer_accel 0.5
 }
-
