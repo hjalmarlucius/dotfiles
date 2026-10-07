@@ -85,11 +85,10 @@
         "on-click": "footclient --app-id floating_shell --window-size-chars 120x45 -e btop"
     },
 
-    "custom/cputemp": {
-      "exec": "sensors | grep 'CPU:' | awk '{print substr($2,2); }'",
-      "format": "  {}",
-      "on-click": "swaymsg exec 'footclient --app-id floating_shell --window-size-chars 80x45 watch sensors'",
-      "interval": 1
+    "temperature": {
+        "critical-threshold": 80,
+        "format": " {temperatureC}°C",
+        "on-click": "swaymsg exec 'footclient --app-id floating_shell --window-size-chars 80x45 -e watch sensors'"
     },
 
     "memory": {

@@ -12,7 +12,7 @@
     "modules-right": [
         "idle_inhibitor",
         "cpu",
-        "custom/cputemp",
+        "temperature",
         "memory",
         "disk#root",
         "backlight",
