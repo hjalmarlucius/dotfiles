@@ -10,29 +10,31 @@ mouse_warping none
 
 # Set inner/outer gaps
 smart_gaps on
-gaps inner 2
+gaps inner 4
 gaps outer 0
 
 # Hide titlebar on windows:
-default_border pixel 1
+default_border pixel 2
+smart_borders on
 
 # Default Font
 font pango:Noto Sans Regular 10
 
-# Thin borders:
-smart_borders on
-
 # Title format for windows
-for_window [shell="xdg_shell"] title_format "%title (%app_id)"
-for_window [shell="x_wayland"] title_format "%class - %title"
+set $focus     #00E5FF
+set $unfocused #333333
+set $urgent    #FF0033
+set $bg        #0A0A0A
+set $text_dark #000000
+set $text_dim  #888888
 
-# class                 border  bground text    indicator child_border
-client.focused          #556064 #F9CE5C #000000 #CB4B16   #FDF6E3
-client.focused_inactive #CB4B16 #2F3D44 #1ABC9C #454948   #454948
-client.unfocused        #556064 #2F3D44 #1ABC9C #454948   #454948
-client.urgent           #CB4B16 #FDF6E3 #1ABC9C #268BD2   #268BD2
-client.placeholder      #000000 #0C0C0C #ffffff #000000   #000000
-client.background       #2B2C2B
+# class                 border      bground     text        indicator   child_border
+client.focused          $focus      $focus      $text_dark  $focus      $focus
+client.focused_inactive $unfocused  $unfocused  $text_dim   $unfocused  $unfocused
+client.unfocused        $unfocused  $unfocused  $text_dim   $unfocused  $unfocused
+client.urgent           $urgent     $urgent     #FFFFFF     $urgent     $urgent
+client.placeholder      #000000     #000000     #FFFFFF     #000000     #000000
+client.background       $bg
 
 # Status Bar:
 bar {
