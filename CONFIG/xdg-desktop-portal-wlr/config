@@ -1,5 +1,4 @@
 [screencast]
 chooser_type = dmenu
 chooser_cmd = fuzzel --dmenu
-output_name=DP-1
 max_fps=30

@@ -44,7 +44,7 @@ autoload -Uz compinit
 compinit -d "~/.config/zsh/zcompdump"
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' 'r:|[._-]=** r:|=**'
-zstyle ':completion:*' list-colors ''
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 if command -v kubectl >/dev/null 2>&1; then
   source <(kubectl completion zsh)
 fi

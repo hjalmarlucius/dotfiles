@@ -331,6 +331,7 @@ def install_filebrowsers(overwrite: bool, reinstall: bool) -> None:
         "yazi-rs/plugins:smart-enter",
         "yazi-rs/plugins:smart-filter",
         "yazi-rs/plugins:toggle-pane",
+        "ahkohd/eza-preview",
         "boydaihungst/file-extra-metadata",
     ]:
         run(f"ya pkg add {plugin}".split())
