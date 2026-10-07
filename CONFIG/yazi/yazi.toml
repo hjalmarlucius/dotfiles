@@ -4,6 +4,11 @@ show_hidden = true
 sort_by = "natural"
 ratio = [ 1, 4, 5 ]
 
+[[mgr.prepend_keymap]]
+on = "O"
+run = "open --interactive"
+desc = "Open with... (Interactive menu)"
+
 [preview]
 wrap = "yes"
 image_delay = 50
@@ -39,6 +44,10 @@ url = "*/"
 run = "git"
 
 [[plugin.prepend_previewers]]
+url = "*/"
+run = "eza-preview"
+
+[[plugin.prepend_previewers]]
 url = "*.tar*"
 run = 'piper --format=url -- tar tf "$1"'
 
@@ -51,8 +60,16 @@ url = "*.md"
 run = 'piper -- CLICOLOR_FORCE=1 glow -w=$w -s=dark "$1"'
 
 [[plugin.prepend_previewers]]
-url = "*/"
-run = 'piper -- eza -TL=3 --color=always --icons=always --group-directories-first --no-quotes "$1"'
+url = "*.parquet"
+run = "parquet-preview"
+
+[[plugin.prepend_previewers]]
+url = "*.parq"
+run = "parquet-preview"
+
+[[plugin.prepend_previewers]]
+url = "*.pq"
+run = "parquet-preview"
 
 [[plugin.prepend_spotters]]
 url = "*"
