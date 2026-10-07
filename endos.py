@@ -399,7 +399,7 @@ def install_sway(overwrite: bool, reinstall: bool) -> None:
         "waybar",
         "gtklock",
         "gtk-3.0",
-        "mako",
+        "swaync",
         "fuzzel",
         "nwg-drawer",
         "xdg-desktop-portal-wlr",
@@ -413,6 +413,8 @@ def install_sway(overwrite: bool, reinstall: bool) -> None:
     helper_clone_foldercontents(CUSTOM_SRC / "CONFIG", CFG_TGT, "sway", overwrite)
     # custom waybar configs
     helper_clone_foldercontents(CUSTOM_SRC / "CONFIG", CFG_TGT, "waybar", overwrite)
+    # custom swaync configs
+    helper_clone_foldercontents(CUSTOM_SRC / "CONFIG", CFG_TGT, "swaync", overwrite)
     # desktop entries
     helper_clone_foldercontents(
         HOME_SRC,
