@@ -253,9 +253,14 @@ bindsym {
     # Launch the file explorer
     $mod+o exec pcmanfm
 
-    # Dismiss message
-    $mod+n exec makoctl dismiss
-    $mod+Shift+n exec makoctl dismiss -a
+    # Dismiss current notification
+    $mod+n exec swaync-client -c
+
+    # Dismiss all notifications
+    $mod+Shift+n exec swaync-client -C
+
+    # Toggle the SwayNC control center panel
+    $mod+Shift+m exec swaync-client -t -sw
 }
 
 # config tools
@@ -297,9 +302,6 @@ exec swayidle -w \
 exec systemctl --user enable --now foot-server.service
 
 exec {
-    # Desktop notifications
-    exec mako
-
     # Set wallpaper
     ~/.azotebg
 
@@ -317,6 +319,8 @@ exec {
 }
 
 exec_always {
+    pkill -x swaync; exec swaync
+
     # nwg-drawer
     nwg-drawer -r -c 7 -is 90 -mb 10 -ml 50 -mr 50 -mt 10
 

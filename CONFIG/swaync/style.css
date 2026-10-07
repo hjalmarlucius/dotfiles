@@ -1,0 +1,52 @@
+@define-color bg       #0A0A0A;
+@define-color border   #333333;
+@define-color text     #FFFFFF;
+@define-color focus    #00E5FF;
+@define-color urgent   #FF0033;
+
+* {
+  font-family: "Noto Sans", sans-serif;
+  border-radius: 0px; /* Sharp corners */
+  background-clip: padding-box;
+}
+
+.control-center {
+  background: @bg;
+  border-left: 2px solid @border;
+  color: @text;
+}
+
+.floating-notifications .notification {
+  background: @bg;
+  border: 2px solid @focus; /* Instantly clear it's a new notification */
+  box-shadow: none;
+  margin: 4px;
+}
+
+button:hover {
+  background: @border;
+  border: 1px solid @focus;
+}
+
+.widget-title {
+  color: @focus;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 10px;
+  border-bottom: 1px solid @border;
+}
+
+.widget-dnd,
+.widget-mpris,
+.widget-volume {
+  background: transparent;
+  border: 1px solid @border;
+  margin: 8px;
+  padding: 8px;
+}
+
+.notification-row:focus,
+.notification-row:hover {
+  background: #111111;
+  border-left: 2px solid @focus;
+}
