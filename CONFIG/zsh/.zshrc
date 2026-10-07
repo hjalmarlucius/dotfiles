@@ -21,6 +21,7 @@ catai () {
     echo '```'
   done
 }
+alias sioyek="QT_QPA_PLATFORM=xcb sioyek"
 
 # --- basic keybinds ---
 bindkey '^[[Z' reverse-menu-complete  # shift-tab
