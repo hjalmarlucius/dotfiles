@@ -26,7 +26,7 @@
     "modules-right": [
         "idle_inhibitor",
         "cpu",
-        "custom/cputemp",
+        "temperature",
         "memory",
         "custom/nvidia",
         "disk#root",
