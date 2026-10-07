@@ -86,7 +86,9 @@ c.content.blocking.adblock.lists = [
 ]
 c.content.javascript.log_message.excludes = {
     "userscript:_qute_js": ["*TrustedHTML*"],
-    "userscript:_qute_stylesheet": ["*Refused to apply inline style because it violates the following Content Security Policy directive: *"]
+    "userscript:_qute_stylesheet": [
+        "*Refused to apply inline style because it violates the following Content Security Policy directive: *"
+    ],
 }
 c.completion.web_history.max_items = 10000
 c.completion.height = "100%"
@@ -148,7 +150,13 @@ c.input.insert_mode.plugins = True
 c.messages.timeout = 5000
 c.qt.force_platform = "wayland"
 c.qt.highdpi = True
-c.qt.args = ["disable-features=WebAuth"]  # makes BankID work
+c.qt.args = [
+    "disable-features=WebAuth",  # makes BankID work
+    "disable-gpu",  # Stops using the GPU for rendering
+    "disable-gpu-compositing",  # Forces CPU compositing
+    "disable-accelerated-2d-canvas",  # Offloads canvas drawing to CPU
+    "disable-accelerated-video-decode",  # Prevents VRAM usage for videos
+]
 c.scrolling.bar = "always"
 c.scrolling.smooth = False
 c.session.lazy_restore = False
@@ -204,20 +212,20 @@ c.fonts.web.family.fixed = "IBM Plex Mono"
 c.fonts.web.family.standard = c.fonts.web.family.sans_serif
 
 # COLORS
-base00 = "#181818"
-base01 = "#282828"
-base02 = "#383838"
+base00 = "#0A0A0A"
+base01 = "#111111"
+base02 = "#333333"
 base03 = "#585858"
 base04 = "#b8b8b8"
-base05 = "#d8d8d8"
+base05 = "#FFFFFF"
 base06 = "#e8e8e8"
 base07 = "#f8f8f8"
-base08 = "#ab4642"
+base08 = "#FF0033"
 base09 = "#dc9656"
-base0A = "#f7ca88"
-base0B = "#a1b56c"
+base0A = "#FFE57F"
+base0B = "#00E5FF"
 base0C = "#86c1b9"
-base0D = "#7cafc2"
+base0D = "#00E5FF"
 base0E = "#ba8baf"
 base0F = "#a16946"
 c.colors.webpage.preferred_color_scheme = "light"
@@ -251,9 +259,9 @@ c.colors.downloads.start.bg = base0D
 c.colors.downloads.stop.fg = base00
 c.colors.downloads.stop.bg = base0C
 c.colors.downloads.error.fg = base08
-c.colors.hints.fg = base00
-c.colors.hints.bg = base0A
-c.colors.hints.match.fg = base05
+c.colors.hints.bg = base00
+c.colors.hints.fg = base0B
+c.colors.hints.match.fg = base08
 c.colors.keyhint.fg = base05
 c.colors.keyhint.suffix.fg = base05
 c.colors.keyhint.bg = base00
@@ -311,9 +319,9 @@ c.colors.tabs.pinned.selected.even.fg = base05
 c.colors.tabs.pinned.selected.odd.bg = base02
 c.colors.tabs.pinned.selected.odd.fg = base05
 c.colors.tabs.selected.odd.fg = base05
-c.colors.tabs.selected.odd.bg = base02
 c.colors.tabs.selected.even.fg = base05
-c.colors.tabs.selected.even.bg = base02
+c.colors.tabs.selected.odd.bg = base0B
+c.colors.tabs.selected.even.bg = base0B
 
 # overrides
 c.colors.hints.fg = base05
