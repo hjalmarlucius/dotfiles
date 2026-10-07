@@ -1751,4 +1751,4 @@ require("lazy").setup({
     checker = { enabled = true },
     rocks = { enabled = false },
 })
-vim.cmd("colorscheme sonokai")
+vim.cmd("colorscheme gruvbox-material")
