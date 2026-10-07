@@ -67,6 +67,8 @@ installmap = dict(
         "git-lfs",
         "lazygit",
         "bat",
+        "gnome-keyring",  # for git credentials
+        "seahorse",  # keyring ui
     ),
     readers=(
         "sioyek",

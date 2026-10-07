@@ -1,7 +1,7 @@
 [core]
     filemode = false
-    pager = delta --diff-so-fancy
-    autorcrlf = true
+    pager = delta
+    autocrlf = input
     editor = nvim
 [user]
     name = Henrik Bakken
@@ -13,8 +13,10 @@
     required = true
 [interactive]
     diffFilter = delta --color-only
-; [merge]
-;     conflictstyle = diff3
+
+[merge]
+    conflictstyle = zdiff3
+
 [delta]
     navigate = true
     light = false
@@ -29,16 +31,14 @@
     plus-non-emph-style  = bold green
     plus-emph-style  = bold reverse green
 [delta "interactive"]
-    keep-plus-minus-markers = false[delta "decorations"]
+    keep-plus-minus-markers = false
+[delta "decorations"]
     commit-decoration-style = bold yellow box ul
     file-style = bold yellow ul
     file-decoration-style = none
     hunk-header-decoration-style = cyan box ul
 [init]
     defaultBranch = main
-
-# better defaults
-# https://blog.gitbutler.com/how-git-core-devs-configure-git/
 [column]
     ui = auto
 [branch]
@@ -57,6 +57,8 @@
     prune = true
     pruneTags = true
     all = true
+[pull]
+    rebase = true
 [help]
     autocorrect = prompt
 [rebase]
@@ -64,24 +66,12 @@
     autoStash = true
     updateRefs = true
 
-# Improved colors for the highlighted bits
-# https://github.com/so-fancy/diff-so-fancy
+[rerere]
+    enabled = true
+    autoupdate = true
 [color]
     ui = true
-    [color "diff-highlight"]
-    oldNormal = red bold
-    oldHighlight = red bold 52
-    newNormal = green bold
-    newHighlight = green bold 22
-[color "diff"]
-    meta = 11
-    frag = magenta bold
-    func = 146 bold
-    commit = yellow bold
-    old = red bold
-    new = green bold
-    whitespace = red reverse
 [safe]
-	directory = /tmp
+    directory = /tmp
 [credential]
-	helper = store
+    helper = /usr/lib/git-core/git-credential-libsecret
