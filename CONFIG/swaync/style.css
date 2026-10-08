@@ -1,4 +1,4 @@
-@define-color bg       #0A0A0A;
+@define-color bg       rgba(10, 10, 10, 0.85);
 @define-color border   #333333;
 @define-color text     #FFFFFF;
 @define-color focus    #00E5FF;
@@ -36,9 +36,20 @@ button:hover {
   border-bottom: 1px solid @border;
 }
 
+.close-button {
+  background: transparent;
+  border: none;
+  color: @text;
+}
+
+.close-button:hover {
+  background: @urgent;
+}
 .widget-dnd,
 .widget-mpris,
-.widget-volume {
+.widget-volume,
+.widget-backlight,
+.widget-buttons-grid {
   background: transparent;
   border: 1px solid @border;
   margin: 8px;
