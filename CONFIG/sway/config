@@ -255,14 +255,10 @@ bindsym {
     # Launch the file explorer
     $mod+o exec pcmanfm
 
-    # Dismiss current notification
-    $mod+n exec swaync-client -c
-
-    # Dismiss all notifications
-    $mod+Shift+n exec swaync-client -C
-
-    # Toggle the SwayNC control center panel
-    $mod+Shift+m exec swaync-client -t -sw
+    # Notifications
+    $mod+n exec swaync-client --hide-latest
+    $mod+Shift+n exec swaync-client --close-latest
+    $mod+m exec swaync-client -t -sw
 }
 
 # config tools
@@ -277,7 +273,7 @@ mode "$mode_monitor" {
     bindsym Return mode "default"
     bindsym Escape mode "default"
 }
-bindsym $mod+m mode "$mode_monitor"
+bindsym $mod+Shift+m mode "$mode_monitor"
 
 # ------------------------------------------
 # AUTOSTART
