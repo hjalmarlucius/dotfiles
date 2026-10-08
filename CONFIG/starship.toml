@@ -1,5 +1,5 @@
 add_newline = true
-right_format = """$cmd_duration"""
+right_format = """$cmd_duration\n"""
 
 [line_break]
 disabled = false
@@ -8,17 +8,25 @@ disabled = false
 disabled = false
 
 [cmd_duration]
-min_time = 1000
-format = 'underwent [$duration](bold yellow)'
-show_milliseconds = true
+disabled = true
 
 [directory]
 truncation_length = 5
 truncate_to_repo = false
-truncation_symbol = '…/'
+truncation_symbol = "…/"
 repo_root_style = "red"
 before_repo_root_style = "cyan"
-repo_root_format = '[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) '
+repo_root_format = """\
+  [$before_root_path]\
+  ($before_repo_root_style)\
+  [$repo_root]\
+  ($repo_root_style)\
+  [$path]\
+  ($style)\
+  [$read_only]\
+  ($read_only_style)\
+   \
+  """
 
 [git_status]
 disabled = true
