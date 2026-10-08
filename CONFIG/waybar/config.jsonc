@@ -60,7 +60,7 @@
         "format-ok": "Systemd ✓",
         "system": true, // Monitor failed systemwide units.
         "user": true, // Ignore failed user units.
-        "on-click": "swaymsg exec 'footclient --app-id floating_shell --window-size-chars 120x45 isd'"
+        "on-click": "swaymsg exec 'footclient --app-id floating_shell --window-size-chars 250x45 systemctl-tui'"
     },
 
 // Configuration - modules-right
@@ -82,19 +82,19 @@
             "warning": 70,
             "critical": 90,
         },
-        "on-click": "footclient --app-id floating_shell --window-size-chars 120x45 -e btop"
+        "on-click": "footclient --app-id floating_shell --window-size-chars 250x150 -e btop"
     },
 
     "temperature": {
         "critical-threshold": 80,
         "format": " {temperatureC}°C",
-        "on-click": "swaymsg exec 'footclient --app-id floating_shell --window-size-chars 80x45 -e watch sensors'"
+        "on-click": "swaymsg exec 'footclient --app-id floating_shell --window-size-chars 120x100 -e watch sensors'"
     },
 
     "memory": {
         "interval": 5,
         "format": "{:>3}%",
-        "on-click": "footclient --app-id floating_shell --window-size-chars 100x100 -e btop",
+        "on-click": "footclient --app-id floating_shell --window-size-chars 250x150 -e btop",
         "states": {
             "warning": 70,
             "critical": 90
@@ -106,7 +106,7 @@
         "interval": 30,
         "format": "  / {specific_free:0.0f} of {specific_total:0.0f} GB free",
         "unit": "GB",
-        "on-click": "swaymsg exec 'footclient --app-id floating_shell --window-size-chars 80x45 ncdu -x /'"
+        "on-click": "swaymsg exec 'footclient --app-id floating_shell --window-size-chars 250x45 gdu -d'"
     },
 
     "backlight": {
@@ -132,7 +132,6 @@
         },
         "on-click": "pavucontrol",
         "tooltip-format": "{icon}  {volume}% {format_source}",
-        "on-click": "swaymsg exec 'footclient --app-id floating_shell --window-size-chars 120x12 pulsemixer'",
         "on-click-middle": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
         "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +5%",
         "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -5%"
@@ -148,6 +147,27 @@
         },
         "format": "{icon} {capacity}%",
         "format-icons": ["", "", "", "", ""]
+    },
+
+    "custom/notification": {
+        "tooltip": true,
+        "format": "<span size='16pt'>{icon}</span>",
+        "format-icons": {
+            "notification": "󱅫",
+            "none": "󰂜",
+            "dnd-notification": "󰂠",
+            "dnd-none": "󰪓",
+            "inhibited-notification": "󰂛",
+            "inhibited-none": "󰪑",
+            "dnd-inhibited-notification": "󰂛",
+            "dnd-inhibited-none": "󰪑"
+        },
+        "return-type": "json",
+        "exec-if": "which swaync-client",
+        "exec": "swaync-client -swb",
+        "on-click": "swaync-client -t -sw",
+        "on-click-right": "swaync-client -d -sw",
+        "escape": true
     },
 
     "clock": {
