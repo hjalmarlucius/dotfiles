@@ -58,7 +58,7 @@ installmap = dict(
         "go",  # required for vim-hexokinase build
         "tree-sitter-cli",  # required for nvim treesitter
     ),
-    utils=("uv", "ncdu", "unzip", "jq", "bluetui"),
+    utils=("uv", "gdu", "unzip", "jq", "bluetui"),
     gittools=(
         "tig",
         "diff-so-fancy",
@@ -138,8 +138,7 @@ installmap = dict(
         "htop",  # hardware
         "btop",  # hardware
         "nvtop",  # gpu
-        "lazyjournal",  # journald
-        "isd",  # systemd
+        "systemctl-tui",  # systemd
         "bandwhich",  # network
         "sysstat",
     ),

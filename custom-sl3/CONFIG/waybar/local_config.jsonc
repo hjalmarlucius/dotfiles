@@ -20,6 +20,7 @@
         "battery",
         "clock",
         "tray",
-        "custom/power"
+        "custom/notification",
+        "custom/power",
     ]
 }
