@@ -1248,8 +1248,15 @@ end
 
 local function makespec_smartsplits()
     return {
-        "mrjones2014/smart-splits.nvim",
+        "smart-splits-nvim/smart-splits.nvim",
         lazy = false,
+        opts = {
+            mux = { backend = "smart-splits-backend-tmux" },
+            move = { at_edge = "wrap" },
+        },
+        dependencies = {
+            { "smart-splits-nvim/backend-tmux", main = "smart-splits-backend-tmux" },
+        },
         -- stylua: ignore
         keys = {
             { "<M-h>", function() require("smart-splits").move_cursor_left() end, desc = "Go to Left Window" },
