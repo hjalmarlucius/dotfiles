@@ -120,7 +120,7 @@ installmap = dict(
         "python-tldextract",
         "bitwarden-cli",  # for qutebrowser autofill
     ),
-    chat=("discordo-git", "gurk"),
+    chat=("discord", "gurk"),
     emailcalrss=(
         "khard",  # contacts
         "khal",  # calendar
@@ -331,6 +331,7 @@ def install_filebrowsers(overwrite: bool, reinstall: bool) -> None:
         "yazi-rs/plugins:toggle-pane",
         "ahkohd/eza-preview",
         "boydaihungst/file-extra-metadata",
+        "ya pkg add ndtoan96/ouch",
     ]:
         run(f"ya pkg add {plugin}".split())
     tgt = ".local/share/applications/userapp-file-roller.desktop"
@@ -346,7 +347,6 @@ def install_netbrowsers(overwrite: bool, reinstall: bool) -> None:
 
 def install_chat(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["chat"], reinstall=reinstall)
-    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "discordo", overwrite)
     helper_clone_foldercontents(CFG_SRC, CFG_TGT, "gurk", overwrite)
 
 
@@ -408,12 +408,12 @@ def install_sway(overwrite: bool, reinstall: bool) -> None:
         helper_clone_foldercontents(CFG_SRC, CFG_TGT, sub, overwrite)
     helper_maybe_copy(CFG_SRC, CFG_TGT, "xdg-terminals.list", overwrite, symlink=True)
     helper_maybe_copy(CFG_SRC, CFG_TGT, "mimeapps.list", overwrite, symlink=True)
+    # swaync configs
+    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "swaync", overwrite)
     # custom sway configs
     helper_clone_foldercontents(CUSTOM_SRC / "CONFIG", CFG_TGT, "sway", overwrite)
     # custom waybar configs
     helper_clone_foldercontents(CUSTOM_SRC / "CONFIG", CFG_TGT, "waybar", overwrite)
-    # custom swaync configs
-    helper_clone_foldercontents(CUSTOM_SRC / "CONFIG", CFG_TGT, "swaync", overwrite)
     # desktop entries
     helper_clone_foldercontents(
         HOME_SRC,
