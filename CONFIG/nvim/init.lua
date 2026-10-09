@@ -83,7 +83,7 @@ vim.opt.spelllang = { "en" }
 
 -- Splits
 vim.opt.splitbelow = true
-vim.opt.splitkeep = "screen"
+vim.opt.splitkeep = "cursor"
 vim.opt.splitright = true
 
 -- Terminal & Status Column
