@@ -4,11 +4,6 @@ show_hidden = true
 sort_by = "natural"
 ratio = [ 1, 4, 5 ]
 
-[[mgr.prepend_keymap]]
-on = "O"
-run = "open --interactive"
-desc = "Open with... (Interactive menu)"
-
 [preview]
 wrap = "yes"
 image_delay = 50
@@ -17,14 +12,93 @@ max_height = 1500
 
 [open]
 prepend_rules = [
+  # Directories
+  { mime = "inode/directory", use = [ "thunar", "pcmanfm", "open" ] },
+
+  # Text & Code
   { url = "*.csv", use = "text" },
+  { url = "*.md", use = [ "glow", "nvim", "bat", "open" ] },
+  { url = "*.json", use = [ "jq", "nvim", "bat", "open" ] },
+  { mime = "text/*", use = [ "nvim", "bat", "open" ] },
+  { mime = "inode/x-empty", use = [ "nvim", "open" ] },
+
+  # PDF & Documents
+  { mime = "application/pdf", use = [ "zathura", "sioyek", "okular", "xournalpp", "chrome", "firefox", "open" ] },
+  { mime = "application/vnd.openxmlformats-officedocument.*", use = [ "libreoffice", "calligra", "open" ] },
+  { mime = "application/vnd.oasis.opendocument.*", use = [ "libreoffice", "calligra", "open" ] },
+
+  # Images
+  { mime = "image/heic", use = [ "swappy", "krita", "open" ] },
+  { mime = "image/*", use = [ "qimgv", "swappy", "krita", "open" ] },
+
+  # Video & Audio
+  { mime = "video/*", use = [ "mpv", "vlc", "open" ] },
+  { mime = "audio/*", use = [ "quodlibet", "mpv", "vlc", "open" ] },
+
+  # Archives
+  { mime = "application/zip", use = [ "file-roller", "unzip", "open" ] },
+  { mime = "application/x-tar", use = [ "file-roller", "open" ] },
+  { mime = "application/gzip", use = [ "file-roller", "open" ] },
+  { mime = "application/x-bzip*", use = [ "file-roller", "open" ] },
+  { mime = "application/x-7z-compressed", use = [ "file-roller", "open" ] },
+  { mime = "application/x-rar", use = [ "file-roller", "open" ] },
+
+  # Web pages
+  { mime = "text/html", use = [ "qutebrowser", "firefox", "chrome", "w3m", "open" ] },
+
+  # JSON files
+  # Certificates
+  { url = "*.{crt,pem,cer,der}", use = [ "cert", "nvim", "bat", "open" ] },
+
+  # Catch-all for any file (allows Exiftool on everything as a fallback)
+  { url = "*", use = [ "exiftool", "open" ] },
 ]
 
 [opener]
+# --- Text / Code (Blocking Terminal Apps) ---
 text = [
-  { run = "bat $@", block = true, desc = "bat" },
-  { run = "nvim $@", block = true, desc = "nvim" },
+  { run = "bat %s", block = true, desc = "bat" },
+  { run = "nvim %s", block = true, desc = "nvim" },
 ]
+nvim = [ { run = "nvim %s", block = true, desc = "Neovim" } ]
+bat = [ { run = "bat %s", block = true, desc = "Bat" } ]
+glow = [ { run = "glow --pager %s", block = true, desc = "Glow" } ]
+jq = [ { run = "jq -C . %s | less -R", block = true, desc = "jq viewer" } ]
+cert = [ { run = "openssl x509 -text -noout -in %s | less", block = true, desc = "View Cert (openssl)" } ]
+
+# --- PDFs (Orphaned GUI Apps) ---
+zathura = [ { run = "zathura %s", orphan = true, desc = "Zathura" } ]
+sioyek = [ { run = "sioyek %s", orphan = true, desc = "Sioyek" } ]
+okular = [ { run = "okular %s", orphan = true, desc = "Okular" } ]
+xournalpp = [ { run = "xournalpp %s", orphan = true, desc = "Xournal++" } ]
+
+# --- Browsers (Orphaned GUI Apps) ---
+chrome = [ { run = "google-chrome-stable %s", orphan = true, desc = "Chrome" } ]
+firefox = [ { run = "firefox %s", orphan = true, desc = "Firefox" } ]
+qutebrowser = [ { run = "qutebrowser %s", orphan = true, desc = "Qutebrowser" } ]
+w3m = [ { run = "w3m %s", orphan = true, desc = "w3m" } ]
+
+# --- Media: Video / Audio (Orphaned GUI Apps) ---
+mpv = [ { run = "mpv %s", orphan = true, desc = "MPV" } ]
+vlc = [ { run = "vlc %s", orphan = true, desc = "VLC" } ]
+quodlibet = [ { run = "quodlibet %s", orphan = true, desc = "quod libet" } ]
+
+# --- Images (Orphaned GUI Apps) ---
+qimgv = [ { run = "qimgv %s", orphan = true, desc = "qimgv" } ]
+swappy = [ { run = "swappy -f %s", orphan = true, desc = "swappy" } ]
+krita = [ { run = "krita %s", orphan = true, desc = "krita" } ]
+
+# --- Office Documents (Orphaned GUI Apps) ---
+libreoffice = [ { run = "libreoffice %s", orphan = true, desc = "LibreOffice" } ]
+calligra = [ { run = "calligrawords %s", orphan = true, desc = "Calligra" } ]
+
+# --- Archives ---
+file-roller = [ { run = "file-roller %s", orphan = true, desc = "File Roller" } ]
+unzip = [ { run = "unzip %s", block = true, desc = "Unzip (Terminal)" } ]
+
+# --- Directories (Orphaned GUI Apps) ---
+thunar = [ { run = "thunar %s", orphan = true, desc = "Thunar" } ]
+pcmanfm = [ { run = "pcmanfm %s", orphan = true, desc = "PCManFM" } ]
 
 [input]
 cursor_blink = true

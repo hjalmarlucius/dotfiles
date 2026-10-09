@@ -52,7 +52,6 @@ installmap = dict(
     tmux=("tmux", "urlscan"),
     editors=(
         "neovim",
-        "helix",
         "ripgrep",
         "npm",  # required for nvim plugins
         "go",  # required for vim-hexokinase build
@@ -92,7 +91,6 @@ installmap = dict(
         # photos
         "qimgv",
         "kimageformats5",  # heif support
-        "digikam",
         # music
         "quodlibet",
         "gst-plugins-good",  # required deb
@@ -300,7 +298,6 @@ def install_tmux(overwrite: bool, reinstall: bool) -> None:
 def install_editors(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["editors"], reinstall=reinstall)
     helper_clone_foldercontents(CFG_SRC, CFG_TGT, "nvim", overwrite)
-    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "helix", overwrite)
 
 
 def install_gittools(overwrite: bool, reinstall: bool) -> None:
