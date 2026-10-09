@@ -96,7 +96,6 @@ installmap = dict(
         "gst-plugins-good",  # required deb
         # audio
         "pamixer",
-        "noisetorch",
     ),
     filebrowsers=(
         "yazi",
