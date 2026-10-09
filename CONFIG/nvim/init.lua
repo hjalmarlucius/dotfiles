@@ -118,6 +118,7 @@ vim.api.nvim_create_autocmd("FileType", {
 -- MAPS
 -- ----------------------------------------
 
+vim.g.no_python_maps = 1
 local map = vim.keymap.set
 
 -- better esc
