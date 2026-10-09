@@ -291,13 +291,6 @@ exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CU
 exec hash dbus-update-activation-environment 2>/dev/null && \
      dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
 
-# Idle configuration
-exec swayidle -w \
-    timeout 1200 'gtklock -d' \
-    timeout 2400 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
-    timeout 10 'if pgrep -x gtklock; then swaymsg "output * power off"; fi' \
-    before-sleep 'gtklock -d'
-
 # Start foot server
 exec systemctl --user enable --now foot-server.service
 
@@ -319,7 +312,13 @@ exec {
 }
 
 exec_always {
-    pkill -x swaync; exec swaync
+    # Idle configuration
+    pkill -x swayidle; exec swayidle -w \
+        timeout 1200 'gtklock' \
+        timeout 2400 'swaymsg "output * dpms off"' \
+            resume 'swaymsg "output * dpms on"' \
+        before-sleep 'gtklock'
+        lock 'gtklock'
 
     # nwg-drawer
     nwg-drawer -r -c 7 -is 90 -mb 10 -ml 50 -mr 50 -mt 10
