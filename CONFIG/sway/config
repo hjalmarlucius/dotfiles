@@ -326,10 +326,6 @@ exec_always {
     # persist clipboard after close
     pkill -x wl-clip-persist
     wl-clip-persist --clipboard regular --all-mime-type-regex '(?i)^(?!image/x-inkscape-svg).+'
-
-    # enable noisetorch
-    noisetorch -u
-    noisetorch -i
 }
 
 # ------------------------------------------
