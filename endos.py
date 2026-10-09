@@ -103,6 +103,7 @@ installmap = dict(
         "ranger",
         "pcmanfm",
         "thunar",
+        "ouch",
         "gparted",
         "sshfs",
         "file-roller",

@@ -36,12 +36,12 @@ prepend_rules = [
   { mime = "audio/*", use = [ "quodlibet", "mpv", "vlc", "open" ] },
 
   # Archives
-  { mime = "application/zip", use = [ "file-roller", "unzip", "open" ] },
-  { mime = "application/x-tar", use = [ "file-roller", "open" ] },
-  { mime = "application/gzip", use = [ "file-roller", "open" ] },
-  { mime = "application/x-bzip*", use = [ "file-roller", "open" ] },
-  { mime = "application/x-7z-compressed", use = [ "file-roller", "open" ] },
-  { mime = "application/x-rar", use = [ "file-roller", "open" ] },
+  { mime = "application/zip", use = [ "ouch", "file-roller", "open" ] },
+  { mime = "application/x-tar", use = [ "ouch", "file-roller", "open" ] },
+  { mime = "application/gzip", use = [ "ouch", "file-roller", "open" ] },
+  { mime = "application/x-bzip*", use = [ "ouch", "file-roller", "open" ] },
+  { mime = "application/x-7z-compressed", use = [ "ouch", "file-roller", "open" ] },
+  { mime = "application/x-rar", use = [ "ouch", "file-roller", "open" ] },
 
   # Web pages
   { mime = "text/html", use = [ "qutebrowser", "firefox", "chrome", "w3m", "open" ] },
@@ -93,8 +93,8 @@ libreoffice = [ { run = "libreoffice %s", orphan = true, desc = "LibreOffice" } 
 calligra = [ { run = "calligrawords %s", orphan = true, desc = "Calligra" } ]
 
 # --- Archives ---
+ouch = [ { run = "ouch d -y %s", desc = "Extract here with ouch" } ]
 file-roller = [ { run = "file-roller %s", orphan = true, desc = "File Roller" } ]
-unzip = [ { run = "unzip %s", block = true, desc = "Unzip (Terminal)" } ]
 
 # --- Directories (Orphaned GUI Apps) ---
 thunar = [ { run = "thunar %s", orphan = true, desc = "Thunar" } ]
@@ -116,6 +116,10 @@ run = "git"
 group = "git"
 url = "*/"
 run = "git"
+
+[[plugin.prepend_previewers]]
+mime = "application/{*zip,tar,bzip2,7z*,rar,xz,zstd,java-archive}"
+run = "ouch"
 
 [[plugin.prepend_previewers]]
 url = "*/"
