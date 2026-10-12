@@ -833,10 +833,7 @@ local function makespec_diffview()
             "DiffviewRefresh",
             "DiffviewFileHistory",
         },
-        keys = {
-            { "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "DiffView Tab" },
-            { "<leader>gh", "<cmd>DiffviewFileHistory<cr>", desc = "File History Tab" },
-        },
+        keys = {},
     }
 end
 local function makespec_fugitive()
@@ -884,6 +881,7 @@ local function makespec_gitsigns()
                 vim.cmd.normal({ "]c", bang = true })
             else
                 gs.nav_hunk("next")
+                vim.schedule(gs.preview_hunk_inline)
             end
         end
         local function prev_hunk()
@@ -891,14 +889,14 @@ local function makespec_gitsigns()
                 vim.cmd.normal({ "[c", bang = true })
             else
                 gs.nav_hunk("prev")
+                vim.schedule(gs.preview_hunk_inline)
             end
         end
-
         local function bmap(mode, l, r, desc) vim.keymap.set(mode, l, r, { buffer = bufnr, desc = desc }) end
 
         -- Navigation
-        bmap("n", "<M-,>", next_hunk, "Next Hunk")
-        bmap("n", "<M-.>", prev_hunk, "Prev Hunk")
+        bmap("n", "<M-,>", prev_hunk, "Prev Hunk")
+        bmap("n", "<M-.>", next_hunk, "Next Hunk")
         bmap("n", "[h", prev_hunk, "Prev Hunk")
         bmap("n", "]h", next_hunk, "Next Hunk")
 
@@ -909,6 +907,8 @@ local function makespec_gitsigns()
         -- Hunk
         bmap("n", "<leader>gi", gs.preview_hunk_inline, "Preview Hunk Inline")
         bmap("n", "<leader>gp", gs.preview_hunk, "Preview Hunk")
+        bmap("n", "<leader>gd", gs.diffthis, "Diff This (Index)")
+        bmap("n", "<leader>gD", function() gs.diffthis("~") end, "Diff This (HEAD~1)")
         bmap("n", "<leader>gq", gs.setqflist, "File Hunks to QuickFix")
         bmap("n", "<leader>gQ", function() gs.setqflist("all") end, "All Hunks to QuickFix")
         bmap("n", "<leader>gx", gs.reset_hunk, "Reset Hunk")
@@ -926,7 +926,7 @@ local function makespec_gitsigns()
         bmap("n", "<leader>gtb", gs.toggle_current_line_blame, "Toggle Line Blame")
         bmap("n", "<leader>gtd", gs.toggle_deleted, "Toggle Deleted")
 
-        -- Text object, e.g. for dih to delete hunk
+        -- Text Object (e.g., 'dih' to delete hunk)
         bmap({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "Select Hunk")
     end
 
@@ -934,11 +934,6 @@ local function makespec_gitsigns()
         "lewis6991/gitsigns.nvim",
         event = { "BufReadPre", "BufNewFile" },
         opts = {
-            signcolumn = true,
-            numhl = false,
-            linehl = false,
-            word_diff = false,
-            signs_staged_enable = false,
             on_attach = on_gitsigns_attach,
         },
     }
