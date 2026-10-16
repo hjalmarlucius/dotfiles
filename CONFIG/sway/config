@@ -20,6 +20,9 @@ smart_borders on
 # Default Font
 font pango:Noto Sans Regular 10
 
+# Cursor
+seat seat0 xcursor_theme Adwaita 0
+
 # Title format for windows
 set $focus     #00E5FF
 set $unfocused #333333
