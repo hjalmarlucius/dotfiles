@@ -6,7 +6,6 @@ if TYPE_CHECKING:
 
 c: "ConfigContainer" = c  # type: ignore # noqa: F821
 config: "ConfigAPI" = config  # type: ignore # noqa: F821
-from typing import TYPE_CHECKING
 
 config.load_autoconfig(True)
 config.bind("<", "tab-move -")
@@ -47,7 +46,6 @@ config.bind("tj", "back -t", mode="normal")
 config.bind("wj", "back -w", mode="normal")
 config.bind("tk", "forward -t", mode="normal")
 config.bind("wk", "forward -w", mode="normal")
-config.bind("ø", "cmd-set-text :")
 config.bind("m", 'cmd-set-text :quickmark-add {url:pretty} "', mode="normal")
 config.bind("D", "tab-close")
 config.bind(",m", "hint links spawn -d mpv {hint-url}", mode="normal")
