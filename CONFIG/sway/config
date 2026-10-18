@@ -315,13 +315,12 @@ exec {
 }
 
 exec_always {
-    # Idle configuration
     pkill -x swayidle; exec swayidle -w \
-        timeout 1200 'gtklock' \
+        timeout 1200 'gtklock -d' \
         timeout 2400 'swaymsg "output * dpms off"' \
             resume 'swaymsg "output * dpms on"' \
-        before-sleep 'gtklock'
-        lock 'gtklock'
+        before-sleep 'gtklock -d' \
+        lock 'gtklock -d'
 
     # nwg-drawer
     nwg-drawer -r -c 7 -is 90 -mb 10 -ml 50 -mr 50 -mt 10
