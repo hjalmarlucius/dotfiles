@@ -1,6 +1,3 @@
-local bufname = vim.api.nvim_buf_get_name(0)
-local filename_arg = bufname ~= "" and (" --stdin-filepath " .. vim.fn.shellescape(bufname)) or ""
-
 -- Indentation & Layout
 vim.opt_local.colorcolumn = "100"
 vim.opt_local.textwidth = 100
@@ -12,9 +9,3 @@ vim.opt_local.expandtab = true
 -- Formatting Behavior
 vim.opt_local.formatoptions:remove("t") -- Don't autowrap while typing
 vim.opt_local.formatoptions:append("j") -- Remove comment markers when joining lines
-
--- gq Formatters (Prettier fallback, LSP primary)
--- Prefers local/global binary first to avoid slow npx invocation overhead
-local prettier_bin = vim.fn.executable("prettier") == 1 and "prettier" or "npx prettier"
-vim.bo.formatprg = prettier_bin .. filename_arg
-vim.bo.formatexpr = "v:lua.vim.lsp.formatexpr()"
