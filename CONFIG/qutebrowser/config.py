@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+import os
 
 if TYPE_CHECKING:
     from qutebrowser.config.config import ConfigContainer
@@ -71,7 +72,7 @@ c.completion.open_categories = [
 c.content.register_protocol_handler = False
 c.content.blocking.enabled = True
 c.content.fullscreen.window = True
-c.content.blocking.method = "adblock"
+c.content.blocking.method = "auto"
 c.content.blocking.adblock.lists = [
     "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt",
     "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/badware.txt",
@@ -148,13 +149,21 @@ c.input.insert_mode.plugins = True
 c.messages.timeout = 5000
 c.qt.force_platform = "wayland"
 c.qt.highdpi = True
-c.qt.args = [
+qt_args = [
     "disable-features=WebAuth",  # makes BankID work
-    "disable-gpu",  # Stops using the GPU for rendering
-    "disable-gpu-compositing",  # Forces CPU compositing
-    "disable-accelerated-2d-canvas",  # Offloads canvas drawing to CPU
-    "disable-accelerated-video-decode",  # Prevents VRAM usage for videos
 ]
+# Disable GPU by default (for AI training), unless QUTE_ENABLE_GPU is set
+if os.environ.get("QUTE_ENABLE_GPU") != "1":
+    qt_args.extend(
+        [
+            "disable-gpu",  # Stops using the GPU for rendering
+            "disable-gpu-compositing",  # Forces CPU compositing
+            "disable-accelerated-2d-canvas",  # Offloads canvas drawing to CPU
+            "disable-accelerated-video-decode",  # Prevents VRAM usage for videos
+        ]
+    )
+
+c.qt.args = qt_args
 c.scrolling.bar = "always"
 c.scrolling.smooth = False
 c.session.lazy_restore = False
@@ -188,16 +197,16 @@ c.tabs.undo_stack_size = 1000
 c.tabs.width = "15%"
 c.url.start_pages = "https://www.google.com/search?hl=en&source=hp"
 c.url.default_page = "https://www.google.com/search?hl=en&source=hp"
-c.url.searchengines = dict(
-    DEFAULT="https://www.google.com/search?hl=en&source=hp&q={}",
-    aw="https://wiki.archlinux.org/?search={}",
-    ap="https://www.archlinux.org/packages/?q={}",
-    gh="https://github.com/search?q={}&type=repositories",
-    ip="https://iplocation.io/ip/{}",
-    sh="https://explainshell.com/explain?cmd={}",
-    wi="https://en.wikipedia.org/w/index.php?search={}",
-    yt="https://yewtu.be/search?q={}",
-)
+c.url.searchengines = {
+    "DEFAULT": "https://www.google.com/search?hl=en&source=hp&q={}",
+    "aw": "https://wiki.archlinux.org/?search={}",
+    "ap": "https://www.archlinux.org/packages/?q={}",
+    "gh": "https://github.com/search?q={}&type=repositories",
+    "ip": "https://iplocation.io/ip/{}",
+    "sh": "https://explainshell.com/explain?cmd={}",
+    "wi": "https://en.wikipedia.org/w/index.php?search={}",
+    "yt": "https://yewtu.be/search?q={}",
+}
 c.zoom.default = "100%"
 
 # FONTS
