@@ -1,0 +1,352 @@
+#!/usr/bin/env python3.14
+"""
+catai: Collect project tree & files in XML tags for LLM context.
+
+Requires Python >= 3.14 (PEP 649/749 deferred annotations, PEP 695 type statements).
+"""
+
+import argparse
+import os
+import shlex
+import shutil
+import subprocess
+import sys
+import tempfile
+from collections.abc import Iterable, Sequence
+from dataclasses import dataclass
+from pathlib import Path
+
+type GlobList = list[str]
+type PathList = list[str]
+
+DEFAULT_IGNORES: tuple[str, ...] = (
+    "!.git/*",
+    "!.env*",
+    "!*lock*",
+    "!*.lock",
+    "!*.min.*",
+)
+
+EXAMPLES = """
+Examples:
+  catai                              # Dump entire current repo
+  catai src/                         # Dump everything inside src/
+  catai src -x legacy                # Everything in src/ except src/legacy/
+  catai src -x '*.test.ts' -x dist   # Exclude multiple patterns
+  catai src '!legacy' '!*.spec.js'   # Exclude using '!' shorthand
+  catai -T src/main.rs               # Single file without <project_tree>
+  catai -i src -x vendor             # Pick files in fzf
+  catai -y                           # Pick files/folders in Yazi
+  catai -d                           # Only git-modified & untracked files
+"""
+
+
+@dataclass(slots=True, frozen=True)
+class Config:
+    paths: PathList
+    rg_globs: GlobList
+    dirty: bool
+    no_tree: bool
+    interactive: bool
+    yazi: bool
+    print_cmd: bool
+
+
+def expand_exclude(pattern: str) -> GlobList:
+    """Expand a user exclusion pattern into ripgrep glob flags."""
+    clean = pattern.lstrip("!").rstrip("/")
+    if not clean:
+        return []
+    # Normalize absolute paths or leading './' so ripgrep globs match properly
+    try:
+        p = Path(clean)
+        if p.is_absolute():
+            clean = str(p.relative_to(Path.cwd()))
+        elif clean.startswith("./"):
+            clean = clean[2:]
+    except ValueError:
+        pass
+    return [
+        f"--glob=!{clean}",
+        f"--glob=!{clean}/**",
+        f"--glob=!**/{clean}",
+        f"--glob=!**/{clean}/**",
+    ]
+
+
+def parse_args(argv: Sequence[str] | None = None) -> Config:
+    parser = argparse.ArgumentParser(
+        prog="catai",
+        description="Collect project tree and files in XML tags for LLM context.",
+        epilog=EXAMPLES,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "targets",
+        nargs="*",
+        help="Files, directories, or '!exclude' globs",
+    )
+    parser.add_argument(
+        "-x",
+        "--exclude",
+        action="append",
+        default=[],
+        metavar="PATTERN",
+        help="Exclude folder or file glob (repeatable)",
+    )
+    parser.add_argument(
+        "-d",
+        "--dirty",
+        action="store_true",
+        help="Only git modified & untracked files",
+    )
+    parser.add_argument(
+        "-T",
+        "--no-tree",
+        action="store_true",
+        help="Skip <project_tree> header",
+    )
+    parser.add_argument(
+        "-i",
+        "--interactive",
+        action="store_true",
+        help="Interactive fzf file picker",
+    )
+    parser.add_argument(
+        "-y",
+        "--yazi",
+        action="store_true",
+        help="Interactive Yazi file/folder chooser",
+    )
+    parser.add_argument(
+        "--print-cmd",
+        action="store_true",
+        help="Print selected command instead of executing (used by zsh print -z)",
+    )
+
+    ns = parser.parse_args(argv)
+
+    rg_globs: GlobList = [f"--glob={g}" for g in DEFAULT_IGNORES]
+    for ex in ns.exclude:
+        rg_globs.extend(expand_exclude(ex))
+
+    paths: PathList = []
+    for target in ns.targets:
+        match target:
+            case s if s.startswith("!"):
+                rg_globs.extend(expand_exclude(s[1:]))
+            case s:
+                paths.append(s)
+
+    return Config(
+        paths=paths,
+        rg_globs=rg_globs,
+        dirty=ns.dirty,
+        no_tree=ns.no_tree,
+        interactive=ns.interactive,
+        yazi=ns.yazi,
+        print_cmd=ns.print_cmd,
+    )
+
+
+def run_lines(cmd: Sequence[str]) -> list[str]:
+    """Run a command and return non-empty stdout lines."""
+    res = subprocess.run(cmd, capture_output=True, text=True, check=False)
+    return [line for line in res.stdout.splitlines() if line]
+
+
+def render_tree(file_paths: Iterable[str]) -> str:
+    """Pure-Python directory tree renderer (no external 'tree' binary required)."""
+    type TreeDict = dict[str, TreeDict]
+    root: TreeDict = {}
+
+    for raw_path in sorted(file_paths):
+        parts = Path(raw_path).parts
+        curr = root
+        for part in parts:
+            if part in (".", ""):
+                continue
+            curr = curr.setdefault(part, {})
+
+    lines: list[str] = ["."]
+
+    def walk(node: TreeDict, prefix: str = "") -> None:
+        items = list(node.items())
+        for idx, (name, children) in enumerate(items):
+            is_last = idx == len(items) - 1
+            connector = "└── " if is_last else "├── "
+            lines.append(f"{prefix}{connector}{name}")
+            if children:
+                extension = "    " if is_last else "│   "
+                walk(children, prefix + extension)
+
+    walk(root)
+    return "\n".join(lines)
+
+
+def pick_with_fzf(cfg: Config) -> PathList:
+    rg_cmd = [
+        "rg",
+        "--files",
+        "--hidden",
+        "--sort",
+        "path",
+        *cfg.rg_globs,
+        "--",
+        *cfg.paths,
+    ]
+    all_files = run_lines(rg_cmd)
+    if not all_files:
+        return []
+
+    preview = "bat --color=always {} 2>/dev/null || cat {}"
+    proc = subprocess.run(
+        ["fzf", "-m", "--preview", preview],
+        input="\n".join(all_files),
+        stdout=subprocess.PIPE,
+        text=True,
+        check=False,
+    )
+    return [line for line in proc.stdout.splitlines() if line]
+
+
+def pick_with_yazi(cfg: Config) -> PathList:
+    with tempfile.NamedTemporaryFile(prefix="yazi-chooser.", delete=False) as tmp:
+        tmp_path = Path(tmp.name)
+
+    try:
+        subprocess.run(["yazi", f"--chooser-file={tmp_path}", *cfg.paths], check=False)
+        if not tmp_path.exists() or tmp_path.stat().st_size == 0:
+            return []
+        raw_picked = [
+            line for line in tmp_path.read_text(encoding="utf-8").splitlines() if line
+        ]
+        cwd = Path.cwd()
+        rel_picked: PathList = []
+        for p in raw_picked:
+            path_obj = Path(p)
+            try:
+                rel_picked.append(str(path_obj.relative_to(cwd)))
+            except ValueError:
+                rel_picked.append(str(path_obj))
+        return rel_picked
+    finally:
+        tmp_path.unlink(missing_ok=True)
+
+
+def collect_files(cfg: Config, target_paths: PathList) -> tuple[PathList, PathList]:
+    """Return (tree_files, matched_non_empty_text_files)."""
+    cwd = Path.cwd().resolve()
+    rel_targets: PathList = []
+    for p in target_paths:
+        resolved = Path(p).resolve()
+        try:
+            rel = str(resolved.relative_to(cwd))
+            rel_targets.append("." if rel == "" else rel)
+        except ValueError:
+            rel_targets.append(os.path.relpath(resolved, cwd))
+
+    if cfg.dirty:
+        dirty_cmd = [
+            "git",
+            "ls-files",
+            "-m",
+            "-o",
+            "--exclude-standard",
+            "--",
+            *rel_targets,
+        ]
+        candidates = run_lines(dirty_cmd)
+        if not candidates:
+            return [], []
+    else:
+        candidates = rel_targets
+
+    # Non-empty, non-binary files via ripgrep '^'
+    rg_content_cmd = [
+        "rg",
+        "-l",
+        "--hidden",
+        "--sort",
+        "path",
+        *cfg.rg_globs,
+        "^",
+        "--",
+        *candidates,
+    ]
+    matched_files = run_lines(rg_content_cmd)
+
+    # Single-file edge case: `rg -l '^' single_file.txt` prints the filename,
+    # Ensure it is always included if non-empty
+    if cfg.no_tree or not matched_files:
+        return [], matched_files
+
+    rg_tree_cmd = [
+        "rg",
+        "--files",
+        "--hidden",
+        "--sort",
+        "path",
+        *cfg.rg_globs,
+        "--",
+        *rel_targets,
+    ]
+    tree_files = run_lines(rg_tree_cmd)
+    return tree_files, matched_files
+
+
+def dump_output(tree_files: PathList, files: PathList, show_tree: bool) -> None:
+    out = sys.stdout
+    if show_tree and tree_files:
+        out.write("<project_tree>\n")
+        out.write(render_tree(tree_files))
+        out.write("\n</project_tree>\n\n")
+
+    for filepath in files:
+        path = Path(filepath)
+        out.write(f'<file path="{filepath}">\n')
+        out.flush()
+        try:
+            with path.open("rb") as f:
+                shutil.copyfileobj(f, sys.stdout.buffer)
+            # Ensure trailing newline before closing tag
+            if path.stat().st_size > 0:
+                with path.open("rb") as f:
+                    f.seek(-1, os.SEEK_END)
+                    if f.read(1) != b"\n":
+                        out.write("\n")
+        except OSError as exc:
+            sys.stderr.write(f"Error reading {filepath}: {exc}\n")
+        out.write("</file>\n\n")
+
+
+def main() -> int:
+    cfg = parse_args()
+
+    # Handle interactive pickers (-i / -y)
+    if cfg.interactive or cfg.yazi:
+        picked = pick_with_yazi(cfg) if cfg.yazi else pick_with_fzf(cfg)
+        if not picked:
+            return 1
+        if cfg.print_cmd:
+            print(f"catai {shlex.join(picked)}")
+            return 0
+        tree_files, files = collect_files(cfg, picked)
+    else:
+        tree_files, files = collect_files(cfg, cfg.paths)
+
+    if not files:
+        msg = (
+            "No dirty or untracked files found."
+            if cfg.dirty
+            else "No matching text files found."
+        )
+        sys.stderr.write(f"{msg}\n")
+        return 1
+
+    dump_output(tree_files, files, show_tree=not cfg.no_tree)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -280,6 +280,7 @@ def install_zsh(overwrite: bool, reinstall: bool) -> None:
     run("chsh -s /usr/bin/zsh".split())
     helper_maybe_copy(CFG_SRC, CFG_TGT, "starship.toml", overwrite, symlink=True)
     helper_maybe_copy(HOME_SRC, HOME_TGT, ".zshenv", overwrite, symlink=True)
+    helper_maybe_copy(HOME_SRC, HOME_TGT, ".local/bin/catai", overwrite, symlink=True)
 
 
 def install_tmux(overwrite: bool, reinstall: bool) -> None:
