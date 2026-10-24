@@ -69,7 +69,7 @@ bind generic um status-merge
 bind generic - stage-update-line
 bind generic \ stage-split-chunk
 
-bind generic y @sh -c "echo -n %(commit) | wl-copy"
+bind generic Y @sh -c "echo -n %(commit) | wl-copy"
 
 bind generic c  none
 bind generic cc !git commit
