@@ -36,3 +36,21 @@ desc = "Maximize or restore the preview pane"
 on = "C"
 run = "plugin ouch"
 desc = "Compress with ouch"
+
+[[mgr.prepend_keymap]]
+on = [ "c", "a" ]
+run = 'shell --block -- catai -T %s | nvim -R -c "set bt=nofile ft=xml" -'
+desc = "catai: Dump selected files/folders into Neovim"
+
+[[mgr.prepend_keymap]]
+on = [ "c", "x" ]
+run = """\
+  shell --block -- zsh -c \"args=(); for p in \\\"\\$@\\\"; do args+=(-x \\\"\\$p\\\"); done; catai -T \
+  \\\"\\${args[@]}\\\" | nvim -R -c \\\"set bt=nofile ft=xml\\\" -\" -- %s\
+  """
+desc = "catai: Dump current dir EXCEPT selected items"
+
+[[mgr.prepend_keymap]]
+on = [ "c", "d" ]
+run = 'shell --block -- catai -T -d | nvim -R -c "set bt=nofile ft=xml" -'
+desc = "catai: Dump git dirty files into Neovim"
