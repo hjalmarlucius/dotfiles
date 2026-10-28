@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.14
 """
-catai: Collect project tree & files in XML tags for LLM context.
+catai: Collect files in XML tags for LLM context.
 
 Requires Python >= 3.14 (PEP 649/749 deferred annotations, PEP 695 type statements).
 """
@@ -12,7 +12,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from collections.abc import Iterable, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -34,7 +34,6 @@ Examples:
   catai src -x legacy                # Everything in src/ except src/legacy/
   catai src -x '*.test.ts' -x dist   # Exclude multiple patterns
   catai src '!legacy' '!*.spec.js'   # Exclude using '!' shorthand
-  catai -T src/main.rs               # Single file without <project_tree>
   catai -i src -x vendor             # Pick files in fzf
   catai -y                           # Pick files/folders in Yazi
   catai -d                           # Only git-modified & untracked files
@@ -46,7 +45,6 @@ class Config:
     paths: PathList
     rg_globs: GlobList
     dirty: bool
-    no_tree: bool
     interactive: bool
     yazi: bool
     print_cmd: bool
@@ -77,7 +75,7 @@ def expand_exclude(pattern: str) -> GlobList:
 def parse_args(argv: Sequence[str] | None = None) -> Config:
     parser = argparse.ArgumentParser(
         prog="catai",
-        description="Collect project tree and files in XML tags for LLM context.",
+        description="Collect files in XML tags for LLM context.",
         epilog=EXAMPLES,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -99,12 +97,6 @@ def parse_args(argv: Sequence[str] | None = None) -> Config:
         "--dirty",
         action="store_true",
         help="Only git modified & untracked files",
-    )
-    parser.add_argument(
-        "-T",
-        "--no-tree",
-        action="store_true",
-        help="Skip <project_tree> header",
     )
     parser.add_argument(
         "-i",
@@ -142,7 +134,6 @@ def parse_args(argv: Sequence[str] | None = None) -> Config:
         paths=paths,
         rg_globs=rg_globs,
         dirty=ns.dirty,
-        no_tree=ns.no_tree,
         interactive=ns.interactive,
         yazi=ns.yazi,
         print_cmd=ns.print_cmd,
@@ -153,35 +144,6 @@ def run_lines(cmd: Sequence[str]) -> list[str]:
     """Run a command and return non-empty stdout lines."""
     res = subprocess.run(cmd, capture_output=True, text=True, check=False)
     return [line for line in res.stdout.splitlines() if line]
-
-
-def render_tree(file_paths: Iterable[str]) -> str:
-    """Pure-Python directory tree renderer (no external 'tree' binary required)."""
-    type TreeDict = dict[str, TreeDict]
-    root: TreeDict = {}
-
-    for raw_path in sorted(file_paths):
-        parts = Path(raw_path).parts
-        curr = root
-        for part in parts:
-            if part in (".", ""):
-                continue
-            curr = curr.setdefault(part, {})
-
-    lines: list[str] = ["."]
-
-    def walk(node: TreeDict, prefix: str = "") -> None:
-        items = list(node.items())
-        for idx, (name, children) in enumerate(items):
-            is_last = idx == len(items) - 1
-            connector = "└── " if is_last else "├── "
-            lines.append(f"{prefix}{connector}{name}")
-            if children:
-                extension = "    " if is_last else "│   "
-                walk(children, prefix + extension)
-
-    walk(root)
-    return "\n".join(lines)
 
 
 def pick_with_fzf(cfg: Config) -> PathList:
@@ -234,8 +196,8 @@ def pick_with_yazi(cfg: Config) -> PathList:
         tmp_path.unlink(missing_ok=True)
 
 
-def collect_files(cfg: Config, target_paths: PathList) -> tuple[PathList, PathList]:
-    """Return (tree_files, matched_non_empty_text_files)."""
+def collect_files(cfg: Config, target_paths: PathList) -> PathList:
+    """Return matched non-empty text files."""
     cwd = Path.cwd().resolve()
     rel_targets: PathList = []
     for p in target_paths:
@@ -258,7 +220,7 @@ def collect_files(cfg: Config, target_paths: PathList) -> tuple[PathList, PathLi
         ]
         candidates = run_lines(dirty_cmd)
         if not candidates:
-            return [], []
+            return []
     else:
         candidates = rel_targets
 
@@ -274,34 +236,11 @@ def collect_files(cfg: Config, target_paths: PathList) -> tuple[PathList, PathLi
         "--",
         *candidates,
     ]
-    matched_files = run_lines(rg_content_cmd)
-
-    # Single-file edge case: `rg -l '^' single_file.txt` prints the filename,
-    # Ensure it is always included if non-empty
-    if cfg.no_tree or not matched_files:
-        return [], matched_files
-
-    rg_tree_cmd = [
-        "rg",
-        "--files",
-        "--hidden",
-        "--sort",
-        "path",
-        *cfg.rg_globs,
-        "--",
-        *rel_targets,
-    ]
-    tree_files = run_lines(rg_tree_cmd)
-    return tree_files, matched_files
+    return run_lines(rg_content_cmd)
 
 
-def dump_output(tree_files: PathList, files: PathList, show_tree: bool) -> None:
+def dump_output(files: PathList) -> None:
     out = sys.stdout
-    if show_tree and tree_files:
-        out.write("<project_tree>\n")
-        out.write(render_tree(tree_files))
-        out.write("\n</project_tree>\n\n")
-
     for filepath in files:
         path = Path(filepath)
         out.write(f'<file path="{filepath}">\n')
@@ -331,9 +270,9 @@ def main() -> int:
         if cfg.print_cmd:
             print(f"catai {shlex.join(picked)}")
             return 0
-        tree_files, files = collect_files(cfg, picked)
+        files = collect_files(cfg, picked)
     else:
-        tree_files, files = collect_files(cfg, cfg.paths)
+        files = collect_files(cfg, cfg.paths)
 
     if not files:
         msg = (
@@ -344,7 +283,7 @@ def main() -> int:
         sys.stderr.write(f"{msg}\n")
         return 1
 
-    dump_output(tree_files, files, show_tree=not cfg.no_tree)
+    dump_output(files)
     return 0
 
 
