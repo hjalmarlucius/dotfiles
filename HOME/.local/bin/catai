@@ -29,14 +29,15 @@ DEFAULT_IGNORES: tuple[str, ...] = (
 
 EXAMPLES = """
 Examples:
-  catai                              # Dump entire current repo
-  catai src/                         # Dump everything inside src/
-  catai src -x legacy                # Everything in src/ except src/legacy/
-  catai src -x '*.test.ts' -x dist   # Exclude multiple patterns
-  catai src '!legacy' '!*.spec.js'   # Exclude using '!' shorthand
-  catai -i src -x vendor             # Pick files in fzf
-  catai -y                           # Pick files/folders in Yazi
-  catai -d                           # Only git-modified & untracked files
+  catai                                       # Dump entire current repo
+  catai src/                                  # Dump everything inside src/
+  catai packages/**/*.py -x packages/**/vega.py
+  catai src -x legacy                         # Everything in src/ except src/legacy/
+  catai src -x '*.test.ts' -x dist            # Exclude multiple patterns
+  catai src '!legacy' '!*.spec.js'            # Exclude using '!' shorthand
+  catai -i src -x vendor                      # Pick files in fzf
+  catai -y                                    # Pick files/folders in Yazi
+  catai -d                                    # Only git-modified & untracked files
 """
 
 
@@ -50,20 +51,57 @@ class Config:
     print_cmd: bool
 
 
+def is_glob(pattern: str) -> bool:
+    """Return True if the string contains glob metacharacters."""
+    return any(ch in pattern for ch in ("*", "?", "["))
+
+
+def normalize_rel(raw: str) -> str:
+    """Normalize a path or glob relative to CWD without resolving symlinks on globs."""
+    clean = raw.rstrip("/")
+    if not clean:
+        return "."
+    if is_glob(clean):
+        return clean.removeprefix("./")
+    try:
+        resolved = Path(clean).resolve()
+        cwd = Path.cwd().resolve()
+        rel = str(resolved.relative_to(cwd))
+        return "." if rel == "" else rel
+    except ValueError:
+        return os.path.relpath(clean, Path.cwd())
+
+
+def expand_include_glob(pattern: str) -> GlobList:
+    """Convert an include glob (e.g. packages/**/*.py) into ripgrep glob flags."""
+    clean = normalize_rel(pattern)
+    if clean.endswith("/**") or clean.endswith("/*"):
+        return [f"--glob={clean}"]
+    return (
+        [f"--glob={clean}", f"--glob=**/{clean}"]
+        if "/" not in clean
+        else [f"--glob={clean}"]
+    )
+
+
 def expand_exclude(pattern: str) -> GlobList:
     """Expand a user exclusion pattern into ripgrep glob flags."""
     clean = pattern.lstrip("!").rstrip("/")
     if not clean:
         return []
-    # Normalize absolute paths or leading './' so ripgrep globs match properly
-    try:
-        p = Path(clean)
-        if p.is_absolute():
-            clean = str(p.relative_to(Path.cwd()))
-        elif clean.startswith("./"):
-            clean = clean[2:]
-    except ValueError:
-        pass
+    clean = normalize_rel(clean)
+
+    # If the pattern already contains ** or *, pass both direct and nested negative globs
+    if is_glob(clean):
+        if "/" in clean:
+            return [f"--glob=!{clean}", f"--glob=!{clean}/**"]
+        return [
+            f"--glob=!{clean}",
+            f"--glob=!{clean}/**",
+            f"--glob=!**/{clean}",
+            f"--glob=!**/{clean}/**",
+        ]
+
     return [
         f"--glob=!{clean}",
         f"--glob=!{clean}/**",
@@ -82,7 +120,7 @@ def parse_args(argv: Sequence[str] | None = None) -> Config:
     parser.add_argument(
         "targets",
         nargs="*",
-        help="Files, directories, or '!exclude' globs",
+        help="Files, directories, globs, or '!exclude' globs",
     )
     parser.add_argument(
         "-x",
@@ -118,17 +156,24 @@ def parse_args(argv: Sequence[str] | None = None) -> Config:
 
     ns = parser.parse_args(argv)
 
-    rg_globs: GlobList = [f"--glob={g}" for g in DEFAULT_IGNORES]
+    include_globs: GlobList = []
+    exclude_globs: GlobList = [f"--glob={g}" for g in DEFAULT_IGNORES]
+
     for ex in ns.exclude:
-        rg_globs.extend(expand_exclude(ex))
+        exclude_globs.extend(expand_exclude(ex))
 
     paths: PathList = []
     for target in ns.targets:
         match target:
             case s if s.startswith("!"):
-                rg_globs.extend(expand_exclude(s[1:]))
+                exclude_globs.extend(expand_exclude(s[1:]))
+            case s if is_glob(s):
+                include_globs.extend(expand_include_glob(s))
             case s:
                 paths.append(s)
+
+    # Include globs must come BEFORE exclude globs so exclusions win in ripgrep
+    rg_globs: GlobList = [*include_globs, *exclude_globs]
 
     return Config(
         paths=paths,
@@ -183,30 +228,29 @@ def pick_with_yazi(cfg: Config) -> PathList:
         raw_picked = [
             line for line in tmp_path.read_text(encoding="utf-8").splitlines() if line
         ]
-        cwd = Path.cwd()
-        rel_picked: PathList = []
-        for p in raw_picked:
-            path_obj = Path(p)
-            try:
-                rel_picked.append(str(path_obj.relative_to(cwd)))
-            except ValueError:
-                rel_picked.append(str(path_obj))
-        return rel_picked
+        return [normalize_rel(p) for p in raw_picked]
     finally:
         tmp_path.unlink(missing_ok=True)
 
 
 def collect_files(cfg: Config, target_paths: PathList) -> PathList:
-    """Return matched non-empty text files."""
-    cwd = Path.cwd().resolve()
-    rel_targets: PathList = []
-    for p in target_paths:
-        resolved = Path(p).resolve()
-        try:
-            rel = str(resolved.relative_to(cwd))
-            rel_targets.append("." if rel == "" else rel)
-        except ValueError:
-            rel_targets.append(os.path.relpath(resolved, cwd))
+    """Return matched non-empty text files while strictly respecting .gitignore and -x."""
+    rel_targets = [normalize_rel(p) for p in target_paths]
+
+    # Separate directory targets from explicit file targets.
+    # Because ripgrep ignores .gitignore and --glob when given explicit file paths,
+    # we always validate explicit files against `rg --files` in the repo.
+    dirs: PathList = []
+    explicit_files: set[str] = set()
+
+    for t in rel_targets:
+        p = Path(t)
+        if p.is_dir():
+            dirs.append(t)
+        elif p.is_file():
+            explicit_files.add(t)
+        else:
+            dirs.append(t)
 
     if cfg.dirty:
         dirty_cmd = [
@@ -218,20 +262,51 @@ def collect_files(cfg: Config, target_paths: PathList) -> PathList:
             "--",
             *rel_targets,
         ]
-        candidates = run_lines(dirty_cmd)
+        dirty_files = set(run_lines(dirty_cmd))
+        if not dirty_files:
+            return []
+        allowed_all = set(
+            run_lines(["rg", "--files", "--hidden", "--sort", "path", *cfg.rg_globs])
+        )
+        candidates = sorted(dirty_files & allowed_all)
+        if not candidates:
+            return []
+    elif explicit_files:
+        # Intersect explicit files with ripgrep's allowed file list so .gitignore and -x win
+        allowed_all = set(
+            run_lines(["rg", "--files", "--hidden", "--sort", "path", *cfg.rg_globs])
+        )
+        valid_files = sorted(explicit_files & allowed_all)
+        dir_files = (
+            run_lines(
+                [
+                    "rg",
+                    "--files",
+                    "--hidden",
+                    "--sort",
+                    "path",
+                    *cfg.rg_globs,
+                    "--",
+                    *dirs,
+                ]
+            )
+            if dirs
+            else []
+        )
+        candidates = sorted(set(valid_files) | set(dir_files))
         if not candidates:
             return []
     else:
-        candidates = rel_targets
+        candidates = dirs
 
-    # Non-empty, non-binary files via ripgrep '^'
+    # Non-empty, non-binary check via ripgrep '^'
     rg_content_cmd = [
         "rg",
         "-l",
         "--hidden",
         "--sort",
         "path",
-        *cfg.rg_globs,
+        *([] if (cfg.dirty or explicit_files) else cfg.rg_globs),
         "^",
         "--",
         *candidates,
