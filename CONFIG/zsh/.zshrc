@@ -13,7 +13,7 @@ export SAVEHIST=200000
 alias ls='ls --color=auto -Ah'
 alias ..='cd ..'
 alias ...='cd ../..'
-catai() {
+_catai() {
   if [[ " $* " == *" -i "* || " $* " == *" -y "* ]]; then
     local cmd
     cmd="$(command catai --print-cmd "$@")" && [[ -n "$cmd" ]] && print -z "$cmd"
@@ -21,8 +21,9 @@ catai() {
     command catai "$@"
   fi
 }
-alias cataid='catai -d'
-alias cataiy='catai -y'
+alias catai='noglob _catai'
+alias cataid='noglob _catai -d'
+alias cataiy='noglob _catai -y'
 alias sioyek="QT_QPA_PLATFORM=xcb sioyek"
 
 # --- basic keybinds ---
