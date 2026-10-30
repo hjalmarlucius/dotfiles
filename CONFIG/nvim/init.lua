@@ -7,17 +7,22 @@ vim.opt.shell = "/usr/bin/zsh"
 vim.g.BASH_Ctrl_j = "off"
 vim.g.BASH_Ctrl_l = "off"
 vim.opt.clipboard:append("unnamedplus")
-vim.g.clipboard = {
-    name = "OSC 52",
-    copy = {
-        ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
-        ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
-    },
-    paste = {
-        ["+"] = require("vim.ui.clipboard.osc52").paste("+"),
-        ["*"] = require("vim.ui.clipboard.osc52").paste("*"),
-    },
-}
+
+-- Only force OSC 52 over SSH; locally, use the native Wayland/X11 clipboard to avoid paste delays
+if vim.env.SSH_TTY then
+    vim.g.clipboard = {
+        name = "OSC 52",
+        copy = {
+            ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+            ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+        },
+        paste = {
+            ["+"] = require("vim.ui.clipboard.osc52").paste("+"),
+            ["*"] = require("vim.ui.clipboard.osc52").paste("*"),
+        },
+    }
+end
+
 vim.opt.cursorline = true
 vim.opt.list = true
 vim.opt.listchars = { tab = "→ ", trail = "·", extends = "↷", precedes = "↶", nbsp = "+" }
@@ -131,17 +136,11 @@ end, { expr = true, desc = "Escape and Clear hlsearch" })
 map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { desc = "Down", expr = true, silent = true })
 map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { desc = "Up", expr = true, silent = true })
 
--- Move to window using the <alt> hjkl keys
-map("n", "<M-h>", "<C-w>h", { desc = "Go to Left Window", remap = true })
-map("n", "<M-j>", "<C-w>j", { desc = "Go to Lower Window", remap = true })
-map("n", "<M-k>", "<C-w>k", { desc = "Go to Upper Window", remap = true })
-map("n", "<M-l>", "<C-w>l", { desc = "Go to Right Window", remap = true })
-
--- Resize window using <ctrl> hjkl keys
-map("n", "<C-k>", "<cmd>resize +2<cr>", { desc = "Increase Window Height" })
-map("n", "<C-j>", "<cmd>resize -2<cr>", { desc = "Decrease Window Height" })
-map("n", "<C-h>", "<cmd>vertical resize -2<cr>", { desc = "Decrease Window Width" })
-map("n", "<C-l>", "<cmd>vertical resize +2<cr>", { desc = "Increase Window Width" })
+-- Insert/Command mode cursor movement (Normal mode <M-hjkl> is handled by smart-splits)
+map({ "i", "c" }, "<M-h>", "<Left>", { desc = "Move Cursor Left" })
+map("i", "<M-j>", "<Down>", { desc = "Move Cursor Down" })
+map("i", "<M-k>", "<Up>", { desc = "Move Cursor Up" })
+map({ "i", "c" }, "<M-l>", "<Right>", { desc = "Move Cursor Right" })
 
 -- https://github.com/mhinz/vim-galore#tips-1
 -- smarter next/prev in command line
@@ -160,11 +159,11 @@ map({ "x", "n", "s" }, "<leader>wa", "<cmd>wa<cr>", { desc = "Save Files" })
 -- quit
 map("n", "<leader>qq", "<cmd>q<cr>", { desc = "Close Window" })
 map("n", "<leader>qa", "<cmd>qa<cr>", { desc = "Quit All" })
-map("n", "<leader>qA", "<cmd>qa!<cr>", { desc = "Quit All" })
+map("n", "<leader>qA", "<cmd>qa!<cr>", { desc = "Force Quit All" })
 map("n", "<leader>wq", "<cmd>wq<cr>", { desc = "Write And Close Window" })
 map("n", "<leader>wQ", "<cmd>wqa<cr>", { desc = "Write And Quit All" })
 
---keywordprg
+-- keywordprg
 map("n", "<leader>K", "<cmd>norm! K<cr>", { desc = "Keywordprg" })
 
 -- better indenting
@@ -190,12 +189,12 @@ map("n", "<M-V>", "<cmd>vnew<cr>", { desc = "New Window Right", remap = true })
 map("n", "<M-S>", "<cmd>new<cr>", { desc = "New Window Below", remap = true })
 
 -- buffers
-map("n", "<M-K>", "<cmd>bprev<cr>")
-map("n", "<M-J>", "<cmd>bnext<cr>")
+map("n", "<M-K>", "<cmd>bprev<cr>", { desc = "Prev Buffer" })
+map("n", "<M-J>", "<cmd>bnext<cr>", { desc = "Next Buffer" })
 
 -- quickfix window
-map("n", "<C-p>", "<cmd>cprev<cr>")
-map("n", "<C-n>", "<cmd>cnext<cr>")
+map("n", "<C-p>", "<cmd>cprev<cr>", { desc = "Prev Quickfix" })
+map("n", "<C-n>", "<cmd>cnext<cr>", { desc = "Next Quickfix" })
 
 -- tabs
 map("n", "<leader><tab>l", "<cmd>tablast<cr>", { desc = "Last Tab" })
@@ -255,6 +254,22 @@ vim.api.nvim_create_autocmd("BufEnter", {
     pattern = "*",
     command = "if &buftype == '' && !&modified && expand('%') != '' | exec 'checktime ' . expand('<abuf>') | endif",
 })
+
+-- Restore cursor to last known position when reopening a file
+vim.api.nvim_create_autocmd("BufReadPost", {
+    group = vim.api.nvim_create_augroup("restore_cursor", { clear = true }),
+    desc = "Restore last cursor position when reopening a file",
+    callback = function(ev)
+        local exclude = { "gitcommit", "gitrebase", "commit", "xxd" }
+        if vim.tbl_contains(exclude, vim.bo[ev.buf].filetype) then return end
+        local mark = vim.api.nvim_buf_get_mark(ev.buf, '"')
+        local lcount = vim.api.nvim_buf_line_count(ev.buf)
+        if mark[1] > 0 and mark[1] <= lcount then
+            pcall(vim.api.nvim_win_set_cursor, 0, mark)
+        end
+    end,
+})
+
 -- Close some filetypes with <q>
 vim.api.nvim_create_autocmd("FileType", {
     group = vim.api.nvim_create_augroup("close_with_q", { clear = true }),
@@ -482,15 +497,6 @@ local function makespec_lspconfig()
             vim.lsp.enable("vtsls")
             vim.lsp.enable("yamlls")
 
-            vim.api.nvim_create_autocmd("FileType", {
-                group = vim.api.nvim_create_augroup("DefeatFtpluginOmnifunc", { clear = true }),
-                pattern = { "python" },
-                callback = function(ev)
-                    vim.schedule(function()
-                        if vim.api.nvim_buf_is_valid(ev.buf) then vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc" end
-                    end)
-                end,
-            })
             vim.api.nvim_create_autocmd("LspAttach", {
                 group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
                 callback = function(ev)
@@ -502,19 +508,6 @@ local function makespec_lspconfig()
                     bmap("n", "gD", vim.lsp.buf.declaration, "Goto Declaration")
                     bmap("n", "gy", vim.lsp.buf.type_definition, "Goto Type Definition")
                     bmap({ "n", "i" }, "<M-x>", vim.lsp.buf.signature_help, "Signature Help")
-                    bmap("i", "<C-Space>", "<C-x><C-o>", "Trigger LSP Completion")
-                    bmap("i", "<C-l>", "<C-n>", "Buffer/Keyword Completion")
-                    bmap("i", "<C-f>", "<C-x><C-f>", "File Path Completion")
-
-                    local client = vim.lsp.get_client_by_id(ev.data.client_id)
-                    if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
-                        bmap(
-                            "n",
-                            "<leader>uh",
-                            function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end,
-                            "Toggle Inlay Hints"
-                        )
-                    end
                 end,
             })
         end,
@@ -526,7 +519,7 @@ local function makespec_smearcursor()
         "sphamba/smear-cursor.nvim",
         event = "VeryLazy",
         opts = {
-            enabled = false, -- Dormant on startup
+            enabled = false, -- Dormant on startup (toggled via <leader>uS)
             stiffness = 0.8,
             trailing_stiffness = 0.5,
         },
@@ -641,8 +634,6 @@ end
 
 local function makespec_neotree()
     local function copy_path(state)
-        -- NeoTree is based on [NuiTree](https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/tree)
-        -- The node is based on [NuiNode](https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/tree#nuitreenode)
         local node = state.tree:get_node()
         local filepath = node:get_id()
         local filename = node.name
@@ -702,9 +693,6 @@ local function makespec_neotree()
                     system_open = function(state)
                         local node = state.tree:get_node()
                         local path = node:get_id()
-                        -- macOs: open file in default application in the background.
-                        -- vim.fn.jobstart({ "xdg-open", "-g", path }, { detach = true })
-                        -- Linux: open file in default application
                         vim.fn.jobstart({ "xdg-open", path }, { detach = true })
                     end,
                 },
@@ -733,7 +721,7 @@ local function makespec_neotree()
                     },
                 },
             },
-            keys = { { "<leader>ff", "<cmd>Neotree<cr>", desc = "Neotree Explorer (sidebar)" } },
+            keys = { { "<leader>ff", "<cmd>Neotree toggle<cr>", desc = "Neotree Explorer (sidebar)" } },
         },
     }
 end
@@ -742,10 +730,13 @@ local function makespecs_previewers()
     return {
         {
             "chomosuke/typst-preview.nvim",
-            lazy = false,
+            ft = { "typst" },
+            cmd = { "TypstPreview", "TypstPreviewToggle", "TypstPreviewStop" },
             version = "1.*",
+            keys = {
+                { "<leader>cp", "<cmd>TypstPreviewToggle<cr>", ft = "typst", desc = "Typst Live Preview" },
+            },
             opts = {
-                -- debug = true,
                 port = 10010,
                 dependencies_bin = { ["tinymist"] = "tinymist" },
                 follow_cursor = false,
@@ -760,10 +751,12 @@ local function makespecs_previewers()
             },
         },
         {
-            -- live preview of markdown files
             "iamcco/markdown-preview.nvim", -- requires yarn
             cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
             ft = { "markdown" },
+            keys = {
+                { "<leader>cp", "<cmd>MarkdownPreviewToggle<cr>", ft = "markdown", desc = "Markdown Live Preview" },
+            },
             build = function() vim.fn["mkdp#util#install"]() end,
             init = function()
                 vim.g.mkdp_auto_start = 0 -- auto start on moving into
@@ -779,25 +772,10 @@ local function makespecs_previewers()
             dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.icons" },
             opts = {
                 code = { sign = false, width = "block", right_pad = 1 },
-                header = { sign = false, icons = {} },
+                heading = { sign = false, icons = {} },
                 checkbox = { enabled = false },
             },
             ft = { "markdown" },
-            config = function(_, opts)
-                require("render-markdown").setup(opts)
-                Snacks.toggle({
-                    name = "Render Markdown",
-                    get = function() return require("render-markdown.state").enabled end,
-                    set = function(enabled)
-                        local m = require("render-markdown")
-                        if enabled then
-                            m.enable()
-                        else
-                            m.disable()
-                        end
-                    end,
-                }):map("<leader>um")
-            end,
         },
     }
 end
@@ -810,18 +788,60 @@ local function makespec_vimflog()
             cmd = { "Flog", "Flogsplit", "Floggit" },
             config = function()
                 vim.g.flog_permanent_default_opts = {
-                    -- format = "%ad [%h] {%an}%d %s",
                     format = "%ad [%h]%d %s",
                     date = "short",
                 }
             end,
             keys = {
                 { "<leader>gf", "<cmd>vertical Flogsplit -path=%<cr>", desc = "Git Flog File" },
-                { "<leader>gc", "<cmd>vertical Flogsplit<cr>", desc = "Git Flog" },
+                { "<leader>gc", "<cmd>vertical Flogsplit<cr>", desc = "Git Flog (Branch Graph)" },
             },
         },
     }
 end
+
+local function makespec_codediff()
+    return {
+        "esmuellert/codediff.nvim",
+        cmd = "CodeDiff",
+        opts = { diff = { compute_moves = true } },
+        keys = {
+            { "<leader>gd", "<cmd>CodeDiff<cr>", desc = "CodeDiff (Working Tree)" },
+            { "<leader>gD", "<cmd>CodeDiff HEAD~1<cr>", desc = "CodeDiff (HEAD~1)" },
+            {
+                "<leader>gC",
+                function()
+                    Snacks.picker.git_log({
+                        title = "CodeDiff: <CR> diff commit..HEAD | <C-s> diff single commit",
+                        confirm = function(picker, item)
+                            picker:close()
+                            if item and item.commit then
+                                vim.cmd("CodeDiff " .. item.commit .. "..HEAD")
+                            end
+                        end,
+                        win = {
+                            input = {
+                                keys = {
+                                    ["<c-s>"] = { "codediff_single", mode = { "n", "i" } },
+                                },
+                            },
+                        },
+                        actions = {
+                            codediff_single = function(picker, item)
+                                picker:close()
+                                if item and item.commit then
+                                    vim.cmd("CodeDiff " .. item.commit .. "~1.." .. item.commit)
+                                end
+                            end,
+                        },
+                    })
+                end,
+                desc = "CodeDiff Commit..HEAD (Picker)",
+            },
+        },
+    }
+end
+
 local function makespec_diffview()
     return {
         "sindrets/diffview.nvim",
@@ -833,9 +853,15 @@ local function makespec_diffview()
             "DiffviewRefresh",
             "DiffviewFileHistory",
         },
-        keys = {},
+        keys = {
+            { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", mode = "n", desc = "File Commit History (Diffview)" },
+            { "<leader>gh", ":'<,'>DiffviewFileHistory<cr>", mode = "v", desc = "Line Selection History (Diffview)" },
+            { "<leader>gM", "<cmd>DiffviewOpen<cr>", desc = "Merge / Repo Diffview" },
+            { "<leader>gX", "<cmd>DiffviewClose<cr>", desc = "Close Diffview" },
+        },
     }
 end
+
 local function makespec_fugitive()
     return {
         "tpope/vim-fugitive",
@@ -906,9 +932,7 @@ local function makespec_gitsigns()
 
         -- Hunk
         bmap("n", "<leader>gi", gs.preview_hunk_inline, "Preview Hunk Inline")
-        bmap("n", "<leader>gp", gs.preview_hunk, "Preview Hunk")
-        bmap("n", "<leader>gd", gs.diffthis, "Diff This (Index)")
-        bmap("n", "<leader>gD", function() gs.diffthis("~") end, "Diff This (HEAD~1)")
+        bmap("n", "<leader>gk", gs.preview_hunk, "Preview Hunk Popup")
         bmap("n", "<leader>gq", gs.setqflist, "File Hunks to QuickFix")
         bmap("n", "<leader>gQ", function() gs.setqflist("all") end, "All Hunks to QuickFix")
         bmap("n", "<leader>gx", gs.reset_hunk, "Reset Hunk")
@@ -943,6 +967,9 @@ local function makespec_atone()
     return {
         "XXiaoA/atone.nvim",
         cmd = "Atone",
+        keys = {
+            { "<leader>uU", "<cmd>Atone toggle<cr>", desc = "Undo Tree (Atone)" },
+        },
         opts = {
             ui = {
                 compact = true,
@@ -957,39 +984,36 @@ local function makespec_whichkey()
         event = "VeryLazy",
         opts = {
             spec = {
+                { "<leader>a", group = "ai", mode = { "n", "v" } },
+                { "<leader>c", group = "code/content", mode = { "n", "v" } },
+                { "<leader>f", group = "file/find" },
+                { "<leader>g", group = "git", mode = { "n", "v" } },
+                { "<leader>gt", group = "git toggles" },
+                { "<leader>l", group = "logs" },
+                { "<leader>q", group = "quit" },
+                { "<leader>s", group = "search", mode = { "n", "v" } },
+                { "<leader>S", group = "swap AST node" },
+                { "<leader>u", group = "ui/toggles", icon = { icon = "󰙵 ", color = "cyan" } },
+                { "<leader>w", group = "write/save", mode = { "n", "x" } },
                 {
-                    mode = { "n", "v" },
-                    { "<leader>a", group = "ai" },
-                    { "<leader>c", group = "code/content" },
-                    { "<leader>f", group = "file/find" },
-                    { "<leader>g", group = "git" },
-                    { "<leader>gt", group = "toggles" },
-                    { "<leader>l", group = "logs" },
-                    { "<leader>p", group = "autoformat" },
-                    { "<leader>q", group = "quit" },
-                    { "<leader>s", group = "search" },
-                    { "<leader>u", group = "ui", icon = { icon = "󰙵 ", color = "cyan" } },
-                    { "[", group = "prev" },
-                    { "]", group = "next" },
-                    { "g", group = "goto" },
-                    { "gr", group = "lsp actions", icon = { icon = " ", color = "purple" } },
-                    { "gra", desc = "Code Action" },
-                    { "gri", desc = "Goto Implementation" },
-                    { "grn", desc = "Rename Symbol" },
-                    { "grr", desc = "Goto References" },
-                    { "gy", desc = "Goto Type Definition" },
-                    { "gs", group = "surround" },
-                    { "z", group = "fold" },
-                    { "<leader><tab>", group = "tabs" },
-                    {
-                        "<leader>w",
-                        group = "windows",
-                        proxy = "<c-w>",
-                        expand = function() return require("which-key.extras").expand.win() end,
-                    },
-                    -- better descriptions
-                    { "gx", desc = "Open with system app" },
+                    "<leader>W",
+                    group = "windows",
+                    proxy = "<c-w>",
+                    expand = function() return require("which-key.extras").expand.win() end,
                 },
+                { "<leader><tab>", group = "tabs" },
+                { "[", group = "prev", mode = { "n", "v" } },
+                { "]", group = "next", mode = { "n", "v" } },
+                { "g", group = "goto", mode = { "n", "v" } },
+                { "gr", group = "lsp actions", icon = { icon = " ", color = "purple" }, mode = { "n", "v" } },
+                { "gra", desc = "Code Action", mode = { "n", "v" } },
+                { "gri", desc = "Goto Implementation" },
+                { "grn", desc = "Rename Symbol" },
+                { "grr", desc = "Goto References" },
+                { "gy", desc = "Goto Type Definition" },
+                { "gs", group = "surround", mode = { "n", "v" } },
+                { "z", group = "fold", mode = { "n", "v" } },
+                { "gx", desc = "Open with system app", mode = { "n", "v" } },
             },
         },
         keys = {
@@ -1044,7 +1068,7 @@ local function makespec_snacks()
             debug = { enabled = true },
             image = { enabled = true },
             indent = { enabled = true },
-            lazygit = { enabled = vim.fn.has("lazygit") == 1 },
+            lazygit = { enabled = vim.fn.executable("lazygit") == 1 },
             notifier = { enabled = true, style = "minimal", refresh = 500, top_down = false },
             ---@class snacks.picker
             picker = {
@@ -1080,8 +1104,8 @@ local function makespec_snacks()
             { "<M-f>", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
             { "<leader>fg", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
             { "<leader>fa", function() Snacks.picker.files() end, desc = "Find Files" },
-            { "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.expand("~/dotfiles"), title="Find Configs" }) end, desc = "Find Config" },
-            { "<leader>fn", function() Snacks.picker.files({ cwd = vim.fn.expand("~/notes"), title="Find Notes" }) end, desc = "Find Note", },
+            { "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.expand("~/dotfiles"), title = "Find Configs" }) end, desc = "Find Config" },
+            { "<leader>fn", function() Snacks.picker.files({ cwd = vim.fn.expand("~/notes"), title = "Find Notes" }) end, desc = "Find Note" },
             -- logs
             { "<leader>ll", function() Snacks.notifier.show_history() end, desc = "Notification History" },
             -- code
@@ -1091,22 +1115,22 @@ local function makespec_snacks()
             { "<leader>cc", function() Snacks.picker.diagnostics_buffer() end, desc = "Buffer Diagnostics" },
             { "<leader>cd", function() Snacks.picker.diagnostics() end, desc = "Diagnostics" },
             -- terminal
-            { "<C-/>", function() Snacks.terminal.toggle() end, desc = "Snacks Terminal", mode={"n", "t"} },
-            { "<C-_>", function() Snacks.terminal.toggle() end, desc = "which_key_ignore", mode={'n', "t"} },
+            { "<C-/>", function() Snacks.terminal.toggle() end, desc = "Snacks Terminal", mode = { "n", "t" } },
+            { "<C-_>", function() Snacks.terminal.toggle() end, desc = "which_key_ignore", mode = { "n", "t" } },
             -- search
             { "<F1>", function() Snacks.picker.help() end, desc = "Help Pages" },
             { "<F9>", function() Snacks.picker.colorschemes() end, desc = "Colorschemes" },
             { "<M-/>", function() Snacks.picker.git_grep({ ignorecase = false }) end, desc = "Grep Git Files" },
             { "<leader>sg", function() Snacks.picker.git_grep({ ignorecase = false }) end, desc = "Grep Git Files" },
             { "<leader>sa", function() Snacks.picker.grep({ untracked = true }) end, desc = "Grep Files" },
-            { "<leader>*", function() Snacks.picker.grep_word() end, desc = "Visual selection or word", mode = { "n", "x" }, },
+            { "<leader>*", function() Snacks.picker.grep_word() end, desc = "Visual selection or word", mode = { "n", "x" } },
             { "<leader>/", function() Snacks.picker.search_history() end, desc = "Search History" },
             { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
             { "<leader>sB", function() Snacks.picker.grep_buffers() end, desc = "Grep Buffers" },
             { "<leader>sb", function() Snacks.picker.lines() end, desc = "Grep Buffer" },
-            { "<leader>sc", function() Snacks.picker.grep({ cwd = "/home/hjalmarlucius/dotfiles", title="Grep Configs" }) end, desc = "Grep Configs" },
+            { "<leader>sc", function() Snacks.picker.grep({ cwd = vim.fn.expand("~/dotfiles"), title = "Grep Configs" }) end, desc = "Grep Configs" },
             { "<leader>sl", function() Snacks.picker.loclist() end, desc = "Location List" },
-            { "<leader>sn", function() Snacks.picker.grep({ cwd = "/home/hjalmarlucius/notes", title="Grep Notes" }) end, desc = "Grep Notes", },
+            { "<leader>sn", function() Snacks.picker.grep({ cwd = vim.fn.expand("~/notes"), title = "Grep Notes" }) end, desc = "Grep Notes" },
             { "<leader>sp", function() Snacks.picker.projects() end, desc = "Find Projects" },
             { "<leader>sq", function() Snacks.picker.qflist() end, desc = "Quickfix List" },
             { "<leader>su", function() Snacks.picker.undo() end, desc = "Undo History" },
@@ -1126,18 +1150,51 @@ local function makespec_snacks()
                     Snacks.toggle.option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 }):map("<leader>uc")
                     Snacks.toggle.diagnostics():map("<leader>ud")
                     Snacks.toggle.dim():map("<leader>uD")
-                    -- Snacks.toggle.inlay_hints():map("<leader>ui")  -- using vim.show_pos instead
+                    Snacks.toggle.inlay_hints():map("<leader>uh")
                     Snacks.toggle.line_number():map("<leader>ul")
                     Snacks.toggle.option("relativenumber", { name = "Relative Number" }):map("<leader>uL")
                     Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
                     Snacks.toggle.treesitter():map("<leader>ut")
                     Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
+
                     -- Toggle for Smear Cursor
                     Snacks.toggle({
                         name = "Smear Cursor",
                         get = function() return require("smear_cursor").enabled end,
                         set = function(state) require("smear_cursor").enabled = state end,
                     }):map("<leader>uS")
+
+                    -- Toggle for Render Markdown
+                    Snacks.toggle({
+                        name = "Render Markdown",
+                        get = function()
+                            local ok, rm = pcall(require, "render-markdown")
+                            return ok and rm.get() or false
+                        end,
+                        set = function(enabled)
+                            local rm = require("render-markdown")
+                            if rm.set then
+                                rm.set(enabled)
+                            elseif enabled then
+                                rm.enable()
+                            else
+                                rm.disable()
+                            end
+                        end,
+                    }):map("<leader>um")
+
+                    -- Toggle for Highlight Colors
+                    Snacks.toggle({
+                        name = "Highlight Colors",
+                        get = function() return require("nvim-highlight-colors").is_active() end,
+                        set = function(state)
+                            if state then
+                                require("nvim-highlight-colors").turnOn()
+                            else
+                                require("nvim-highlight-colors").turnOff()
+                            end
+                        end,
+                    }):map("<leader>uC")
                 end,
             })
         end,
@@ -1146,10 +1203,6 @@ end
 
 local function makespecs_mini()
     return {
-        {
-            "echasnovski/mini.basics",
-            opts = { options = { basic = true, extra_ui = true }, mappings = { move_with_alt = true } },
-        },
         {
             "echasnovski/mini.icons",
             opts = {},
@@ -1202,7 +1255,7 @@ local function makespec_todocomments()
     return {
         "folke/todo-comments.nvim",
         dependencies = { "nvim-lua/plenary.nvim" },
-        lazy = false,
+        event = { "BufReadPost", "BufNewFile" },
         opts = {
             signs = true, -- show icons in the signs column
             sign_priority = 8, -- sign priority
@@ -1269,6 +1322,7 @@ local function makespec_smartsplits()
 end
 
 local function makespec_mason()
+    -- Must not be lazy-loaded so ~/.local/share/nvim/mason/bin is prepended to PATH on startup
     return {
         "mason-org/mason.nvim",
         lazy = false,
@@ -1326,7 +1380,7 @@ local function makespec_flash()
                                         exclude = {
                                             function(win)
                                                 return vim.bo[vim.api.nvim_win_get_buf(win)].filetype
-                                                    == "snacks_picker_list"
+                                                    ~= "snacks_picker_list"
                                             end,
                                         },
                                     },
@@ -1375,9 +1429,8 @@ local function makespec_treesitter()
         branch = "main",
         build = ":TSUpdate",
         lazy = false,
-        main = "nvim-treesitter.config",
-        opts = {
-            ensure_installed = {
+        config = function()
+            local parsers = {
                 "bash",
                 "c",
                 "cpp",
@@ -1393,7 +1446,7 @@ local function makespec_treesitter()
                 "lua",
                 "markdown",
                 "markdown_inline",
-                "query", -- for folds
+                "query",
                 "python",
                 "regex",
                 "toml",
@@ -1403,14 +1456,20 @@ local function makespec_treesitter()
                 "vim",
                 "vimdoc",
                 "yaml",
-            },
-            auto_install = true,
-            highlight = { enable = true },
-            indent = {
-                enable = true,
-                disable = function(lang, buf) return lang == "python" end,
-            },
-        },
+            }
+            require("nvim-treesitter").install(parsers)
+            -- Enable Treesitter highlighting and indentation (except Python)
+            vim.api.nvim_create_autocmd("FileType", {
+                group = vim.api.nvim_create_augroup("treesitter_start", { clear = true }),
+                callback = function(ev)
+                    if pcall(vim.treesitter.start, ev.buf) then
+                        if vim.bo[ev.buf].filetype ~= "python" then
+                            vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+                        end
+                    end
+                end,
+            })
+        end,
     }
 end
 
@@ -1437,8 +1496,6 @@ local function makespec_blink()
                         -- Strip any completion item that tries to inject an auto-import
                         transform_items = function(_, items)
                             return vim.tbl_filter(function(item)
-                                -- If the LSP item includes additionalTextEdits, it's mutating
-                                -- lines outside your cursor (e.g., adding an import at the top)
                                 return not (item.additionalTextEdits and #item.additionalTextEdits > 0)
                             end, items)
                         end,
@@ -1452,20 +1509,15 @@ end
 local function makespec_treewalker()
     return {
         "aaronik/treewalker.nvim",
-        -- Load when you open a file that Treesitter supports
         event = { "BufReadPost", "BufNewFile" },
         opts = {
-            -- Briefly highlights the block of code you just jumped to
             highlight = true,
         },
         keys = {
-            -- Normal and Visual mode mappings
             { "]]", "<cmd>Treewalker Down<cr>", mode = { "n", "v" }, desc = "Next Sibling (Current Level)" },
             { "[[", "<cmd>Treewalker Up<cr>", mode = { "n", "v" }, desc = "Prev Sibling (Current Level)" },
             { "((", "<cmd>Treewalker Left<cr>", mode = { "n", "v" }, desc = "Go Out (Parent Level)" },
             { "))", "<cmd>Treewalker Right<cr>", mode = { "n", "v" }, desc = "Go In (Child Level)" },
-
-            -- Optional: Swap nodes! (Move current block down/up past its sibling)
             { "<leader>Sj", "<cmd>Treewalker SwapDown<cr>", desc = "Swap Block Down" },
             { "<leader>Sk", "<cmd>Treewalker SwapUp<cr>", desc = "Swap Block Up" },
         },
@@ -1474,16 +1526,15 @@ end
 
 local function makespec_hlslens()
     return {
-        -- search count > 99
         "kevinhwang91/nvim-hlslens",
         dependencies = { "haya14busa/vim-asterisk" },
         cmd = { "HlSearchLensDisable", "HlSearchLensEnable", "HlSearchLensToggle" },
         opts = { nearest_only = true, nearest_float_when = "never" },
         keys = {
-            { "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, {} },
-            { "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, {} },
-            { "g*", [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, {} },
-            { "g#", [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, {} },
+            { "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, desc = "Search Word Forward" },
+            { "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, desc = "Search Word Backward" },
+            { "g*", [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, desc = "Search Partial Forward" },
+            { "g#", [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, desc = "Search Partial Backward" },
             { "n", [[n<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, noremap = true, silent = true },
             { "N", [[N<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, noremap = true, silent = true },
         },
@@ -1495,7 +1546,8 @@ local function makespec_autotag()
     return {
         "windwp/nvim-ts-autotag",
         dependencies = { "nvim-treesitter/nvim-treesitter" },
-        opts = { filetypes = { "html", "xml" } },
+        ft = { "html", "xml" },
+        opts = {},
     }
 end
 
@@ -1531,18 +1583,12 @@ local function makespec_conform()
                 "<leader>p",
                 function() require("conform").format({ async = true, lsp_format = "fallback" }) end,
                 mode = { "n", "v" },
-                desc = "Autoformat",
+                desc = "Autoformat Buffer",
             },
             { "<leader>lp", "<cmd>ConformInfo<cr>", desc = "Conform log" },
             { "<leader>lP", "<cmd>e ~/.local/state/nvim/conform.log<cr>", desc = "Conform log file" },
         },
         opts = {
-            -- format_on_save = function(bufnr)
-            --     -- Disable with a global or buffer-local variable
-            --     if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then return end
-            --     return { timeout_ms = 3000, lsp_format = "fallback" }
-            -- end,
-
             formatters_by_ft = {
                 ["_"] = { "trim_whitespace" },
                 css = { "prettierd", "prettier", stop_after_first = true },
@@ -1565,7 +1611,8 @@ local function makespec_conform()
                 timeout_ms = 1000,
             },
             formatters = {
-                javascript = { require_cwd = true },
+                prettierd = { require_cwd = true },
+                prettier = { require_cwd = true },
                 stylua = { append_args = { "--indent-type", "Spaces", "--collapse-simple-statement", "Always" } },
                 ruff_fix = { append_args = { "--select", "I,F,UP" } },
                 yamlfmt = {
@@ -1583,7 +1630,6 @@ local function makespec_avante()
     return {
         "yetone/avante.nvim",
         event = "VeryLazy",
-        lazy = false,
         version = false,
         build = "make",
         opts = {
@@ -1693,14 +1739,9 @@ end
 
 local lazyspecs = {
     "itchyny/vim-qfedit", -- editable quickfix list
-    { "ethanholz/nvim-lastplace", opts = {} }, -- keep location upon reopening
     "tpope/vim-eunuch", -- Move, Rename etc
     "tpope/vim-sleuth", -- do the right thing with tabstop and softtabstop
-    {
-        "esmuellert/codediff.nvim",
-        cmd = "CodeDiff",
-        opts = { diff = { compute_moves = true } },
-    },
+    makespec_codediff(),
     makespec_lazydev(), -- nvim lsp helpers
     makespec_snacks(),
     makespec_conform(), -- autoformat
