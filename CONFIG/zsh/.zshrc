@@ -13,17 +13,6 @@ export SAVEHIST=200000
 alias ls='ls --color=auto -Ah'
 alias ..='cd ..'
 alias ...='cd ../..'
-_catai() {
-  if [[ " $* " == *" -i "* || " $* " == *" -y "* ]]; then
-    local cmd
-    cmd="$(command catai --print-cmd "$@")" && [[ -n "$cmd" ]] && print -z "$cmd"
-  else
-    command catai "$@"
-  fi
-}
-alias catai='noglob _catai'
-alias cataid='noglob _catai -d'
-alias cataiy='noglob _catai -y'
 alias sioyek="QT_QPA_PLATFORM=xcb sioyek"
 
 # --- basic keybinds ---
@@ -52,6 +41,32 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 if command -v kubectl >/dev/null 2>&1; then
   source <(kubectl completion zsh)
 fi
+
+# --- catai ---
+# --- catai wrapper & completion (must be AFTER compinit) ---
+catai_run() {
+  if [[ " $* " == *" -i "* || " $* " == *" -y "* ]]; then
+    local cmd
+    cmd="$(command catai --print-cmd "$@")" && [[ -n "$cmd" ]] && print -z "$cmd"
+  else
+    command catai "$@"
+  fi
+}
+alias catai='noglob catai_run'
+alias cataid='noglob catai_run -d'
+alias cataiy='noglob catai_run -y'
+
+_catai() {
+  _arguments -s -S \
+    '*-x[Exclude folder or file glob]:exclude pattern:_files' \
+    '*--exclude=[Exclude folder or file glob]:exclude pattern:_files' \
+    '(-d --dirty)'{-d,--dirty}'[Only git modified & untracked files]' \
+    '(-i --interactive)'{-i,--interactive}'[Interactive fzf file picker]' \
+    '(-y --yazi)'{-y,--yazi}'[Interactive Yazi chooser]' \
+    '(-h --help)'{-h,--help}'[Show help message]' \
+    '*:files or directories:_files'
+}
+compdef _catai catai_run catai
 
 # --- div plugins ---
 # autosuggestions must come before atuin
