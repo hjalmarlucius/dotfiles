@@ -855,6 +855,7 @@ local function makespec_diffview()
         },
         keys = {
             { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", mode = "n", desc = "File Commit History (Diffview)" },
+            { "<leader>gH", "<cmd>DiffviewFileHistory<cr>", mode = "n", desc = "Commit History (Diffview)" },
             { "<leader>gh", ":'<,'>DiffviewFileHistory<cr>", mode = "v", desc = "Line Selection History (Diffview)" },
             { "<leader>gM", "<cmd>DiffviewOpen<cr>", desc = "Merge / Repo Diffview" },
             { "<leader>gX", "<cmd>DiffviewClose<cr>", desc = "Close Diffview" },
