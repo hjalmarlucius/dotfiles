@@ -264,9 +264,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
         if vim.tbl_contains(exclude, vim.bo[ev.buf].filetype) then return end
         local mark = vim.api.nvim_buf_get_mark(ev.buf, '"')
         local lcount = vim.api.nvim_buf_line_count(ev.buf)
-        if mark[1] > 0 and mark[1] <= lcount then
-            pcall(vim.api.nvim_win_set_cursor, 0, mark)
-        end
+        if mark[1] > 0 and mark[1] <= lcount then pcall(vim.api.nvim_win_set_cursor, 0, mark) end
     end,
 })
 
@@ -815,9 +813,7 @@ local function makespec_codediff()
                         title = "CodeDiff: <CR> diff commit..HEAD | <C-s> diff single commit",
                         confirm = function(picker, item)
                             picker:close()
-                            if item and item.commit then
-                                vim.cmd("CodeDiff " .. item.commit .. "..HEAD")
-                            end
+                            if item and item.commit then vim.cmd("CodeDiff " .. item.commit .. "..HEAD") end
                         end,
                         win = {
                             input = {
@@ -1333,6 +1329,22 @@ local function makespec_mason()
 end
 
 local function makespec_flash()
+    local function flash_line(forward)
+        return function()
+            local line = vim.fn.line(".")
+            require("flash").jump({
+                search = {
+                    forward = forward,
+                    wrap = false,
+                    multi_window = false,
+                    mode = function(str) return "\\%" .. line .. "l" .. str end,
+                },
+                jump = { autojump = true },
+                label = { after = { 0, 0 } },
+            })
+        end
+    end
+
     return {
         "folke/flash.nvim",
         event = "VeryLazy",
@@ -1341,25 +1353,18 @@ local function makespec_flash()
             jump = { autojump = false },
             modes = {
                 search = { enabled = false },
-                char = {
-                    jump = { autojump = true },
-                    char_actions = function(motion)
-                        return {
-                            [";"] = "next", -- set to `right` to always go right
-                            [","] = "prev", -- set to `left` to always go left
-                            [motion:lower()] = "next",
-                            [motion:upper()] = "prev",
-                        }
-                    end,
-                },
+                -- Disable built-in f/F/t/T char mode so it doesn't overwrite custom f/F/t/T keys
+                char = { enabled = false },
             },
         },
         -- stylua: ignore
         keys = {
             { "s", mode = { "n", "o", "x" }, function() require("flash").jump() end, desc = "Flash" },
-            { "S", mode = { "n", "o", "x" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+            { "f", mode = { "n", "o", "x" }, flash_line(true), desc = "Flash Line Forward" },
+            { "F", mode = { "n", "o", "x" }, flash_line(false), desc = "Flash Line Backward" },
+            { "t", mode = { "n", "o", "x" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+            { "T", mode = { "n", "o", "x" }, function() require("flash").treesitter_search() end, desc = "Flash Treesitter Search", },
             { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
-            { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
             { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
         },
         specs = {
@@ -1398,7 +1403,6 @@ local function makespec_flash()
         },
     }
 end
-
 local function makespec_grugfar()
     return {
         "MagicDuck/grug-far.nvim",
@@ -1406,7 +1410,7 @@ local function makespec_grugfar()
         cmd = "GrugFar",
         keys = {
             {
-                "<leader>sr",
+                "<leader>sR",
                 function()
                     local grug = require("grug-far")
                     local ext = vim.bo.buftype == "" and vim.fn.expand("%:e")
@@ -1418,12 +1422,26 @@ local function makespec_grugfar()
                     })
                 end,
                 mode = { "n", "v" },
-                desc = "Search and Replace",
+                desc = "Search and Replace (Project)",
+            },
+            {
+                "<leader>sr",
+                function()
+                    local grug = require("grug-far")
+                    grug.open({
+                        transient = true,
+                        prefills = {
+                            search = vim.fn.expand("<cword>"),
+                            paths = vim.fn.expand("%"),
+                        },
+                    })
+                end,
+                mode = { "n", "v" },
+                desc = "Search and Replace (Current File)",
             },
         },
     }
 end
-
 local function makespec_treesitter()
     return {
         "nvim-treesitter/nvim-treesitter",
@@ -1496,9 +1514,10 @@ local function makespec_blink()
                     lsp = {
                         -- Strip any completion item that tries to inject an auto-import
                         transform_items = function(_, items)
-                            return vim.tbl_filter(function(item)
-                                return not (item.additionalTextEdits and #item.additionalTextEdits > 0)
-                            end, items)
+                            return vim.tbl_filter(
+                                function(item) return not (item.additionalTextEdits and #item.additionalTextEdits > 0) end,
+                                items
+                            )
                         end,
                     },
                 },
@@ -1532,10 +1551,30 @@ local function makespec_hlslens()
         cmd = { "HlSearchLensDisable", "HlSearchLensEnable", "HlSearchLensToggle" },
         opts = { nearest_only = true, nearest_float_when = "never" },
         keys = {
-            { "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, desc = "Search Word Forward" },
-            { "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, desc = "Search Word Backward" },
-            { "g*", [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, desc = "Search Partial Forward" },
-            { "g#", [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, desc = "Search Partial Backward" },
+            {
+                "*",
+                [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]],
+                mode = { "n", "x" },
+                desc = "Search Word Forward",
+            },
+            {
+                "#",
+                [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],
+                mode = { "n", "x" },
+                desc = "Search Word Backward",
+            },
+            {
+                "g*",
+                [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]],
+                mode = { "n", "x" },
+                desc = "Search Partial Forward",
+            },
+            {
+                "g#",
+                [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]],
+                mode = { "n", "x" },
+                desc = "Search Partial Backward",
+            },
             { "n", [[n<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, noremap = true, silent = true },
             { "N", [[N<Cmd>lua require('hlslens').start()<CR>]], mode = { "n", "x" }, noremap = true, silent = true },
         },
