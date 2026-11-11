@@ -23,21 +23,22 @@ font pango:Noto Sans Regular 10
 # Cursor
 seat seat0 xcursor_theme Adwaita 0
 
-# Title format for windows
-set $focus     #00E5FF
-set $unfocused #333333
-set $urgent    #FF0033
-set $bg        #0A0A0A
-set $text_dark #000000
-set $text_dim  #888888
+set $1ary     #55e0ec
+set $2ary     #519ce6
+set $3ary     #e9b163
+set $danger   #f15b5b
+set $bg       #0f1414
+set $neutral  #c1cccd
+set $white    #FFFFFF
+set $dimtxt   #AAAAAA
 
 # class                 border      bground     text        indicator   child_border
-client.focused          $focus      $focus      $text_dark  $focus      $focus
-client.focused_inactive $unfocused  $unfocused  $text_dim   $unfocused  $unfocused
-client.unfocused        $unfocused  $unfocused  $text_dim   $unfocused  $unfocused
-client.urgent           $urgent     $urgent     #FFFFFF     $urgent     $urgent
-client.placeholder      #000000     #000000     #FFFFFF     #000000     #000000
-client.background       $bg
+client.focused          $1ary       $bg         $white      $danger     $1ary
+client.focused_inactive $1ary       $bg         $dimtxt     $bg         $bg
+client.unfocused        $bg         $bg         $dimtxt     $bg         $bg
+client.urgent           $danger     $bg         $white      $danger     $1ary
+client.placeholder      $2ary       $bg         $dimtxt     $2ary       $bg
+client.background       $bg         $bg         $neutral    $bg         $bg
 
 # Status Bar:
 bar {
