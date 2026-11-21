@@ -13,6 +13,8 @@
 # - sudo ufw allow 2222
 # - ... etc
 # - sudo enable ufw
+# TODO
+# sudo sh -c 'echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf'; sudo rmmod pcspkr
 from difflib import unified_diff
 from getpass import getuser
 from os.path import lexists
@@ -515,6 +517,14 @@ def installer(
         print("installed docker + home assistant")
     print("""
     MANUAL NEXT STEPS:
+
+    # oom handling
+
+    Add to `sudo systemctl edit user.slice`:
+    ```
+    [Slice]
+    OOMScoreAdjust=500
+    ```
 
     # vdirsyncer
     - set up with google calendar using

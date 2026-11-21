@@ -75,3 +75,5 @@
     directory = /tmp
 [credential]
     helper = /usr/lib/git-core/git-credential-libsecret
+[credential "https://git.hjarl.com"]
+	useHttpPath = true
