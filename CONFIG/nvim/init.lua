@@ -221,6 +221,20 @@ map(
     { desc = "Redraw / Clear hlsearch / Diff Update / Refresh Buffers" }
 )
 
+-- previous search with ?
+map("n", "?", function()
+    local prev = vim.fn.histget("search", -2)
+    if prev == "" then
+        vim.notify("No previous search pattern", vim.log.levels.WARN)
+        return
+    end
+    vim.fn.histadd("search", prev)
+    vim.fn.setreg("/", prev)
+    vim.o.hlsearch = true
+    pcall(vim.cmd, "normal! n")
+    pcall(function() require("hlslens").start() end)
+end, { desc = "Toggle Previous Search Pattern" })
+
 -- LSP
 -- Global Diagnostic mappings (Diagnostics work independently of LSP)
 local diagnostic_goto = function(count, severity)
@@ -1095,7 +1109,7 @@ local function makespec_snacks()
             { "<leader>qd", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
             { "<leader>gl", function() Snacks.lazygit() end, desc = "Launch Lazygit" },
             { "<leader>.", function() Snacks.scratch.open() end, desc = "Scratch Buffer" },
-            { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
+            { "<leader>b", function() Snacks.picker.buffers() end, desc = "Buffers" },
 
             -- find
             { "<M-f>", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
