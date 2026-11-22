@@ -379,6 +379,7 @@ def install_sway(overwrite: bool, reinstall: bool) -> None:
         "etc/systemd/sleep.conf.d/hibernate.conf",
         "etc/greetd/sway.cfg",
         "lib/systemd/system-sleep/iptsd.sh",
+        "etc/dracut.conf.d/crypt-ssh.conf",
     ]:
         src = CUSTOM_SRC / "ROOT" / sub
         if not src.exists():
@@ -543,10 +544,12 @@ def installer(
     - configure /etc/hosts
     - /etc/hosts: configure
     - /root/.ssh/authorized_keys: add permitted ssh keys
-    - /etc/dracut.conf.d/crypt-ssh.conf: set port + 'unlock' helper
+    - LUKS unlock over ssh (crypt-ssh.conf is copied by this script):
+      `sudo mkdir -p /etc/dracut-crypt-ssh && sudo ssh-keygen -t ed25519 -N ""
+      -f /etc/dracut-crypt-ssh/ssh_host_ed25519_key`
     - /etc/dracut.conf.d/eos-defaults.conf: don't omit network
     - /etc/kernel/cmdline: add `rd.neednet=1 ip=dhcp` arguments
-    - `sudo dracut-rebuild`
+    - `sudo dracut-rebuild`, then test: reboot, `ssh -p 222 root@<host>`, `unlock`
     - run `hjarl-system/k8s.py` scripts
 
     # docker / home assistant
