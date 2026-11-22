@@ -20,4 +20,4 @@ workspace DEL output $out-right
 workspace HOM output $out-left
 workspace END output $out-right
 workspace PUp output $out-left
-workspace PDn output $out-right
+workspace Pdn output $out-right
