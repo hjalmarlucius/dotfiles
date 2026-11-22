@@ -112,6 +112,7 @@ installmap = dict(
         "zoxide",  # quick search
         "eza",  # pretty alternative to `ls`
         "glow",  # markdown renderer
+        "duckdb",  # yazi parquet-preview plugin
     ),
     netbrowsers=(
         "qutebrowser",
@@ -324,19 +325,7 @@ def install_filebrowsers(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["filebrowsers"], reinstall=reinstall)
     helper_clone_foldercontents(CFG_SRC, CFG_TGT, "ranger", overwrite)
     helper_clone_foldercontents(CFG_SRC, CFG_TGT, "yazi", overwrite)
-    for plugin in [
-        "yazi-rs/plugins:chmod",
-        "yazi-rs/plugins:git",
-        "yazi-rs/plugins:mount",
-        "yazi-rs/plugins:piper",
-        "yazi-rs/plugins:smart-enter",
-        "yazi-rs/plugins:smart-filter",
-        "yazi-rs/plugins:toggle-pane",
-        "ahkohd/eza-preview",
-        "boydaihungst/file-extra-metadata",
-        "ya pkg add ndtoan96/ouch",
-    ]:
-        run(f"ya pkg add {plugin}".split())
+    run(["ya", "pkg", "install"])  # plugins listed in CONFIG/yazi/package.toml
     tgt = ".local/share/applications/userapp-file-roller.desktop"
     helper_maybe_copy(HOME_SRC, HOME_TGT, tgt, overwrite, symlink=True)
 
