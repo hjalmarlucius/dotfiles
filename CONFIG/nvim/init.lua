@@ -167,10 +167,10 @@ map("n", "<leader>wQ", "<cmd>wqa<cr>", { desc = "Write And Quit All" })
 map("n", "<leader>K", "<cmd>norm! K<cr>", { desc = "Keywordprg" })
 
 -- better indenting
-map("v", "<", "<gv")
-map("v", ">", ">gv")
-map("v", "<Tab>", ">gv")
-map("v", "<S-Tab>", "<gv")
+map("x", "<", "<gv")
+map("x", ">", ">gv")
+map("x", "<Tab>", ">gv")
+map("x", "<S-Tab>", "<gv")
 
 -- new file
 map("n", "<leader>n", "<cmd>enew<cr>", { desc = "New File" })
@@ -866,7 +866,7 @@ local function makespec_diffview()
         keys = {
             { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", mode = "n", desc = "File Commit History (Diffview)" },
             { "<leader>gH", "<cmd>DiffviewFileHistory<cr>", mode = "n", desc = "Commit History (Diffview)" },
-            { "<leader>gh", ":'<,'>DiffviewFileHistory<cr>", mode = "v", desc = "Line Selection History (Diffview)" },
+            { "<leader>gh", ":'<,'>DiffviewFileHistory<cr>", mode = "x", desc = "Line Selection History (Diffview)" },
             { "<leader>gM", "<cmd>DiffviewOpen<cr>", desc = "Merge / Repo Diffview" },
             { "<leader>gX", "<cmd>DiffviewClose<cr>", desc = "Close Diffview" },
         },
@@ -947,12 +947,12 @@ local function makespec_gitsigns()
         bmap("n", "<leader>gq", gs.setqflist, "File Hunks to QuickFix")
         bmap("n", "<leader>gQ", function() gs.setqflist("all") end, "All Hunks to QuickFix")
         bmap("n", "<leader>gx", gs.reset_hunk, "Reset Hunk")
-        bmap("v", "<leader>gx", function() gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Reset Selection")
+        bmap("x", "<leader>gx", function() gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Reset Selection")
         bmap("n", "<leader>gR", gs.reset_buffer, "Reset Buffer")
         bmap("n", "<leader>gs", gs.stage_hunk, "Stage Hunk")
-        bmap("v", "<leader>gs", function() gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Stage Selection")
+        bmap("x", "<leader>gs", function() gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Stage Selection")
         bmap("n", "<leader>gS", gs.stage_buffer, "Stage Buffer")
-        bmap({ "n", "v" }, "<leader>gv", gs.select_hunk, "Select Hunk")
+        bmap({ "n", "x" }, "<leader>gv", gs.select_hunk, "Select Hunk")
 
         -- Toggles
         bmap("n", "<leader>gtw", gs.toggle_word_diff, "Toggle Diff Word Colors")
@@ -995,14 +995,14 @@ local function makespec_whichkey()
         event = "VeryLazy",
         opts = {
             spec = {
-                { "<leader>a", group = "ai", mode = { "n", "v" } },
-                { "<leader>c", group = "code/content", mode = { "n", "v" } },
+                { "<leader>a", group = "ai", mode = { "n", "x" } },
+                { "<leader>c", group = "code/content", mode = { "n", "x" } },
                 { "<leader>f", group = "file/find" },
-                { "<leader>g", group = "git", mode = { "n", "v" } },
+                { "<leader>g", group = "git", mode = { "n", "x" } },
                 { "<leader>gt", group = "git toggles" },
                 { "<leader>l", group = "logs" },
                 { "<leader>q", group = "quit" },
-                { "<leader>s", group = "search", mode = { "n", "v" } },
+                { "<leader>s", group = "search", mode = { "n", "x" } },
                 { "<leader>S", group = "swap AST node" },
                 { "<leader>u", group = "ui/toggles", icon = { icon = "󰙵 ", color = "cyan" } },
                 { "<leader>w", group = "write/save", mode = { "n", "x" } },
@@ -1013,18 +1013,18 @@ local function makespec_whichkey()
                     expand = function() return require("which-key.extras").expand.win() end,
                 },
                 { "<leader><tab>", group = "tabs" },
-                { "[", group = "prev", mode = { "n", "v" } },
-                { "]", group = "next", mode = { "n", "v" } },
-                { "g", group = "goto", mode = { "n", "v" } },
-                { "gr", group = "lsp actions", icon = { icon = " ", color = "purple" }, mode = { "n", "v" } },
-                { "gra", desc = "Code Action", mode = { "n", "v" } },
+                { "[", group = "prev", mode = { "n", "x" } },
+                { "]", group = "next", mode = { "n", "x" } },
+                { "g", group = "goto", mode = { "n", "x" } },
+                { "gr", group = "lsp actions", icon = { icon = " ", color = "purple" }, mode = { "n", "x" } },
+                { "gra", desc = "Code Action", mode = { "n", "x" } },
                 { "gri", desc = "Goto Implementation" },
                 { "grn", desc = "Rename Symbol" },
                 { "grr", desc = "Goto References" },
                 { "gy", desc = "Goto Type Definition" },
-                { "gs", group = "surround", mode = { "n", "v" } },
-                { "z", group = "fold", mode = { "n", "v" } },
-                { "gx", desc = "Open with system app", mode = { "n", "v" } },
+                { "gs", group = "surround", mode = { "n", "x" } },
+                { "z", group = "fold", mode = { "n", "x" } },
+                { "gx", desc = "Open with system app", mode = { "n", "x" } },
             },
         },
         keys = {
@@ -1435,7 +1435,7 @@ local function makespec_grugfar()
                         },
                     })
                 end,
-                mode = { "n", "v" },
+                mode = { "n", "x" },
                 desc = "Search and Replace (Project)",
             },
             {
@@ -1450,7 +1450,7 @@ local function makespec_grugfar()
                         },
                     })
                 end,
-                mode = { "n", "v" },
+                mode = { "n", "x" },
                 desc = "Search and Replace (Current File)",
             },
         },
@@ -1548,10 +1548,10 @@ local function makespec_treewalker()
             highlight = true,
         },
         keys = {
-            { "]]", "<cmd>Treewalker Down<cr>", mode = { "n", "v" }, desc = "Next Sibling (Current Level)" },
-            { "[[", "<cmd>Treewalker Up<cr>", mode = { "n", "v" }, desc = "Prev Sibling (Current Level)" },
-            { "((", "<cmd>Treewalker Left<cr>", mode = { "n", "v" }, desc = "Go Out (Parent Level)" },
-            { "))", "<cmd>Treewalker Right<cr>", mode = { "n", "v" }, desc = "Go In (Child Level)" },
+            { "]]", "<cmd>Treewalker Down<cr>", mode = { "n", "x" }, desc = "Next Sibling (Current Level)" },
+            { "[[", "<cmd>Treewalker Up<cr>", mode = { "n", "x" }, desc = "Prev Sibling (Current Level)" },
+            { "((", "<cmd>Treewalker Left<cr>", mode = { "n", "x" }, desc = "Go Out (Parent Level)" },
+            { "))", "<cmd>Treewalker Right<cr>", mode = { "n", "x" }, desc = "Go In (Child Level)" },
             { "<leader>Sj", "<cmd>Treewalker SwapDown<cr>", desc = "Swap Block Down" },
             { "<leader>Sk", "<cmd>Treewalker SwapUp<cr>", desc = "Swap Block Up" },
         },
@@ -1636,7 +1636,7 @@ local function makespec_conform()
             {
                 "<leader>p",
                 function() require("conform").format({ async = true, lsp_format = "fallback" }) end,
-                mode = { "n", "v" },
+                mode = { "n", "x" },
                 desc = "Autoformat Buffer",
             },
             { "<leader>lp", "<cmd>ConformInfo<cr>", desc = "Conform log" },
@@ -1739,8 +1739,8 @@ local function makespec_avante()
             "nvim-treesitter/nvim-treesitter",
         },
         keys = {
-            { "<leader>ai", "<cmd>AvanteAsk<cr>", desc = "AI Ask", mode = { "n", "v" } },
-            { "<leader>ae", "<cmd>AvanteEdit<cr>", desc = "AI Edit Selection", mode = "v" },
+            { "<leader>ai", "<cmd>AvanteAsk<cr>", desc = "AI Ask", mode = { "n", "x" } },
+            { "<leader>ae", "<cmd>AvanteEdit<cr>", desc = "AI Edit Selection", mode = "x" },
             { "<leader>ar", "<cmd>AvanteRefresh<cr>", desc = "AI Refresh Context" },
         },
     }
