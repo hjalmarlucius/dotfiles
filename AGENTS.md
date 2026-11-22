@@ -12,15 +12,15 @@ Read every session:
 
 | Name | Account | Owns |
 | --- | --- | --- |
-| AGENT_DOTFILES | `agent-dotfiles` | Changes to this repository, made directly in `~/dotfiles`, and its issues. |
+| AGENT_DOTFILES | `agent-dotfiles` | Changes to this repository, made on `agent/*` branches and offered as draft pull requests, and its issues. |
 
-The owner decides `decide:` issues, reviews your commits, pushes to both remotes, and runs `endos.py`.
+The owner decides `decide:` issues, reviews and merges your pull requests, pushes `main` to both remotes, and runs `endos.py`.
 
-## Working directly in the live checkout
+## The live checkout and your worktrees
 
-- Work in `~/dotfiles`, on `main`. Never switch branches, rebase, reset, stash or check out files here: each of those changes the running setup, and the owner often has uncommitted work in this checkout.
-- The owner's uncommitted changes are theirs: leave them as they are. Before you edit a file, check `git status` and `git diff` for it. If it already has changes you did not make, ask on the issue first rather than mixing your edit in.
-- Your edits take effect at once for every file `endos.py` symlinks. Make each change in one go, so that no half-edited configuration is left live, and check it before the next one (see the checks below).
+- `~/dotfiles` is live: never edit, commit, switch branches, rebase, reset, stash or check out files there. Each of those changes the running setup, and the owner often has uncommitted work in it, which is theirs.
+- Work in a worktree of your own outside the checkout: `git -C ~/dotfiles worktree add -b agent/<N>-<slug> <dir> main`, one branch per issue. Remove the worktree when the branch is done; the branch keeps the work.
+- Nothing you change takes effect until the owner merges and pulls, so check each change before you commit it (see the checks below).
 - Never run `endos.py`: it installs packages, writes to `/`, and needs sudo. Never edit files under `~`, `~/.config` or `/` directly; change them here.
 
 ## Public repository
@@ -43,9 +43,10 @@ The owner decides `decide:` issues, reviews your commits, pushes to both remotes
 
 ## Commits
 
-- Commit only your own changes, on `main`: `git add` names each file, and `git add -p` takes only your hunks when a file also holds the owner's changes. Never `git add -A` or `git commit -a`.
+- Commit only on your `agent/*` branch: `git add` names each file. Never `git add -A` or `git commit -a`.
 - Commits are small and each one is valid on its own; commit line `<tool>: <imperative summary>` (`nvim: ...`, `sway: ...`, `endos: ...`), body says what and why and refers to the issue as `#N`.
-- Never push: the owner reviews your commits and pushes them. Comment on the issue with the commit, the checks and their results, and what the owner must do beyond pulling (see below), then leave the issue for the owner to close.
+- Push only `agent/*` branches, only to `https://git.hjarl.com/henrik/dotfiles.git`, with your own token (a `credential.helper` override, never the owner's stored credentials). Never push `main`, and never push to GitHub.
+- Open a draft pull request per branch, titled `WIP: <commit-style title>`. Its text says what changed per issue item, the checks and their results, and what the owner must do beyond pulling (see below), and ends with `Fixes #N`. The owner reviews, merges and closes the issue.
 
 ## Checks after each change
 
