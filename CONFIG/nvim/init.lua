@@ -1230,8 +1230,12 @@ local function makespecs_mini()
             version = false,
             event = "VeryLazy",
             opts = {
-                -- Disabled because your custom LSP mappings (]e, ]w) are better!
+                -- Disabled: these would override ]e/]w (diagnostics), ]c/[c (built-in diff
+                -- hunk jump) and ]t/[t (todo-comments)
                 diagnostic = { suffix = "", options = {} },
+                window = { suffix = "", options = {} },
+                comment = { suffix = "", options = {} },
+                treesitter = { suffix = "", options = {} },
 
                 -- These are the heavy hitters. They map [ and ] automatically.
                 buffer = { suffix = "b", options = {} }, -- ]b / [b
@@ -1240,7 +1244,6 @@ local function makespecs_mini()
                 yank = { suffix = "y", options = {} }, -- ]y / [y (cycle pasted text)
                 indent = { suffix = "i", options = {} }, -- ]i / [i (match indent level)
                 file = { suffix = "f", options = {} }, -- ]f / [f (next file on disk)
-                window = { suffix = "w", options = {} }, -- ]w / [w (cycle windows)
                 undo = { suffix = "u", options = {} }, -- ]u / [u (traverse undo tree)
             },
         },
