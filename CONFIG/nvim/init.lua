@@ -1620,12 +1620,21 @@ local function makespec_lint()
         event = { "BufReadPre", "BufNewFile" },
         config = function()
             local lint = require("lint")
+            -- Drop linters whose binary isn't installed, else nvim-lint reports ENOENT on every
+            -- lint (tidy and golangci-lint aren't installed). Mason's bin is on PATH by now.
+            local function installed(names)
+                return vim.tbl_filter(function(name)
+                    local linter = lint.linters[name]
+                    if type(linter) == "function" then linter = linter() end
+                    return type(linter.cmd) ~= "string" or vim.fn.executable(linter.cmd) == 1
+                end, names)
+            end
             lint.linters_by_ft = {
-                javascript = { "eslint_d" },
-                typescript = { "eslint_d" },
-                html = { "tidy", "eslint_d" },
-                go = { "golangcilint" },
-                sh = { "shellcheck" },
+                javascript = installed({ "eslint_d" }),
+                typescript = installed({ "eslint_d" }),
+                html = installed({ "tidy", "eslint_d" }),
+                go = installed({ "golangcilint" }),
+                sh = installed({ "shellcheck" }),
             }
 
             local lint_augroup = vim.api.nvim_create_augroup("nvim_lint", { clear = true })
