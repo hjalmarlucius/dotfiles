@@ -404,14 +404,6 @@ local function makespec_lspconfig()
                     },
                 },
             })
-            vim.lsp.config("yamlls", {
-                settings = {
-                    yaml = {
-                        schemas = { kubernetes = vim.fs.normalize("~/src/hjarl/system/manifests/*.yaml") },
-                        -- schemaStore = { enable = false, url = "" },
-                    },
-                },
-            })
             vim.lsp.config("ty", {
                 cmd = { "ty", "server" },
                 filetypes = { "python" },
