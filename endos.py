@@ -102,6 +102,7 @@ installmap = dict(
     filebrowsers=(
         "yazi",
         "ranger",
+        "ueberzugpp",  # ranger image previews (provides ueberzug)
         "pcmanfm",
         "thunar",
         "ouch",
