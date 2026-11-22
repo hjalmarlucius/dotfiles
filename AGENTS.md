@@ -6,6 +6,7 @@ Read every session:
 
 - This file.
 - Your open issues: `gt issue list -R henrik/dotfiles --label owner/agent-dotfiles`, with their comments.
+- While you are idle, check them again every 10 minutes (with a recurring timer, such as `/loop 10m`), and act on new issues, comments and reviews.
 
 ## Owners
 
