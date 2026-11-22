@@ -633,10 +633,16 @@ local function makespec_oil()
         },
         init = function()
             vim.api.nvim_create_autocmd("User", {
+                group = vim.api.nvim_create_augroup("oil_lsp_rename", { clear = true }),
                 pattern = "OilActionsPost",
+                desc = "Tell LSP servers about files renamed in Oil",
                 callback = function(event)
-                    if event.data.actions.type == "move" then
-                        Snacks.rename.on_rename_file(event.data.actions.src_url, event.data.actions.dest_url)
+                    if event.data.err then return end
+                    for _, action in ipairs(event.data.actions) do
+                        -- local files only: oil:///path (not oil-ssh:// etc.)
+                        local src = action.src_url and action.src_url:match("^oil://(.*)")
+                        local dest = action.dest_url and action.dest_url:match("^oil://(.*)")
+                        if action.type == "move" and src and dest then Snacks.rename.on_rename_file(src, dest) end
                     end
                 end,
             })
