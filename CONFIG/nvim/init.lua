@@ -114,6 +114,7 @@ vim.diagnostic.config({
 })
 
 vim.api.nvim_create_autocmd("FileType", {
+    group = vim.api.nvim_create_augroup("no_auto_comment", { clear = true }),
     desc = "Disable auto-commenting on new line",
     pattern = "*",
     callback = function() vim.opt_local.formatoptions:remove({ "r", "o" }) end,
@@ -258,12 +259,15 @@ map("n", "gl", vim.diagnostic.setloclist, { desc = "Diagnostics to Location List
 -- ----------------------------------------
 
 -- auto reload files
+local auto_reload = vim.api.nvim_create_augroup("auto_reload", { clear = true })
 vim.api.nvim_create_autocmd("FocusGained", {
+    group = auto_reload,
     desc = "Reload files from disk when we focus vim",
     pattern = "*",
     command = "if getcmdwintype() == '' | checktime | endif",
 })
 vim.api.nvim_create_autocmd("BufEnter", {
+    group = auto_reload,
     desc = "Every time we enter an unmodified buffer, check if it changed on disk",
     pattern = "*",
     command = "if &buftype == '' && !&modified && expand('%') != '' | exec 'checktime ' . expand('<abuf>') | endif",
@@ -449,7 +453,6 @@ local function makespec_lspconfig()
             })
             vim.lsp.config("vtsls", {
                 settings = {
-                    complete_function_calls = true,
                     vtsls = {
                         enableMoveToFileCodeAction = true,
                         autoUseWorkspaceTsdk = true,
@@ -890,11 +893,10 @@ local function makespec_fugitive()
             "Gwrite",
             "Ggrep",
             "Glgrep",
-            "Gmove",
+            "GMove",
             "GRename",
             "GDelete",
             "GRemove",
-            "Gdelete",
             "GUnlink",
             "GBrowse",
         },
