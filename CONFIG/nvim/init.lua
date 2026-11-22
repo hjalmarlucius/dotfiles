@@ -403,7 +403,7 @@ local function makespec_lspconfig()
             vim.lsp.config("yamlls", {
                 settings = {
                     yaml = {
-                        schemas = { kubernetes = vim.fn.expand("~/src/hjarl/system/manifests/*.yaml") },
+                        schemas = { kubernetes = vim.fs.normalize("~/src/hjarl/system/manifests/*.yaml") },
                         -- schemaStore = { enable = false, url = "" },
                     },
                 },
@@ -695,9 +695,9 @@ local function makespec_neotree()
             cmd = { "Neotree" },
             dependencies = { "nvim-lua/plenary.nvim", "mini.icons", "MunifTanjim/nui.nvim" },
             opts = {
-                hijack_netrw_behavior = "disabled",
                 close_if_last_window = true,
                 filesystem = {
+                    hijack_netrw_behavior = "disabled", -- oil handles directories
                     filtered_items = { hide_gitignored = false },
                     follow_current_file = { enabled = false },
                     window = {
@@ -965,7 +965,6 @@ local function makespec_gitsigns()
         bmap("n", "<leader>gtl", gs.toggle_linehl, "Toggle Diff Line Highlight")
         bmap("n", "<leader>gtn", gs.toggle_numhl, "Toggle Diff Line Number Highlight")
         bmap("n", "<leader>gtb", gs.toggle_current_line_blame, "Toggle Line Blame")
-        bmap("n", "<leader>gtd", gs.toggle_deleted, "Toggle Deleted")
 
         -- Text Object (e.g., 'dih' to delete hunk)
         bmap({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "Select Hunk")
