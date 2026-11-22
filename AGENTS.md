@@ -5,7 +5,7 @@ The owner's dotfiles. `endos.py` installs them per host: it symlinks files from 
 Read every session:
 
 - This file.
-- Your open issues: `gt issue list -R henrik/dotfiles --label owner/agent-dotfiles`, with their comments.
+- The open issues: `gt issue list -R henrik/dotfiles`, with their comments.
 - While you are idle, check them again every 10 minutes (with a recurring timer, such as `/loop 10m`), and act on new issues, comments and reviews.
 
 ## Owners
@@ -14,7 +14,7 @@ Read every session:
 | --- | --- | --- |
 | AGENT_DOTFILES | `agent-dotfiles` | Changes to this repository, made directly in `~/dotfiles`, and its issues. |
 
-The owner decides `kind/decide` issues, reviews your commits, pushes to both remotes, and runs `endos.py`.
+The owner decides `decide:` issues, reviews your commits, pushes to both remotes, and runs `endos.py`.
 
 ## Working directly in the live checkout
 
@@ -36,9 +36,9 @@ The owner decides `kind/decide` issues, reviews your commits, pushes to both rem
 
 ## Issues
 
-- Open work is Gitea issues, labelled `kind/` (`bug`, `do`, `idea`, `decide`, `plan`), `owner/agent-dotfiles`, `area/<tool>` (`nvim`, `zsh`, `sway`, `tmux`, `endos`, …), `size/` (`S`, `M`, `L`), and `status/plausible` on a bug not yet verified.
-- A bug states the defect, where it is (`file:line`) and how it shows. Verify it before dropping `status/plausible`.
-- `kind/do` is agreed work; `kind/idea` waits for the owner to relabel it `kind/do`; `kind/decide` needs the owner's call.
+- Open work is Gitea issues, without labels. The title says the tool and the problem: `<tool>: <summary>` (`nvim: ...`, `sway: ...`). A question only the owner can answer has a title starting `decide:`.
+- A bug states the defect, where it is (`file:line`) and how it shows. Mark a point you have not verified "(plausible)", and drop the mark once you have.
+- An issue the owner opened, or one they have answered, is agreed work. Otherwise, ask on the issue before starting anything that isn't a plain bug fix.
 - An inconsistency met on the way is a bug: fix it if small, else open an issue.
 
 ## Commits
