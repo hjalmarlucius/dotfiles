@@ -173,7 +173,8 @@ installmap = dict(
         "flux-bin",
         "open-iscsi",  # required by longhorn
         "kubectl-cnpg",
-        # ssh for luks unlocking
+    ),
+    luksunlock=(  # unlock LUKS over ssh from the initramfs
         "dracut-crypt-ssh",
         "dropbear",
     ),
@@ -374,13 +375,6 @@ def install_sway(overwrite: bool, reinstall: bool) -> None:
     helper_uninstall("autotiling", "cliphist")
     helper_install(*installmap["sway"], reinstall=reinstall)
     # sudo stuff
-    if (CUSTOM_SRC / "ROOT/etc/dracut.conf.d/crypt-ssh.conf").exists():
-        # crypt-ssh.conf names this host key; without it every dracut rebuild
-        # (e.g. a kernel update) would ship an initramfs without dropbear
-        key = "/etc/dracut-crypt-ssh/ssh_host_ed25519_key"
-        run(["sudo", "mkdir", "-p", "/etc/dracut-crypt-ssh"], check=False)
-        keygen = f"test -f {key} || ssh-keygen -q -t ed25519 -N '' -f {key}"
-        run(["sudo", "sh", "-c", keygen], check=False)
     for sub in [
         "etc/systemd/logind.conf.d/suspend.conf",
         "etc/systemd/sleep.conf.d/hibernate.conf",
@@ -458,11 +452,22 @@ def install_k8sreqs(overwrite: bool, reinstall: bool) -> None:
     run("sudo systemctl enable --now iscsid".split())
     # user
     helper_clone_foldercontents(CFG_SRC, CFG_TGT, "k9s", overwrite)
-    # luks
-    run("sudo mkdir -p /root/.ssh".split())
-    run("sudo chmod 700 /root/.ssh".split())
-    run("sudo touch /root/.ssh/authorized_keys".split())
-    run("sudo chmod 600 /root/.ssh/authorized_keys".split())
+
+
+def install_luks_unlock(reinstall: bool) -> None:
+    """Packages, host key and key list for custom-<host>/.../crypt-ssh.conf.
+
+    Runs before install_sway copies that file: the package owns the path,
+    so pacman would refuse to install it over a copied file, and without
+    the key every dracut rebuild would ship an initramfs without dropbear."""
+    helper_install(*installmap["luksunlock"], reinstall=reinstall)
+    folder = "/etc/dracut-crypt-ssh"
+    key = f"{folder}/ssh_host_ed25519_key"
+    keys = f"{folder}/authorized_keys"  # may unlock; not root logins
+    run(["sudo", "mkdir", "-p", folder], check=False)
+    keygen = f"test -f {key} || ssh-keygen -q -t ed25519 -N '' -f {key}"
+    run(["sudo", "sh", "-c", keygen], check=False)
+    run(["sudo", "sh", "-c", f"touch {keys} && chmod 600 {keys}"], check=False)
 
 
 def installer(
@@ -498,6 +503,9 @@ def installer(
     print("installed monitors")
     helper_install(*installmap["apps"], reinstall=reinstall)
     print("installed apps")
+    if HOSTNAME in ["mothership", "droneship"]:
+        install_luks_unlock(reinstall)
+        print("installed luks unlock")
     install_sway(overwrite, reinstall)
     print("installed sway")
     helper_install(*installmap["remotedata"], reinstall=reinstall)
@@ -550,9 +558,9 @@ def installer(
     # k8s
     - configure /etc/hosts
     - /etc/hosts: configure
-    - /root/.ssh/authorized_keys: add permitted ssh keys
-    - LUKS unlock over ssh: this script copies crypt-ssh.conf and makes its
-      host key in /etc/dracut-crypt-ssh/
+    - LUKS unlock over ssh: this script installs dracut-crypt-ssh, makes the
+      host key and copies crypt-ssh.conf; add the public keys that may unlock
+      to /etc/dracut-crypt-ssh/authorized_keys
     - /etc/dracut.conf.d/eos-defaults.conf: don't omit network
     - /etc/kernel/cmdline: add `rd.neednet=1 ip=dhcp` arguments
     - `sudo dracut-rebuild`, then test: reboot, `ssh -p 222 root@<host>`, `unlock`
