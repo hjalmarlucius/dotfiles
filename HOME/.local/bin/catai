@@ -27,6 +27,9 @@ DEFAULT_IGNORES: tuple[str, ...] = (
     "!*.lockb",  # old bun
     "!*-lock.json",  # npm package-lock.json
     "!*-lock.yaml",  # pnpm-lock.yaml
+    "!*-lock.yml",  # conda-lock.yml
+    "!*.lock.json",  # NuGet packages.lock.json
+    "!*.lockfile",  # gradle.lockfile
     "!*.min.*",
 )
 
