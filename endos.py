@@ -374,6 +374,13 @@ def install_sway(overwrite: bool, reinstall: bool) -> None:
     helper_uninstall("autotiling", "cliphist")
     helper_install(*installmap["sway"], reinstall=reinstall)
     # sudo stuff
+    if (CUSTOM_SRC / "ROOT/etc/dracut.conf.d/crypt-ssh.conf").exists():
+        # crypt-ssh.conf names this host key; without it every dracut rebuild
+        # (e.g. a kernel update) would ship an initramfs without dropbear
+        key = "/etc/dracut-crypt-ssh/ssh_host_ed25519_key"
+        run(["sudo", "mkdir", "-p", "/etc/dracut-crypt-ssh"])
+        keygen = f"test -f {key} || ssh-keygen -q -t ed25519 -N '' -f {key}"
+        run(["sudo", "sh", "-c", keygen])
     for sub in [
         "etc/systemd/logind.conf.d/suspend.conf",
         "etc/systemd/sleep.conf.d/hibernate.conf",
@@ -544,9 +551,8 @@ def installer(
     - configure /etc/hosts
     - /etc/hosts: configure
     - /root/.ssh/authorized_keys: add permitted ssh keys
-    - LUKS unlock over ssh (crypt-ssh.conf is copied by this script):
-      `sudo mkdir -p /etc/dracut-crypt-ssh && sudo ssh-keygen -t ed25519 -N ""
-      -f /etc/dracut-crypt-ssh/ssh_host_ed25519_key`
+    - LUKS unlock over ssh: this script copies crypt-ssh.conf and makes its
+      host key in /etc/dracut-crypt-ssh/
     - /etc/dracut.conf.d/eos-defaults.conf: don't omit network
     - /etc/kernel/cmdline: add `rd.neednet=1 ip=dhcp` arguments
     - `sudo dracut-rebuild`, then test: reboot, `ssh -p 222 root@<host>`, `unlock`
