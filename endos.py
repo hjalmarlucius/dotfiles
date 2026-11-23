@@ -372,16 +372,16 @@ def install_sway(overwrite: bool, reinstall: bool) -> None:
     helper_uninstall("autotiling", "cliphist")
     helper_install(*installmap["sway"], reinstall=reinstall)
     # sudo stuff
-    for srcsub, tgtsub in [
-        ("etc/systemd/logind.conf.d/suspend.conf",) * 2,
-        ("etc/systemd/sleep.conf.d/hibernate.conf",) * 2,
-        ("etc/greetd/sway.cfg",) * 2,
-        ("lib/systemd/system-sleep/iptsd-hack.sh", "lib/systemd/system-sleep/iptsd.sh"),
+    for sub in [
+        "etc/systemd/logind.conf.d/suspend.conf",
+        "etc/systemd/sleep.conf.d/hibernate.conf",
+        "etc/greetd/sway.cfg",
+        "lib/systemd/system-sleep/iptsd.sh",
     ]:
-        src = CUSTOM_SRC / "ROOT" / srcsub
+        src = CUSTOM_SRC / "ROOT" / sub
         if not src.exists():
             continue
-        tgt = ROOT_TGT / tgtsub
+        tgt = ROOT_TGT / sub
         run(["sudo", "mkdir", "-p", str(tgt.parent)])
         if tgt.exists():
             if diff := compare(src, tgt):
