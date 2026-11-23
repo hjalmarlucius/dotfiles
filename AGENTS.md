@@ -19,7 +19,7 @@ The owner decides `decide:` issues, reviews and merges your pull requests, pushe
 ## The live checkout and your worktrees
 
 - `~/dotfiles` is live: never edit, commit, switch branches, rebase, reset, stash or check out files there. Each of those changes the running setup, and the owner often has uncommitted work in it, which is theirs.
-- Work in a worktree of your own outside the checkout: `git -C ~/dotfiles worktree add -b agent/<N>-<slug> <dir> main`, one branch per issue. Remove the worktree when the branch is done; the branch keeps the work.
+- Work in a worktree of your own outside the checkout, one branch per issue, based on Gitea's `main` rather than the local one (which can hold the owner's unpushed commits): `git -C ~/dotfiles fetch https://git.hjarl.com/henrik/dotfiles.git main`, then `git -C ~/dotfiles worktree add -b agent/<N>-<slug> <dir> FETCH_HEAD`. Remove the worktree when the branch is done; the branch keeps the work.
 - Nothing you change takes effect until the owner merges and pulls, so check each change before you commit it (see the checks below).
 - Never run `endos.py`: it installs packages, writes to `/`, and needs sudo. Never edit files under `~`, `~/.config` or `/` directly; change them in your worktree.
 
@@ -53,9 +53,9 @@ The owner decides `decide:` issues, reviews and merges your pull requests, pushe
 
 - Syntax-check every file you changed: `luac -p` for Lua, `zsh -n` for zsh, `bash -n` for shell scripts, `python -m py_compile` for Python, and the tool's own check where it has one (`sway -C -c CONFIG/sway/config`). That sway check also reads the live `~/.config/sway/local_config`; to check a `custom-<host>/` change, run it with `HOME` set to a temporary folder that links that host's `local_config`.
 - `uvx ruff check endos.py` already reports findings on `main`; a change to `endos.py` adds none.
-- After a Neovim change, load the configuration headless: `nvim --headless +qa`, and report its errors.
+- After a Neovim change, load the worktree's configuration headless (plain `nvim` reads the live one): `nvim --headless -u <worktree>/CONFIG/nvim/init.lua +qa`, and report its errors.
 - A change to `endos.py`, or one that adds, moves or removes a file it installs, lists in its pull request every target under `~`, `~/.config` or `/` that is added, moved or removed.
 
 ## Beyond the checkout
 
-- Only the owner runs `endos.py`. A change that needs a step beyond editing files here (a package or plugin install, a new symlink, a sudo copy, a reload of a running program) lists the exact commands in its pull request.
+- Only the owner runs `endos.py`. A change that needs a step beyond merging and pulling (a package or plugin install, a new symlink, a sudo copy, a reload of a running program) lists the exact commands in its pull request.
