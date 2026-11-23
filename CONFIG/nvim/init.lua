@@ -626,22 +626,6 @@ local function makespec_oil()
             { "<leader>fE", "<cmd>Oil .<cr>", desc = "Oil Explorer (buffer)" },
             { "<leader>fe", "<cmd>Oil --float .<cr>", desc = "Oil Explorer (float)" },
         },
-        init = function()
-            vim.api.nvim_create_autocmd("User", {
-                group = vim.api.nvim_create_augroup("oil_lsp_rename", { clear = true }),
-                pattern = "OilActionsPost",
-                desc = "Tell LSP servers about files renamed in Oil",
-                callback = function(event)
-                    if event.data.err then return end
-                    for _, action in ipairs(event.data.actions) do
-                        -- local files only: oil:///path (not oil-ssh:// etc.)
-                        local src = action.src_url and action.src_url:match("^oil://(.*)")
-                        local dest = action.dest_url and action.dest_url:match("^oil://(.*)")
-                        if action.type == "move" and src and dest then Snacks.rename.on_rename_file(src, dest) end
-                    end
-                end,
-            })
-        end,
     }
 end
 
@@ -959,6 +943,7 @@ local function makespec_gitsigns()
         bmap("n", "<leader>gtl", gs.toggle_linehl, "Toggle Diff Line Highlight")
         bmap("n", "<leader>gtn", gs.toggle_numhl, "Toggle Diff Line Number Highlight")
         bmap("n", "<leader>gtb", gs.toggle_current_line_blame, "Toggle Line Blame")
+        bmap("n", "<leader>gtd", gs.toggle_deleted, "Toggle Deleted")
 
         -- Text Object (e.g., 'dih' to delete hunk)
         bmap({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "Select Hunk")
