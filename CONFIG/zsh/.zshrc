@@ -81,7 +81,7 @@ source /usr/share/zsh/plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 # --- search ---
 # fzf: Ctrl-T, Alt-C
 # the widgets read these when they run, so they must be exported
-export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # empty CTRL_R_COMMAND is read while sourcing: leaves ^R to atuin
 FZF_CTRL_R_COMMAND= source <(fzf --zsh)
