@@ -139,8 +139,6 @@ installmap = dict(
         "btop",  # hardware
         "nvtop",  # gpu
         "systemctl-tui",  # systemd
-        "isd",  # systemd
-        "lazyjournal",  # journal
         "bandwhich",  # network
         "sysstat",
     ),
