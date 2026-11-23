@@ -34,7 +34,7 @@ bindkey '^X^E' edit-command-line
 
 # --- autocompletion ---
 autoload -Uz compinit
-compinit -d "~/.config/zsh/zcompdump"
+compinit -d "${ZDOTDIR:-$HOME}/zcompdump"
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' 'r:|[._-]=** r:|=**'
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
@@ -80,10 +80,11 @@ source /usr/share/zsh/plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 
 # --- search ---
 # fzf: Ctrl-T, Alt-C
-FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git' \
-  FZF_CTRL_R_COMMAND= \
-  FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND" \
-  source <(fzf --zsh)
+# the widgets read these when they run, so they must be exported
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+# empty CTRL_R_COMMAND is read while sourcing: leaves ^R to atuin
+FZF_CTRL_R_COMMAND= source <(fzf --zsh)
 # atuin: Ctrl+R, /
 eval "$(atuin init zsh)"
 # handle collisions
