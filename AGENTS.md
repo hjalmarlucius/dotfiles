@@ -5,8 +5,8 @@ The owner's dotfiles. `endos.py` installs them per host: it symlinks files from 
 Read every session:
 
 - This file.
-- The open issues: `gt issue list -R henrik/dotfiles`, with their comments.
-- While you are idle, check them again every 10 minutes (with a recurring timer, such as `/loop 10m`), and act on new issues, comments and reviews.
+- The open issues and pull requests: `gt issue list -R henrik/dotfiles` and `gt pr list -R henrik/dotfiles`, with their comments and reviews.
+- While you are idle, check them again every 10 minutes (with a recurring timer, such as `/loop 10m`), and act on new issues, comments, reviews and merges.
 
 ## Owners
 
@@ -21,7 +21,7 @@ The owner decides `decide:` issues, reviews and merges your pull requests, pushe
 - `~/dotfiles` is live: never edit, commit, switch branches, rebase, reset, stash or check out files there. Each of those changes the running setup, and the owner often has uncommitted work in it, which is theirs.
 - Work in a worktree of your own outside the checkout: `git -C ~/dotfiles worktree add -b agent/<N>-<slug> <dir> main`, one branch per issue. Remove the worktree when the branch is done; the branch keeps the work.
 - Nothing you change takes effect until the owner merges and pulls, so check each change before you commit it (see the checks below).
-- Never run `endos.py`: it installs packages, writes to `/`, and needs sudo. Never edit files under `~`, `~/.config` or `/` directly; change them here.
+- Never run `endos.py`: it installs packages, writes to `/`, and needs sudo. Never edit files under `~`, `~/.config` or `/` directly; change them in your worktree.
 
 ## Public repository
 
@@ -39,6 +39,7 @@ The owner decides `decide:` issues, reviews and merges your pull requests, pushe
 - Open work is Gitea issues, without labels. The title says the tool and the problem: `<tool>: <summary>` (`nvim: ...`, `sway: ...`). A question only the owner can answer has a title starting `decide:`.
 - A bug states the defect, where it is (`file:line`) and how it shows. Mark a point you have not verified "(plausible)", and drop the mark once you have.
 - An issue the owner opened, or one they have answered, is agreed work. Otherwise, ask on the issue before starting anything that isn't a plain bug fix.
+- When the owner asks for something in chat, open an issue for it first, so the branch and pull request have a number.
 - An inconsistency met on the way is a bug: fix it if small, else open an issue.
 
 ## Commits
@@ -50,11 +51,11 @@ The owner decides `decide:` issues, reviews and merges your pull requests, pushe
 
 ## Checks after each change
 
-- Syntax-check every file you changed: `luac -p` for Lua, `zsh -n` for zsh, `bash -n` for shell scripts, `python -m py_compile` for Python, and the tool's own check where it has one (`sway -C -c CONFIG/sway/config`).
+- Syntax-check every file you changed: `luac -p` for Lua, `zsh -n` for zsh, `bash -n` for shell scripts, `python -m py_compile` for Python, and the tool's own check where it has one (`sway -C -c CONFIG/sway/config`). That sway check also reads the live `~/.config/sway/local_config`; to check a `custom-<host>/` change, run it with `HOME` set to a temporary folder that links that host's `local_config`.
 - `uvx ruff check endos.py` already reports findings on `main`; a change to `endos.py` adds none.
 - After a Neovim change, load the configuration headless: `nvim --headless +qa`, and report its errors.
-- A change to `endos.py`, or one that adds, moves or removes a file it installs, lists in the issue every target under `~`, `~/.config` or `/` that is added, moved or removed.
+- A change to `endos.py`, or one that adds, moves or removes a file it installs, lists in its pull request every target under `~`, `~/.config` or `/` that is added, moved or removed.
 
 ## Beyond the checkout
 
-- Only the owner runs `endos.py`. A change that needs a step beyond editing files here (a package or plugin install, a new symlink, a sudo copy, a reload of a running program) lists the exact commands on its issue.
+- Only the owner runs `endos.py`. A change that needs a step beyond editing files here (a package or plugin install, a new symlink, a sudo copy, a reload of a running program) lists the exact commands in its pull request.
