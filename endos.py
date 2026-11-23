@@ -378,9 +378,9 @@ def install_sway(overwrite: bool, reinstall: bool) -> None:
         # crypt-ssh.conf names this host key; without it every dracut rebuild
         # (e.g. a kernel update) would ship an initramfs without dropbear
         key = "/etc/dracut-crypt-ssh/ssh_host_ed25519_key"
-        run(["sudo", "mkdir", "-p", "/etc/dracut-crypt-ssh"])
+        run(["sudo", "mkdir", "-p", "/etc/dracut-crypt-ssh"], check=False)
         keygen = f"test -f {key} || ssh-keygen -q -t ed25519 -N '' -f {key}"
-        run(["sudo", "sh", "-c", keygen])
+        run(["sudo", "sh", "-c", keygen], check=False)
     for sub in [
         "etc/systemd/logind.conf.d/suspend.conf",
         "etc/systemd/sleep.conf.d/hibernate.conf",
