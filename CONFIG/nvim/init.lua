@@ -249,9 +249,7 @@ map("n", "<M-i>", function() vim.diagnostic.open_float({ source = true }) end, {
 map("n", "<M-n>", diagnostic_goto(1), { desc = "Next Diagnostic" })
 map("n", "<M-p>", diagnostic_goto(-1), { desc = "Prev Diagnostic" })
 map("n", "[e", diagnostic_goto(-1, "ERROR"), { desc = "Prev Error" })
-map("n", "[w", diagnostic_goto(-1, "WARN"), { desc = "Prev Warning" })
 map("n", "]e", diagnostic_goto(1, "ERROR"), { desc = "Next Error" })
-map("n", "]w", diagnostic_goto(1, "WARN"), { desc = "Next Warning" })
 map("n", "gl", vim.diagnostic.setloclist, { desc = "Diagnostics to Location List" })
 
 -- ----------------------------------------
@@ -1214,12 +1212,8 @@ local function makespecs_mini()
             version = false,
             event = "VeryLazy",
             opts = {
-                -- Disabled: these would override ]e/]w (diagnostics), ]c/[c (built-in diff
-                -- hunk jump) and ]t/[t (todo-comments)
+                -- Disabled because the custom ]e / [e diagnostics mappings are better
                 diagnostic = { suffix = "", options = {} },
-                window = { suffix = "", options = {} },
-                comment = { suffix = "", options = {} },
-                treesitter = { suffix = "", options = {} },
 
                 -- These are the heavy hitters. They map [ and ] automatically.
                 buffer = { suffix = "b", options = {} }, -- ]b / [b
@@ -1279,8 +1273,6 @@ local function makespec_todocomments()
             },
         },
         keys = {
-            { "]t", function() require("todo-comments").jump_next() end, desc = "Next Todo Comment" },
-            { "[t", function() require("todo-comments").jump_prev() end, desc = "Previous Todo Comment" },
             { "<leader>ct", "<cmd>TodoQuickFix keywords=TODO,MAYBE,FIX<cr>", desc = "Todo/Fix/Fixme list" },
             { "<leader>cT", "<cmd>TodoQuickFix<cr>", desc = "Comments list" },
             { "<leader>st", function() Snacks.picker.todo_comments() end, desc = "Todo" },
