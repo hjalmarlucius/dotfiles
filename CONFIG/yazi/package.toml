@@ -1,0 +1,57 @@
+[[plugin.deps]]
+use = "yazi-rs/plugins:chmod"
+rev = "e0bbd20"
+hash = "87472b05a8c420100f6a2b9cde1e7746"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:git"
+rev = "e0bbd20"
+hash = "347cc6b190eb0c2fd60513cc7ae37412"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:mount"
+rev = "e0bbd20"
+hash = "ba1a606728adb75b091b6eaf3fd60372"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:piper"
+rev = "e0bbd20"
+hash = "d1e0499cae5f3aeb628c267616d4b682"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:smart-enter"
+rev = "e0bbd20"
+hash = "187cc58ba7ac3befd49c342129e6f1b6"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:smart-filter"
+rev = "e0bbd20"
+hash = "d6f7351ea25a43c9b5f4315fa1e23935"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:toggle-pane"
+rev = "e0bbd20"
+hash = "5b2fbef7d1513ce38ff72623a071a5e"
+
+[[plugin.deps]]
+use = "boydaihungst/file-extra-metadata"
+rev = "98baba6"
+hash = "c5292f37d73d0a8f301cc138a51baedf"
+
+[[plugin.deps]]
+use = "cxwx/parquet-preview"
+rev = "2374bec"
+hash = "f89a2cce6a09692939d4aa8c1b0bb21"
+
+[[plugin.deps]]
+use = "ahkohd/eza-preview"
+rev = "e8fb6c8"
+hash = "c238595c801caa4f28553b9af8cf8804"
+
+[[plugin.deps]]
+use = "ndtoan96/ouch"
+rev = "596b666"
+hash = "c2f4f4aca257dcceafa9e3b828dbf1c9"
+
+[flavor]
+deps = []

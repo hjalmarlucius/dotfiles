@@ -4,3 +4,4 @@ CONFIG/homeassistant/SERVICE_ACCOUNT.JSON
 CONFIG/vdirsyncer/config
 CONFIG/rclone/rclone.conf
 __pycache__/
+CONFIG/yazi/plugins/
