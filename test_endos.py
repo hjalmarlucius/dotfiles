@@ -144,9 +144,9 @@ endos.CUSTOM = at / "custom"
 planned = []
 endos.run = lambda *cmd, text=None: (planned.append((cmd[:2], text)), True)[1]
 endos.install = lambda packages: planned.append("install") or True
-endos.query = lambda *cmd, text=None, **o: "256 SHA256:abc me (ED25519)" if text else ""
+endos.query = lambda *cmd, **options: ""
 endos.read_as_root = lambda *cmd: (
-    "ssh-ed25519 AAAA me" if cmd[0] == "cat" and cmd[1].startswith("/root") else ""
+    "ssh-ed25519 AAAAC3Nz me" if cmd[0] == "cat" and cmd[1].startswith("/root") else ""
 )
 endos.choose = lambda question, options: []
 endos.confirm = lambda question: True
@@ -161,6 +161,16 @@ def check_unlocking(home: Path) -> None:
     for overwrite in ("False", "True"):  # no key chosen: the conf stays out
         setup = f"{UNLOCK}endos.args.overwrite = {overwrite}\nendos.check_unlock()\n"
         in_child(home, setup + "assert 'install' not in str(planned), planned")
+    # choosing keys is safe in a dry run, with the real gate
+    setup = UNLOCK.replace("endos.choose =", "unused =").replace(
+        "endos.run =", "unused ="
+    )
+    dry = "endos.args.dry_run = True\nsys.addaudithook(endos.audit)\n"
+    shown = in_child(
+        home, "import sys\n" + setup + dry + "assert endos.add_unlock_keys()"
+    )
+    assert "SHA256:" in shown, shown
+    assert "AAAA" not in shown
     (home / "keys").mkdir()
     for name in ("host", "host.pub", "authorized_keys"):
         (home / "keys" / name).write_text("ssh-ed25519 AAAA me\n")

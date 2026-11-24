@@ -7,6 +7,8 @@ through run() or do(), and in a dry run audit() stops anything that doesn't.
 """
 
 import argparse
+import base64
+import hashlib
 import os
 import pwd
 import re
@@ -291,11 +293,11 @@ def audit(event: str, info: tuple) -> None:
         raise RuntimeError(f"a dry run must not do this: {event} {info}")
 
 
-def query(*cmd: str, cwd: Path = DOTFILES, text: str | None = None) -> str:
+def query(*cmd: str, cwd: Path = DOTFILES) -> str:
     """Output of a command that only reads."""
     assert is_query(cmd), cmd
     result = subprocess.run(
-        cmd, cwd=cwd, input=text, stdout=subprocess.PIPE, text=True, check=False
+        cmd, cwd=cwd, stdout=subprocess.PIPE, text=True, check=False
     )
     return result.stdout
 
@@ -640,6 +642,9 @@ def has_unlock_keys() -> bool:
     return bool(key_lines(read_as_root("cat", str(UNLOCK_KEYS)) or ""))
 
 
+PUBLIC_KEY = re.compile(r"(?:ssh|ecdsa|sk)-\S+ +(AAAA[\w+/=]+) *(.*)")
+
+
 def add_unlock_keys() -> bool:
     """Let the owner pick from the keys that may log in as root or as the user."""
     texts = [read_as_root("cat", "/root/.ssh/authorized_keys") or ""]
@@ -648,10 +653,10 @@ def add_unlock_keys() -> bool:
         texts.append(own.read_text())
     keys = {}
     for line in key_lines("\n".join(texts)):
-        # 256 SHA256:... comment (ED25519)
-        info = query("ssh-keygen", "-l", "-f", "-", text=line + "\n").split()
-        if len(info) > 1 and info[1].startswith("SHA256:"):
-            keys[info[1]] = (" ".join(info[2:]), line)
+        if found := PUBLIC_KEY.search(line):
+            digest = hashlib.sha256(base64.b64decode(found[1] + "==")).digest()
+            fingerprint = "SHA256:" + base64.b64encode(digest).decode().rstrip("=")
+            keys[fingerprint] = (found[2], line)
     if not keys:
         print("! no public keys found to choose from; see manual.md")
         return False
