@@ -37,7 +37,7 @@ vim.opt.timeoutlen = 500
 vim.opt.virtualedit = "block"
 vim.opt.wildmode = { "longest:full", "full" }
 vim.opt.wrap = false
-vim.opt.diffopt = { "internal", "filler", "closeoff", "hiddenoff", "vertical", "algorithm:histogram" }
+vim.opt.diffopt:append({ "hiddenoff", "vertical", "algorithm:histogram" })
 -- stylua: ignore
 vim.opt.wildignore:append({ "blue.vim", "darkblue.vim", "delek.vim", "desert.vim", "elflord.vim", "evening.vim", "habamax.vim", "industry.vim", "koehler.vim", "lunaperche.vim", "morning.vim", "murphy.vim", "pablo.vim", "peachpuff.vim", "quiet.vim", "retrobox.vim", "ron.vim", "shine.vim", "slate.vim", "sorbet.vim", "torte.vim", "unokai.vim", "vim.lua", "wildcharm.vim", "zaibatsu.vim", "zellner.vim", })
 
