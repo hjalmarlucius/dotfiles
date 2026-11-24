@@ -106,6 +106,7 @@
         "interval": 30,
         "format": "  / {specific_free:0.0f} of {specific_total:0.0f} GB free",
         "unit": "GB",
+        "states": { "warning": 85, "critical": 95 },
         "on-click": "swaymsg exec 'footclient --app-id floating_shell --window-size-chars 250x45 gdu -d'"
     },
 

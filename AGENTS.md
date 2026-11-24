@@ -6,7 +6,6 @@ Read every session:
 
 - This file.
 - The open issues and pull requests: `gt issue list -R henrik/dotfiles` and `gt pr list -R henrik/dotfiles`, with their comments and reviews.
-- While you are idle, check them again every 10 minutes (with a recurring timer, such as `/loop 10m`), and act on new issues, comments, reviews and merges.
 
 ## Owners
 

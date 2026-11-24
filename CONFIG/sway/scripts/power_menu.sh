@@ -1,6 +1,13 @@
 #!/bin/bash
 
-SELECTION="$(printf "󰌾 Lock\n󰤄 Suspend\n󰍃 Log out\n Reboot\n Reboot to UEFI\n󰐥 Shutdown" | fuzzel --dmenu -a top-right -l 6 -w 18 -p "Select an option: ")"
+SUSPEND=""
+LINES_SHOWN=5
+if [[ "$(busctl call org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager CanSuspendThenHibernate)" == 's "yes"' ]]; then
+    SUSPEND="󰤄 Suspend\n"
+    LINES_SHOWN=6
+fi
+
+SELECTION="$(printf "󰌾 Lock\n${SUSPEND}󰍃 Log out\n Reboot\n Reboot to UEFI\n󰐥 Shutdown" | fuzzel --dmenu -a top-right -l $LINES_SHOWN -w 18 -p "Select an option: ")"
 [[ -z "$SELECTION" ]] && exit 0
 
 confirm_action() {
