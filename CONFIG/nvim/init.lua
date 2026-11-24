@@ -888,7 +888,7 @@ local function makespec_fugitive()
         keys = {
             { "<leader>gg", "<cmd>vertical Git<cr>", desc = "Fugitive Status" },
             { "<leader>gp", "<cmd>Git! push<cr>", desc = "Git Push" },
-            { "<leader>gP", "<cmd>Git! push -f<cr>", desc = "Git Force Push" },
+            { "<leader>gP", "<cmd>Git! push --force-with-lease --force-if-includes<cr>", desc = "Git Force Push" },
         },
     }
 end
