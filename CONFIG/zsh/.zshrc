@@ -3,6 +3,7 @@ export SYSTEMD_EDITOR=nvim
 export EDITOR=nvim
 export VISUAL=nvim
 export PAGER="bat --style=header,rule,snip"
+export SYSTEMD_PAGER=less  # journalctl -e only works with less
 export PATH=~/.local/bin:${KREW_ROOT:-$HOME/.krew}/bin:$PATH
 export BROWSER=/usr/bin/qutebrowser
 export HISTFILE=~/.config/zsh/history
@@ -38,9 +39,6 @@ compinit -d "${ZDOTDIR:-$HOME}/zcompdump"
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' 'r:|[._-]=** r:|=**'
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-if command -v kubectl >/dev/null 2>&1; then
-  source <(kubectl completion zsh)
-fi
 
 # --- catai ---
 # --- catai wrapper & completion (must be AFTER compinit) ---
@@ -83,6 +81,7 @@ source /usr/share/zsh/plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 # the widgets read these when they run, so they must be exported
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_CTRL_T_OPTS="--preview 'bat --color=always --style=numbers --line-range=:200 {}'"
 # empty CTRL_R_COMMAND is read while sourcing: leaves ^R to atuin
 FZF_CTRL_R_COMMAND= source <(fzf --zsh)
 # atuin: Ctrl+R, /
