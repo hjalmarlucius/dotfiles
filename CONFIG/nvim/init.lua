@@ -491,14 +491,23 @@ local function makespec_lspconfig()
                 root_markers = { ".git" },
             })
 
+            -- pyrefly reports unused imports and unknown names
+            vim.lsp.config("ruff", { init_options = { settings = { lint = { ignore = { "F401", "F821" } } } } })
+            vim.lsp.config("jsonls", { cmd = { "vscode-json-language-server", "--stdio" } })
+            vim.lsp.config("cssls", { cmd = { "vscode-css-language-server", "--stdio" } })
+
             vim.lsp.enable("bashls")
             vim.lsp.enable("clangd")
+            vim.lsp.enable("cssls")
+            vim.lsp.enable("gopls")
             vim.lsp.enable("html")
+            vim.lsp.enable("jsonls")
             vim.lsp.enable("lua_ls")
             -- vim.lsp.enable("ty")
             vim.lsp.enable("pyrefly")
             -- vim.lsp.enable("pylsp")
             -- vim.lsp.enable("basedpyright")
+            vim.lsp.enable("ruff")
             vim.lsp.enable("tinymist")
             vim.lsp.enable("vtsls")
             vim.lsp.enable("yamlls")
@@ -506,6 +515,9 @@ local function makespec_lspconfig()
             vim.api.nvim_create_autocmd("LspAttach", {
                 group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
                 callback = function(ev)
+                    local client = vim.lsp.get_client_by_id(ev.data.client_id)
+                    if client and client.name == "ruff" then client.server_capabilities.hoverProvider = false end
+
                     local bmap = function(mode, keys, func, desc)
                         vim.keymap.set(mode, keys, func, { buffer = ev.buf, desc = desc, silent = true })
                     end
