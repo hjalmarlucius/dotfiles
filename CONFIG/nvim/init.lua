@@ -100,9 +100,6 @@ vim.diagnostic.config({
     virtual_text = {
         spacing = vim.o.shiftwidth,
         source = "if_many",
-        severity = {
-            max = vim.diagnostic.severity.WARN,
-        },
     },
     signs = false,
     virtual_lines = {
@@ -573,7 +570,7 @@ local function makespec_lualine()
                 lualine_a = { "mode" },
                 lualine_b = {},
                 lualine_c = { { "filename", path = 1, shorting_target = 0 } },
-                lualine_x = {},
+                lualine_x = { "diagnostics" },
                 lualine_y = {
                     "filetype",
                     { "location", separator = "/", padding = { left = 1, right = 1 } },
