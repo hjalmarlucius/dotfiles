@@ -1,5 +1,5 @@
 vim.g.mapleader = vim.keycode(" ")
-vim.g.maplocalleader = vim.keycode("/")
+vim.g.maplocalleader = vim.keycode("\\")
 vim.opt.langmap = "ø:"
 
 -- general options
