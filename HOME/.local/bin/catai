@@ -22,8 +22,15 @@ type PathList = list[str]
 DEFAULT_IGNORES: tuple[str, ...] = (
     "!.git/*",
     "!.env*",
-    "!*lock*",
-    "!*.lock",
+    # lockfiles by exact name pattern; a bare *lock* would also drop clock.py or blocks/
+    "!*.lock",  # Cargo, poetry, uv, yarn, flake, Gemfile, composer, bun
+    "!*.lockb",  # old bun
+    "!*-lock.json",  # npm package-lock.json
+    "!*-lock.yaml",  # pnpm-lock.yaml
+    "!*-lock.yml",  # conda-lock.yml
+    "!*.lock.json",  # NuGet packages.lock.json
+    "!*.lockfile",  # gradle.lockfile
+    "!*.lock.hcl",  # .terraform.lock.hcl
     "!*.min.*",
 )
 
@@ -179,6 +186,22 @@ def run_lines(cmd: Sequence[str]) -> list[str]:
     return [line.removeprefix("./") for line in res.stdout.splitlines() if line]
 
 
+def run_nul(cmd: Sequence[str]) -> list[str]:
+    """Run a command with NUL-separated output (git -z) and return the entries."""
+    res = subprocess.run(cmd, capture_output=True, check=False)
+    return [os.fsdecode(entry) for entry in res.stdout.split(b"\0") if entry]
+
+
+def is_text_file(path: str) -> bool:
+    """True for a non-empty file with no NUL byte in its first 8000 bytes (git's heuristic)."""
+    try:
+        with open(path, "rb") as f:
+            head = f.read(8000)
+    except OSError:
+        return False
+    return bool(head) and b"\0" not in head
+
+
 def resolve_candidate_files(targets: PathList, exclude_globs: GlobList) -> PathList:
     """Resolve any mix of directories, explicit files, and globs while honoring .gitignore and -x."""
     if not targets:
@@ -291,25 +314,20 @@ def collect_files(cfg: Config, target_paths: PathList) -> PathList:
         return []
 
     if cfg.dirty:
+        # -z: names verbatim (no "\303\270" quoting); paths relative to CWD
         dirty_files = set(
-            run_lines(["git", "ls-files", "-m", "-o", "--exclude-standard"])
+            run_nul(["git", "ls-files", "-z", "-m", "-o", "--exclude-standard"])
+        )
+        # staged files (e.g. a new file after git add) that ls-files -m misses
+        dirty_files.update(
+            run_nul(["git", "diff", "--cached", "--name-only", "--relative", "-z"])
         )
         candidates = [f for f in candidates if f in dirty_files]
         if not candidates:
             return []
 
-    # Filter to non-empty, non-binary text files via ripgrep '^'
-    rg_content_cmd = [
-        "rg",
-        "-l",
-        "--hidden",
-        "--sort",
-        "path",
-        "^",
-        "--",
-        *candidates,
-    ]
-    return run_lines(rg_content_cmd)
+    # Keep non-empty text files. Not rg: it searches binaries named on the command line.
+    return [f for f in candidates if is_text_file(f)]
 
 
 def dump_output(files: PathList) -> None:

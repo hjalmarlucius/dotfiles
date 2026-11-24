@@ -71,8 +71,6 @@
     autoupdate = true
 [color]
     ui = true
-[safe]
-    directory = /tmp
 [credential]
     helper = /usr/lib/git-core/git-credential-libsecret
 [credential "https://git.hjarl.com"]
