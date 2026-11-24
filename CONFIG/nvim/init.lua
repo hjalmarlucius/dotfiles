@@ -1617,7 +1617,7 @@ local function makespec_lint()
                 typescript = installed({ "eslint_d" }),
                 html = installed({ "tidy", "eslint_d" }),
                 go = installed({ "golangcilint" }),
-                sh = installed({ "shellcheck" }),
+                -- sh: bashls runs shellcheck
             }
 
             local lint_augroup = vim.api.nvim_create_augroup("nvim_lint", { clear = true })
