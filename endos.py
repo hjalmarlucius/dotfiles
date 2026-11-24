@@ -46,7 +46,7 @@ installmap = dict(
         "zsh-vi-mode",
         "atuin",
         "fzf",
-        "git-delta",
+        "fd",  # FZF_DEFAULT_COMMAND
         "starship",
         "zoxide",
         "bat",
@@ -67,7 +67,6 @@ installmap = dict(
         "git-delta",
         "git-lfs",
         "lazygit",
-        "bat",
         "gnome-keyring",  # for git credentials
         "seahorse",  # keyring ui
     ),
@@ -109,7 +108,6 @@ installmap = dict(
         "sshfs",
         "file-roller",
         "7zip",  # explore zip files
-        "zoxide",  # quick search
         "eza",  # pretty alternative to `ls`
         "glow",  # markdown renderer
     ),
@@ -144,7 +142,7 @@ installmap = dict(
         "bandwhich",  # network
         "sysstat",
     ),
-    apps=("keepassxc", "bitwarden", "qalculate-gtk", "discord"),
+    apps=("keepassxc", "bitwarden", "qalculate-gtk"),
     sway=(
         "xdg-terminal-exec",
         # visuals
@@ -166,6 +164,7 @@ installmap = dict(
         "dry-bin",  # docker tui
     ),
     k8s=(
+        "docker",  # docker.service is enabled by install_k8sreqs
         "docker-buildx",  # advanced build
         "qemu-user-static-binfmt",  # build arm64
         "qemu-user-static",  # build arm64
@@ -198,9 +197,10 @@ def compare(src: Path, tgt: Path) -> str:
     if src.is_dir():
         diff = ""
         for subsrc in src.glob("**/*"):
-            subpath = subsrc.relative_to(src)  # NOTE: dirty code!
-            subtgt = tgt / subpath
-            if subtgt.exists() and lexists(subtgt):
+            if not subsrc.is_file():
+                continue
+            subtgt = tgt / subsrc.relative_to(src)
+            if subtgt.exists():
                 diff += compare(subsrc, subtgt)
         return diff
     else:
@@ -339,8 +339,6 @@ def install_filebrowsers(overwrite: bool, reinstall: bool) -> None:
         "ya pkg add ndtoan96/ouch",
     ]:
         run(f"ya pkg add {plugin}".split())
-    tgt = ".local/share/applications/userapp-file-roller.desktop"
-    helper_maybe_copy(HOME_SRC, HOME_TGT, tgt, overwrite, symlink=True)
 
 
 def install_netbrowsers(overwrite: bool, reinstall: bool) -> None:
@@ -364,8 +362,6 @@ def install_emailcalrss(overwrite: bool, reinstall: bool) -> None:
     helper_install(*installmap["emailcalrss"], reinstall=reinstall)
     for tgt in ["vdirsyncer", "khard", "khal", "aerc"]:
         helper_clone_foldercontents(CFG_SRC, CFG_TGT, tgt, overwrite)
-    tgt = ".local/share/applications/userapp-khalimport.desktop"
-    helper_maybe_copy(HOME_SRC, HOME_TGT, tgt, overwrite, symlink=True)
     run("systemctl enable --user --now vdirsyncer.timer".split())
     run(f"chmod 600 {CFG_TGT / 'aerc/accounts.conf'}".split())
     (HOME_TGT / "Calendars").mkdir(exist_ok=True)
@@ -413,8 +409,6 @@ def install_sway(overwrite: bool, reinstall: bool) -> None:
         helper_clone_foldercontents(CFG_SRC, CFG_TGT, sub, overwrite)
     helper_maybe_copy(CFG_SRC, CFG_TGT, "xdg-terminals.list", overwrite, symlink=True)
     helper_maybe_copy(CFG_SRC, CFG_TGT, "mimeapps.list", overwrite, symlink=True)
-    # swaync configs
-    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "swaync", overwrite)
     # custom sway configs
     helper_clone_foldercontents(CUSTOM_SRC / "CONFIG", CFG_TGT, "sway", overwrite)
     # custom waybar configs
@@ -440,7 +434,7 @@ def install_virtwin(overwrite: bool, reinstall: bool) -> None:
     run(["sudo", "usermod", "-aG", "libvirt", USERNAME])
     run("sudo virsh net-start default".split())
     run("sudo virsh net-autostart default".split())
-    run("systemctl enable --now libvirtd".split())
+    run("sudo systemctl enable --now libvirtd".split())
 
 
 def install_k8sreqs(overwrite: bool, reinstall: bool) -> None:
@@ -531,7 +525,7 @@ def installer(
     # vdirsyncer
     - set up with google calendar using
       https://vdirsyncer.pimutils.org/en/stable/config.html#google
-    - run `vdirsyncer discover` then `vdiscover sync`
+    - run `vdirsyncer discover` then `vdirsyncer sync`
 
     # firefox
     - allow windowed fullscreen by setting full-screen-api.ignore-widgets to
@@ -542,7 +536,6 @@ def installer(
       coolercontrold.service`
 
     # k8s
-    - configure /etc/hosts
     - /etc/hosts: configure
     - /root/.ssh/authorized_keys: add permitted ssh keys
     - /etc/dracut.conf.d/crypt-ssh.conf: set port + 'unlock' helper
