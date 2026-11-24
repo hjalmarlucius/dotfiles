@@ -15,6 +15,16 @@ alias ..='cd ..'
 alias ...='cd ../..'
 alias sioyek="QT_QPA_PLATFORM=xcb sioyek"
 
+# --- yazi: cd to its folder on quit (Q quits without) ---
+function y() {
+  local tmp cwd
+  tmp="$(mktemp -t "yazi-cwd.XXXXXX")" || return
+  command yazi "$@" --cwd-file="$tmp"
+  IFS= read -r -d '' cwd < "$tmp"
+  [[ -n "$cwd" && "$cwd" != "$PWD" && -d "$cwd" ]] && builtin cd -- "$cwd"
+  command rm -f -- "$tmp"
+}
+
 # --- basic keybinds ---
 bindkey '^[[Z' reverse-menu-complete  # shift-tab
 bindkey '^[^M' self-insert-unmeta  # alt+enter newline
