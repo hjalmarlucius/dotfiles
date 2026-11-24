@@ -120,6 +120,8 @@ installmap = dict(
         "w3m",
         "python-adblock",  # for qutebrowser ad blocker
         "python-tldextract",
+        "python-readability-lxml",  # for qutebrowser reader mode
+        "pdfjs",  # for qutebrowser pdf viewer
         "bitwarden-cli",  # for qutebrowser autofill
     ),
     chat=("discord", "gurk"),

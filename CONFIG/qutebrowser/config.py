@@ -17,7 +17,7 @@ config.unbind("r", mode="normal")
 config.bind("<Ctrl+r>", "reload -f")
 config.bind("R", "reload", mode="normal")
 config.bind("<Ctrl+n>", "tab-clone -w")
-config.bind("<Ctrl+t>", "tab-clone -t")
+config.bind("<Ctrl+t>", "tab-clone")
 config.bind("<Ctrl+Shift+r>", "restart", mode="normal")
 config.bind("<Ctrl+h>", "history")
 config.bind("<F2>", "edit-url")
@@ -51,6 +51,8 @@ config.bind("m", 'cmd-set-text :quickmark-add {url:pretty} "', mode="normal")
 config.bind("D", "tab-close")
 config.bind(",m", "hint links spawn -d mpv {hint-url}", mode="normal")
 config.bind(",M", "spawn -d mpv {url}", mode="normal")
+config.bind(",d", "hint all delete", mode="normal")
+config.bind(",r", "spawn --userscript readability", mode="normal")
 config.unbind("co")  # close all tabs except this one
 config.unbind("<Ctrl+x>")  # navigate decrement
 config.unbind("<Ctrl+a>")  # navigate increment
@@ -69,6 +71,7 @@ c.completion.open_categories = [
     "history",
     "filesystem",
 ]
+c.content.pdfjs = True
 c.content.register_protocol_handler = False
 c.content.blocking.enabled = True
 c.content.fullscreen.window = True
@@ -93,7 +96,7 @@ c.completion.web_history.max_items = 10000
 c.completion.height = "100%"
 c.confirm_quit = ["multiple-tabs", "downloads"]
 c.content.javascript.clipboard = "ask"
-c.content.local_content_can_access_remote_urls = True
+c.content.local_content_can_access_remote_urls = False
 c.content.autoplay = False
 c.content.geolocation = False
 c.content.cache.size = 52428800
@@ -130,7 +133,7 @@ for url, urlconfig in urlconfigs.items():
         config.set(setting, value, url)
 
 c.downloads.position = "bottom"
-c.downloads.prevent_mixed_content = False
+c.downloads.prevent_mixed_content = True
 c.editor.command = [
     "footclient",
     "--app-id",
@@ -152,8 +155,11 @@ c.qt.highdpi = True
 qt_args = [
     "disable-features=WebAuth",  # makes BankID work
 ]
-# Disable GPU by default (for AI training), unless QUTE_ENABLE_GPU is set
-if os.environ.get("QUTE_ENABLE_GPU") != "1":
+# Disable GPU on the AI training hosts, unless QUTE_ENABLE_GPU is set
+if (
+    os.uname().nodename in ("mothership", "droneship")
+    and os.environ.get("QUTE_ENABLE_GPU") != "1"
+):
     qt_args.extend(
         [
             "disable-gpu",  # Stops using the GPU for rendering
@@ -166,7 +172,7 @@ if os.environ.get("QUTE_ENABLE_GPU") != "1":
 c.qt.args = qt_args
 c.scrolling.bar = "always"
 c.scrolling.smooth = False
-c.session.lazy_restore = False
+c.session.lazy_restore = True
 c.session.default_name = "hb"
 c.statusbar.padding = {"bottom": 5, "left": 5, "right": 5, "top": 5}
 c.statusbar.position = "bottom"
@@ -202,20 +208,21 @@ c.url.searchengines = {
     "aw": "https://wiki.archlinux.org/?search={}",
     "ap": "https://www.archlinux.org/packages/?q={}",
     "gh": "https://github.com/search?q={}&type=repositories",
+    "gi": "https://git.hjarl.com/explore/repos?q={}",
+    "gm": "https://www.google.com/maps/search/{}",
     "ip": "https://iplocation.io/ip/{}",
     "sh": "https://explainshell.com/explain?cmd={}",
     "wi": "https://en.wikipedia.org/w/index.php?search={}",
-    "yt": "https://yewtu.be/search?q={}",
 }
 c.zoom.default = "100%"
 
 # FONTS
-c.fonts.default_family = ["Iosevka"]
+c.fonts.default_family = ["Hack"]
 c.fonts.default_size = "12pt"
-c.fonts.prompts = "12pt Iosevka"
-c.fonts.web.family.sans_serif = "IBM Plex Sans"
-c.fonts.web.family.serif = "IBM Plex Serif"
-c.fonts.web.family.fixed = "IBM Plex Mono"
+c.fonts.prompts = "default_size default_family"
+c.fonts.web.family.sans_serif = "Noto Sans"
+c.fonts.web.family.serif = "Noto Serif"
+c.fonts.web.family.fixed = "Noto Sans Mono"
 c.fonts.web.family.standard = c.fonts.web.family.sans_serif
 
 # COLORS
@@ -235,7 +242,7 @@ base0C = "#86c1b9"
 base0D = "#00E5FF"
 base0E = "#ba8baf"
 base0F = "#a16946"
-c.colors.webpage.preferred_color_scheme = "light"
+c.colors.webpage.preferred_color_scheme = "dark"
 c.colors.webpage.darkmode.enabled = False
 
 # from https://raw.githubusercontent.com/tinted-theming/base16-qutebrowser/refs/heads/main/templates/default.mustache

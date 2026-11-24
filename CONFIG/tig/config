@@ -1,4 +1,4 @@
-set blame-view = date:default line-number:yes
+set blame-view = date:default line-number:yes text
 set main-view-id-display = yes
 set main-view-author-display = full
 set ignore-space = all

@@ -11,7 +11,7 @@ unicode_symbols = false
 local_timezone = Europe/Oslo
 default_timezone = Europe/Oslo
 timeformat = %H:%M
-dateformat = %d.%m
+dateformat = %d.%m.%Y
 longdateformat = %d.%m.%Y
 
 [calendars]
