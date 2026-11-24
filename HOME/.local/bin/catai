@@ -20,7 +20,8 @@ type GlobList = list[str]
 type PathList = list[str]
 
 DEFAULT_IGNORES: tuple[str, ...] = (
-    "!.git/*",
+    "!.git",
+    "!**/.git/**",
     "!.env*",
     # lockfiles by exact name pattern; a bare *lock* would also drop clock.py or blocks/
     "!*.lock",  # Cargo, poetry, uv, yarn, flake, Gemfile, composer, bun
@@ -32,6 +33,12 @@ DEFAULT_IGNORES: tuple[str, ...] = (
     "!*.lockfile",  # gradle.lockfile
     "!*.lock.hcl",  # .terraform.lock.hcl
     "!*.min.*",
+    # keys and credentials
+    "!*.pem",
+    "!*.key",
+    "!id_rsa*",
+    "!id_ed25519*",
+    "!credentials*",
 )
 
 EXAMPLES = """
@@ -267,6 +274,15 @@ def resolve_candidate_files(targets: PathList, exclude_globs: GlobList) -> PathL
         allowed_all = set(
             run_lines(["rg", "--files", "--hidden", "--sort", "path", *exclude_globs])
         )
+        # files outside the current folder aren't in that list: check each where it is
+        for parent in {os.path.dirname(f) for f in explicit_files - allowed_all}:
+            if parent:
+                allowed_all.update(
+                    run_lines(
+                        ["rg", "--files", "--hidden", "--max-depth", "1"]
+                        + [*exclude_globs, "--", parent]
+                    )
+                )
         matched.update(explicit_files & allowed_all)
 
     return sorted(matched)

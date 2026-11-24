@@ -183,8 +183,8 @@ bindsym --whole-window --border {
     $mod+Shift+button5 resize grow width 5 px or 5 ppt
 }
 
-# media keys
-bindsym {
+# media keys, also on the lock screen
+bindsym --locked {
     # Volume
     XF86AudioRaiseVolume exec pamixer --unmute -i 2
     XF86AudioLowerVolume exec pamixer --unmute -d 2
@@ -192,6 +192,7 @@ bindsym {
     Pause exec pamixer -ui 2
     Print exec pamixer -ud 2
     Scroll_Lock exec pamixer --toggle-mute
+    XF86AudioMicMute exec pamixer --default-source --toggle-mute
 
     # Player
     XF86AudioPlay exec playerctl play-pause
@@ -223,6 +224,9 @@ bindsym {
     $mod+Prior workspace PUp
     $mod+Next workspace Pdn
 
+    # Switch to the previous workspace
+    $mod+Tab workspace back_and_forth
+
     # Move focused container to workspace
     $mod+Shift+1 move container to workspace 1
     $mod+Shift+2 move container to workspace 2
@@ -250,6 +254,9 @@ bindsym {
     # Snip a selection and pipe to swappy
     $mod+Shift+s exec env XCURSOR_THEME=Qogir-Dark XCURSOR_SIZE=20 sh -c 'grim -g "$(slurp)" - | swappy -f -'
 
+    # Screenshot of all screens to the clipboard
+    $mod+Ctrl+s exec grim - | wl-copy
+
     # unicode picker
     $mod+u exec unipicker --command "fuzzel --dmenu | wl-copy"
 
@@ -263,22 +270,10 @@ bindsym {
     # Notifications
     $mod+n exec swaync-client --hide-latest
     $mod+Shift+n exec swaync-client --close-latest
+    $mod+Ctrl+n exec swaync-client --action 0
     $mod+m exec swaync-client -t -sw
 }
 
-# config tools
-set $mode_monitor (b) btop, (h) htop, (s) isd, (j) journal, (n) nvtop
-mode "$mode_monitor" {
-    bindsym b exec footclient --app-id floating_shell --window-size-chars 140x50 btop, mode "default"
-    bindsym h exec footclient --app-id floating_shell --window-size-chars 140x50 htop, mode "default"
-    bindsym s exec footclient --app-id floating_shell --window-size-chars 140x50 isd, mode "default"
-    bindsym j exec footclient --app-id floating_shell --window-size-chars 140x50 lazyjournal, mode "default"
-    bindsym n exec footclient --app-id floating_shell --window-size-chars 140x50 nvtop, mode "default"
-
-    bindsym Return mode "default"
-    bindsym Escape mode "default"
-}
-bindsym $mod+Shift+m mode "$mode_monitor"
 
 # ------------------------------------------
 # AUTOSTART
@@ -320,15 +315,11 @@ exec {
 }
 
 exec_always {
-    pkill -x swayidle; exec swayidle -w \
-        timeout 1200 'gtklock -d' \
-        timeout 2400 'swaymsg "output * dpms off"' \
-            resume 'swaymsg "output * dpms on"' \
-        before-sleep 'gtklock' \
-        lock 'gtklock'
+    # lock and turn screens off when idle
+    ~/.config/sway/scripts/idle.sh
 
     # nwg-drawer
-    nwg-drawer -r -c 7 -is 90 -mb 10 -ml 50 -mr 50 -mt 10
+    nwg-drawer -r -term footclient -fm pcmanfm -c 7 -is 90 -mb 10 -ml 50 -mr 50 -mt 10
 }
 
 # ------------------------------------------
@@ -361,9 +352,12 @@ for_window [app_id="org.mozilla.Thunderbird" title="^((?!Mozilla Thunderbird).)*
 for_window [app_id="(?i)^steam$"] floating enable
 for_window [app_id="(?i)^steam$" title="^Steam$"] floating disable
 
+# Focus a window asking for it if visible, else mark it urgent
+focus_on_window_activation smart
+
 # Inhibit idle
 for_window [app_id="firefox"] inhibit_idle fullscreen
-for_window [app_id="Chromium"] inhibit_idle fullscreen
+for_window [app_id="(?i)^chromium$"] inhibit_idle fullscreen
 
 # Don't allow applications to inhibit shortcuts, i.e. grab total control of the
 # keyboard. Chrome currently abuses this by enabling it for all "--app=..." shortcuts.
@@ -382,6 +376,8 @@ input type:touchpad {
 input type:keyboard {
     xkb_layout "us_custom,us_norwegian"
     xkb_options "grp:shifts_toggle,caps:escape"
+    repeat_delay 250
+    repeat_rate 45
 }
 
 input type:mouse {

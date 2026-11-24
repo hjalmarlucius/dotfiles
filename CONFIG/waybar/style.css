@@ -109,6 +109,15 @@
   color: red;
 }
 
+#temperature.critical,
+#disk.critical {
+  color: red;
+}
+
+#disk.warning {
+  color: orange;
+}
+
 #memory {
   animation-timing-function: linear;
   animation-iteration-count: infinite;

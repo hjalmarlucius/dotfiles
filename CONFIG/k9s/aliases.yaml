@@ -8,3 +8,9 @@ aliases:
   rb: rolebindings
   np: networkpolicies
   gr: gitrepo
+  pg: postgresql.cnpg.io/v1/clusters
+  pgb: postgresql.cnpg.io/v1/backups
+  hrt: gateway.networking.k8s.io/v1/httproutes
+  spol: gateway.envoyproxy.io/v1alpha1/securitypolicies
+  vol: longhorn.io/v1beta2/volumes
+  lhn: longhorn.io/v1beta2/nodes

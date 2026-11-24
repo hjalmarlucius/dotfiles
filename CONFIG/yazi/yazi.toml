@@ -11,21 +11,29 @@ max_width = 1500
 max_height = 1500
 
 [open]
+# mime types as yazi has them: without the x- and vnd. prefixes
 prepend_rules = [
   # Directories
-  { mime = "inode/directory", use = [ "thunar", "pcmanfm", "open" ] },
+  { mime = "folder/*", use = [ "thunar", "pcmanfm", "open" ] },
+
+  # Certificates
+  { url = "*.{crt,pem,cer}", use = [ "nvim", "cert", "bat", "open" ] },
+  { url = "*.der", use = [ "cert", "open" ] },
+
+  # Web pages
+  { mime = "text/html", use = [ "nvim", "qutebrowser", "firefox", "chrome", "w3m", "bat", "open" ] },
 
   # Text & Code
   { url = "*.csv", use = "text" },
-  { url = "*.md", use = [ "glow", "nvim", "bat", "open" ] },
-  { url = "*.json", use = [ "jq", "nvim", "bat", "open" ] },
+  { url = "*.md", use = [ "nvim", "glow", "bat", "open" ] },
+  { url = "*.json", use = [ "nvim", "jq", "bat", "open" ] },
   { mime = "text/*", use = [ "nvim", "bat", "open" ] },
-  { mime = "inode/x-empty", use = [ "nvim", "open" ] },
+  { mime = "inode/empty", use = [ "nvim", "open" ] },
 
   # PDF & Documents
   { mime = "application/pdf", use = [ "zathura", "sioyek", "okular", "xournalpp", "chrome", "firefox", "open" ] },
-  { mime = "application/vnd.openxmlformats-officedocument.*", use = [ "libreoffice", "calligra", "open" ] },
-  { mime = "application/vnd.oasis.opendocument.*", use = [ "libreoffice", "calligra", "open" ] },
+  { mime = "application/openxmlformats-officedocument.*", use = [ "libreoffice", "calligra", "open" ] },
+  { mime = "application/oasis.opendocument.*", use = [ "libreoffice", "calligra", "open" ] },
 
   # Images
   { mime = "image/heic", use = [ "swappy", "krita", "open" ] },
@@ -37,21 +45,12 @@ prepend_rules = [
 
   # Archives
   { mime = "application/zip", use = [ "ouch", "file-roller", "open" ] },
-  { mime = "application/x-tar", use = [ "ouch", "file-roller", "open" ] },
+  { mime = "application/tar", use = [ "ouch", "file-roller", "open" ] },
   { mime = "application/gzip", use = [ "ouch", "file-roller", "open" ] },
-  { mime = "application/x-bzip*", use = [ "ouch", "file-roller", "open" ] },
-  { mime = "application/x-7z-compressed", use = [ "ouch", "file-roller", "open" ] },
-  { mime = "application/x-rar", use = [ "ouch", "file-roller", "open" ] },
-
-  # Web pages
-  { mime = "text/html", use = [ "qutebrowser", "firefox", "chrome", "w3m", "open" ] },
-
-  # JSON files
-  # Certificates
-  { url = "*.{crt,pem,cer,der}", use = [ "cert", "nvim", "bat", "open" ] },
-
-  # Catch-all for any file (allows Exiftool on everything as a fallback)
-  { url = "*", use = [ "exiftool", "open" ] },
+  { mime = "application/bzip*", use = [ "ouch", "file-roller", "open" ] },
+  { mime = "application/7z*", use = [ "ouch", "file-roller", "open" ] },
+  { mime = "application/rar", use = [ "ouch", "file-roller", "open" ] },
+  { mime = "application/{xz,zstd}", use = [ "ouch", "file-roller", "open" ] },
 ]
 
 [opener]
@@ -68,7 +67,7 @@ cert = [ { run = "openssl x509 -text -noout -in %s | less", block = true, desc =
 
 # --- PDFs (Orphaned GUI Apps) ---
 zathura = [ { run = "zathura %s", orphan = true, desc = "Zathura" } ]
-sioyek = [ { run = "sioyek %s", orphan = true, desc = "Sioyek" } ]
+sioyek = [ { run = "env QT_QPA_PLATFORM=xcb sioyek %s", orphan = true, desc = "Sioyek" } ]
 okular = [ { run = "okular %s", orphan = true, desc = "Okular" } ]
 xournalpp = [ { run = "xournalpp %s", orphan = true, desc = "Xournal++" } ]
 
@@ -76,7 +75,7 @@ xournalpp = [ { run = "xournalpp %s", orphan = true, desc = "Xournal++" } ]
 chrome = [ { run = "google-chrome-stable %s", orphan = true, desc = "Chrome" } ]
 firefox = [ { run = "firefox %s", orphan = true, desc = "Firefox" } ]
 qutebrowser = [ { run = "qutebrowser %s", orphan = true, desc = "Qutebrowser" } ]
-w3m = [ { run = "w3m %s", orphan = true, desc = "w3m" } ]
+w3m = [ { run = "w3m %s", block = true, desc = "w3m" } ]
 
 # --- Media: Video / Audio (Orphaned GUI Apps) ---
 mpv = [ { run = "mpv %s", orphan = true, desc = "MPV" } ]
@@ -93,7 +92,7 @@ libreoffice = [ { run = "libreoffice %s", orphan = true, desc = "LibreOffice" } 
 calligra = [ { run = "calligrawords %s", orphan = true, desc = "Calligra" } ]
 
 # --- Archives ---
-ouch = [ { run = "ouch d -y %s", desc = "Extract here with ouch" } ]
+ouch = [ { run = "ouch d %s", block = true, desc = "Extract here with ouch" } ]
 file-roller = [ { run = "file-roller %s", orphan = true, desc = "File Roller" } ]
 
 # --- Directories (Orphaned GUI Apps) ---

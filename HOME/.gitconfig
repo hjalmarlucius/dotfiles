@@ -53,9 +53,13 @@
 [push]
     autoSetupRemote = true
     followTags = true
+    useForceIfIncludes = true
+[commit]
+    verbose = true
+[alias]
+    pushf = push --force-with-lease
 [fetch]
     prune = true
-    pruneTags = true
     all = true
 [pull]
     rebase = true
@@ -68,7 +72,6 @@
 
 [rerere]
     enabled = true
-    autoupdate = true
 [color]
     ui = true
 [credential]

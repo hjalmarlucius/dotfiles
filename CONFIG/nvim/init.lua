@@ -1,5 +1,5 @@
 vim.g.mapleader = vim.keycode(" ")
-vim.g.maplocalleader = vim.keycode("/")
+vim.g.maplocalleader = vim.keycode("\\")
 vim.opt.langmap = "ø:"
 
 -- general options
@@ -37,7 +37,7 @@ vim.opt.timeoutlen = 500
 vim.opt.virtualedit = "block"
 vim.opt.wildmode = { "longest:full", "full" }
 vim.opt.wrap = false
-vim.opt.diffopt = { "internal", "filler", "closeoff", "hiddenoff", "vertical", "algorithm:histogram" }
+vim.opt.diffopt:append({ "hiddenoff", "vertical", "algorithm:histogram" })
 -- stylua: ignore
 vim.opt.wildignore:append({ "blue.vim", "darkblue.vim", "delek.vim", "desert.vim", "elflord.vim", "evening.vim", "habamax.vim", "industry.vim", "koehler.vim", "lunaperche.vim", "morning.vim", "murphy.vim", "pablo.vim", "peachpuff.vim", "quiet.vim", "retrobox.vim", "ron.vim", "shine.vim", "slate.vim", "sorbet.vim", "torte.vim", "unokai.vim", "vim.lua", "wildcharm.vim", "zaibatsu.vim", "zellner.vim", })
 
@@ -100,9 +100,6 @@ vim.diagnostic.config({
     virtual_text = {
         spacing = vim.o.shiftwidth,
         source = "if_many",
-        severity = {
-            max = vim.diagnostic.severity.WARN,
-        },
     },
     signs = false,
     virtual_lines = {
@@ -125,6 +122,7 @@ vim.api.nvim_create_autocmd("FileType", {
 -- ----------------------------------------
 
 vim.g.no_python_maps = 1
+vim.g.loaded_python3_provider = 0 -- skips a slow search when a Python file opens
 local map = vim.keymap.set
 
 -- better esc
@@ -284,6 +282,12 @@ vim.api.nvim_create_autocmd("BufReadPost", {
     end,
 })
 
+vim.api.nvim_create_autocmd("TextYankPost", {
+    group = vim.api.nvim_create_augroup("yank_flash", { clear = true }),
+    desc = "Flash yanked text",
+    callback = function() vim.hl.on_yank() end,
+})
+
 -- Close some filetypes with <q>
 vim.api.nvim_create_autocmd("FileType", {
     group = vim.api.nvim_create_augroup("close_with_q", { clear = true }),
@@ -345,19 +349,20 @@ end, { nargs = 1 })
 
 local function makespecs_themes()
     return {
-        "junegunn/seoul256.vim",
-        "folke/tokyonight.nvim",
+        -- the others load on :colorscheme
+        { "junegunn/seoul256.vim", lazy = true },
+        { "folke/tokyonight.nvim", lazy = true },
         {
             "uloco/bluloco.nvim",
-            lazy = false,
+            lazy = true,
             dependencies = { "rktjmp/lush.nvim" },
             opts = {},
         },
-        "sainnhe/gruvbox-material",
-        "sainnhe/everforest",
-        "sainnhe/edge",
-        "sainnhe/sonokai",
-        { "catppuccin/nvim", name = "catppuccin", opts = { auto_integrations = true } },
+        { "sainnhe/gruvbox-material", lazy = false, priority = 1000 },
+        { "sainnhe/everforest", lazy = true },
+        { "sainnhe/edge", lazy = true },
+        { "sainnhe/sonokai", lazy = true },
+        { "catppuccin/nvim", name = "catppuccin", lazy = true, opts = { auto_integrations = true } },
     }
 end
 
@@ -490,14 +495,23 @@ local function makespec_lspconfig()
                 root_markers = { ".git" },
             })
 
+            -- pyrefly reports unused imports and unknown names
+            vim.lsp.config("ruff", { init_options = { settings = { lint = { ignore = { "F401", "F821" } } } } })
+            vim.lsp.config("jsonls", { cmd = { "vscode-json-language-server", "--stdio" } })
+            vim.lsp.config("cssls", { cmd = { "vscode-css-language-server", "--stdio" } })
+
             vim.lsp.enable("bashls")
             vim.lsp.enable("clangd")
+            vim.lsp.enable("cssls")
+            vim.lsp.enable("gopls")
             vim.lsp.enable("html")
+            vim.lsp.enable("jsonls")
             vim.lsp.enable("lua_ls")
             -- vim.lsp.enable("ty")
             vim.lsp.enable("pyrefly")
             -- vim.lsp.enable("pylsp")
             -- vim.lsp.enable("basedpyright")
+            vim.lsp.enable("ruff")
             vim.lsp.enable("tinymist")
             vim.lsp.enable("vtsls")
             vim.lsp.enable("yamlls")
@@ -505,6 +519,9 @@ local function makespec_lspconfig()
             vim.api.nvim_create_autocmd("LspAttach", {
                 group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
                 callback = function(ev)
+                    local client = vim.lsp.get_client_by_id(ev.data.client_id)
+                    if client and client.name == "ruff" then client.server_capabilities.hoverProvider = false end
+
                     local bmap = function(mode, keys, func, desc)
                         vim.keymap.set(mode, keys, func, { buffer = ev.buf, desc = desc, silent = true })
                     end
@@ -522,7 +539,7 @@ end
 local function makespec_smearcursor()
     return {
         "sphamba/smear-cursor.nvim",
-        event = "VeryLazy",
+        lazy = true, -- loaded by <leader>uS
         opts = {
             enabled = false, -- Dormant on startup (toggled via <leader>uS)
             stiffness = 0.8,
@@ -560,7 +577,7 @@ local function makespec_lualine()
                 lualine_a = { "mode" },
                 lualine_b = {},
                 lualine_c = { { "filename", path = 1, shorting_target = 0 } },
-                lualine_x = {},
+                lualine_x = { "diagnostics" },
                 lualine_y = {
                     "filetype",
                     { "location", separator = "/", padding = { left = 1, right = 1 } },
@@ -756,7 +773,7 @@ local function makespecs_previewers()
             init = function()
                 vim.g.mkdp_auto_start = 0 -- auto start on moving into
                 vim.g.mkdp_auto_close = 0 -- auto close on moving away
-                vim.g.mkdp_open_to_the_world = 1 -- available to others
+                vim.g.mkdp_open_to_the_world = vim.env.SSH_TTY and 1 or 0 -- available to others only over SSH
                 vim.g.mkdp_port = 10010
                 vim.g.mkdp_echo_preview_url = 1
                 vim.g.mkdp_preview_options = { disable_sync_scroll = 1 }
@@ -803,6 +820,23 @@ local function makespec_codediff()
         keys = {
             { "<leader>gd", "<cmd>CodeDiff<cr>", desc = "CodeDiff (Working Tree)" },
             { "<leader>gD", "<cmd>CodeDiff HEAD~1<cr>", desc = "CodeDiff (HEAD~1)" },
+            { "<leader>gh", "<cmd>CodeDiff history %<cr>", desc = "File Commit History (CodeDiff)" },
+            { "<leader>gh", ":CodeDiff history<cr>", mode = "x", desc = "Line Selection History (CodeDiff)" },
+            { "<leader>gH", "<cmd>CodeDiff history<cr>", desc = "Commit History (CodeDiff)" },
+            {
+                "<leader>gM",
+                function()
+                    -- Without a conflict, the merge view's result is an empty, modified buffer
+                    local file = vim.fn.expand("%:p")
+                    local git = { "git", "-C", vim.fs.dirname(file), "ls-files", "--unmerged", "--", file }
+                    if vim.fn.system(git) == "" or vim.v.shell_error ~= 0 then
+                        vim.notify("No merge conflict in this file", vim.log.levels.WARN)
+                        return
+                    end
+                    vim.cmd.CodeDiff({ "merge", file })
+                end,
+                desc = "Merge Conflicts In File (CodeDiff)",
+            },
             {
                 "<leader>gC",
                 function()
@@ -831,27 +865,6 @@ local function makespec_codediff()
                 end,
                 desc = "CodeDiff Commit..HEAD (Picker)",
             },
-        },
-    }
-end
-
-local function makespec_diffview()
-    return {
-        "sindrets/diffview.nvim",
-        cmd = {
-            "DiffviewOpen",
-            "DiffviewClose",
-            "DiffviewToggleFiles",
-            "DiffviewFocusFiles",
-            "DiffviewRefresh",
-            "DiffviewFileHistory",
-        },
-        keys = {
-            { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", mode = "n", desc = "File Commit History (Diffview)" },
-            { "<leader>gH", "<cmd>DiffviewFileHistory<cr>", mode = "n", desc = "Commit History (Diffview)" },
-            { "<leader>gh", ":'<,'>DiffviewFileHistory<cr>", mode = "x", desc = "Line Selection History (Diffview)" },
-            { "<leader>gM", "<cmd>DiffviewOpen<cr>", desc = "Merge / Repo Diffview" },
-            { "<leader>gX", "<cmd>DiffviewClose<cr>", desc = "Close Diffview" },
         },
     }
 end
@@ -887,7 +900,7 @@ local function makespec_fugitive()
         keys = {
             { "<leader>gg", "<cmd>vertical Git<cr>", desc = "Fugitive Status" },
             { "<leader>gp", "<cmd>Git! push<cr>", desc = "Git Push" },
-            { "<leader>gP", "<cmd>Git! push -f<cr>", desc = "Git Force Push" },
+            { "<leader>gP", "<cmd>Git! push --force-with-lease --force-if-includes<cr>", desc = "Git Force Push" },
         },
     }
 end
@@ -977,7 +990,6 @@ local function makespec_whichkey()
         event = "VeryLazy",
         opts = {
             spec = {
-                { "<leader>a", group = "ai", mode = { "n", "x" } },
                 { "<leader>c", group = "code/content", mode = { "n", "x" } },
                 { "<leader>f", group = "file/find" },
                 { "<leader>g", group = "git", mode = { "n", "x" } },
@@ -1099,6 +1111,8 @@ local function makespec_snacks()
             { "<leader>fa", function() Snacks.picker.files() end, desc = "Find Files" },
             { "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.expand("~/dotfiles"), title = "Find Configs" }) end, desc = "Find Config" },
             { "<leader>fn", function() Snacks.picker.files({ cwd = vim.fn.expand("~/notes"), title = "Find Notes" }) end, desc = "Find Note" },
+            { "<leader>fo", function() Snacks.picker.recent() end, desc = "Recent Files" },
+            { "<leader>r", function() Snacks.picker.resume() end, desc = "Resume Last Picker" },
             -- logs
             { "<leader>ll", function() Snacks.notifier.show_history() end, desc = "Notification History" },
             -- code
@@ -1303,10 +1317,10 @@ local function makespec_smartsplits()
             { "<M-k>", function() require("smart-splits").move_cursor_up() end, desc = "Go to Upper Window" },
             { "<M-l>", function() require("smart-splits").move_cursor_right() end, desc = "Go to Right Window" },
             { "<M-\\>", function() require("smart-splits").move_cursor_previous() end, desc = "Go to Previous Window" },
-            { "<C-h>", function() require("smart-splits").resize_left() end, desc = "Resize Window Left" },
-            { "<C-j>", function() require("smart-splits").resize_down() end, desc = "Resize Window Down" },
-            { "<C-k>", function() require("smart-splits").resize_up() end, desc = "Resize Window Up" },
-            { "<C-l>", function() require("smart-splits").resize_right() end, desc = "Resize Window Right" },
+            { "<M-C-h>", function() require("smart-splits").resize_left() end, desc = "Resize Window Left" },
+            { "<M-C-j>", function() require("smart-splits").resize_down() end, desc = "Resize Window Down" },
+            { "<M-C-k>", function() require("smart-splits").resize_up() end, desc = "Resize Window Up" },
+            { "<M-C-l>", function() require("smart-splits").resize_right() end, desc = "Resize Window Right" },
         },
     }
 end
@@ -1322,22 +1336,6 @@ local function makespec_mason()
 end
 
 local function makespec_flash()
-    local function flash_line(forward)
-        return function()
-            local line = vim.fn.line(".")
-            require("flash").jump({
-                search = {
-                    forward = forward,
-                    wrap = false,
-                    multi_window = false,
-                    mode = function(str) return "\\%" .. line .. "l" .. str end,
-                },
-                jump = { autojump = true },
-                label = { after = { 0, 0 } },
-            })
-        end
-    end
-
     return {
         "folke/flash.nvim",
         event = "VeryLazy",
@@ -1346,17 +1344,14 @@ local function makespec_flash()
             jump = { autojump = false },
             modes = {
                 search = { enabled = false },
-                -- Disable built-in f/F/t/T char mode so it doesn't overwrite custom f/F/t/T keys
-                char = { enabled = false },
+                char = { enabled = true }, -- f/F/t/T/;/, (multi_line = false breaks . on another line)
             },
         },
         -- stylua: ignore
         keys = {
             { "s", mode = { "n", "o", "x" }, function() require("flash").jump() end, desc = "Flash" },
-            { "f", mode = { "n", "o", "x" }, flash_line(true), desc = "Flash Line Forward" },
-            { "F", mode = { "n", "o", "x" }, flash_line(false), desc = "Flash Line Backward" },
-            { "t", mode = { "n", "o", "x" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
-            { "T", mode = { "n", "o", "x" }, function() require("flash").treesitter_search() end, desc = "Flash Treesitter Search", },
+            { "S", mode = "o", function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+            { "R", mode = "o", function() require("flash").treesitter_search() end, desc = "Flash Treesitter Search", },
             { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
             { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
         },
@@ -1604,7 +1599,7 @@ local function makespec_lint()
                 typescript = installed({ "eslint_d" }),
                 html = installed({ "tidy", "eslint_d" }),
                 go = installed({ "golangcilint" }),
-                sh = installed({ "shellcheck" }),
+                -- sh: bashls runs shellcheck
             }
 
             local lint_augroup = vim.api.nvim_create_augroup("nvim_lint", { clear = true })
@@ -1640,7 +1635,7 @@ local function makespec_conform()
                 json = { "jq" },
                 lua = { "stylua" },
                 markdown = { "prettierd", "prettier", stop_after_first = true },
-                python = { "ruff_format", "ruff_fix", "ruff_organize_imports" },
+                python = { "ruff_fix", "ruff_format" },
                 sh = { "shfmt" },
                 toml = { "pyproject-fmt" },
                 bash = { "shfmt" },
@@ -1653,10 +1648,14 @@ local function makespec_conform()
                 timeout_ms = 1000,
             },
             formatters = {
-                prettierd = { require_cwd = true },
+                ["pyproject-fmt"] = {
+                    condition = function(_, ctx) return vim.fs.basename(ctx.filename) == "pyproject.toml" end,
+                },
+                -- Markdown is formatted without a prettier config too
+                prettierd = function(bufnr) return { require_cwd = vim.bo[bufnr].filetype ~= "markdown" } end,
                 prettier = { require_cwd = true },
                 stylua = { append_args = { "--indent-type", "Spaces", "--collapse-simple-statement", "Always" } },
-                ruff_fix = { append_args = { "--select", "I,F,UP" } },
+                ruff_fix = { append_args = { "--extend-select", "I,F,UP" } },
                 yamlfmt = {
                     prepend_args = {
                         "-formatter",
@@ -1664,72 +1663,6 @@ local function makespec_conform()
                     },
                 },
             },
-        },
-    }
-end
-
-local function makespec_avante()
-    return {
-        "yetone/avante.nvim",
-        event = "VeryLazy",
-        version = false,
-        build = "make",
-        opts = {
-            provider = "openai",
-            auto_suggestions_provider = "openai",
-            providers = {
-                openai = {
-                    model = "gpt-4.1",
-                    extra_request_body = { temperature = 0 },
-                    max_tokens = 4096,
-                },
-                gemini = {
-                    model = "gemini-2.5-flash",
-                    extra_request_body = { temperature = 0, max_tokens = 4096 },
-                },
-            },
-            ignore_patterns = {
-                ".git",
-                "node_modules",
-                "dist",
-                "build",
-                "target",
-                ".cache",
-                ".venv",
-                "venv",
-                "__pycache__",
-                ".pytest_cache",
-                ".mypy_cache",
-                ".ruff_cache",
-                ".DS_Store",
-                "*.lock",
-                "*.png",
-                "*.jpg",
-                "*.jpeg",
-                "*.gif",
-                "*.webp",
-                "*.pdf",
-                "*.svg",
-                "*.zip",
-                "*.tar",
-                "*.gz",
-                "*.min.js",
-                "*.map",
-                "*.secret",
-                "*.whl",
-                "*.data",
-            },
-        },
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-            "MunifTanjim/nui.nvim",
-            "echasnovski/mini.icons",
-            "nvim-treesitter/nvim-treesitter",
-        },
-        keys = {
-            { "<leader>ai", "<cmd>AvanteAsk<cr>", desc = "AI Ask", mode = { "n", "x" } },
-            { "<leader>ae", "<cmd>AvanteEdit<cr>", desc = "AI Edit Selection", mode = "x" },
-            { "<leader>ar", "<cmd>AvanteRefresh<cr>", desc = "AI Refresh Context" },
         },
     }
 end
@@ -1795,7 +1728,6 @@ local lazyspecs = {
     makespec_autotag(),
     makespec_lint(),
     makespec_mason(),
-    -- makespec_avante(),
     -- navigation
     makespec_atone(),
     makespec_whichkey(),
@@ -1814,7 +1746,6 @@ local lazyspecs = {
     -- git
     makespec_gitsigns(),
     makespec_fugitive(),
-    makespec_diffview(),
     makespec_vimflog(),
     makespecs_themes(),
     makespecs_mini(),
@@ -1834,7 +1765,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
     spec = lazyspecs,
-    checker = { enabled = true },
+    checker = { enabled = true, notify = false, frequency = 86400 },
     rocks = { enabled = false },
 })
 vim.cmd("colorscheme gruvbox-material")

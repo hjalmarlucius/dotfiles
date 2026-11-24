@@ -51,6 +51,6 @@ run = """\
 desc = "catai: Dump current dir EXCEPT selected items"
 
 [[mgr.prepend_keymap]]
-on = [ "c", "d" ]
+on = [ "c", "g" ]
 run = 'shell --block -- catai -d | nvim -R -c "set bt=nofile ft=xml" -'
 desc = "catai: Dump git dirty files into Neovim"
