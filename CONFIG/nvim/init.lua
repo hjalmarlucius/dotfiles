@@ -282,6 +282,12 @@ vim.api.nvim_create_autocmd("BufReadPost", {
     end,
 })
 
+vim.api.nvim_create_autocmd("TextYankPost", {
+    group = vim.api.nvim_create_augroup("yank_flash", { clear = true }),
+    desc = "Flash yanked text",
+    callback = function() vim.hl.on_yank() end,
+})
+
 -- Close some filetypes with <q>
 vim.api.nvim_create_autocmd("FileType", {
     group = vim.api.nvim_create_augroup("close_with_q", { clear = true }),
@@ -1105,6 +1111,8 @@ local function makespec_snacks()
             { "<leader>fa", function() Snacks.picker.files() end, desc = "Find Files" },
             { "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.expand("~/dotfiles"), title = "Find Configs" }) end, desc = "Find Config" },
             { "<leader>fn", function() Snacks.picker.files({ cwd = vim.fn.expand("~/notes"), title = "Find Notes" }) end, desc = "Find Note" },
+            { "<leader>fo", function() Snacks.picker.recent() end, desc = "Recent Files" },
+            { "<leader>r", function() Snacks.picker.resume() end, desc = "Resume Last Picker" },
             -- logs
             { "<leader>ll", function() Snacks.notifier.show_history() end, desc = "Notification History" },
             -- code
