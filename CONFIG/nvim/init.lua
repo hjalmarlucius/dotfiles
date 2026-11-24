@@ -125,6 +125,7 @@ vim.api.nvim_create_autocmd("FileType", {
 -- ----------------------------------------
 
 vim.g.no_python_maps = 1
+vim.g.loaded_python3_provider = 0 -- skips a slow search when a Python file opens
 local map = vim.keymap.set
 
 -- better esc
