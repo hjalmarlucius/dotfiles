@@ -1,45 +1,40 @@
-#!/usr/bin/env -S uv run --script
-# /// script
-# requires-python = ">=3.13"
-# dependencies = [
-#     "defopt",
-# ]
-# ///
-# TODO
-# pre-luks remote ssh
-# add ufw setup
-# - sudo ufw allow 22/tcp comment "ssh"
-# - sudo ufw default allow FORWARD
-# - sudo ufw allow 2222
-# - ... etc
-# - sudo enable ufw
-# TODO
-# sudo sh -c 'echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf'; sudo rmmod pcspkr
-from difflib import unified_diff
-from getpass import getuser
-from os.path import lexists
-from pathlib import Path
-from shutil import rmtree
-from subprocess import run
-from urllib.request import urlretrieve
+#!/usr/bin/env python3
+"""Install the owner's dotfiles and packages on this host (see manual.md too).
 
-HOSTNAME = open("/etc/hostname").read().strip()
-HOME_TGT = Path.home()
-ROOT_TGT = Path("/")
+--dry-run shows what a run would do and changes nothing. Every change goes
+through run() or do(), and in a dry run audit() stops anything that doesn't.
+"""
+
+import argparse
+import os
+import pwd
+import shlex
+import subprocess
+import sys
+from collections.abc import Callable
+from difflib import unified_diff
+from pathlib import Path
+
+HOSTNAME = Path("/etc/hostname").read_text().strip()
 DOTFILES = Path(__file__).resolve().parent
-HOME_SRC = DOTFILES / "HOME"
-ROOT_SRC = DOTFILES / "ROOT"
-CFG_TGT = HOME_TGT / ".config"
-CFG_SRC = DOTFILES / "CONFIG"
-CUSTOM_SRC = DOTFILES / f"custom-{HOSTNAME}"
-USERNAME = getuser()
-installmap = dict(
-    fonts=(
+HOME = Path.home()
+CFG = HOME / ".config"
+CUSTOM = DOTFILES / f"custom-{HOSTNAME}"
+
+# The package groups not named here are for every host.
+HOSTS = {
+    "mothership": ("nvidia", "luks", "k8s", "coolercontrol", "docker", "virtwin"),
+    "droneship": ("nvidia", "luks", "k8s", "coolercontrol"),
+    "sl3": (),
+    "spro5": ("tablet",),
+}
+PACKAGES = {
+    "fonts": (
         "noto-fonts-emoji",
         "ttf-hack",
         "font-manager",
     ),
-    zsh=(
+    "zsh": (
         "zsh",
         "zsh-autosuggestions",
         "zsh-syntax-highlighting",
@@ -51,16 +46,16 @@ installmap = dict(
         "zoxide",
         "bat",
     ),
-    tmux=("tmux", "urlscan"),
-    editors=(
+    "tmux": ("tmux", "urlscan"),
+    "editors": (
         "neovim",
         "ripgrep",
         "npm",  # required for nvim plugins
         "go",  # required for vim-hexokinase build
         "tree-sitter-cli",  # required for nvim treesitter
     ),
-    utils=("uv", "gdu", "unzip", "jq", "bluetui"),
-    gittools=(
+    "utils": ("uv", "gdu", "unzip", "jq", "bluetui"),
+    "gittools": (
         "tig",
         "diff-so-fancy",
         "git-secret",
@@ -70,7 +65,7 @@ installmap = dict(
         "gnome-keyring",  # for git credentials
         "seahorse",  # keyring ui
     ),
-    readers=(
+    "readers": (
         "sioyek-git",
         "zathura",
         "zathura-pdf-mupdf",
@@ -82,7 +77,7 @@ installmap = dict(
         "libreoffice-fresh",
         "xournalpp",
     ),
-    mediaviewers=(
+    "mediaviewers": (
         # video
         "vlc",
         "mpv",
@@ -101,7 +96,7 @@ installmap = dict(
         "pavucontrol",  # waybar
         "playerctl",  # sway media keys
     ),
-    filebrowsers=(
+    "filebrowsers": (
         "yazi",
         "ranger",
         "pcmanfm",
@@ -116,7 +111,7 @@ installmap = dict(
         "perl-image-exiftool",  # yazi keymap
         "duckdb",  # yazi parquet-preview plugin
     ),
-    netbrowsers=(
+    "netbrowsers": (
         "qutebrowser",
         "firefox",
         "google-chrome",
@@ -127,8 +122,8 @@ installmap = dict(
         "pdfjs",  # for qutebrowser pdf viewer
         "bitwarden-cli",  # for qutebrowser autofill
     ),
-    chat=("discord", "gurk"),
-    emailcalrss=(
+    "chat": ("discord", "gurk"),
+    "emailcalrss": (
         "khard",  # contacts
         "khal",  # calendar
         "aerc",  # email
@@ -140,7 +135,7 @@ installmap = dict(
         "w3m",  # terminal browser for aerc
         "python-aiohttp-oauthlib",  # for google vdirsyncer
     ),
-    monitors=(
+    "monitors": (
         "htop",  # hardware
         "btop",  # hardware
         "nvtop",  # gpu
@@ -149,8 +144,8 @@ installmap = dict(
         "sysstat",
         "lm_sensors",  # waybar
     ),
-    apps=("keepassxc", "bitwarden", "qalculate-gtk"),
-    sway=(
+    "apps": ("keepassxc", "bitwarden", "qalculate-gtk"),
+    "sway": (
         "xdg-terminal-exec",
         "swaync",  # notifications
         # visuals
@@ -163,16 +158,16 @@ installmap = dict(
         "blueman",  # bluetooth
         "wev",  # debugging of ui
     ),
-    remotedata=("rclone", "dropbox", "minio-client"),
-    screensharing=("wireplumber",),
-    nvidia=("cuda", "nvidia-settings"),
-    coolercontrol=("coolercontrol",),
-    docker=(
+    "remotedata": ("rclone", "dropbox", "minio-client"),
+    "screensharing": ("wireplumber",),
+    "nvidia": ("cuda", "nvidia-settings"),
+    "coolercontrol": ("coolercontrol",),
+    "docker": (
         "docker",
         "dry-bin",  # docker tui
     ),
-    k8s=(
-        "docker",  # docker.service is enabled by install_k8sreqs
+    "k8s": (
+        "docker",
         "docker-buildx",  # advanced build
         "qemu-user-static-binfmt",  # build arm64
         "qemu-user-static",  # build arm64
@@ -183,12 +178,12 @@ installmap = dict(
         "open-iscsi",  # required by longhorn
         "kubectl-cnpg",
     ),
-    surface=("squeekboard",),  # on-screen keyboard, sway on spro5
-    luks=(  # unlock LUKS over ssh from the initramfs
+    "tablet": ("squeekboard",),  # on-screen keyboard, bound in sway
+    "luks": (  # unlock LUKS over ssh from the initramfs
         "dracut-crypt-ssh-git",
         "dropbear",
     ),
-    virtwin=(
+    "virtwin": (
         "qemu-full",  # the emulator itself
         "libvirt",  # the backend manager - handles running qemu
         "virt-manager",  # the graphical dashboard
@@ -200,383 +195,335 @@ installmap = dict(
         "openbsd-netcat",  # networking plumbing
         "swtpm",  # win11 requirement
     ),
+}
+REMOVE = ("autotiling", "cliphist", "mako")  # EndeavourOS defaults we replace
+UNITS = {  # system unit: package group
+    "bluetooth.service": "sway",
+    "docker.service": "k8s",
+    "iscsid.service": "k8s",
+    "coolercontrold.service": "coolercontrol",
+    "libvirtd.service": "virtwin",
+}
+TREES = (
+    (DOTFILES / "HOME", HOME),
+    (DOTFILES / "CONFIG", CFG),
+    (CUSTOM / "CONFIG", CFG),
+)
+PRIVATE = ("CONFIG/aerc/accounts.conf", "CONFIG/vdirsyncer/config")  # mode 600
+FONT_URL = "https://raw.githubusercontent.com/SUNET/static_sunet_se/refs/heads/master/fonts/Akkurat-Mono.otf"
+QUERIES = (  # all that query() may run: these change nothing
+    ("git", "ls-files"),
+    ("id", "-nG"),
+    ("pacman", "-Qq"),
+    ("pacman", "-T"),
+    ("systemctl", "is-enabled"),
+    ("systemctl", "--user", "is-enabled"),
 )
 
+args = argparse.Namespace(dry_run=False, overwrite=False, reinstall=False)
+failed: list[str] = []
 
-def compare(src: Path, tgt: Path) -> str:
-    if src.is_dir():
-        diff = ""
-        for subsrc in src.glob("**/*"):
-            if not subsrc.is_file():
-                continue
-            subtgt = tgt / subsrc.relative_to(src)
-            if subtgt.exists():
-                diff += compare(subsrc, subtgt)
-        return diff
+
+# ---- the gate: every command, change and question goes through these ----
+
+
+def is_query(cmd) -> bool:
+    return any(tuple(cmd[: len(allowed)]) == allowed for allowed in QUERIES)
+
+
+def audit(event: str, info: tuple) -> None:
+    """Audit hook for dry runs: refuse whatever could change something."""
+    if event == "open":
+        refuse = info[2] & (os.O_WRONLY | os.O_RDWR | os.O_CREAT | os.O_TRUNC)
+    elif event == "subprocess.Popen":
+        refuse = not is_query(info[1])
+    elif event in ("os.listdir", "os.scandir", "os.walk"):
+        refuse = False
     else:
-        srcdata = open(src).readlines() if src.exists() else []
-        tgtdata = open(tgt).readlines() if tgt.exists() else []
-        return "".join(unified_diff(srcdata, tgtdata, str(src), str(tgt)))
+        refuse = event.startswith(("os.", "shutil.", "socket.", "builtins.input"))
+    if refuse:
+        raise RuntimeError(f"a dry run must not do this: {event} {info}")
 
 
-def helper_maybe_copy(
-    src_folder: Path, tgt_folder: Path, sub: str, overwrite: bool, symlink: bool
-) -> bool:
-    src = src_folder.expanduser() / sub
-    tgt = tgt_folder.expanduser() / sub
-    assert src.exists()
-    tgt.parent.mkdir(exist_ok=True, parents=True)
-    if lexists(tgt):
-        if not overwrite:
-            if diff := compare(src, tgt):
-                print("DIFF:\n" + diff)
-                if input("overwrite? (y/n) ") == "n":
-                    return False
-        if tgt.is_file() or tgt.is_symlink():
-            tgt.unlink()
-        else:
-            rmtree(str(tgt))
-    if symlink:
-        tgt.symlink_to(src)
-    else:
-        run(["cp", str(src), str(tgt)])
+def query(*cmd: str, cwd: Path = DOTFILES) -> str:
+    """Output of a command that only reads."""
+    assert is_query(cmd), cmd
+    result = subprocess.run(
+        cmd, cwd=cwd, stdout=subprocess.PIPE, text=True, check=False
+    )
+    return result.stdout
+
+
+def run(*cmd: str | Path) -> bool:
+    """Run a command that changes something."""
+    line = shlex.join(map(str, cmd))
+    return do(line, subprocess.run, cmd, check=True)
+
+
+def do(what: str, change: Callable, *params, **options) -> bool:
+    """Show a change, and make it unless this is a dry run."""
+    print("+", what, flush=True)
+    if args.dry_run:
+        return True
+    try:
+        change(*params, **options)
+    except (OSError, subprocess.SubprocessError) as err:
+        print("!", err)
+        failed.append(what)
+        return False
     return True
 
 
-def helper_clone_foldercontents(
-    src_parent: Path,
-    tgt_parent: Path,
-    folder: str,
-    overwrite: bool,
-    symlink: bool = True,
-) -> None:
-    src_folder = src_parent.expanduser() / folder
-    tgt_folder = tgt_parent.expanduser() / folder
-    tgt_folder.mkdir(exist_ok=True, parents=True)
-    assert src_folder.is_dir()
-    assert tgt_folder.is_dir() or tgt_folder.is_symlink()
-    for src in src_folder.iterdir():
-        name = src.name
-        if name.endswith(".secret"):  # git-secret item
+def confirm(question: str) -> bool:
+    if args.dry_run:
+        print("? would ask:", question)
+        return True
+    return input(f"{question} (y/N) ").strip().lower() in ("y", "yes")
+
+
+# ---- links and copies ----
+
+
+def list_files(root: Path, *options: str) -> list[str]:
+    output = query("git", "ls-files", "-z", *options, cwd=root)
+    return [name for name in output.split("\0") if name]
+
+
+def tracked(root: Path) -> list[Path]:
+    """Files in git below root. A git-secret file x.secret stands for x."""
+    found = []
+    for name in list_files(root) if root.is_dir() else ():
+        rel = Path(name.removesuffix(".secret"))
+        if (root / rel).is_file():
+            found.append(rel)
+        else:
+            print(f"! missing (secret not revealed?): {root / rel}")
+    return found
+
+
+def into_checkout(path: Path) -> bool:
+    """Whether path is a link into the checkout."""
+    if not path.is_symlink():
+        return False
+    target = os.path.normpath(path.parent / os.readlink(path))
+    return Path(target).is_relative_to(DOTFILES)
+
+
+def same(src: Path, tgt: Path) -> bool:
+    try:
+        return src.read_bytes() == tgt.read_bytes()
+    except OSError:
+        return False
+
+
+def may_replace(src: Path, tgt: Path) -> bool:
+    try:
+        old, new = (p.read_text().splitlines(keepends=True) for p in (tgt, src))
+    except (OSError, UnicodeDecodeError) as err:
+        print("! cannot compare:", err)
+    else:
+        if src.with_name(src.name + ".secret").exists():
+            print("a git-secret file: the differences are not shown")
+        else:
+            print("".join(unified_diff(old, new, str(tgt), str(src))))
+    return args.overwrite or confirm(f"replace {tgt}?")
+
+
+def set_aside(path: Path) -> bool:
+    backup = path.with_name(path.name + ".endos-bak")
+    while os.path.lexists(backup):
+        backup = backup.with_name(backup.name + "~")
+    return do(f"rename {path} to {backup.name}", path.rename, backup)
+
+
+def make_link(src: Path, tgt: Path) -> None:
+    tgt.parent.mkdir(parents=True, exist_ok=True)
+    tgt.symlink_to(src)
+
+
+def link(src: Path, tgt: Path) -> None:
+    if tgt.parent.resolve().is_relative_to(DOTFILES):
+        # through some link we didn't make; a link here would replace src itself
+        failed.append(f"link {tgt}: its folder is in the checkout")
+        return
+    if tgt.is_symlink() and os.readlink(tgt) == str(src):
+        return
+    if into_checkout(tgt) or (not tgt.is_symlink() and same(src, tgt)):
+        clear = do(f"remove {tgt}, to link it", tgt.unlink)
+    elif os.path.lexists(tgt):
+        clear = may_replace(src, tgt) and set_aside(tgt)
+    else:
+        clear = True
+    if clear:
+        do(f"link {tgt} -> {src}", make_link, src, tgt)
+
+
+def link_tree(source: Path, root: Path, skip: set[str]) -> None:
+    files = [rel for rel in tracked(source) if rel.parts[0] not in skip]
+    # older versions linked whole folders; those become real folders
+    unfolded = set()
+    for folder in sorted({root / p for rel in files for p in rel.parents[:-1]}):
+        if into_checkout(folder) and unfolded.isdisjoint(folder.parents):
+            do(f"remove the folder link {folder}", folder.unlink)
+            unfolded.add(folder)
+    for rel in files:
+        if args.dry_run and not unfolded.isdisjoint((root / rel).parents):
+            print(f"+ link {root / rel} -> {source / rel}")
+        else:
+            link(source / rel, root / rel)
+    if source.is_dir():
+        for name in list_files(source, "--others", "--exclude-standard"):
+            print(f"! not in git, so not linked: {source / name}")
+
+
+def prune_links() -> None:
+    """Remove dead links to files that are no longer in the checkout."""
+    folders = {HOME} | {(HOME / rel).parent for rel in tracked(DOTFILES / "HOME")}
+    folders |= {Path(folder) for folder, _, _ in os.walk(CFG)}
+    for folder in sorted(filter(Path.is_dir, folders)):
+        for path in sorted(folder.iterdir()):
+            if into_checkout(path) and not path.exists():
+                do(f"remove the dead link {path}", path.unlink)
+
+
+def copy_system_files(source: Path) -> None:
+    """Copy to / with sudo, with the file modes of the checkout."""
+    for rel in tracked(source):
+        src, tgt = source / rel, Path("/") / rel
+        if same(src, tgt):
             continue
-        helper_maybe_copy(src_folder, tgt_folder, name, overwrite, symlink=symlink)
+        if not os.path.lexists(tgt) or may_replace(src, tgt):
+            mode = f"{src.stat().st_mode & 0o777:o}"
+            run("sudo", "install", "-D", "-m", mode, src, tgt)
 
 
-def helper_check_if_installed(pkg: str) -> bool:
-    return run(["pacman", "-Q", pkg], capture_output=True).returncode == 0
+def copy_homeassistant() -> None:
+    """The container writes to these files, so never replace them."""
+    source, root = DOTFILES / "CONFIG/homeassistant", CFG / "homeassistant"
+    for rel in tracked(source):
+        if not os.path.lexists(root / rel):
+            run("install", "-D", "-m", "644", source / rel, root / rel)
 
 
-def helper_uninstall(*pkgs: str) -> None:
-    for pkg in pkgs:
-        run(["yay", "-Rns", pkg], capture_output=True)
+# ---- packages, units and other steps ----
 
 
-def helper_install(*pkgs: str, reinstall: bool) -> None:
-    for pkg in pkgs:
-        if reinstall or not helper_check_if_installed(pkg):
-            assert run(["yay", "-S", pkg]).returncode == 0
+def install(packages: set[str]) -> bool:
+    missing = sorted(packages)
+    if not args.reinstall:  # -T prints those that nothing installed provides
+        missing = query("pacman", "-T", *missing).split()
+    return not missing or run("yay", "-S", *missing)
 
 
-def install_fonts(reinstall: bool) -> None:
-    tgt = Path("~/.local/share/fonts/Akkurat-Mono.otf").expanduser()
-    tgt.parent.mkdir(exist_ok=True, parents=True)
-    urlretrieve(
-        "https://raw.githubusercontent.com/SUNET/static_sunet_se/refs/heads/master/fonts/Akkurat-Mono.otf",
-        tgt,
-    )
-    helper_install(*installmap["fonts"], reinstall=reinstall)
+def uninstall(package: str) -> None:
+    installed = query("pacman", "-Qq", package).strip() == package
+    if installed and confirm(f"uninstall {package}?"):
+        run("yay", "-Rns", package)
 
 
-def install_zsh(overwrite: bool, reinstall: bool) -> None:
-    helper_install(*installmap["zsh"], reinstall=reinstall)
-    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "zsh", overwrite)
-    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "atuin", overwrite)
-    run("chsh -s /usr/bin/zsh".split())
-    helper_maybe_copy(CFG_SRC, CFG_TGT, "starship.toml", overwrite, symlink=True)
-    helper_maybe_copy(HOME_SRC, HOME_TGT, ".zshenv", overwrite, symlink=True)
-    helper_maybe_copy(HOME_SRC, HOME_TGT, ".local/bin/catai", overwrite, symlink=True)
+def enable(unit: str, sudo: tuple[str, ...] = ("sudo",), *options: str) -> None:
+    if query("systemctl", *options, "is-enabled", unit).strip() != "enabled":
+        run(*sudo, "systemctl", *options, "enable", "--now", unit)
 
 
-def install_tmux(overwrite: bool, reinstall: bool) -> None:
-    helper_install(*installmap["tmux"], reinstall=reinstall)
-    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "tmux", overwrite)
-    tpmpath = CFG_TGT / "tmux/plugins/tpm"
-    if overwrite or not lexists(tpmpath):
-        if lexists(tpmpath):
-            if tpmpath.is_symlink():
-                tpmpath.unlink()
-            else:
-                rmtree(str(tpmpath))
-        run(["git", "clone", "https://github.com/tmux-plugins/tpm", tpmpath])
+def setup_common() -> None:
+    font = HOME / ".local/share/fonts/Akkurat-Mono.otf"
+    if not font.exists():
+        options = ("--fail", "--location", "--create-dirs", "--remove-on-error")
+        run("curl", *options, "--output", font, FONT_URL)
+    if pwd.getpwuid(os.getuid()).pw_shell != "/usr/bin/zsh":
+        run("chsh", "-s", "/usr/bin/zsh")
+    tpm = CFG / "tmux/plugins/tpm"
+    if not tpm.exists():
+        run("git", "clone", "https://github.com/tmux-plugins/tpm", tpm)
+    run("ya", "pkg", "install")  # plugins listed in CONFIG/yazi/package.toml
+    for folder in (HOME / "Downloads", HOME / "Calendars", HOME / "Contacts"):
+        if not folder.is_dir():
+            do(f"make folder {folder}", folder.mkdir)
+    waybar = CFG / "waybar/config"  # EndeavourOS's; hides our config.jsonc
+    if os.path.lexists(waybar):
+        set_aside(waybar)
+    enable("vdirsyncer.timer", (), "--user")
 
 
-def install_editors(overwrite: bool, reinstall: bool) -> None:
-    helper_install(*installmap["editors"], reinstall=reinstall)
-    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "nvim", overwrite)
-
-
-def install_gittools(overwrite: bool, reinstall: bool) -> None:
-    helper_install(*installmap["gittools"], reinstall=reinstall)
-    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "tig", overwrite)
-    helper_maybe_copy(HOME_SRC, HOME_TGT, ".gitconfig", overwrite, symlink=True)
-
-
-def install_readers(overwrite: bool, reinstall: bool) -> None:
-    helper_install(*installmap["readers"], reinstall=reinstall)
-    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "xournalpp", overwrite)
-    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "sioyek", overwrite)
-    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "zathura", overwrite)
-
-
-def install_mediaviewers(reinstall: bool) -> None:
-    helper_install(*installmap["mediaviewers"], reinstall=reinstall)
-
-
-def install_filebrowsers(overwrite: bool, reinstall: bool) -> None:
-    helper_install(*installmap["filebrowsers"], reinstall=reinstall)
-    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "ranger", overwrite)
-    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "yazi", overwrite)
-    run(["ya", "pkg", "install"])  # plugins listed in CONFIG/yazi/package.toml
-
-
-def install_netbrowsers(overwrite: bool, reinstall: bool) -> None:
-    helper_install(*installmap["netbrowsers"], reinstall=reinstall)
-    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "qutebrowser", overwrite)
-    helper_maybe_copy(HOME_SRC, HOME_TGT, ".w3m/keymap", overwrite, symlink=True)
-    (HOME_TGT / "Downloads").mkdir(exist_ok=True)
-
-
-def install_chat(overwrite: bool, reinstall: bool) -> None:
-    helper_install(*installmap["chat"], reinstall=reinstall)
-    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "gurk", overwrite)
-
-
-def install_monitors(overwrite: bool, reinstall: bool) -> None:
-    helper_install(*installmap["monitors"], reinstall=reinstall)
-    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "btop", overwrite)
-
-
-def install_emailcalrss(overwrite: bool, reinstall: bool) -> None:
-    helper_install(*installmap["emailcalrss"], reinstall=reinstall)
-    for tgt in ["vdirsyncer", "khard", "khal", "aerc"]:
-        helper_clone_foldercontents(CFG_SRC, CFG_TGT, tgt, overwrite)
-    run("systemctl enable --user --now vdirsyncer.timer".split())
-    run(f"chmod 600 {CFG_TGT / 'aerc/accounts.conf'}".split())
-    (HOME_TGT / "Calendars").mkdir(exist_ok=True)
-    (HOME_TGT / "Contacts").mkdir(exist_ok=True)
-
-
-def install_sway(overwrite: bool, reinstall: bool) -> None:
-    helper_uninstall("autotiling", "cliphist")
-    helper_install(*installmap["sway"], reinstall=reinstall)
-    # sudo stuff
-    for sub in [
-        "etc/systemd/logind.conf.d/suspend.conf",
-        "etc/systemd/sleep.conf.d/hibernate.conf",
-        "etc/greetd/sway.cfg",
-        "lib/systemd/system-sleep/iptsd.sh",
-        "etc/dracut.conf.d/crypt-ssh.conf",
-    ]:
-        src = CUSTOM_SRC / "ROOT" / sub
-        if not src.exists():
-            continue
-        tgt = ROOT_TGT / sub
-        run(["sudo", "mkdir", "-p", str(tgt.parent)])
-        if tgt.exists():
-            if diff := compare(src, tgt):
-                print("DIFF:\n" + diff)
-                if input("overwrite? (y/n) ") == "n":
-                    continue
-            run(["sudo", "rm", str(tgt)])
-        run(["sudo", "cp", str(src), str(tgt)])
-    run("sudo systemctl enable --now bluetooth".split())
-    # div app configs
-    if (tgt := CFG_TGT / "waybar/config").exists():  # precedence over config.jsonc
-        tgt.unlink()
-    for sub in [
-        "sway",
-        "waybar",
-        "gtklock",
-        "gtk-3.0",
-        "swaync",
-        "fuzzel",
-        "nwg-drawer",
-        "xdg-desktop-portal-wlr",
-        "foot",
-        "xkb/symbols",
-    ]:
-        helper_clone_foldercontents(CFG_SRC, CFG_TGT, sub, overwrite)
-    helper_maybe_copy(CFG_SRC, CFG_TGT, "xdg-terminals.list", overwrite, symlink=True)
-    helper_maybe_copy(CFG_SRC, CFG_TGT, "mimeapps.list", overwrite, symlink=True)
-    # custom sway configs
-    helper_clone_foldercontents(CUSTOM_SRC / "CONFIG", CFG_TGT, "sway", overwrite)
-    # custom waybar configs
-    helper_clone_foldercontents(CUSTOM_SRC / "CONFIG", CFG_TGT, "waybar", overwrite)
-    # desktop entries
-    helper_clone_foldercontents(
-        HOME_SRC,
-        HOME_TGT,
-        ".local/share/applications",
-        overwrite,
-    )
-
-
-def configure_pytools(overwrite: bool) -> None:
-    for sub in [".ipython/profile_default", ".jupyter"]:
-        tgt = HOME_TGT / sub
-        run(["mkdir", "-p", str(tgt)])
-        helper_clone_foldercontents(HOME_SRC, HOME_TGT, sub, overwrite)
-
-
-def install_virtwin(overwrite: bool, reinstall: bool) -> None:
-    helper_install(*installmap["virtwin"], reinstall=reinstall)
-    run(["sudo", "usermod", "-aG", "libvirt", USERNAME])
-    run("sudo virsh net-start default".split())
-    run("sudo virsh net-autostart default".split())
-    run("sudo systemctl enable --now libvirtd".split())
-
-
-def install_k8sreqs(overwrite: bool, reinstall: bool) -> None:
-    # sudo
-    helper_install(*installmap["k8s"], reinstall=reinstall)
-    run("sudo systemctl enable --now docker.service".split())
-    sub = "etc/modules-load.d/br_netfilter.conf"
-    run(["sudo", "cp", str(ROOT_SRC / sub), str(ROOT_TGT / sub)])
-    run("sudo systemctl enable --now iscsid".split())
-    # user
-    helper_clone_foldercontents(CFG_SRC, CFG_TGT, "k9s", overwrite)
-
-
-def install_luks_unlock(reinstall: bool) -> None:
-    """Packages, host key and key list for custom-<host>/.../crypt-ssh.conf.
-
-    Runs before install_sway copies that file: the package owns the path,
-    so pacman would refuse to install it over a copied file, and without
-    the key every dracut rebuild would ship an initramfs without dropbear."""
-    helper_install(*installmap["luks"], reinstall=reinstall)
+def setup_luks() -> None:
+    """Host key and key list that custom-<host>/.../crypt-ssh.conf names."""
     folder = "/etc/dracut-crypt-ssh"
     key = f"{folder}/ssh_host_ed25519_key"
     keys = f"{folder}/authorized_keys"  # may unlock; not root logins
-    run(["sudo", "mkdir", "-p", folder], check=False)
-    keygen = f"test -f {key} || ssh-keygen -q -t ed25519 -N '' -f {key}"
-    run(["sudo", "sh", "-c", keygen], check=False)
-    run(["sudo", "sh", "-c", f"touch {keys} && chmod 600 {keys}"], check=False)
+    if not os.path.exists(key):
+        keygen = f"test -f {key} || ssh-keygen -q -t ed25519 -N '' -f {key}"
+        run("sudo", "sh", "-c", f"mkdir -p {folder} && {{ {keygen}; }}")
+    if not os.path.exists(keys):
+        run("sudo", "sh", "-c", f"touch {keys} && chmod 600 {keys}")
 
 
-def installer(
-    *,
-    overwrite: bool = False,
-    reinstall: bool = False,
-) -> None:
-    install_fonts(reinstall)
-    print("installed fonts")
-    install_zsh(overwrite, reinstall)
-    print("installed zsh")
-    install_tmux(overwrite, reinstall)
-    print("installed tmux")
-    install_editors(overwrite, reinstall)
-    print("installed editors")
-    helper_install(*installmap["utils"], reinstall=reinstall)
-    print("installed utils")
-    install_gittools(overwrite, reinstall)
-    print("installed gittools")
-    install_readers(overwrite, reinstall)
-    print("installed readers")
-    install_mediaviewers(reinstall)
-    print("installed mediaviewers")
-    install_filebrowsers(overwrite, reinstall)
-    print("installed filebrowsers")
-    install_netbrowsers(overwrite, reinstall)
-    print("installed netbrowsers")
-    install_emailcalrss(overwrite, reinstall)
-    print("installed emailcalrss")
-    install_chat(overwrite, reinstall)
-    print("installed chat")
-    install_monitors(overwrite, reinstall)
-    print("installed monitors")
-    helper_install(*installmap["apps"], reinstall=reinstall)
-    print("installed apps")
-    if HOSTNAME in ["mothership", "droneship"]:
-        install_luks_unlock(reinstall)
-        print("installed luks unlock")
-    install_sway(overwrite, reinstall)
-    print("installed sway")
-    helper_install(*installmap["remotedata"], reinstall=reinstall)
-    print("installed remotedata")
-    helper_install(*installmap["screensharing"], reinstall=reinstall)
-    print("installed screensharing")
-    configure_pytools(overwrite=overwrite)
-    print("configured python tools")
-    if HOSTNAME in ["mothership", "droneship"]:
-        helper_install(*installmap["nvidia"], reinstall=reinstall)
-        print("installed nvidia")
-    if HOSTNAME in ["mothership", "droneship"]:
-        install_k8sreqs(overwrite, reinstall)
-        print("installed k8s requirements")
-    if HOSTNAME in ["mothership", "droneship"]:
-        helper_install(*installmap["coolercontrol"], reinstall=reinstall)
-        run("sudo systemctl enable --now coolercontrold.service".split())
-        print("installed coolercontrol")
-    if HOSTNAME in ["sl3", "spro5"]:
-        helper_install(*installmap["surface"], reinstall=reinstall)
-    if HOSTNAME in ["mothership"]:
-        helper_install(*installmap["docker"], reinstall=reinstall)
-        install_virtwin(overwrite, reinstall)
-        helper_clone_foldercontents(
-            CFG_SRC, CFG_TGT, "homeassistant", overwrite, symlink=False
-        )
-        print("installed docker + home assistant")
-    print("""
-    MANUAL NEXT STEPS:
+def setup_virtwin() -> None:
+    user = pwd.getpwuid(os.getuid()).pw_name
+    if "libvirt" not in query("id", "-nG", user).split():
+        run("sudo", "usermod", "-aG", "libvirt", user)
+    if not os.path.exists("/sys/class/net/virbr0"):
+        run("sudo", "virsh", "net-start", "default")
+    run("sudo", "virsh", "net-autostart", "default")
 
-    # oom handling
 
-    Add to `sudo systemctl edit user.slice`:
-    ```
-    [Slice]
-    OOMScoreAdjust=500
-    ```
+# ---- the run ----
 
-    # vdirsyncer
-    - set up with google calendar using
-      https://vdirsyncer.pimutils.org/en/stable/config.html#google
-    - run `vdirsyncer discover` then `vdirsyncer sync`
 
-    # firefox
-    - allow windowed fullscreen by setting full-screen-api.ignore-widgets to
-      true in about:config
+def groups_for(host: str) -> list[str]:
+    special = {group for groups in HOSTS.values() for group in groups}
+    return [g for g in PACKAGES if g not in special or g in HOSTS[host]]
 
-    # coolercontrol
-    - set coolercontrold log level to WARN: `sudo systemctl edit
-      coolercontrold.service`
 
-    # k8s
-    - /etc/hosts: configure
-    - LUKS unlock over ssh: this script installs dracut-crypt-ssh, makes the
-      host key and copies crypt-ssh.conf; add the public keys that may unlock
-      to /etc/dracut-crypt-ssh/authorized_keys
-    - /etc/dracut.conf.d/eos-defaults.conf: don't omit network
-    - /etc/kernel/cmdline: add `rd.neednet=1 ip=dhcp` arguments
-    - `sudo dracut-rebuild`, then test: reboot, `ssh -p 222 root@<host>`, `unlock`
-    - run `hjarl-system/k8s.py` scripts
+def packages_for(host: str) -> set[str]:
+    return {package for group in groups_for(host) for package in PACKAGES[group]}
 
-    # docker / home assistant
-    - docker with non-root daemon 
-      `sudo groupadd docker && sudo usermod -aG docker $USER`
-    - run home assistant and music assistant scripts to start docker services
 
-    # virtual machine
-    - /etc/libvirt/network.conf: set `firewall_backend = "iptables"` and restart libvirtd
-    - download windows + virtio driver ISOs
-    - vm setup:
-      - CPUs: Uncheck "Copy host CPU configuration" and select host-passthrough
-      - Disk (IDE/SATA): Change the "Disk bus" to VirtIO
-      - NIC (Network): Change "Device model" to virtio
-      - Add Hardware: Click "Add Hardware" -> "Storage" -> Select "CDROM" -> select virtio driver iso
-    """)
+def link_all(groups: list[str]) -> None:
+    prune_links()
+    skip = {"homeassistant"} if "k8s" in groups else {"homeassistant", "k9s"}
+    for source, root in TREES:
+        link_tree(source, root, skip)
+    for path in (DOTFILES / name for name in PRIVATE):
+        if path.exists() and path.stat().st_mode & 0o077:
+            do(f"chmod 600 {path}", path.chmod, 0o600)
+
+
+def set_up(groups: list[str]) -> None:
+    for package in REMOVE:
+        uninstall(package)
+    if "luks" in groups:  # before its conf is copied: dracut needs the key
+        setup_luks()
+    copy_system_files(CUSTOM / "ROOT")
+    if "k8s" in groups:
+        copy_system_files(DOTFILES / "ROOT")
+    for unit, group in UNITS.items():
+        if group in groups:
+            enable(unit)
+    setup_common()
+    if "docker" in groups:
+        copy_homeassistant()
+    if "virtwin" in groups:
+        setup_virtwin()
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--dry-run", "-n", action="store_true")
+    parser.add_argument("--overwrite", "-o", action="store_true", help="don't ask")
+    parser.add_argument("--reinstall", "-r", action="store_true", help="all packages")
+    parser.parse_args(namespace=args)
+    if HOSTNAME not in HOSTS:
+        sys.exit(f"unknown host {HOSTNAME}: add it to HOSTS")
+    if args.dry_run:
+        sys.addaudithook(audit)
+    link_all(groups_for(HOSTNAME))
+    if install(packages_for(HOSTNAME)):  # the rest needs the packages
+        set_up(groups_for(HOSTNAME))
+    if failed:
+        sys.exit("\n".join(["FAILED:", *failed]))
+    print(f"Steps left to you: {DOTFILES / 'manual.md'}")
 
 
 if __name__ == "__main__":
-    import defopt
-
-    defopt.run(installer)
+    main()
