@@ -114,6 +114,7 @@ vim.diagnostic.config({
 })
 
 vim.api.nvim_create_autocmd("FileType", {
+    group = vim.api.nvim_create_augroup("no_auto_comment", { clear = true }),
     desc = "Disable auto-commenting on new line",
     pattern = "*",
     callback = function() vim.opt_local.formatoptions:remove({ "r", "o" }) end,
@@ -167,10 +168,10 @@ map("n", "<leader>wQ", "<cmd>wqa<cr>", { desc = "Write And Quit All" })
 map("n", "<leader>K", "<cmd>norm! K<cr>", { desc = "Keywordprg" })
 
 -- better indenting
-map("v", "<", "<gv")
-map("v", ">", ">gv")
-map("v", "<Tab>", ">gv")
-map("v", "<S-Tab>", "<gv")
+map("x", "<", "<gv")
+map("x", ">", ">gv")
+map("x", "<Tab>", ">gv")
+map("x", "<S-Tab>", "<gv")
 
 -- new file
 map("n", "<leader>n", "<cmd>enew<cr>", { desc = "New File" })
@@ -248,9 +249,7 @@ map("n", "<M-i>", function() vim.diagnostic.open_float({ source = true }) end, {
 map("n", "<M-n>", diagnostic_goto(1), { desc = "Next Diagnostic" })
 map("n", "<M-p>", diagnostic_goto(-1), { desc = "Prev Diagnostic" })
 map("n", "[e", diagnostic_goto(-1, "ERROR"), { desc = "Prev Error" })
-map("n", "[w", diagnostic_goto(-1, "WARN"), { desc = "Prev Warning" })
 map("n", "]e", diagnostic_goto(1, "ERROR"), { desc = "Next Error" })
-map("n", "]w", diagnostic_goto(1, "WARN"), { desc = "Next Warning" })
 map("n", "gl", vim.diagnostic.setloclist, { desc = "Diagnostics to Location List" })
 
 -- ----------------------------------------
@@ -258,12 +257,15 @@ map("n", "gl", vim.diagnostic.setloclist, { desc = "Diagnostics to Location List
 -- ----------------------------------------
 
 -- auto reload files
+local auto_reload = vim.api.nvim_create_augroup("auto_reload", { clear = true })
 vim.api.nvim_create_autocmd("FocusGained", {
+    group = auto_reload,
     desc = "Reload files from disk when we focus vim",
     pattern = "*",
     command = "if getcmdwintype() == '' | checktime | endif",
 })
 vim.api.nvim_create_autocmd("BufEnter", {
+    group = auto_reload,
     desc = "Every time we enter an unmodified buffer, check if it changed on disk",
     pattern = "*",
     command = "if &buftype == '' && !&modified && expand('%') != '' | exec 'checktime ' . expand('<abuf>') | endif",
@@ -400,14 +402,6 @@ local function makespec_lspconfig()
                     },
                 },
             })
-            vim.lsp.config("yamlls", {
-                settings = {
-                    yaml = {
-                        schemas = { kubernetes = vim.fn.expand("~/src/hjarl/system/manifests/*.yaml") },
-                        -- schemaStore = { enable = false, url = "" },
-                    },
-                },
-            })
             vim.lsp.config("ty", {
                 cmd = { "ty", "server" },
                 filetypes = { "python" },
@@ -449,7 +443,6 @@ local function makespec_lspconfig()
             })
             vim.lsp.config("vtsls", {
                 settings = {
-                    complete_function_calls = true,
                     vtsls = {
                         enableMoveToFileCodeAction = true,
                         autoUseWorkspaceTsdk = true,
@@ -631,16 +624,6 @@ local function makespec_oil()
             { "<leader>fE", "<cmd>Oil .<cr>", desc = "Oil Explorer (buffer)" },
             { "<leader>fe", "<cmd>Oil --float .<cr>", desc = "Oil Explorer (float)" },
         },
-        init = function()
-            vim.api.nvim_create_autocmd("User", {
-                pattern = "OilActionsPost",
-                callback = function(event)
-                    if event.data.actions.type == "move" then
-                        Snacks.rename.on_rename_file(event.data.actions.src_url, event.data.actions.dest_url)
-                    end
-                end,
-            })
-        end,
     }
 end
 
@@ -689,9 +672,9 @@ local function makespec_neotree()
             cmd = { "Neotree" },
             dependencies = { "nvim-lua/plenary.nvim", "mini.icons", "MunifTanjim/nui.nvim" },
             opts = {
-                hijack_netrw_behavior = "disabled",
                 close_if_last_window = true,
                 filesystem = {
+                    hijack_netrw_behavior = "disabled", -- oil handles directories
                     filtered_items = { hide_gitignored = false },
                     follow_current_file = { enabled = false },
                     window = {
@@ -866,7 +849,7 @@ local function makespec_diffview()
         keys = {
             { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", mode = "n", desc = "File Commit History (Diffview)" },
             { "<leader>gH", "<cmd>DiffviewFileHistory<cr>", mode = "n", desc = "Commit History (Diffview)" },
-            { "<leader>gh", ":'<,'>DiffviewFileHistory<cr>", mode = "v", desc = "Line Selection History (Diffview)" },
+            { "<leader>gh", ":'<,'>DiffviewFileHistory<cr>", mode = "x", desc = "Line Selection History (Diffview)" },
             { "<leader>gM", "<cmd>DiffviewOpen<cr>", desc = "Merge / Repo Diffview" },
             { "<leader>gX", "<cmd>DiffviewClose<cr>", desc = "Close Diffview" },
         },
@@ -884,11 +867,10 @@ local function makespec_fugitive()
             "Gwrite",
             "Ggrep",
             "Glgrep",
-            "Gmove",
+            "GMove",
             "GRename",
             "GDelete",
             "GRemove",
-            "Gdelete",
             "GUnlink",
             "GBrowse",
         },
@@ -947,12 +929,12 @@ local function makespec_gitsigns()
         bmap("n", "<leader>gq", gs.setqflist, "File Hunks to QuickFix")
         bmap("n", "<leader>gQ", function() gs.setqflist("all") end, "All Hunks to QuickFix")
         bmap("n", "<leader>gx", gs.reset_hunk, "Reset Hunk")
-        bmap("v", "<leader>gx", function() gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Reset Selection")
+        bmap("x", "<leader>gx", function() gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Reset Selection")
         bmap("n", "<leader>gR", gs.reset_buffer, "Reset Buffer")
         bmap("n", "<leader>gs", gs.stage_hunk, "Stage Hunk")
-        bmap("v", "<leader>gs", function() gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Stage Selection")
+        bmap("x", "<leader>gs", function() gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Stage Selection")
         bmap("n", "<leader>gS", gs.stage_buffer, "Stage Buffer")
-        bmap({ "n", "v" }, "<leader>gv", gs.select_hunk, "Select Hunk")
+        bmap({ "n", "x" }, "<leader>gv", gs.select_hunk, "Select Hunk")
 
         -- Toggles
         bmap("n", "<leader>gtw", gs.toggle_word_diff, "Toggle Diff Word Colors")
@@ -995,14 +977,14 @@ local function makespec_whichkey()
         event = "VeryLazy",
         opts = {
             spec = {
-                { "<leader>a", group = "ai", mode = { "n", "v" } },
-                { "<leader>c", group = "code/content", mode = { "n", "v" } },
+                { "<leader>a", group = "ai", mode = { "n", "x" } },
+                { "<leader>c", group = "code/content", mode = { "n", "x" } },
                 { "<leader>f", group = "file/find" },
-                { "<leader>g", group = "git", mode = { "n", "v" } },
+                { "<leader>g", group = "git", mode = { "n", "x" } },
                 { "<leader>gt", group = "git toggles" },
                 { "<leader>l", group = "logs" },
                 { "<leader>q", group = "quit" },
-                { "<leader>s", group = "search", mode = { "n", "v" } },
+                { "<leader>s", group = "search", mode = { "n", "x" } },
                 { "<leader>S", group = "swap AST node" },
                 { "<leader>u", group = "ui/toggles", icon = { icon = "󰙵 ", color = "cyan" } },
                 { "<leader>w", group = "write/save", mode = { "n", "x" } },
@@ -1013,18 +995,18 @@ local function makespec_whichkey()
                     expand = function() return require("which-key.extras").expand.win() end,
                 },
                 { "<leader><tab>", group = "tabs" },
-                { "[", group = "prev", mode = { "n", "v" } },
-                { "]", group = "next", mode = { "n", "v" } },
-                { "g", group = "goto", mode = { "n", "v" } },
-                { "gr", group = "lsp actions", icon = { icon = " ", color = "purple" }, mode = { "n", "v" } },
-                { "gra", desc = "Code Action", mode = { "n", "v" } },
+                { "[", group = "prev", mode = { "n", "x" } },
+                { "]", group = "next", mode = { "n", "x" } },
+                { "g", group = "goto", mode = { "n", "x" } },
+                { "gr", group = "lsp actions", icon = { icon = " ", color = "purple" }, mode = { "n", "x" } },
+                { "gra", desc = "Code Action", mode = { "n", "x" } },
                 { "gri", desc = "Goto Implementation" },
                 { "grn", desc = "Rename Symbol" },
                 { "grr", desc = "Goto References" },
                 { "gy", desc = "Goto Type Definition" },
-                { "gs", group = "surround", mode = { "n", "v" } },
-                { "z", group = "fold", mode = { "n", "v" } },
-                { "gx", desc = "Open with system app", mode = { "n", "v" } },
+                { "gs", group = "surround", mode = { "n", "x" } },
+                { "z", group = "fold", mode = { "n", "x" } },
+                { "gx", desc = "Open with system app", mode = { "n", "x" } },
             },
         },
         keys = {
@@ -1230,7 +1212,7 @@ local function makespecs_mini()
             version = false,
             event = "VeryLazy",
             opts = {
-                -- Disabled because your custom LSP mappings (]e, ]w) are better!
+                -- Disabled because the custom ]e / [e diagnostics mappings are better
                 diagnostic = { suffix = "", options = {} },
 
                 -- These are the heavy hitters. They map [ and ] automatically.
@@ -1240,7 +1222,6 @@ local function makespecs_mini()
                 yank = { suffix = "y", options = {} }, -- ]y / [y (cycle pasted text)
                 indent = { suffix = "i", options = {} }, -- ]i / [i (match indent level)
                 file = { suffix = "f", options = {} }, -- ]f / [f (next file on disk)
-                window = { suffix = "w", options = {} }, -- ]w / [w (cycle windows)
                 undo = { suffix = "u", options = {} }, -- ]u / [u (traverse undo tree)
             },
         },
@@ -1292,8 +1273,6 @@ local function makespec_todocomments()
             },
         },
         keys = {
-            { "]t", function() require("todo-comments").jump_next() end, desc = "Next Todo Comment" },
-            { "[t", function() require("todo-comments").jump_prev() end, desc = "Previous Todo Comment" },
             { "<leader>ct", "<cmd>TodoQuickFix keywords=TODO,MAYBE,FIX<cr>", desc = "Todo/Fix/Fixme list" },
             { "<leader>cT", "<cmd>TodoQuickFix<cr>", desc = "Comments list" },
             { "<leader>st", function() Snacks.picker.todo_comments() end, desc = "Todo" },
@@ -1435,7 +1414,7 @@ local function makespec_grugfar()
                         },
                     })
                 end,
-                mode = { "n", "v" },
+                mode = { "n", "x" },
                 desc = "Search and Replace (Project)",
             },
             {
@@ -1450,7 +1429,7 @@ local function makespec_grugfar()
                         },
                     })
                 end,
-                mode = { "n", "v" },
+                mode = { "n", "x" },
                 desc = "Search and Replace (Current File)",
             },
         },
@@ -1548,10 +1527,10 @@ local function makespec_treewalker()
             highlight = true,
         },
         keys = {
-            { "]]", "<cmd>Treewalker Down<cr>", mode = { "n", "v" }, desc = "Next Sibling (Current Level)" },
-            { "[[", "<cmd>Treewalker Up<cr>", mode = { "n", "v" }, desc = "Prev Sibling (Current Level)" },
-            { "((", "<cmd>Treewalker Left<cr>", mode = { "n", "v" }, desc = "Go Out (Parent Level)" },
-            { "))", "<cmd>Treewalker Right<cr>", mode = { "n", "v" }, desc = "Go In (Child Level)" },
+            { "]]", "<cmd>Treewalker Down<cr>", mode = { "n", "x" }, desc = "Next Sibling (Current Level)" },
+            { "[[", "<cmd>Treewalker Up<cr>", mode = { "n", "x" }, desc = "Prev Sibling (Current Level)" },
+            { "((", "<cmd>Treewalker Left<cr>", mode = { "n", "x" }, desc = "Go Out (Parent Level)" },
+            { "))", "<cmd>Treewalker Right<cr>", mode = { "n", "x" }, desc = "Go In (Child Level)" },
             { "<leader>Sj", "<cmd>Treewalker SwapDown<cr>", desc = "Swap Block Down" },
             { "<leader>Sk", "<cmd>Treewalker SwapUp<cr>", desc = "Swap Block Up" },
         },
@@ -1611,12 +1590,21 @@ local function makespec_lint()
         event = { "BufReadPre", "BufNewFile" },
         config = function()
             local lint = require("lint")
+            -- Drop linters whose binary isn't installed, else nvim-lint reports ENOENT on every
+            -- lint (tidy and golangci-lint aren't installed). Mason's bin is on PATH by now.
+            local function installed(names)
+                return vim.tbl_filter(function(name)
+                    local linter = lint.linters[name]
+                    if type(linter) == "function" then linter = linter() end
+                    return type(linter.cmd) ~= "string" or vim.fn.executable(linter.cmd) == 1
+                end, names)
+            end
             lint.linters_by_ft = {
-                javascript = { "eslint_d" },
-                typescript = { "eslint_d" },
-                html = { "tidy", "eslint_d" },
-                go = { "golangcilint" },
-                sh = { "shellcheck" },
+                javascript = installed({ "eslint_d" }),
+                typescript = installed({ "eslint_d" }),
+                html = installed({ "tidy", "eslint_d" }),
+                go = installed({ "golangcilint" }),
+                sh = installed({ "shellcheck" }),
             }
 
             local lint_augroup = vim.api.nvim_create_augroup("nvim_lint", { clear = true })
@@ -1636,7 +1624,7 @@ local function makespec_conform()
             {
                 "<leader>p",
                 function() require("conform").format({ async = true, lsp_format = "fallback" }) end,
-                mode = { "n", "v" },
+                mode = { "n", "x" },
                 desc = "Autoformat Buffer",
             },
             { "<leader>lp", "<cmd>ConformInfo<cr>", desc = "Conform log" },
@@ -1739,8 +1727,8 @@ local function makespec_avante()
             "nvim-treesitter/nvim-treesitter",
         },
         keys = {
-            { "<leader>ai", "<cmd>AvanteAsk<cr>", desc = "AI Ask", mode = { "n", "v" } },
-            { "<leader>ae", "<cmd>AvanteEdit<cr>", desc = "AI Edit Selection", mode = "v" },
+            { "<leader>ai", "<cmd>AvanteAsk<cr>", desc = "AI Ask", mode = { "n", "x" } },
+            { "<leader>ae", "<cmd>AvanteEdit<cr>", desc = "AI Edit Selection", mode = "x" },
             { "<leader>ar", "<cmd>AvanteRefresh<cr>", desc = "AI Refresh Context" },
         },
     }

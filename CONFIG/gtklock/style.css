@@ -32,15 +32,6 @@ window {
   padding-bottom: 5px;
   color: #ffffff;
 }
-#powerbar-box button {
-  background-color: rgba(10, 10, 10, 0.8);
-  border: 2px solid #333333;
-  padding: 6px;
-}
-#powerbar-box button:hover {
-  border-color: #00e5ff;
-  color: #00e5ff;
-}
 #input-label {
   font-size: 0px;
 }
