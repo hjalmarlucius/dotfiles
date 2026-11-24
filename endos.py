@@ -37,8 +37,6 @@ installmap = dict(
     fonts=(
         "noto-fonts-emoji",
         "ttf-hack",
-        "ttc-iosevka",
-        "ttf-ibm-plex",
         "font-manager",
     ),
     zsh=(

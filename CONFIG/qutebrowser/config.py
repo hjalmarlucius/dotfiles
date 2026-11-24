@@ -210,12 +210,12 @@ c.url.searchengines = {
 c.zoom.default = "100%"
 
 # FONTS
-c.fonts.default_family = ["Iosevka"]
+c.fonts.default_family = ["Hack"]
 c.fonts.default_size = "12pt"
-c.fonts.prompts = "12pt Iosevka"
-c.fonts.web.family.sans_serif = "IBM Plex Sans"
-c.fonts.web.family.serif = "IBM Plex Serif"
-c.fonts.web.family.fixed = "IBM Plex Mono"
+c.fonts.prompts = "default_size default_family"
+c.fonts.web.family.sans_serif = "Noto Sans"
+c.fonts.web.family.serif = "Noto Serif"
+c.fonts.web.family.fixed = "Noto Sans Mono"
 c.fonts.web.family.standard = c.fonts.web.family.sans_serif
 
 # COLORS
