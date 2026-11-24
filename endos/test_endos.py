@@ -1,7 +1,15 @@
-"""Checks of endos.py. Run it without access to anything that matters:
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = ["tyro"]
+# ///
+"""Checks of endos. Run it without access to anything that matters (and
+./endos/main.py --help once before, which puts tyro in the cache of uv):
 
 bwrap --ro-bind / / --dev /dev --proc /proc --tmpfs /tmp --unshare-net \\
-    --ro-bind "$PWD" "$PWD" --chdir "$PWD" python3 -B test_endos.py
+    --overlay-src ~/.cache/uv --tmp-overlay ~/.cache/uv \\
+    --ro-bind "$PWD" "$PWD" --chdir "$PWD" uv run --offline --script \\
+    endos/test_endos.py
 """
 
 import ast
@@ -11,7 +19,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-SOURCE = Path(__file__).with_name("endos.py")
+SOURCE = Path(__file__).resolve().parent
+DOTFILES = SOURCE.parent
 CHANGES = {"chmod", "mkdir", "open", "rename", "replace", "rmdir", "symlink_to"}
 CHANGES |= {"touch", "unlink", "write_bytes", "write_text", "hardlink_to"}
 CHANGES |= {"call", "check_call", "check_output", "Popen", "run", "system"}
@@ -28,24 +37,40 @@ GATES = {
 
 def check_gates() -> None:
     """Calls that change something are only made inside the gates."""
-    for function in ast.parse(SOURCE.read_text()).body:
-        if getattr(function, "name", None) in GATES:
+    files = [p for p in SOURCE.glob("*.py") if p.name != Path(__file__).name]
+    assert len(files) == 9, files
+    for path in files:
+        gates = {"gate": GATES - {"make_link"}, "links": {"make_link"}}
+        scan(path, gates.get(path.stem, set()))
+
+
+def scan(path: Path, gates: set[str]) -> None:
+    for function in ast.parse(path.read_text()).body:
+        if getattr(function, "name", None) in gates:
             continue
         for node in ast.walk(function):
             if not isinstance(node, ast.Call):
                 continue
             func = node.func
             bad = isinstance(func, ast.Name) and func.id in BUILTINS | {"make_link"}
-            bad |= isinstance(func, ast.Attribute) and func.attr in CHANGES
-            assert not bad, f"line {node.lineno}: {ast.unparse(node)} is not in a gate"
+            bad |= (
+                isinstance(func, ast.Attribute)
+                and func.attr in CHANGES
+                and ast.unparse(func) != "gate.run"
+            )
+            where = f"{path.name}:{node.lineno}"
+            assert not bad, f"{where}: {ast.unparse(node)} is not in a gate"
 
 
 def in_child(home: Path, code: str) -> str:
-    """Run code after importing endos with HOME=home; packages are never touched."""
-    setup = "import endos, sys, subprocess, os\nfrom pathlib import Path\n"
+    """Run code after importing the modules with HOME=home; packages are never touched."""
+    setup = (
+        "import cleanup, gate, links, main, packages, paths, steps, unlock\n"
+        "import sys, subprocess, os\nfrom pathlib import Path\n"
+    )
     result = subprocess.run(
         [sys.executable, "-B", "-c", setup + code],
-        cwd=SOURCE.parent,
+        cwd=SOURCE,
         env={**os.environ, "HOME": str(home)},
         capture_output=True,
         text=True,
@@ -56,19 +81,23 @@ def in_child(home: Path, code: str) -> str:
 
 
 def snapshot(home: Path) -> dict[str, object]:
-    paths = sorted(home.rglob("*"))
-    return {str(p): os.readlink(p) if p.is_symlink() else p.stat() for p in paths}
+    found = {}
+    for path in sorted(home.rglob("*")):
+        stat = path.lstat()  # without atime, which reading may change
+        target = os.readlink(path) if path.is_symlink() else ""
+        found[str(path)] = (stat.st_mode, stat.st_ino, stat.st_mtime_ns, target)
+    return found
 
 
-DRY = "endos.args.dry_run = True\nsys.addaudithook(endos.audit)\n"
-LINK = "endos.PRIVATE = ()\nendos.link_all(endos.groups_for('mothership'))\n"
-YES = "endos.confirm = lambda question: True\n"
+DRY = "gate.args.dry_run = True\nsys.addaudithook(gate.audit)\n"
+LINK = "links.PRIVATE = ()\nlinks.link_all(packages.groups_for('mothership'))\n"
+YES = "gate.confirm = lambda question: True\n"
 
 
 def check_links(home: Path) -> None:
     (home / ".config/nvim").mkdir(parents=True)
-    (home / ".config/nvim/after").symlink_to(SOURCE.parent / "CONFIG/nvim/after")
-    (home / ".config/dead").symlink_to(SOURCE.parent / "CONFIG/gone")
+    (home / ".config/nvim/after").symlink_to(DOTFILES / "CONFIG/nvim/after")
+    (home / ".config/dead").symlink_to(DOTFILES / "CONFIG/gone")
     (home / ".gitconfig").write_text("mine\n")
     before = snapshot(home)
     plan = in_child(home, DRY + LINK)
@@ -104,12 +133,12 @@ def check_audit(home: Path) -> None:
 MAIN = """
 calls = []
 for name in ("link_all", "set_up", "check_unlock"):
-    setattr(endos, name, lambda *a, name=name: calls.append(name))
-endos.install = lambda packages: (calls.append("install"), works)[1]
-endos.HOSTNAME = host
-sys.argv = ["endos.py", *options]
+    setattr(main, name, lambda *a, name=name: calls.append(name))
+main.install = lambda packages: (calls.append("install"), works)[1]
+main.HOSTNAME = host
+sys.argv = ["main.py", *options]
 status = 0
-try: endos.main()
+try: main.main()
 except SystemExit as stop: status = stop.code
 """
 
@@ -129,27 +158,27 @@ def check_main(home: Path) -> None:
         setup = f"host, options, works = {(host, options, works)!r}\n"
         expect = f"assert (calls, status) == ({calls!r}, {status}), (calls, status)"
         in_child(home, setup + MAIN + expect)
-    broken = "host, options, works = 'sl3', [], True\nendos.run('false')\n"
+    broken = "host, options, works = 'sl3', [], True\ngate.run('false')\n"
     in_child(home, broken + MAIN + "assert 'false' in status, status")
 
 
 UNLOCK = """
 import pathlib
 at = Path.home()
-endos.CRYPT_CONF = Path("conf")  # a relative path: / and the checkout hold it
-endos.UNLOCK_KEYS, endos.CMDLINE = at / "keys/authorized_keys", at / "cmdline"
-endos.HOST_KEY = str(at / "keys/host")
-endos.dracut_confs = lambda: [at / "omit.conf"]
-endos.CUSTOM = at / "custom"
+unlock.CRYPT_CONF = Path("conf")  # a relative path: / and the checkout hold it
+unlock.UNLOCK_KEYS, unlock.CMDLINE = at / "keys/authorized_keys", at / "cmdline"
+unlock.HOST_KEY = str(at / "keys/host")
+unlock.dracut_confs = lambda: [at / "omit.conf"]
+unlock.CUSTOM = at / "custom"
 planned = []
-endos.run = lambda *cmd, text=None: (planned.append((cmd[:2], text)), True)[1]
-endos.install = lambda packages: planned.append("install") or True
-endos.query = lambda *cmd, **options: ""
-endos.read_as_root = lambda *cmd: (
+gate.run = lambda *cmd, text=None: (planned.append((cmd[:2], text)), True)[1]
+unlock.install = lambda packages: planned.append("install") or True
+gate.query = lambda *cmd, **options: ""
+gate.read_as_root = lambda *cmd: (
     "ssh-ed25519 AAAAC3Nz me" if cmd[0] == "cat" and cmd[1].startswith("/root") else ""
 )
-endos.choose = lambda question, options: []
-endos.confirm = lambda question: True
+gate.choose = lambda question, options: []
+gate.confirm = lambda question: True
 """
 
 
@@ -159,15 +188,15 @@ def check_unlocking(home: Path) -> None:
     (home / "custom/ROOT").mkdir(parents=True)
     (home / "custom/ROOT/conf").write_text("ours")
     for overwrite in ("False", "True"):  # no key chosen: the conf stays out
-        setup = f"{UNLOCK}endos.args.overwrite = {overwrite}\nendos.check_unlock()\n"
+        setup = f"{UNLOCK}gate.args.overwrite = {overwrite}\nunlock.check_unlock()\n"
         in_child(home, setup + "assert 'install' not in str(planned), planned")
     # choosing keys is safe in a dry run, with the real gate
-    setup = UNLOCK.replace("endos.choose =", "unused =").replace(
-        "endos.run =", "unused ="
+    setup = UNLOCK.replace("gate.choose =", "unused =").replace(
+        "gate.run =", "unused ="
     )
-    dry = "endos.args.dry_run = True\nsys.addaudithook(endos.audit)\n"
+    dry = "gate.args.dry_run = True\nsys.addaudithook(gate.audit)\n"
     shown = in_child(
-        home, "import sys\n" + setup + dry + "assert endos.add_unlock_keys()"
+        home, "import sys\n" + setup + dry + "assert unlock.add_unlock_keys()"
     )
     assert "SHA256:" in shown, shown
     assert "AAAA" not in shown
@@ -178,25 +207,25 @@ def check_unlocking(home: Path) -> None:
         home,
         UNLOCK
         + """
-endos.has_unlock_keys = lambda: True
-endos.check_unlock()
+unlock.has_unlock_keys = lambda: True
+unlock.check_unlock()
 print([(cmd, text) for cmd, text in planned])
 assert (("sudo", "tee"), "quiet root=/dev/x ip=10.0.0.2 rw rd.neednet=1\\n") in planned
 assert (("sudo", "tee"), 'omit_dracutmodules+=" nfs  brltty "\\n') in planned
 assert (("sudo", "install"), None) in planned
 assert not any("reinstall-kernels" in cmd for cmd, text in planned)
-endos.args.check = True
+gate.args.check = True
 planned.clear()
-endos.entries_ok, endos.image_ok = lambda: True, lambda version: None
-endos.check_unlock()
+unlock.entries_ok, unlock.image_ok = lambda: True, lambda version: None
+unlock.check_unlock()
 assert (("sudo", "reinstall-kernels"), None) not in planned, "unknown is no reason"
-endos.image_ok = lambda version: False
-endos.confirm = lambda question: "rebuild the" not in question
-endos.check_unlock()
+unlock.image_ok = lambda version: False
+gate.confirm = lambda question: "rebuild the" not in question
+unlock.check_unlock()
 assert (("sudo", "reinstall-kernels"), None) not in planned, "no means no"
-assert endos.failed
-endos.confirm = lambda question: True
-endos.check_unlock()
+assert gate.failed
+gate.confirm = lambda question: True
+unlock.check_unlock()
 assert (("sudo", "reinstall-kernels"), None) in planned
 """,
     )
@@ -204,7 +233,7 @@ assert (("sudo", "reinstall-kernels"), None) in planned
     same = in_child(
         home,
         "for line in ('a b', 'a rd.neednet=1 ip=dhcp\\n', 'a\\nb\\n'):\n"
-        "    new = endos.with_network(line).split()\n"
+        "    new = unlock.with_network(line).split()\n"
         "    assert new[:len(line.split())] == line.split()\n"
         "    assert {'rd.neednet=1', 'ip=dhcp'} <= set(new)",
     )
@@ -216,17 +245,17 @@ def check_cleanup(home: Path) -> None:
     (home / ".config/mako").mkdir()
     (home / ".config/mako/config").write_text("mine\n")
     stub = """
-endos.query = lambda *cmd: "mako\\nzsh\\n" if cmd[0] == "pacman" else "disabled\\n"
-endos.run = lambda *cmd: print("RUN", *cmd)
+gate.query = lambda *cmd: "mako\\nzsh\\n" if cmd[0] == "pacman" else "disabled\\n"
+gate.run = lambda *cmd: print("RUN", *cmd)
 asked = []
-endos.choose = lambda question, options: (asked.extend(options), picked)[1]
+gate.choose = lambda question, options: (asked.extend(options), picked)[1]
 """
     for overwrite in ("False", "True"):
-        option = f"endos.args.overwrite = {overwrite}\npicked = []\n"
+        option = f"gate.args.overwrite = {overwrite}\npicked = []\n"
         before = snapshot(home)
-        in_child(home, stub + option + "endos.clean_up()")
+        in_child(home, stub + option + "cleanup.clean_up()")
         assert snapshot(home) == before
-    out = in_child(home, stub + "picked = asked\nendos.clean_up()\nprint(asked)")
+    out = in_child(home, stub + "picked = asked\ncleanup.clean_up()\nprint(asked)")
     assert "RUN yay -Rns mako" in out
     assert "zsh" not in out
     assert not (home / ".config/helix").exists()
@@ -234,14 +263,14 @@ endos.choose = lambda question, options: (asked.extend(options), picked)[1]
 
 
 YAZI = """
-endos.DOTFILES = Path.home() / "checkout"
-plugins = endos.CFG / "yazi/plugins"
+steps.DOTFILES = links.DOTFILES = Path.home() / "checkout"
+plugins = steps.CFG / "yazi/plugins"
 def ya(*cmd):
     if works: (plugins / "git.yazi").mkdir(parents=True)
     return works
-endos.run = ya
-endos.confirm = lambda question: True
-endos.setup_yazi()
+gate.run = ya
+gate.confirm = lambda question: True
+steps.setup_yazi()
 """
 
 
@@ -262,7 +291,7 @@ def check_yazi(home: Path) -> None:
     assert old.is_dir(), "a plugin that is not in package.toml is kept"
     assert (link / "git.yazi").is_dir()
     (old / "own.yazi").rmdir()
-    in_child(home, "works = False\nendos.args.dry_run = True\n" + YAZI)
+    in_child(home, "works = False\ngate.args.dry_run = True\n" + YAZI)
     assert old.is_dir()
     in_child(home, "works = True\n" + YAZI.replace("if works:", "if False:"))
     assert not old.exists()

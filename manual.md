@@ -1,14 +1,14 @@
-# Steps endos.py leaves to you
+# Steps endos leaves to you
 
 In this order. "All hosts" unless a heading says otherwise. Where a file may hold
 other settings already, look before you overwrite it.
 
-## 1. Before endos.py
+## 1. Before endos
 
 ```
 git clone https://git.hjarl.com/henrik/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-sudo pacman -S --needed git yay
+sudo pacman -S --needed git yay uv
 yay -S --needed git-secret
 gpg --import <your private key>      # from your own backup
 git secret reveal
@@ -31,25 +31,25 @@ sudo reboot                                         # choose the surface kernel
 ```
 Verify: `uname -r` contains `surface`; `systemctl list-units 'iptsd@*'` lists one.
 
-## 3. endos.py
+## 3. endos
 
 ```
 cd ~/dotfiles
-./endos.py --dry-run | less
-./endos.py
+./endos/main.py --dry-run | less
+./endos/main.py
 ```
 It asks before it replaces or removes anything, and lists the leftovers of older
 versions to choose from. Log out and in again when it has added you to a group.
-Verify: `./endos.py --dry-run` shows only `ya pkg install`, `virsh net-autostart`
+Verify: `./endos/main.py --dry-run` shows only `ya pkg install`, `virsh net-autostart`
 (mothership) and what you said no to; `id -nG` has `docker libvirt` (mothership).
 
 ## 4. SSH unlock (mothership, droneship)
 
-endos.py sets it up; this checks it, and offers repairs one by one. It reads files
+endos sets it up; this checks it, and offers repairs one by one. It reads files
 with sudo. Nothing is copied to dracut before a key may unlock, and the initramfs
 is only rebuilt if you say yes.
 ```
-./endos.py --check
+./endos/main.py --check
 ```
 If it finds no public key to offer, add one (a key of its own is best):
 ```
@@ -113,7 +113,7 @@ Verify: `sudo ufw status verbose`.
   uv run -m hosts apply <node>
   ```
   Verify: `kubectl get nodes`.
-- coolercontrol's log level (endos.py copies it):
+- coolercontrol's log level (endos copies it):
   `sudo systemctl restart coolercontrold`.
   Verify: `systemctl show -p Environment coolercontrold` has `CC_LOG=WARN`.
 
