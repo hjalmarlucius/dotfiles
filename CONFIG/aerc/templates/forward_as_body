@@ -1,7 +1,14 @@
 X-Mailer: aerc {{version}}
 
 Forwarded message from {{.OriginalFrom | names | join ", "}} on {{dateFormat .OriginalDate "Mon Jan 2, 2006 at 3:04 PM"}}:
+{{- if or
+	(eq .OriginalMIMEType "text/html")
+	(contains "<html" (toLower .OriginalText))
+}}
+{{exec `/usr/lib/aerc/filters/html` .OriginalText | replace `\r` ``}}
+{{- else }}
 {{.OriginalText}}
+{{- end }}
 {{- with .Signature }}
 
 {{.}}
