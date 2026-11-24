@@ -1,7 +1,7 @@
 set blame-view = date:default line-number:yes text
 set main-view-id-display = yes
 set main-view-author-display = full
-set ignore-space = all
+set ignore-space = no
 set blob-view-line-number-display = yes
 
 bind generic h scroll-left
@@ -75,5 +75,4 @@ bind generic c  none
 bind generic cc !git commit
 bind generic ca !?@git commit --amend --no-edit
 
-bind generic ? view-help
 bind generic <C-w><C-w> view-next
