@@ -3,7 +3,7 @@
 set zoom-min 0
 set zoom-max 1000
 set zoom-step 10
-set first-page-column 1
+set first-page-column 1:2
 set pages-per-row 1
 set scroll-step 100
 set scroll-page-aware "true"
@@ -14,14 +14,11 @@ set guioptions "csv"
 set adjust-open "best-fit"
 set selection-clipboard "clipboard"
 set database "sqlite"
+set continuous-hist-save true
 map [normal]     R rotate rotate-ccw
 map [fullscreen] R rotate rotate-ccw
-map [normal]     c recolor
-map [fullscreen] c recolor
 map [normal]     <F8> recolor
 map [fullscreen] <F8> recolor
-map [normal] f toggle_fullscreen
-map [fullscreen] f toggle_fullscreen
 map [normal] <A-1> set "pages-per-row 1"
 map [fullscreen] <A-1> set "pages-per-row 1"
 map [normal] <A-2> set "pages-per-row 2"
