@@ -71,7 +71,7 @@ installmap = dict(
         "seahorse",  # keyring ui
     ),
     readers=(
-        "sioyek",
+        "sioyek-git",
         "zathura",
         "zathura-pdf-mupdf",
         "zathura-djvu",
@@ -91,12 +91,15 @@ installmap = dict(
         "v4l-utils",
         # photos
         "qimgv",
+        "krita",  # yazi opener
         "kimageformats5",  # heif support
         # music
         "quodlibet",
         "gst-plugins-good",  # required deb
         # audio
         "pamixer",
+        "pavucontrol",  # waybar
+        "playerctl",  # sway media keys
     ),
     filebrowsers=(
         "yazi",
@@ -110,6 +113,7 @@ installmap = dict(
         "7zip",  # explore zip files
         "eza",  # pretty alternative to `ls`
         "glow",  # markdown renderer
+        "perl-image-exiftool",  # yazi keymap
         "duckdb",  # yazi parquet-preview plugin
     ),
     netbrowsers=(
@@ -130,7 +134,8 @@ installmap = dict(
         "aerc",  # email
         "eilmeldung",  # rss reader
         "vdirsyncer",  # sync calendar+contacts
-        "pandoc",  # md2html for aerc
+        "pandoc-cli",  # md2html for aerc
+        "poppler",  # pdftotext for aerc
         "pass",  # password manager for aerc
         "w3m",  # terminal browser for aerc
         "python-aiohttp-oauthlib",  # for google vdirsyncer
@@ -142,10 +147,12 @@ installmap = dict(
         "systemctl-tui",  # systemd
         "bandwhich",  # network
         "sysstat",
+        "lm_sensors",  # waybar
     ),
     apps=("keepassxc", "bitwarden", "qalculate-gtk"),
     sway=(
         "xdg-terminal-exec",
+        "swaync",  # notifications
         # visuals
         "wlsunset",  # eye saver
         "wdisplays",  # ui for display settings
@@ -176,8 +183,9 @@ installmap = dict(
         "open-iscsi",  # required by longhorn
         "kubectl-cnpg",
     ),
-    luksunlock=(  # unlock LUKS over ssh from the initramfs
-        "dracut-crypt-ssh",
+    surface=("squeekboard",),  # on-screen keyboard, sway on spro5
+    luks=(  # unlock LUKS over ssh from the initramfs
+        "dracut-crypt-ssh-git",
         "dropbear",
     ),
     virtwin=(
@@ -185,7 +193,7 @@ installmap = dict(
         "libvirt",  # the backend manager - handles running qemu
         "virt-manager",  # the graphical dashboard
         "virt-viewer",  # the display window
-        "iptables-nft",  # for using iptables instead of nft
+        "iptables",  # the nft backend; replaced iptables-nft
         "dnsmasq",  # lightweight DHCP and DNS server
         "bridge-utils",  # tools for creating network bridges
         "vde2",  # networking plumbing
@@ -445,7 +453,7 @@ def install_luks_unlock(reinstall: bool) -> None:
     Runs before install_sway copies that file: the package owns the path,
     so pacman would refuse to install it over a copied file, and without
     the key every dracut rebuild would ship an initramfs without dropbear."""
-    helper_install(*installmap["luksunlock"], reinstall=reinstall)
+    helper_install(*installmap["luks"], reinstall=reinstall)
     folder = "/etc/dracut-crypt-ssh"
     key = f"{folder}/ssh_host_ed25519_key"
     keys = f"{folder}/authorized_keys"  # may unlock; not root logins
@@ -509,6 +517,8 @@ def installer(
         helper_install(*installmap["coolercontrol"], reinstall=reinstall)
         run("sudo systemctl enable --now coolercontrold.service".split())
         print("installed coolercontrol")
+    if HOSTNAME in ["sl3", "spro5"]:
+        helper_install(*installmap["surface"], reinstall=reinstall)
     if HOSTNAME in ["mothership"]:
         helper_install(*installmap["docker"], reinstall=reinstall)
         install_virtwin(overwrite, reinstall)
