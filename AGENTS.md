@@ -21,7 +21,7 @@ The owner decides `decide:` issues, reviews and merges your pull requests, pushe
 - `~/dotfiles` is live: never edit, commit, switch branches, rebase, reset, stash or check out files there. Each of those changes the running setup, and the owner often has uncommitted work in it, which is theirs.
 - Work in a worktree of your own outside the checkout, one branch per issue, based on Gitea's `main` rather than the local one (which can hold the owner's unpushed commits): `git -C ~/dotfiles fetch https://git.hjarl.com/henrik/dotfiles.git main`, then `git -C ~/dotfiles worktree add -b agent/<N>-<slug> <dir> FETCH_HEAD`. Remove the worktree when the branch is done; the branch keeps the work.
 - Nothing you change takes effect until the owner merges and pulls, so check each change before you commit it (see the checks below).
-- Never run `endos.py`: it installs packages, writes to `/`, and needs sudo. Never edit files under `~`, `~/.config` or `/` directly; change them in your worktree.
+- Never run `endos.py`: it installs packages, writes to `/`, and needs sudo. The one exception is its dry run, only in this sandbox (no network, read-only, no system sockets): `bwrap --ro-bind / / --dev /dev --proc /proc --tmpfs /tmp --tmpfs /run --ro-bind <worktree>/endos.py ~/dotfiles/endos.py --unshare-net --unshare-ipc --die-with-parent --new-session --chdir ~/dotfiles python3 -B ./endos.py --dry-run`. Never edit files under `~`, `~/.config` or `/` directly; change them in your worktree.
 
 ## Public repository
 
