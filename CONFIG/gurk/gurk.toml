@@ -31,6 +31,7 @@ ctrl-w = "kill_word"
 ctrl-a = "beginning_of_line"
 ctrl-e = "end_of_line"
 tab = "react"
+ctrl-o = "open_editor"
 # defaults
 shift-down = "select_channel next"
 shift-up = "select_channel previous"
