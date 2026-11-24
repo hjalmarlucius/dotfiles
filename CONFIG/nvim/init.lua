@@ -1303,10 +1303,10 @@ local function makespec_smartsplits()
             { "<M-k>", function() require("smart-splits").move_cursor_up() end, desc = "Go to Upper Window" },
             { "<M-l>", function() require("smart-splits").move_cursor_right() end, desc = "Go to Right Window" },
             { "<M-\\>", function() require("smart-splits").move_cursor_previous() end, desc = "Go to Previous Window" },
-            { "<C-h>", function() require("smart-splits").resize_left() end, desc = "Resize Window Left" },
-            { "<C-j>", function() require("smart-splits").resize_down() end, desc = "Resize Window Down" },
-            { "<C-k>", function() require("smart-splits").resize_up() end, desc = "Resize Window Up" },
-            { "<C-l>", function() require("smart-splits").resize_right() end, desc = "Resize Window Right" },
+            { "<M-C-h>", function() require("smart-splits").resize_left() end, desc = "Resize Window Left" },
+            { "<M-C-j>", function() require("smart-splits").resize_down() end, desc = "Resize Window Down" },
+            { "<M-C-k>", function() require("smart-splits").resize_up() end, desc = "Resize Window Up" },
+            { "<M-C-l>", function() require("smart-splits").resize_right() end, desc = "Resize Window Right" },
         },
     }
 end
