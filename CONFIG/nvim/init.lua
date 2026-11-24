@@ -757,7 +757,7 @@ local function makespecs_previewers()
             init = function()
                 vim.g.mkdp_auto_start = 0 -- auto start on moving into
                 vim.g.mkdp_auto_close = 0 -- auto close on moving away
-                vim.g.mkdp_open_to_the_world = 1 -- available to others
+                vim.g.mkdp_open_to_the_world = vim.env.SSH_TTY and 1 or 0 -- available to others only over SSH
                 vim.g.mkdp_port = 10010
                 vim.g.mkdp_echo_preview_url = 1
                 vim.g.mkdp_preview_options = { disable_sync_scroll = 1 }
