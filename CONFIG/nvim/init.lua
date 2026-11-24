@@ -1332,22 +1332,6 @@ local function makespec_mason()
 end
 
 local function makespec_flash()
-    local function flash_line(forward)
-        return function()
-            local line = vim.fn.line(".")
-            require("flash").jump({
-                search = {
-                    forward = forward,
-                    wrap = false,
-                    multi_window = false,
-                    mode = function(str) return "\\%" .. line .. "l" .. str end,
-                },
-                jump = { autojump = true },
-                label = { after = { 0, 0 } },
-            })
-        end
-    end
-
     return {
         "folke/flash.nvim",
         event = "VeryLazy",
@@ -1356,17 +1340,14 @@ local function makespec_flash()
             jump = { autojump = false },
             modes = {
                 search = { enabled = false },
-                -- Disable built-in f/F/t/T char mode so it doesn't overwrite custom f/F/t/T keys
-                char = { enabled = false },
+                char = { enabled = true }, -- f/F/t/T/;/, (multi_line = false breaks . on another line)
             },
         },
         -- stylua: ignore
         keys = {
             { "s", mode = { "n", "o", "x" }, function() require("flash").jump() end, desc = "Flash" },
-            { "f", mode = { "n", "o", "x" }, flash_line(true), desc = "Flash Line Forward" },
-            { "F", mode = { "n", "o", "x" }, flash_line(false), desc = "Flash Line Backward" },
-            { "t", mode = { "n", "o", "x" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
-            { "T", mode = { "n", "o", "x" }, function() require("flash").treesitter_search() end, desc = "Flash Treesitter Search", },
+            { "S", mode = "o", function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+            { "R", mode = "o", function() require("flash").treesitter_search() end, desc = "Flash Treesitter Search", },
             { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
             { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
         },
