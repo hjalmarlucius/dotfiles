@@ -266,19 +266,6 @@ bindsym {
     $mod+m exec swaync-client -t -sw
 }
 
-# config tools
-set $mode_monitor (b) btop, (h) htop, (s) isd, (j) journal, (n) nvtop
-mode "$mode_monitor" {
-    bindsym b exec footclient --app-id floating_shell --window-size-chars 140x50 btop, mode "default"
-    bindsym h exec footclient --app-id floating_shell --window-size-chars 140x50 htop, mode "default"
-    bindsym s exec footclient --app-id floating_shell --window-size-chars 140x50 isd, mode "default"
-    bindsym j exec footclient --app-id floating_shell --window-size-chars 140x50 lazyjournal, mode "default"
-    bindsym n exec footclient --app-id floating_shell --window-size-chars 140x50 nvtop, mode "default"
-
-    bindsym Return mode "default"
-    bindsym Escape mode "default"
-}
-bindsym $mod+Shift+m mode "$mode_monitor"
 
 # ------------------------------------------
 # AUTOSTART
