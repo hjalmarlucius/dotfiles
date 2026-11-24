@@ -15,6 +15,7 @@
         "interval": 30,
         "format": "  /mnt/hdd1 {specific_free:0.0f} of {specific_total:0.0f} GB free",
         "unit": "GB",
+        "states": { "warning": 85, "critical": 95 },
         "on-click": "swaymsg exec 'footclient --app-id floating_shell --window-size-chars 150x45 gdu -d'"
     },
     "custom/nvidia": {
@@ -24,6 +25,7 @@
       "interval": 1
     },
     "modules-right": [
+        "privacy",
         "idle_inhibitor",
         "cpu",
         "temperature",
