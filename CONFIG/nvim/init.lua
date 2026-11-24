@@ -1641,7 +1641,7 @@ local function makespec_conform()
                 json = { "jq" },
                 lua = { "stylua" },
                 markdown = { "prettierd", "prettier", stop_after_first = true },
-                python = { "ruff_format", "ruff_fix", "ruff_organize_imports" },
+                python = { "ruff_fix", "ruff_format" },
                 sh = { "shfmt" },
                 toml = { "pyproject-fmt" },
                 bash = { "shfmt" },
@@ -1654,10 +1654,14 @@ local function makespec_conform()
                 timeout_ms = 1000,
             },
             formatters = {
-                prettierd = { require_cwd = true },
+                ["pyproject-fmt"] = {
+                    condition = function(_, ctx) return vim.fs.basename(ctx.filename) == "pyproject.toml" end,
+                },
+                -- Markdown is formatted without a prettier config too
+                prettierd = function(bufnr) return { require_cwd = vim.bo[bufnr].filetype ~= "markdown" } end,
                 prettier = { require_cwd = true },
                 stylua = { append_args = { "--indent-type", "Spaces", "--collapse-simple-statement", "Always" } },
-                ruff_fix = { append_args = { "--select", "I,F,UP" } },
+                ruff_fix = { append_args = { "--extend-select", "I,F,UP" } },
                 yamlfmt = {
                     prepend_args = {
                         "-formatter",
