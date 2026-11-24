@@ -813,6 +813,23 @@ local function makespec_codediff()
         keys = {
             { "<leader>gd", "<cmd>CodeDiff<cr>", desc = "CodeDiff (Working Tree)" },
             { "<leader>gD", "<cmd>CodeDiff HEAD~1<cr>", desc = "CodeDiff (HEAD~1)" },
+            { "<leader>gh", "<cmd>CodeDiff history %<cr>", desc = "File Commit History (CodeDiff)" },
+            { "<leader>gh", ":CodeDiff history<cr>", mode = "x", desc = "Line Selection History (CodeDiff)" },
+            { "<leader>gH", "<cmd>CodeDiff history<cr>", desc = "Commit History (CodeDiff)" },
+            {
+                "<leader>gM",
+                function()
+                    -- Without a conflict, the merge view's result is an empty, modified buffer
+                    local file = vim.fn.expand("%:p")
+                    local git = { "git", "-C", vim.fs.dirname(file), "ls-files", "--unmerged", "--", file }
+                    if vim.fn.system(git) == "" or vim.v.shell_error ~= 0 then
+                        vim.notify("No merge conflict in this file", vim.log.levels.WARN)
+                        return
+                    end
+                    vim.cmd.CodeDiff({ "merge", file })
+                end,
+                desc = "Merge Conflicts In File (CodeDiff)",
+            },
             {
                 "<leader>gC",
                 function()
@@ -841,27 +858,6 @@ local function makespec_codediff()
                 end,
                 desc = "CodeDiff Commit..HEAD (Picker)",
             },
-        },
-    }
-end
-
-local function makespec_diffview()
-    return {
-        "sindrets/diffview.nvim",
-        cmd = {
-            "DiffviewOpen",
-            "DiffviewClose",
-            "DiffviewToggleFiles",
-            "DiffviewFocusFiles",
-            "DiffviewRefresh",
-            "DiffviewFileHistory",
-        },
-        keys = {
-            { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", mode = "n", desc = "File Commit History (Diffview)" },
-            { "<leader>gH", "<cmd>DiffviewFileHistory<cr>", mode = "n", desc = "Commit History (Diffview)" },
-            { "<leader>gh", ":'<,'>DiffviewFileHistory<cr>", mode = "x", desc = "Line Selection History (Diffview)" },
-            { "<leader>gM", "<cmd>DiffviewOpen<cr>", desc = "Merge / Repo Diffview" },
-            { "<leader>gX", "<cmd>DiffviewClose<cr>", desc = "Close Diffview" },
         },
     }
 end
@@ -1809,7 +1805,6 @@ local lazyspecs = {
     -- git
     makespec_gitsigns(),
     makespec_fugitive(),
-    makespec_diffview(),
     makespec_vimflog(),
     makespecs_themes(),
     makespecs_mini(),
