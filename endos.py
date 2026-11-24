@@ -139,8 +139,6 @@ installmap = dict(
         "systemctl-tui",  # systemd
         "bandwhich",  # network
         "sysstat",
-        "isd",  # systemd, sway monitor mode
-        "lazyjournal",  # journal, sway monitor mode
     ),
     apps=("keepassxc", "bitwarden", "qalculate-gtk"),
     sway=(
