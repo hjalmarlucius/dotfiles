@@ -343,19 +343,20 @@ end, { nargs = 1 })
 
 local function makespecs_themes()
     return {
-        "junegunn/seoul256.vim",
-        "folke/tokyonight.nvim",
+        -- the others load on :colorscheme
+        { "junegunn/seoul256.vim", lazy = true },
+        { "folke/tokyonight.nvim", lazy = true },
         {
             "uloco/bluloco.nvim",
-            lazy = false,
+            lazy = true,
             dependencies = { "rktjmp/lush.nvim" },
             opts = {},
         },
-        "sainnhe/gruvbox-material",
-        "sainnhe/everforest",
-        "sainnhe/edge",
-        "sainnhe/sonokai",
-        { "catppuccin/nvim", name = "catppuccin", opts = { auto_integrations = true } },
+        { "sainnhe/gruvbox-material", lazy = false, priority = 1000 },
+        { "sainnhe/everforest", lazy = true },
+        { "sainnhe/edge", lazy = true },
+        { "sainnhe/sonokai", lazy = true },
+        { "catppuccin/nvim", name = "catppuccin", lazy = true, opts = { auto_integrations = true } },
     }
 end
 
@@ -532,7 +533,7 @@ end
 local function makespec_smearcursor()
     return {
         "sphamba/smear-cursor.nvim",
-        event = "VeryLazy",
+        lazy = true, -- loaded by <leader>uS
         opts = {
             enabled = false, -- Dormant on startup (toggled via <leader>uS)
             stiffness = 0.8,
@@ -983,7 +984,6 @@ local function makespec_whichkey()
         event = "VeryLazy",
         opts = {
             spec = {
-                { "<leader>a", group = "ai", mode = { "n", "x" } },
                 { "<leader>c", group = "code/content", mode = { "n", "x" } },
                 { "<leader>f", group = "file/find" },
                 { "<leader>g", group = "git", mode = { "n", "x" } },
@@ -1659,72 +1659,6 @@ local function makespec_conform()
     }
 end
 
-local function makespec_avante()
-    return {
-        "yetone/avante.nvim",
-        event = "VeryLazy",
-        version = false,
-        build = "make",
-        opts = {
-            provider = "openai",
-            auto_suggestions_provider = "openai",
-            providers = {
-                openai = {
-                    model = "gpt-4.1",
-                    extra_request_body = { temperature = 0 },
-                    max_tokens = 4096,
-                },
-                gemini = {
-                    model = "gemini-2.5-flash",
-                    extra_request_body = { temperature = 0, max_tokens = 4096 },
-                },
-            },
-            ignore_patterns = {
-                ".git",
-                "node_modules",
-                "dist",
-                "build",
-                "target",
-                ".cache",
-                ".venv",
-                "venv",
-                "__pycache__",
-                ".pytest_cache",
-                ".mypy_cache",
-                ".ruff_cache",
-                ".DS_Store",
-                "*.lock",
-                "*.png",
-                "*.jpg",
-                "*.jpeg",
-                "*.gif",
-                "*.webp",
-                "*.pdf",
-                "*.svg",
-                "*.zip",
-                "*.tar",
-                "*.gz",
-                "*.min.js",
-                "*.map",
-                "*.secret",
-                "*.whl",
-                "*.data",
-            },
-        },
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-            "MunifTanjim/nui.nvim",
-            "echasnovski/mini.icons",
-            "nvim-treesitter/nvim-treesitter",
-        },
-        keys = {
-            { "<leader>ai", "<cmd>AvanteAsk<cr>", desc = "AI Ask", mode = { "n", "x" } },
-            { "<leader>ae", "<cmd>AvanteEdit<cr>", desc = "AI Edit Selection", mode = "x" },
-            { "<leader>ar", "<cmd>AvanteRefresh<cr>", desc = "AI Refresh Context" },
-        },
-    }
-end
-
 local function makespec_noice()
     return {
         "folke/noice.nvim",
@@ -1786,7 +1720,6 @@ local lazyspecs = {
     makespec_autotag(),
     makespec_lint(),
     makespec_mason(),
-    -- makespec_avante(),
     -- navigation
     makespec_atone(),
     makespec_whichkey(),
@@ -1824,7 +1757,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
     spec = lazyspecs,
-    checker = { enabled = true },
+    checker = { enabled = true, notify = false, frequency = 86400 },
     rocks = { enabled = false },
 })
 vim.cmd("colorscheme gruvbox-material")
