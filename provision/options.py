@@ -1,9 +1,11 @@
 """The options of the command, as args for every module."""
 
 from dataclasses import dataclass
-from typing import Annotated
+from typing import Annotated, Literal
 
 from tyro.conf import arg
+
+Step = Literal["links", "packages", "unlock", "system", "cleanup", "drift"]
 
 
 @dataclass
@@ -14,8 +16,8 @@ class Args:
     """Replace files that differ without asking."""
     reinstall: Annotated[bool, arg(aliases=["-r"])] = False
     """Reinstall all packages."""
-    check: Annotated[bool, arg(aliases=["-c"])] = False
-    """Only check SSH unlock (mothership, droneship), and offer repairs."""
+    only: tuple[Step, ...] = ()
+    """Run only these steps, in the usual order; unlock and drift then say more."""
 
 
 args = Args()  # apply.main() fills it in

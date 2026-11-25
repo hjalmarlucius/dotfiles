@@ -45,7 +45,8 @@ def has_unlock_keys() -> bool:
     if not UNLOCK_KEYS.exists() or UNLOCK_KEYS.stat().st_size == 0:
         return False
     if args.dry_run or (
-        not args.check and same(CUSTOM / "ROOT" / CRYPT_CONF, "/" / CRYPT_CONF)
+        "unlock" not in args.only
+        and same(CUSTOM / "ROOT" / CRYPT_CONF, "/" / CRYPT_CONF)
     ):
         return True
     return bool(key_lines(gate.read_as_root("cat", str(UNLOCK_KEYS)) or ""))
@@ -151,7 +152,7 @@ def item(
     print({True: "ok:", False: "PROBLEM:", None: "unknown:"}[ok], what)
     if ok is False and fix and gate.confirm(f"{how}?"):
         ok = fix()
-    if not ok and args.check and not args.dry_run:
+    if not ok and "unlock" in args.only and not args.dry_run:
         gate.failed.append(what)
     return ok is True
 
@@ -159,6 +160,7 @@ def item(
 def check_unlock() -> None:
     """Set up what is missing. The conf only goes in with a key that may unlock:
     without one, the next kernel update would lock the owner out."""
+    failed_before = len(gate.failed)
     source, conf = CUSTOM / "ROOT" / CRYPT_CONF, "/" / CRYPT_CONF
     packages = set(PACKAGES["luks"])
     ready = [
@@ -203,10 +205,10 @@ def check_unlock() -> None:
     copy = ("sudo", "install", "-D", "-m", "644", source, conf)
     how = "install it (it takes effect at the next kernel update or rebuild)"
     ready = item(f"{conf} is ours", same(source, conf), lambda: gate.run(*copy), how)
-    if not ready or not args.check:
+    if not ready or "unlock" not in args.only:
         return
     if check_boot() and gate.confirm("rebuild the boot entries and every initramfs?"):
-        gate.failed.clear()
+        del gate.failed[failed_before:]  # these are checked again
         if gate.run("sudo", "reinstall-kernels") and not args.dry_run:
             check_boot()
 

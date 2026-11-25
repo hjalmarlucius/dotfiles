@@ -7,13 +7,11 @@ import shutil
 import tomllib
 
 import gate
-from cleanup import clean_up
 from copies import copy_homeassistant, copy_system_files
 from links import into_checkout, set_aside
 from options import args
 from paths import CFG, CUSTOM, DOTFILES, HOME
 from tables import UNITS
-from unlock import check_unlock
 
 FONT_URL = "https://raw.githubusercontent.com/SUNET/static_sunet_se/refs/heads/master/fonts/Akkurat-Mono.otf"
 
@@ -83,8 +81,6 @@ def setup_virtwin() -> None:
 
 
 def set_up(groups: list[str]) -> None:
-    if "luks" in groups:
-        check_unlock()
     copy_system_files(CUSTOM / "ROOT")
     if "k8s" in groups:
         copy_system_files(DOTFILES / "ROOT")
@@ -97,4 +93,3 @@ def set_up(groups: list[str]) -> None:
         copy_homeassistant()
     if "virtwin" in groups:
         setup_virtwin()
-    clean_up()

@@ -38,7 +38,7 @@ GATES = {
 def check_gates() -> None:
     """Calls that change something are only made inside the gates."""
     files = [p for p in SOURCE.glob("*.py") if p.name != Path(__file__).name]
-    assert len(files) == 11, files
+    assert len(files) == 12, files
     for path in files:
         gates = {"gate": GATES - {"make_link"}, "links": {"make_link"}}
         scan(path, gates.get(path.stem, set()))
@@ -65,7 +65,7 @@ def scan(path: Path, gates: set[str]) -> None:
 def in_child(home: Path, code: str) -> str:
     """Run code after importing the modules with HOME=home; packages are never touched."""
     setup = (
-        "import apply, cleanup, gate, links, options, packages, paths, steps, tables, unlock\n"
+        "import apply, cleanup, drift, gate, links, options, packages, paths, steps, tables, unlock\n"
         "import sys, subprocess, os\nfrom pathlib import Path\n"
     )
     result = subprocess.run(
@@ -154,7 +154,7 @@ assert all(isinstance(reason, str) for reason in CLEANUP.values())
 
 MAIN = """
 calls = []
-for name in ("link_all", "set_up", "check_unlock"):
+for name in ("link_all", "set_up", "check_unlock", "clean_up", "list_drift"):
     setattr(apply, name, lambda *a, name=name: calls.append(name))
 apply.install = lambda packages: (calls.append("install"), works)[1]
 apply.HOSTNAME = host
@@ -166,14 +166,19 @@ except SystemExit as stop: status = stop.code
 
 
 def check_main(home: Path) -> None:
-    normal = ["link_all", "install", "set_up"]
+    last = ["set_up", "clean_up", "list_drift"]
+    normal = ["link_all", "install", *last]
+    luks = ["link_all", "install", "check_unlock", *last]
     for host, options, works, calls, status in (
-        ("mothership", [], True, normal, "0"),
+        ("mothership", [], True, luks, "0"),
         ("sl3", ["-o", "-r"], True, normal, "0"),
         ("spro5", ["--dry-run"], True, normal, "0"),
         ("sl3", [], False, normal[:2], "0"),
-        ("droneship", ["--check"], True, ["check_unlock"], "0"),
-        ("sl3", ["--check"], True, [], "0"),
+        ("sl3", ["--only", "system", "links"], True, ["link_all", "set_up"], "0"),
+        ("sl3", ["--only", "drift"], True, ["list_drift"], "0"),
+        ("sl3", ["--only", "nonsense"], True, [], "2"),
+        ("droneship", ["--only", "unlock"], True, ["check_unlock"], "0"),
+        ("sl3", ["--only", "unlock"], True, [], "0"),
         ("elsewhere", [], True, [], "'unknown host elsewhere: add it to hosts.toml'"),
         ("sl3", ["--nonsense"], True, [], "2"),
     ):
@@ -236,7 +241,7 @@ assert (("sudo", "tee"), "quiet root=/dev/x ip=10.0.0.2 rw rd.neednet=1\\n") in 
 assert (("sudo", "tee"), 'omit_dracutmodules+=" nfs  brltty "\\n') in planned
 assert (("sudo", "install"), None) in planned
 assert not any("reinstall-kernels" in cmd for cmd, text in planned)
-options.args.check = True
+options.args.only = ("unlock",)
 planned.clear()
 unlock.entries_ok, unlock.image_ok = lambda: True, lambda version: None
 unlock.check_unlock()

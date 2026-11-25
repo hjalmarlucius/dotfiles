@@ -49,7 +49,7 @@ Provisioning sets it up; this checks it, and offers repairs one by one. It reads
 with sudo. Nothing is copied to dracut before a key may unlock, and the initramfs
 is only rebuilt if you say yes.
 ```
-./provision/apply.py --check
+./provision/apply.py --only unlock
 ```
 If it finds no public key to offer, add one (a key of its own is best):
 ```
