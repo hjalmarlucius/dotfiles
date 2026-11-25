@@ -5,17 +5,17 @@ In a dry run, audit() stops whatever does not."""
 import os
 import shlex
 import subprocess
+import sys
 from collections.abc import Callable
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Annotated
 
+from options import args
 from paths import DOTFILES
-from tyro.conf import arg
 
 QUERIES = (  # all that query() may run: these change nothing
     ("git", "ls-files"),
     ("id", "-nG"),
+    ("pacman", "-Qqet"),
     ("pacman", "-Qqtt"),
     ("pacman", "-T"),
     ("ssh-keygen", "-l"),
@@ -23,20 +23,9 @@ QUERIES = (  # all that query() may run: these change nothing
     ("systemctl", "--user", "is-enabled"),
 )
 
-
-@dataclass
-class Args:
-    dry_run: Annotated[bool, arg(aliases=["-n"])] = False
-    """Show what a run would do, and change nothing."""
-    overwrite: Annotated[bool, arg(aliases=["-o"])] = False
-    """Replace files that differ without asking."""
-    reinstall: Annotated[bool, arg(aliases=["-r"])] = False
-    """Reinstall all packages."""
-    check: Annotated[bool, arg(aliases=["-c"])] = False
-    """Only check SSH unlock (mothership, droneship), and offer repairs."""
-
-
-args = Args()  # main() fills it in
+done: list[str] = []
+skipped: list[str] = []
+warned: list[str] = []
 failed: list[str] = []
 
 
@@ -58,12 +47,14 @@ def audit(event: str, info: tuple) -> None:
         raise RuntimeError(f"a dry run must not do this: {event} {info}")
 
 
-def query(*cmd: str, cwd: Path = DOTFILES) -> str:
+def query(*cmd: str, cwd: Path = DOTFILES, check: bool = False) -> str:
     """Output of a command that only reads."""
     assert is_query(cmd), cmd
     result = subprocess.run(
         cmd, cwd=cwd, stdout=subprocess.PIPE, text=True, check=False
     )
+    if check and result.returncode:
+        sys.exit(f"failed: {shlex.join(cmd)}")
     return result.stdout
 
 
@@ -96,6 +87,7 @@ def do(what: str, change: Callable, *params, **options) -> bool:
     """Show a change, and make it unless this is a dry run."""
     print("+", what, flush=True)
     if args.dry_run:
+        done.append(what)
         return True
     try:
         change(*params, **options)
@@ -103,14 +95,24 @@ def do(what: str, change: Callable, *params, **options) -> bool:
         print("!", err)
         failed.append(what)
         return False
+    done.append(what)
     return True
+
+
+def warn(text: str) -> None:
+    print("!", text)
+    if text not in warned:
+        warned.append(text)
 
 
 def confirm(question: str) -> bool:
     if args.dry_run:
         print("? would ask:", question)
         return True
-    return input(f"{question} (y/N) ").strip().lower() in ("y", "yes")
+    yes = input(f"{question} (y/N) ").strip().lower() in ("y", "yes")
+    if not yes:
+        skipped.append(question)
+    return yes
 
 
 def choose(question: str, options: dict[str, str]) -> list[str]:
@@ -123,4 +125,6 @@ def choose(question: str, options: dict[str, str]) -> list[str]:
     answer = input(f"{question} (names, numbers or all; default none) ").split()
     if answer == ["all"]:
         return list(options)
-    return [n for i, n in enumerate(options, 1) if n in answer or str(i) in answer]
+    chosen = [n for i, n in enumerate(options, 1) if n in answer or str(i) in answer]
+    skipped.extend(f"{question} {name}" for name in options if name not in chosen)
+    return chosen

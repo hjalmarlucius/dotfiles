@@ -1,10 +1,13 @@
 """Links from ~ and ~/.config into the checkout."""
 
 import os
+import shutil
 from difflib import unified_diff
+from functools import partial
 from pathlib import Path
 
 import gate
+from options import args
 from paths import CFG, CUSTOM, DOTFILES, HOME
 
 TREES = (
@@ -16,7 +19,7 @@ PRIVATE = ("CONFIG/aerc/accounts.conf", "CONFIG/vdirsyncer/config")  # mode 600
 
 
 def list_files(root: Path, *options: str) -> list[str]:
-    output = gate.query("git", "ls-files", "-z", *options, cwd=root)
+    output = gate.query("git", "ls-files", "-z", *options, cwd=root, check=True)
     return [name for name in output.split("\0") if name]
 
 
@@ -28,7 +31,7 @@ def tracked(root: Path) -> list[Path]:
         if (root / rel).is_file():
             found.append(rel)
         else:
-            print(f"! missing (secret not revealed?): {root / rel}")
+            gate.warn(f"missing (secret not revealed?): {root / rel}")
     return found
 
 
@@ -51,7 +54,7 @@ def show_diff(src: Path, tgt: Path) -> None:
     try:
         old, new = (p.read_text().splitlines(keepends=True) for p in (tgt, src))
     except (OSError, UnicodeDecodeError) as err:
-        print("! cannot compare:", err)
+        gate.warn(f"cannot compare {tgt}: {err}")
         return
     if src.with_name(src.name + ".secret").exists():
         print("a git-secret file: the differences are not shown")
@@ -61,14 +64,25 @@ def show_diff(src: Path, tgt: Path) -> None:
 
 def may_replace(src: Path, tgt: Path) -> bool:
     show_diff(src, tgt)
-    return gate.args.overwrite or gate.confirm(f"replace {tgt}?")
+    return args.overwrite or gate.confirm(f"replace {tgt}?")
 
 
-def set_aside(path: Path) -> bool:
-    backup = path.with_name(path.name + ".endos-bak")
-    while os.path.lexists(backup):
-        backup = backup.with_name(backup.name + "~")
-    return gate.do(f"rename {path} to {backup.name}", path.rename, backup)
+def is_folder(path: Path) -> bool:
+    return path.is_dir() and not path.is_symlink()
+
+
+def delete(path: Path) -> bool:
+    remove = partial(shutil.rmtree, path) if is_folder(path) else path.unlink
+    return gate.do(f"delete {path}", remove)
+
+
+def may_delete(path: Path) -> bool:
+    """Ask, showing what is in a folder."""
+    if not is_folder(path):
+        return gate.confirm(f"delete {path}?")
+    names = sorted(str(p.relative_to(path)) for p in path.rglob("*"))
+    shown = ", ".join(names[:8]) + (", ..." if len(names) > 8 else "")
+    return gate.confirm(f"delete {path} ({shown or 'empty'})?")
 
 
 def make_link(src: Path, tgt: Path) -> None:
@@ -86,7 +100,8 @@ def link(src: Path, tgt: Path) -> None:
     if into_checkout(tgt) or (not tgt.is_symlink() and same(src, tgt)):
         clear = gate.do(f"remove {tgt}, to link it", tgt.unlink)
     elif os.path.lexists(tgt):
-        clear = may_replace(src, tgt) and set_aside(tgt)
+        may = may_delete(tgt) if is_folder(tgt) else may_replace(src, tgt)
+        clear = may and delete(tgt)
     else:
         clear = True
     if clear:
@@ -102,23 +117,35 @@ def link_tree(source: Path, root: Path, skip: set[str]) -> None:
             gate.do(f"remove the folder link {folder}", folder.unlink)
             unfolded.add(folder)
     for rel in files:
-        if gate.args.dry_run and not unfolded.isdisjoint((root / rel).parents):
-            print(f"+ link {root / rel} -> {source / rel}")
+        if args.dry_run and not unfolded.isdisjoint((root / rel).parents):
+            gate.do(
+                f"link {root / rel} -> {source / rel}",
+                make_link,
+                source / rel,
+                root / rel,
+            )
         else:
             link(source / rel, root / rel)
     if source.is_dir():
         for name in list_files(source, "--others", "--directory", "--exclude-standard"):
-            print(f"! not in git, so not linked: {source / name}")
+            gate.warn(f"not in git, so not linked: {source / name}")
 
 
 def prune_links() -> None:
     """Remove dead links to files that are no longer in the checkout."""
     folders = {HOME} | {(HOME / rel).parent for rel in tracked(DOTFILES / "HOME")}
     folders |= {Path(folder) for folder, _, _ in os.walk(CFG)}
-    for folder in sorted(filter(Path.is_dir, folders)):
-        for path in sorted(folder.iterdir()):
-            if into_checkout(path) and not path.exists():
-                gate.do(f"remove the dead link {path}", path.unlink)
+    dead = [
+        path
+        for folder in sorted(filter(Path.is_dir, folders))
+        for path in sorted(folder.iterdir())
+        if into_checkout(path) and not path.exists()
+    ]
+    for path in dead:
+        print("dead link:", path)
+    if dead and gate.confirm(f"remove these {len(dead)} dead links?"):
+        for path in dead:
+            gate.do(f"remove the dead link {path}", path.unlink)
 
 
 def link_all(groups: list[str]) -> None:

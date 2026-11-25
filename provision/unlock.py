@@ -9,8 +9,10 @@ from pathlib import Path
 
 import gate
 from links import same, show_diff
-from packages import PACKAGES, install
+from options import args
+from packages import install
 from paths import CUSTOM, HOME
+from tables import PACKAGES
 
 CRYPT_CONF = Path("etc/dracut.conf.d/crypt-ssh.conf")
 HOST_KEY = "/etc/dracut-crypt-ssh/ssh_host_ed25519_key"
@@ -20,8 +22,8 @@ BOOT_ENTRIES = "/efi/loader/entries"
 
 
 def write_as_root(path: Path, text: str) -> bool:
-    """Write a file in /, keeping the old one as .endos-bak."""
-    backup = ("sudo", "cp", "-a", "--backup=numbered", path, f"{path}.endos-bak")
+    """Write a file in /, keeping the old one as .dotfiles-bak."""
+    backup = ("sudo", "cp", "-a", "--backup=numbered", path, f"{path}.dotfiles-bak")
     kept = gate.run(*backup) if path.exists() else True
     return kept and gate.run("sudo", "tee", path, text=text)
 
@@ -42,8 +44,9 @@ def has_unlock_keys() -> bool:
     """Whether a key may unlock. The size says enough once the conf is in place."""
     if not UNLOCK_KEYS.exists() or UNLOCK_KEYS.stat().st_size == 0:
         return False
-    if gate.args.dry_run or (
-        not gate.args.check and same(CUSTOM / "ROOT" / CRYPT_CONF, "/" / CRYPT_CONF)
+    if args.dry_run or (
+        "unlock" not in args.only
+        and same(CUSTOM / "ROOT" / CRYPT_CONF, "/" / CRYPT_CONF)
     ):
         return True
     return bool(key_lines(gate.read_as_root("cat", str(UNLOCK_KEYS)) or ""))
@@ -65,7 +68,7 @@ def add_unlock_keys() -> bool:
             fingerprint = "SHA256:" + base64.b64encode(digest).decode().rstrip("=")
             keys[fingerprint] = (found[2], line)
     if not keys:
-        print("! no public keys found to choose from; see manual.md")
+        gate.warn("no public keys found to choose from; see manual.md")
         return False
     names = gate.choose("which may unlock?", {name: keys[name][0] for name in keys})
     if not names:
@@ -149,7 +152,7 @@ def item(
     print({True: "ok:", False: "PROBLEM:", None: "unknown:"}[ok], what)
     if ok is False and fix and gate.confirm(f"{how}?"):
         ok = fix()
-    if not ok and gate.args.check and not gate.args.dry_run:
+    if not ok and "unlock" in args.only and not args.dry_run:
         gate.failed.append(what)
     return ok is True
 
@@ -157,6 +160,7 @@ def item(
 def check_unlock() -> None:
     """Set up what is missing. The conf only goes in with a key that may unlock:
     without one, the next kernel update would lock the owner out."""
+    failed_before = len(gate.failed)
     source, conf = CUSTOM / "ROOT" / CRYPT_CONF, "/" / CRYPT_CONF
     packages = set(PACKAGES["luks"])
     ready = [
@@ -201,11 +205,11 @@ def check_unlock() -> None:
     copy = ("sudo", "install", "-D", "-m", "644", source, conf)
     how = "install it (it takes effect at the next kernel update or rebuild)"
     ready = item(f"{conf} is ours", same(source, conf), lambda: gate.run(*copy), how)
-    if not ready or not gate.args.check:
+    if not ready or "unlock" not in args.only:
         return
     if check_boot() and gate.confirm("rebuild the boot entries and every initramfs?"):
-        gate.failed.clear()
-        if gate.run("sudo", "reinstall-kernels") and not gate.args.dry_run:
+        del gate.failed[failed_before:]  # these are checked again
+        if gate.run("sudo", "reinstall-kernels") and not args.dry_run:
             check_boot()
 
 
