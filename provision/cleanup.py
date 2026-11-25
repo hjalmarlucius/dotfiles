@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 import gate
-from links import into_checkout, set_aside
+from links import delete, into_checkout, may_delete
 from paths import HOME
 from tables import CLEANUP
 
@@ -38,14 +38,8 @@ def remove_leftover(name: str) -> None:
         gate.run("systemctl", "--user", "disable", "--now", name)
     elif not name.startswith(("~/", "/")):
         gate.run("yay", "-Rns", name)
-    elif name.startswith("/"):
-        if path.is_symlink():
+    elif into_checkout(path) or may_delete(path):
+        if name.startswith("/"):
             gate.run("sudo", "rm", path)
-        elif gate.run("sudo", "chmod", "a-x", path):
-            gate.run("sudo", "mv", "--backup=numbered", path, f"{path}.dotfiles-bak")
-    elif into_checkout(path):
-        gate.do(f"remove the link {path}", path.unlink)
-    elif path.is_dir() and not path.is_symlink() and not any(path.iterdir()):
-        gate.do(f"remove the empty folder {path}", path.rmdir)
-    else:
-        set_aside(path)
+        else:
+            delete(path)

@@ -42,8 +42,8 @@ It asks before it replaces or removes anything, and lists the leftovers of older
 versions to choose from. Log out and in again when it has added you to a group.
 To relink only, after a pull: `./provision/apply.py --only links`. `--only drift` lists
 packages that `provision/hosts.toml` lacks.
-Verify: `./provision/apply.py --dry-run` shows only `ya pkg install`, `virsh net-autostart`
-(mothership) and what you said no to; `id -nG` has `docker libvirt` (mothership).
+Verify: `./provision/apply.py --dry-run` shows only `ya pkg install`
+and what you said no to; `id -nG` has `docker libvirt` (mothership).
 
 ## 4. SSH unlock (mothership, droneship)
 

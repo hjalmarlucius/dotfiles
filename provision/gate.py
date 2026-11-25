@@ -5,6 +5,7 @@ In a dry run, audit() stops whatever does not."""
 import os
 import shlex
 import subprocess
+import sys
 from collections.abc import Callable
 from pathlib import Path
 
@@ -46,12 +47,14 @@ def audit(event: str, info: tuple) -> None:
         raise RuntimeError(f"a dry run must not do this: {event} {info}")
 
 
-def query(*cmd: str, cwd: Path = DOTFILES) -> str:
+def query(*cmd: str, cwd: Path = DOTFILES, check: bool = False) -> str:
     """Output of a command that only reads."""
     assert is_query(cmd), cmd
     result = subprocess.run(
         cmd, cwd=cwd, stdout=subprocess.PIPE, text=True, check=False
     )
+    if check and result.returncode:
+        sys.exit(f"failed: {shlex.join(cmd)}")
     return result.stdout
 
 
