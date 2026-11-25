@@ -75,6 +75,12 @@ Verify: `systemctl --user list-timers vdirsyncer.timer`; `khal list`; `khard lis
 Firefox: in about:config, set `full-screen-api.ignore-widgets` to `true`.
 Verify: a video's fullscreen stays within its window.
 
+Gitea, for `gt` and `tea-dash` (the token goes in the keyring):
+```
+gt auth login --host git.hjarl.com
+```
+Verify: `gt auth status --verify`; `tea-dash` shows your pull requests.
+
 ## 6. Out of memory: kill the user's programs first
 
 `OOMScoreAdjust` only works in services (systemd ignores it in `user.slice`, where

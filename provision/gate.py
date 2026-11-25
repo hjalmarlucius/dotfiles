@@ -14,6 +14,7 @@ from paths import DOTFILES
 
 QUERIES = (  # all that query() may run: these change nothing
     ("git", "ls-files"),
+    ("gt", "auth", "status"),
     ("id", "-nG"),
     ("pacman", "-Qqet"),
     ("pacman", "-Qqtt"),

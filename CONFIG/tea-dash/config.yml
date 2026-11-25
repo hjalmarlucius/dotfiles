@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=/usr/share/tea-dash/schema.json
+# Without repos:, the tabs cover every repository the login can see. Repository
+# names stay out: this file is public.
+instance:
+  url: https://git.hjarl.com
+  # the login of gt, from the keyring: gt auth login --host git.hjarl.com
+  tokenCommand: gt auth token --host git.hjarl.com
+
+defaults:
+  view: prs
+  refetchIntervalMinutes: 5
+
+pager:
+  diff: delta --paging always --pager "less -R"
+
+prSections:
+  - title: Needs my review
+    filter:
+      state: open
+      reviewRequested: "@me"
+  - title: Mine
+    filter:
+      state: open
+      createdBy: "@me"
+  - title: All open
+    filter:
+      state: open
+
+issuesSections:
+  - title: Assigned to me
+    filter:
+      state: open
+      assignedBy: "@me"
+  - title: Mine
+    filter:
+      state: open
+      createdBy: "@me"
+  - title: All open
+    filter:
+      state: open
+
+notificationsSections:
+  - title: Inbox
