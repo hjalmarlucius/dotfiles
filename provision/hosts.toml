@@ -78,8 +78,6 @@ mediaviewers = [
 ]
 filebrowsers = [
     "yazi",
-    "ranger",
-    "ueberzugpp",  # ranger image previews (provides ueberzug)
     "pcmanfm",
     "thunar",
     "ouch",
@@ -209,6 +207,8 @@ virtwin = [
 "nvidia-docker" = "dropped 2025-11"
 "oh-my-posh" = "replaced by starship 2025-10"
 "vesktop" = "replaced by discord 2026-03"
+"ranger" = "dropped 2026-11, yazi is used"
+"~/.config/ranger" = "config dropped 2026-11"
 "~/.config/discordo" = "config dropped 2026-10"
 "~/.config/helix" = "config dropped 2026-10"
 "~/.config/hypr" = "config dropped"
