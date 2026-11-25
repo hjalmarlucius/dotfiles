@@ -118,13 +118,18 @@ def check_links(home: Path) -> None:
 
 def check_keeps(home: Path) -> None:
     """No means no, and --overwrite doesn't delete folders or dead links unasked."""
-    (home / ".gitconfig/mine").mkdir(parents=True)
+    (home / ".gtkrc-2.0/mine").mkdir(parents=True)
     (home / ".config").mkdir()
     (home / ".config/dead").symlink_to(DOTFILES / "CONFIG/gone")
     option = "options.args.overwrite = True\ngate.confirm = lambda question: False\n"
     in_child(home, option + LINK)
-    assert (home / ".gitconfig/mine").is_dir()
+    assert (home / ".gtkrc-2.0/mine").is_dir()
     assert (home / ".config/dead").is_symlink()
+    assert (home / ".gtkrc-2.0").is_dir()
+    (home / ".gitconfig").unlink()
+    (home / ".gitconfig").mkdir()  # git fails on this
+    stop = "try: links.link_all([])\nexcept SystemExit: pass\nelse: sys.exit(1)"
+    in_child(home, option + stop)
 
 
 def check_audit(home: Path) -> None:

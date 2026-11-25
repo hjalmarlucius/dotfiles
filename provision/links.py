@@ -19,7 +19,7 @@ PRIVATE = ("CONFIG/aerc/accounts.conf", "CONFIG/vdirsyncer/config")  # mode 600
 
 
 def list_files(root: Path, *options: str) -> list[str]:
-    output = gate.query("git", "ls-files", "-z", *options, cwd=root)
+    output = gate.query("git", "ls-files", "-z", *options, cwd=root, check=True)
     return [name for name in output.split("\0") if name]
 
 
