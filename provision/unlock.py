@@ -9,6 +9,7 @@ from pathlib import Path
 
 import gate
 from links import same, show_diff
+from options import args
 from packages import PACKAGES, install
 from paths import CUSTOM, HOME
 
@@ -42,8 +43,8 @@ def has_unlock_keys() -> bool:
     """Whether a key may unlock. The size says enough once the conf is in place."""
     if not UNLOCK_KEYS.exists() or UNLOCK_KEYS.stat().st_size == 0:
         return False
-    if gate.args.dry_run or (
-        not gate.args.check and same(CUSTOM / "ROOT" / CRYPT_CONF, "/" / CRYPT_CONF)
+    if args.dry_run or (
+        not args.check and same(CUSTOM / "ROOT" / CRYPT_CONF, "/" / CRYPT_CONF)
     ):
         return True
     return bool(key_lines(gate.read_as_root("cat", str(UNLOCK_KEYS)) or ""))
@@ -149,7 +150,7 @@ def item(
     print({True: "ok:", False: "PROBLEM:", None: "unknown:"}[ok], what)
     if ok is False and fix and gate.confirm(f"{how}?"):
         ok = fix()
-    if not ok and gate.args.check and not gate.args.dry_run:
+    if not ok and args.check and not args.dry_run:
         gate.failed.append(what)
     return ok is True
 
@@ -201,11 +202,11 @@ def check_unlock() -> None:
     copy = ("sudo", "install", "-D", "-m", "644", source, conf)
     how = "install it (it takes effect at the next kernel update or rebuild)"
     ready = item(f"{conf} is ours", same(source, conf), lambda: gate.run(*copy), how)
-    if not ready or not gate.args.check:
+    if not ready or not args.check:
         return
     if check_boot() and gate.confirm("rebuild the boot entries and every initramfs?"):
         gate.failed.clear()
-        if gate.run("sudo", "reinstall-kernels") and not gate.args.dry_run:
+        if gate.run("sudo", "reinstall-kernels") and not args.dry_run:
             check_boot()
 
 

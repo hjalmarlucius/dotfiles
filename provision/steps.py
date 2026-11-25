@@ -10,6 +10,7 @@ import gate
 from cleanup import clean_up
 from copies import copy_homeassistant, copy_system_files
 from links import into_checkout, set_aside
+from options import args
 from paths import CFG, CUSTOM, DOTFILES, HOME
 from unlock import check_unlock
 
@@ -67,7 +68,7 @@ def setup_yazi() -> None:
     unknown = {path.name for path in old.iterdir()} - listed
     missing = {name for name in listed if not (plugins / name).is_dir()}
     in_place = plugins.is_dir() and not into_checkout(plugins) and not missing
-    if unknown or not (in_place or gate.args.dry_run):
+    if unknown or not (in_place or args.dry_run):
         print(f"! {old} is kept; not in package.toml: {sorted(unknown)}")
         print(f"  not installed: {sorted(missing)}")
     elif gate.confirm(f"remove {old}, now that {plugins} replaces it?"):

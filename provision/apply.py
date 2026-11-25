@@ -10,6 +10,7 @@ import sys
 import gate
 import tyro
 from links import link_all
+from options import Args, args
 from packages import HOSTS, groups_for, install, packages_for
 from paths import DOTFILES, HOSTNAME
 from steps import set_up
@@ -18,14 +19,14 @@ from unlock import check_unlock
 
 def main() -> None:
     flags = (tyro.conf.FlagCreatePairsOff,)
-    given = tyro.cli(gate.Args, description=__doc__, config=flags)
-    vars(gate.args).update(vars(given))  # the other modules hold this object
+    given = tyro.cli(Args, description=__doc__, config=flags)
+    vars(args).update(vars(given))  # the other modules hold this object
     if HOSTNAME not in HOSTS:
         sys.exit(f"unknown host {HOSTNAME}: add it to HOSTS")
-    if gate.args.dry_run:
+    if args.dry_run:
         sys.addaudithook(gate.audit)
     groups = groups_for(HOSTNAME)
-    if gate.args.check:
+    if args.check:
         if "luks" in groups:
             check_unlock()
     else:

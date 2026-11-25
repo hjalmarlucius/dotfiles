@@ -1,6 +1,7 @@
 """The packages of each host."""
 
 import gate
+from options import args
 
 # The package groups not named here are for every host.
 HOSTS = {
@@ -190,6 +191,6 @@ def packages_for(host: str) -> set[str]:
 
 def install(packages: set[str]) -> bool:
     missing = sorted(packages)
-    if not gate.args.reinstall:  # -T prints those that nothing installed provides
+    if not args.reinstall:  # -T prints those that nothing installed provides
         missing = gate.query("pacman", "-T", *missing).split()
     return not missing or gate.run("yay", "-S", *missing)

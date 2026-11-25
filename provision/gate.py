@@ -6,12 +6,10 @@ import os
 import shlex
 import subprocess
 from collections.abc import Callable
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Annotated
 
+from options import args
 from paths import DOTFILES
-from tyro.conf import arg
 
 QUERIES = (  # all that query() may run: these change nothing
     ("git", "ls-files"),
@@ -23,20 +21,6 @@ QUERIES = (  # all that query() may run: these change nothing
     ("systemctl", "--user", "is-enabled"),
 )
 
-
-@dataclass
-class Args:
-    dry_run: Annotated[bool, arg(aliases=["-n"])] = False
-    """Show what a run would do, and change nothing."""
-    overwrite: Annotated[bool, arg(aliases=["-o"])] = False
-    """Replace files that differ without asking."""
-    reinstall: Annotated[bool, arg(aliases=["-r"])] = False
-    """Reinstall all packages."""
-    check: Annotated[bool, arg(aliases=["-c"])] = False
-    """Only check SSH unlock (mothership, droneship), and offer repairs."""
-
-
-args = Args()  # main() fills it in
 failed: list[str] = []
 
 

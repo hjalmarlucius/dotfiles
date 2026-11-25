@@ -5,6 +5,7 @@ from difflib import unified_diff
 from pathlib import Path
 
 import gate
+from options import args
 from paths import CFG, CUSTOM, DOTFILES, HOME
 
 TREES = (
@@ -61,7 +62,7 @@ def show_diff(src: Path, tgt: Path) -> None:
 
 def may_replace(src: Path, tgt: Path) -> bool:
     show_diff(src, tgt)
-    return gate.args.overwrite or gate.confirm(f"replace {tgt}?")
+    return args.overwrite or gate.confirm(f"replace {tgt}?")
 
 
 def set_aside(path: Path) -> bool:
@@ -102,7 +103,7 @@ def link_tree(source: Path, root: Path, skip: set[str]) -> None:
             gate.do(f"remove the folder link {folder}", folder.unlink)
             unfolded.add(folder)
     for rel in files:
-        if gate.args.dry_run and not unfolded.isdisjoint((root / rel).parents):
+        if args.dry_run and not unfolded.isdisjoint((root / rel).parents):
             print(f"+ link {root / rel} -> {source / rel}")
         else:
             link(source / rel, root / rel)

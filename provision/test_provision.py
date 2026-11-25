@@ -38,7 +38,7 @@ GATES = {
 def check_gates() -> None:
     """Calls that change something are only made inside the gates."""
     files = [p for p in SOURCE.glob("*.py") if p.name != Path(__file__).name]
-    assert len(files) == 9, files
+    assert len(files) == 10, files
     for path in files:
         gates = {"gate": GATES - {"make_link"}, "links": {"make_link"}}
         scan(path, gates.get(path.stem, set()))
@@ -65,7 +65,7 @@ def scan(path: Path, gates: set[str]) -> None:
 def in_child(home: Path, code: str) -> str:
     """Run code after importing the modules with HOME=home; packages are never touched."""
     setup = (
-        "import apply, cleanup, gate, links, packages, paths, steps, unlock\n"
+        "import apply, cleanup, gate, links, options, packages, paths, steps, unlock\n"
         "import sys, subprocess, os\nfrom pathlib import Path\n"
     )
     result = subprocess.run(
@@ -89,7 +89,7 @@ def snapshot(home: Path) -> dict[str, object]:
     return found
 
 
-DRY = "gate.args.dry_run = True\nsys.addaudithook(gate.audit)\n"
+DRY = "options.args.dry_run = True\nsys.addaudithook(gate.audit)\n"
 LINK = "links.PRIVATE = ()\nlinks.link_all(packages.groups_for('mothership'))\n"
 YES = "gate.confirm = lambda question: True\n"
 
@@ -188,13 +188,13 @@ def check_unlocking(home: Path) -> None:
     (home / "custom/ROOT").mkdir(parents=True)
     (home / "custom/ROOT/conf").write_text("ours")
     for overwrite in ("False", "True"):  # no key chosen: the conf stays out
-        setup = f"{UNLOCK}gate.args.overwrite = {overwrite}\nunlock.check_unlock()\n"
+        setup = f"{UNLOCK}options.args.overwrite = {overwrite}\nunlock.check_unlock()\n"
         in_child(home, setup + "assert 'install' not in str(planned), planned")
     # choosing keys is safe in a dry run, with the real gate
     setup = UNLOCK.replace("gate.choose =", "unused =").replace(
         "gate.run =", "unused ="
     )
-    dry = "gate.args.dry_run = True\nsys.addaudithook(gate.audit)\n"
+    dry = "options.args.dry_run = True\nsys.addaudithook(gate.audit)\n"
     shown = in_child(
         home, "import sys\n" + setup + dry + "assert unlock.add_unlock_keys()"
     )
@@ -214,7 +214,7 @@ assert (("sudo", "tee"), "quiet root=/dev/x ip=10.0.0.2 rw rd.neednet=1\\n") in 
 assert (("sudo", "tee"), 'omit_dracutmodules+=" nfs  brltty "\\n') in planned
 assert (("sudo", "install"), None) in planned
 assert not any("reinstall-kernels" in cmd for cmd, text in planned)
-gate.args.check = True
+options.args.check = True
 planned.clear()
 unlock.entries_ok, unlock.image_ok = lambda: True, lambda version: None
 unlock.check_unlock()
@@ -251,7 +251,7 @@ asked = []
 gate.choose = lambda question, options: (asked.extend(options), picked)[1]
 """
     for overwrite in ("False", "True"):
-        option = f"gate.args.overwrite = {overwrite}\npicked = []\n"
+        option = f"options.args.overwrite = {overwrite}\npicked = []\n"
         before = snapshot(home)
         in_child(home, stub + option + "cleanup.clean_up()")
         assert snapshot(home) == before
@@ -291,7 +291,7 @@ def check_yazi(home: Path) -> None:
     assert old.is_dir(), "a plugin that is not in package.toml is kept"
     assert (link / "git.yazi").is_dir()
     (old / "own.yazi").rmdir()
-    in_child(home, "works = False\ngate.args.dry_run = True\n" + YAZI)
+    in_child(home, "works = False\noptions.args.dry_run = True\n" + YAZI)
     assert old.is_dir()
     in_child(home, "works = True\n" + YAZI.replace("if works:", "if False:"))
     assert not old.exists()
