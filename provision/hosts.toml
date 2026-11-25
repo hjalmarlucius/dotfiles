@@ -156,7 +156,7 @@ workstation = [
     "miniserve",  # share a folder over http
 ]
 notes = ["xournalpp"]
-nvidia = ["cuda", "nvidia-settings"]
+nvidia = ["cuda", "nvidia-settings", "nvidia-container-toolkit"]
 coolercontrol = ["coolercontrol"]
 docker = [
     "docker",
