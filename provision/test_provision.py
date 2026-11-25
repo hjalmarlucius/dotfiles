@@ -109,10 +109,22 @@ def check_links(home: Path) -> None:
 
     assert lines(plan) == lines(done), "the dry run showed something else"
     assert len(lines(done)) > 50
-    assert (home / ".gitconfig.dotfiles-bak").read_text() == "mine\n"
+    assert (home / ".gitconfig").is_symlink()
+    assert not list(home.rglob("*.dotfiles-bak"))
     assert not (home / ".config/nvim/after").is_symlink()
     assert not (home / ".config/dead").is_symlink()
     assert not lines(in_child(home, LINK)), "a second run changed something"
+
+
+def check_keeps(home: Path) -> None:
+    """No means no, and --overwrite doesn't delete folders or dead links unasked."""
+    (home / ".gitconfig/mine").mkdir(parents=True)
+    (home / ".config").mkdir()
+    (home / ".config/dead").symlink_to(DOTFILES / "CONFIG/gone")
+    option = "options.args.overwrite = True\ngate.confirm = lambda question: False\n"
+    in_child(home, option + LINK)
+    assert (home / ".gitconfig/mine").is_dir()
+    assert (home / ".config/dead").is_symlink()
 
 
 def check_audit(home: Path) -> None:
@@ -196,7 +208,7 @@ def check_summary(home: Path) -> None:
 gate.run("true")
 gate.run("false")
 gate.do("link a -> b", lambda: None)
-gate.do("rename c to d", lambda: None)
+gate.do("delete c", lambda: None)
 gate.input = lambda question: ""
 assert not gate.confirm("replace e?")
 assert gate.choose("remove which?", {"f": "old"}) == []
@@ -210,8 +222,8 @@ summary.print_summary()
 ran: 1
   true
 linked: 1
-set aside: 1
-  rename c to d
+deleted: 1
+  delete c
 you said no to: 2
   replace e?
   remove which? f
@@ -315,11 +327,17 @@ gate.choose = lambda question, options: (asked.extend(options), picked)[1]
         before = snapshot(home)
         in_child(home, stub + option + "cleanup.clean_up()")
         assert snapshot(home) == before
+    out = in_child(
+        home,
+        stub + "picked = asked\ngate.confirm = lambda q: False\ncleanup.clean_up()",
+    )
+    assert (home / ".config/mako/config").exists(), "no means no"
+    stub += YES
     out = in_child(home, stub + "picked = asked\ncleanup.clean_up()\nprint(asked)")
     assert "RUN yay -Rns mako" in out
     assert "zsh" not in out
     assert not (home / ".config/helix").exists()
-    assert (home / ".config/mako.dotfiles-bak/config").read_text() == "mine\n"
+    assert not (home / ".config/mako").exists()
 
 
 YAZI = """

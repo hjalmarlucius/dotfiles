@@ -213,6 +213,5 @@ virtwin = [
 "~/.config/newsboat" = "config dropped 2026-03"
 "~/.config/nushell" = "config dropped 2026-10"
 "~/.cache/newsboat" = "made by an older version for newsboat"
-"~/.config/sway/config.d" = "EndeavourOS default, not used by our sway config"
 "~/.local/share/applications/userapp-khalimport.des" = "misspelt link 2025-10"
 "/lib/systemd/system-sleep/iptsd-hack.sh" = "installed by hand, now iptsd.sh"

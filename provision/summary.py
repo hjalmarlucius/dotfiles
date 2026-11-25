@@ -5,7 +5,7 @@ from options import args
 
 KINDS = {  # how a change starts: what the summary calls it
     "link ": "linked",
-    "rename ": "set aside",
+    "delete ": "deleted",
     "yay -S ": "installed",
     "yay -Rns ": "uninstalled",
     "remove ": "removed",

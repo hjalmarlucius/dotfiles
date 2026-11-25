@@ -8,7 +8,7 @@ import tomllib
 
 import gate
 from copies import copy_homeassistant, copy_system_files
-from links import into_checkout, set_aside
+from links import delete, into_checkout, may_delete
 from options import args
 from paths import CFG, CUSTOM, DOTFILES, HOME
 from tables import UNITS
@@ -36,8 +36,8 @@ def setup_common() -> None:
         if not folder.is_dir():
             gate.do(f"make folder {folder}", folder.mkdir)
     waybar = CFG / "waybar/config"  # EndeavourOS's; hides our config.jsonc
-    if os.path.lexists(waybar):
-        set_aside(waybar)
+    if os.path.lexists(waybar) and may_delete(waybar):
+        delete(waybar)
     enable("vdirsyncer.timer", (), "--user")
 
 
@@ -79,7 +79,8 @@ def setup_virtwin() -> None:
     join_group("libvirt")
     if not os.path.exists("/sys/class/net/virbr0"):
         gate.run("sudo", "virsh", "net-start", "default")
-    gate.run("sudo", "virsh", "net-autostart", "default")
+    if not os.path.lexists("/etc/libvirt/qemu/networks/autostart/default.xml"):
+        gate.run("sudo", "virsh", "net-autostart", "default")
 
 
 def set_up(groups: list[str]) -> None:

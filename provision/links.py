@@ -1,7 +1,9 @@
 """Links from ~ and ~/.config into the checkout."""
 
 import os
+import shutil
 from difflib import unified_diff
+from functools import partial
 from pathlib import Path
 
 import gate
@@ -65,11 +67,22 @@ def may_replace(src: Path, tgt: Path) -> bool:
     return args.overwrite or gate.confirm(f"replace {tgt}?")
 
 
-def set_aside(path: Path) -> bool:
-    backup = path.with_name(path.name + ".dotfiles-bak")
-    while os.path.lexists(backup):
-        backup = backup.with_name(backup.name + "~")
-    return gate.do(f"rename {path} to {backup.name}", path.rename, backup)
+def is_folder(path: Path) -> bool:
+    return path.is_dir() and not path.is_symlink()
+
+
+def delete(path: Path) -> bool:
+    remove = partial(shutil.rmtree, path) if is_folder(path) else path.unlink
+    return gate.do(f"delete {path}", remove)
+
+
+def may_delete(path: Path) -> bool:
+    """Ask, showing what is in a folder."""
+    if not is_folder(path):
+        return gate.confirm(f"delete {path}?")
+    names = sorted(str(p.relative_to(path)) for p in path.rglob("*"))
+    shown = ", ".join(names[:8]) + (", ..." if len(names) > 8 else "")
+    return gate.confirm(f"delete {path} ({shown or 'empty'})?")
 
 
 def make_link(src: Path, tgt: Path) -> None:
@@ -87,7 +100,8 @@ def link(src: Path, tgt: Path) -> None:
     if into_checkout(tgt) or (not tgt.is_symlink() and same(src, tgt)):
         clear = gate.do(f"remove {tgt}, to link it", tgt.unlink)
     elif os.path.lexists(tgt):
-        clear = may_replace(src, tgt) and set_aside(tgt)
+        may = may_delete(tgt) if is_folder(tgt) else may_replace(src, tgt)
+        clear = may and delete(tgt)
     else:
         clear = True
     if clear:
@@ -121,10 +135,17 @@ def prune_links() -> None:
     """Remove dead links to files that are no longer in the checkout."""
     folders = {HOME} | {(HOME / rel).parent for rel in tracked(DOTFILES / "HOME")}
     folders |= {Path(folder) for folder, _, _ in os.walk(CFG)}
-    for folder in sorted(filter(Path.is_dir, folders)):
-        for path in sorted(folder.iterdir()):
-            if into_checkout(path) and not path.exists():
-                gate.do(f"remove the dead link {path}", path.unlink)
+    dead = [
+        path
+        for folder in sorted(filter(Path.is_dir, folders))
+        for path in sorted(folder.iterdir())
+        if into_checkout(path) and not path.exists()
+    ]
+    for path in dead:
+        print("dead link:", path)
+    if dead and gate.confirm(f"remove these {len(dead)} dead links?"):
+        for path in dead:
+            gate.do(f"remove the dead link {path}", path.unlink)
 
 
 def link_all(groups: list[str]) -> None:
