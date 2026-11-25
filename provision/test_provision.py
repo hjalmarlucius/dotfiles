@@ -116,6 +116,21 @@ def check_links(home: Path) -> None:
     assert not lines(in_child(home, LINK)), "a second run changed something"
 
 
+def check_install(home: Path) -> None:
+    out = in_child(
+        home,
+        """
+gate.query = lambda *cmd: "zsh\\nmpv" if cmd[1] == "-Qqd" else missing
+gate.run = lambda *cmd: print("RUN", *cmd) or cmd[0] != "yay"
+missing = ""
+assert packages.install({"mpv", "fd"})
+missing = "fd"
+assert not packages.install({"fd"})
+""",
+    )
+    assert out == "RUN sudo pacman -D --asexplicit mpv\nRUN yay -S fd\n", out
+
+
 def check_keeps(home: Path) -> None:
     """No means no, and --overwrite doesn't delete folders or dead links unasked."""
     (home / ".gtkrc-2.0/mine").mkdir(parents=True)
