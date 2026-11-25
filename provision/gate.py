@@ -98,7 +98,8 @@ def do(what: str, change: Callable, *params, **options) -> bool:
 
 def warn(text: str) -> None:
     print("!", text)
-    warned.append(text)
+    if text not in warned:
+        warned.append(text)
 
 
 def confirm(question: str) -> bool:
