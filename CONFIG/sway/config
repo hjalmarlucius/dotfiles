@@ -376,8 +376,6 @@ input type:touchpad {
 input type:keyboard {
     xkb_layout "us_custom,us_norwegian"
     xkb_options "grp:shifts_toggle,caps:escape"
-    repeat_delay 250
-    repeat_rate 45
 }
 
 input type:mouse {
