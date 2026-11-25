@@ -40,6 +40,8 @@ gittools = [
     "git-delta",
     "git-lfs",
     "lazygit",
+    "gitea-cli",  # gt; the AUR package gt is something else
+    "tea-dash",  # dashboard for gitea
     "gnome-keyring",  # for git credentials
     "seahorse",  # keyring ui
 ]

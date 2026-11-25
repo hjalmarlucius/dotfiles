@@ -13,6 +13,7 @@ from options import args
 from paths import CFG, CUSTOM, DOTFILES, HOME
 from tables import UNITS
 
+GITEA = "git.hjarl.com"
 FONT_URL = "https://raw.githubusercontent.com/SUNET/static_sunet_se/refs/heads/master/fonts/Akkurat-Mono.otf"
 
 
@@ -39,6 +40,8 @@ def setup_common() -> None:
     if os.path.lexists(waybar) and may_delete(waybar):
         delete(waybar)
     enable("vdirsyncer.timer", (), "--user")
+    if shutil.which("gt") and GITEA not in gate.query("gt", "auth", "status"):
+        gate.warn(f"no Gitea login: gt auth login --host {GITEA}")
 
 
 def setup_yazi() -> None:
