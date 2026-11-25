@@ -3,13 +3,13 @@
 # requires-python = ">=3.13"
 # dependencies = ["tyro"]
 # ///
-"""Checks of endos. Run it without access to anything that matters (and
-./endos/main.py --help once before, which puts tyro in the cache of uv):
+"""Checks of provision. Run it without access to anything that matters (and
+./provision/apply.py --help once before, which puts tyro in the cache of uv):
 
 bwrap --ro-bind / / --dev /dev --proc /proc --tmpfs /tmp --unshare-net \\
     --overlay-src ~/.cache/uv --tmp-overlay ~/.cache/uv \\
     --ro-bind "$PWD" "$PWD" --chdir "$PWD" uv run --offline --script \\
-    endos/test_endos.py
+    provision/test_provision.py
 """
 
 import ast
@@ -65,7 +65,7 @@ def scan(path: Path, gates: set[str]) -> None:
 def in_child(home: Path, code: str) -> str:
     """Run code after importing the modules with HOME=home; packages are never touched."""
     setup = (
-        "import cleanup, gate, links, main, packages, paths, steps, unlock\n"
+        "import apply, cleanup, gate, links, packages, paths, steps, unlock\n"
         "import sys, subprocess, os\nfrom pathlib import Path\n"
     )
     result = subprocess.run(
@@ -109,7 +109,7 @@ def check_links(home: Path) -> None:
 
     assert lines(plan) == lines(done), "the dry run showed something else"
     assert len(lines(done)) > 50
-    assert (home / ".gitconfig.endos-bak").read_text() == "mine\n"
+    assert (home / ".gitconfig.dotfiles-bak").read_text() == "mine\n"
     assert not (home / ".config/nvim/after").is_symlink()
     assert not (home / ".config/dead").is_symlink()
     assert not lines(in_child(home, LINK)), "a second run changed something"
@@ -133,12 +133,12 @@ def check_audit(home: Path) -> None:
 MAIN = """
 calls = []
 for name in ("link_all", "set_up", "check_unlock"):
-    setattr(main, name, lambda *a, name=name: calls.append(name))
-main.install = lambda packages: (calls.append("install"), works)[1]
-main.HOSTNAME = host
-sys.argv = ["main.py", *options]
+    setattr(apply, name, lambda *a, name=name: calls.append(name))
+apply.install = lambda packages: (calls.append("install"), works)[1]
+apply.HOSTNAME = host
+sys.argv = ["apply.py", *options]
 status = 0
-try: main.main()
+try: apply.main()
 except SystemExit as stop: status = stop.code
 """
 
@@ -259,7 +259,7 @@ gate.choose = lambda question, options: (asked.extend(options), picked)[1]
     assert "RUN yay -Rns mako" in out
     assert "zsh" not in out
     assert not (home / ".config/helix").exists()
-    assert (home / ".config/mako.endos-bak/config").read_text() == "mine\n"
+    assert (home / ".config/mako.dotfiles-bak/config").read_text() == "mine\n"
 
 
 YAZI = """

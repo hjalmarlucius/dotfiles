@@ -20,8 +20,8 @@ BOOT_ENTRIES = "/efi/loader/entries"
 
 
 def write_as_root(path: Path, text: str) -> bool:
-    """Write a file in /, keeping the old one as .endos-bak."""
-    backup = ("sudo", "cp", "-a", "--backup=numbered", path, f"{path}.endos-bak")
+    """Write a file in /, keeping the old one as .dotfiles-bak."""
+    backup = ("sudo", "cp", "-a", "--backup=numbered", path, f"{path}.dotfiles-bak")
     kept = gate.run(*backup) if path.exists() else True
     return kept and gate.run("sudo", "tee", path, text=text)
 

@@ -65,7 +65,7 @@ def may_replace(src: Path, tgt: Path) -> bool:
 
 
 def set_aside(path: Path) -> bool:
-    backup = path.with_name(path.name + ".endos-bak")
+    backup = path.with_name(path.name + ".dotfiles-bak")
     while os.path.lexists(backup):
         backup = backup.with_name(backup.name + "~")
     return gate.do(f"rename {path} to {backup.name}", path.rename, backup)

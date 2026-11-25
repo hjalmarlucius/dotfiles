@@ -37,7 +37,7 @@ CLEANUP = {
     "~/.config/mako": "config dropped 2026-10",
     "~/.config/newsboat": "config dropped 2026-03",
     "~/.config/nushell": "config dropped 2026-10",
-    "~/.cache/newsboat": "made by endos for newsboat",
+    "~/.cache/newsboat": "made by an older version for newsboat",
     "~/.config/sway/config.d": "EndeavourOS default, not used by our sway config",
     "~/.local/share/applications/userapp-khalimport.des": "misspelt link 2025-10",
     "/lib/systemd/system-sleep/iptsd-hack.sh": "installed by hand, now iptsd.sh",
@@ -77,7 +77,7 @@ def remove_leftover(name: str) -> None:
         if path.is_symlink():
             gate.run("sudo", "rm", path)
         elif gate.run("sudo", "chmod", "a-x", path):
-            gate.run("sudo", "mv", "--backup=numbered", path, f"{path}.endos-bak")
+            gate.run("sudo", "mv", "--backup=numbered", path, f"{path}.dotfiles-bak")
     elif into_checkout(path):
         gate.do(f"remove the link {path}", path.unlink)
     elif path.is_dir() and not path.is_symlink() and not any(path.iterdir()):
