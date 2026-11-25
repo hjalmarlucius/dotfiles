@@ -1,7 +1,7 @@
 # What each host gets. The package groups not named under [hosts] are for every host.
 
 [hosts]
-mothership = ["workstation", "notes", "games", "rss", "nvidia", "luks", "k8s", "coolercontrol", "docker", "virtwin"]
+mothership = ["workstation", "notes", "games", "heavy", "nvidia", "luks", "k8s", "coolercontrol", "docker", "virtwin"]
 droneship = ["workstation", "nvidia", "luks", "k8s", "coolercontrol"]
 sl3 = []
 spro5 = ["tablet"]
@@ -47,7 +47,6 @@ gittools = [
     "seahorse",  # keyring ui
 ]
 readers = [
-    "sioyek-git",
     "zathura",
     "zathura-pdf-mupdf",
     "zathura-djvu",
@@ -154,7 +153,10 @@ workstation = [
     "miniserve",  # share a folder over http
 ]
 notes = ["xournalpp"]
-rss = ["eilmeldung"]  # a heavy build
+heavy = [  # slow builds
+    "eilmeldung",  # rss reader
+    "sioyek-git",  # pdf reader
+]
 games = ["steam"]  # needs multilib
 nvidia = ["cuda", "nvidia-settings", "nvidia-container-toolkit"]
 coolercontrol = ["coolercontrol"]
