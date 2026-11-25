@@ -1,8 +1,8 @@
 # What each host gets. The package groups not named under [hosts] are for every host.
 
 [hosts]
-mothership = ["nvidia", "luks", "k8s", "coolercontrol", "docker", "virtwin"]
-droneship = ["nvidia", "luks", "k8s", "coolercontrol"]
+mothership = ["workstation", "notes", "nvidia", "luks", "k8s", "coolercontrol", "docker", "virtwin"]
+droneship = ["workstation", "nvidia", "luks", "k8s", "coolercontrol"]
 sl3 = []
 spro5 = ["tablet"]
 
@@ -32,7 +32,8 @@ editors = [
     "go",  # required for vim-hexokinase build
     "tree-sitter-cli",  # required for nvim treesitter
 ]
-utils = ["uv", "gdu", "unzip", "jq", "bluetui"]
+utils = ["uv", "gdu", "unzip", "jq", "bluetui", "scc", "ufw", "haproxy"]
+agents = ["claude-code", "openai-codex", "repomix"]
 gittools = [
     "tig",
     "diff-so-fancy",
@@ -55,7 +56,6 @@ readers = [
     "okular",
     "calligra",
     "libreoffice-fresh",
-    "xournalpp",
 ]
 mediaviewers = [
     # video
@@ -127,6 +127,10 @@ apps = ["keepassxc", "bitwarden", "qalculate-gtk"]
 sway = [
     "xdg-terminal-exec",
     "swaync",  # notifications
+    "fuzzel",  # launcher
+    "nwg-drawer",  # app menu
+    "swappy",  # screenshots
+    "wf-recorder",  # screen recording
     # visuals
     "wlsunset",  # eye saver
     "wdisplays",  # ui for display settings
@@ -139,6 +143,19 @@ sway = [
 ]
 remotedata = ["rclone", "dropbox", "minio-client"]
 screensharing = ["wireplumber"]
+workstation = [
+    "remmina-plugin-rdesktop",  # with remmina
+    "steam",  # needs multilib
+    "thunderbird",
+    "signal-desktop",
+    "inkscape",
+    "jellyfin-server",
+    "jellyfin-web",  # its web pages
+    "fluxctl-bin",
+    "hdfview-bin",
+    "miniserve",  # share a folder over http
+]
+notes = ["xournalpp"]
 nvidia = ["cuda", "nvidia-settings"]
 coolercontrol = ["coolercontrol"]
 docker = [
@@ -156,6 +173,7 @@ k8s = [
     "flux-bin",
     "open-iscsi",  # required by longhorn
     "kubectl-cnpg",
+    "helm",
 ]
 tablet = ["squeekboard"]  # on-screen keyboard, bound in sway
 luks = [  # unlock LUKS over ssh from the initramfs
@@ -207,11 +225,15 @@ virtwin = [
 "nvidia-docker" = "dropped 2025-11"
 "oh-my-posh" = "replaced by starship 2025-10"
 "vesktop" = "replaced by discord 2026-03"
+"kitty" = "not used 2026-11, foot is"
+"wezterm-git" = "not used 2026-11, foot is"
+"glances" = "not used 2026-11, btop is"
 "ranger" = "dropped 2026-11, yazi is used"
 "~/.config/ranger" = "config dropped 2026-11"
 "~/.config/discordo" = "config dropped 2026-10"
 "~/.config/helix" = "config dropped 2026-10"
 "~/.config/hypr" = "config dropped"
+"~/.config/kitty" = "kitty not used 2026-11"
 "~/.config/mako" = "config dropped 2026-10"
 "~/.config/newsboat" = "config dropped 2026-03"
 "~/.config/nushell" = "config dropped 2026-10"

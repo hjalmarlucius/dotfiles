@@ -15,6 +15,10 @@ git secret reveal
 ```
 Verify: `git secret list | xargs ls -l` shows each file.
 
+mothership and droneship: steam needs `[multilib]` in /etc/pacman.conf (uncomment it
+and its Include line, then `sudo pacman -Syu`).
+Verify: `pacman -Si steam`.
+
 ## 2. linux-surface kernel and iptsd (sl3, spro5)
 
 From the linux-surface wiki, Installation and Setup. Check that the fingerprint
