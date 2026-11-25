@@ -1,7 +1,7 @@
 # What each host gets. The package groups not named under [hosts] are for every host.
 
 [hosts]
-mothership = ["workstation", "nvidia", "luks", "k8s", "coolercontrol", "docker", "virtwin"]
+mothership = ["workstation", "notes", "nvidia", "luks", "k8s", "coolercontrol", "docker", "virtwin"]
 droneship = ["workstation", "nvidia", "luks", "k8s", "coolercontrol"]
 sl3 = []
 spro5 = ["tablet"]
@@ -32,7 +32,7 @@ editors = [
     "go",  # required for vim-hexokinase build
     "tree-sitter-cli",  # required for nvim treesitter
 ]
-utils = ["uv", "gdu", "unzip", "jq", "bluetui", "scc", "ufw"]
+utils = ["uv", "gdu", "unzip", "jq", "bluetui", "scc", "ufw", "haproxy"]
 agents = ["claude-code", "openai-codex", "repomix"]
 gittools = [
     "tig",
@@ -56,7 +56,6 @@ readers = [
     "okular",
     "calligra",
     "libreoffice-fresh",
-    "xournalpp",
 ]
 mediaviewers = [
     # video
@@ -156,6 +155,7 @@ workstation = [
     "hdfview-bin",
     "miniserve",  # share a folder over http
 ]
+notes = ["xournalpp"]
 nvidia = ["cuda", "nvidia-settings"]
 coolercontrol = ["coolercontrol"]
 docker = [
