@@ -1,6 +1,6 @@
 # Working in this repo
 
-The owner's dotfiles. `endos/` installs them per host: it symlinks files from this checkout, `~/dotfiles`, into `~` and `~/.config` (with `custom-<hostname>/` for one machine), copies a few into `/` with sudo, and installs packages. So this checkout is live: an edit to a symlinked file changes the running setup at once. Issues are tracked on Gitea (`henrik/dotfiles`); GitHub (`hjalmarlucius/dotfiles`) is a public mirror.
+The owner's dotfiles. `provision/` installs them per host: it symlinks files from this checkout, `~/dotfiles`, into `~` and `~/.config` (with `custom-<hostname>/` for one machine), copies a few into `/` with sudo, and installs packages. So this checkout is live: an edit to a symlinked file changes the running setup at once. Issues are tracked on Gitea (`henrik/dotfiles`); GitHub (`hjalmarlucius/dotfiles`) is a public mirror.
 
 Read every session:
 
@@ -13,14 +13,14 @@ Read every session:
 | --- | --- | --- |
 | AGENT_DOTFILES | `agent-dotfiles` | Changes to this repository, made on `agent/*` branches and offered as draft pull requests, and its issues. |
 
-The owner decides `decide:` issues, reviews and merges your pull requests, pushes `main` to both remotes, and runs `endos/main.py`.
+The owner decides `decide:` issues, reviews and merges your pull requests, pushes `main` to both remotes, and runs `provision/apply.py`.
 
 ## The live checkout and your worktrees
 
 - `~/dotfiles` is live: never edit, commit, switch branches, rebase, reset, stash or check out files there. Each of those changes the running setup, and the owner often has uncommitted work in it, which is theirs.
 - Work in a worktree of your own outside the checkout, one branch per issue, based on Gitea's `main` rather than the local one (which can hold the owner's unpushed commits): `git -C ~/dotfiles fetch https://git.hjarl.com/henrik/dotfiles.git main`, then `git -C ~/dotfiles worktree add -b agent/<N>-<slug> <dir> FETCH_HEAD`. Remove the worktree when the branch is done; the branch keeps the work.
 - Nothing you change takes effect until the owner merges and pulls, so check each change before you commit it (see the checks below).
-- Never run `endos/main.py`: it installs packages, writes to `/`, and needs sudo. The one exception is its dry run, only in this sandbox (no network, read-only, no system sockets), with the branch cloned to `<clone>` first (`git clone --branch <branch> ~/dotfiles <clone>`): `bwrap --ro-bind / / --dev /dev --proc /proc --ro-bind <clone> ~/dotfiles --tmpfs /tmp --tmpfs /run --unshare-net --unshare-ipc --die-with-parent --new-session --overlay-src ~/.cache/uv --tmp-overlay ~/.cache/uv --setenv UV_OFFLINE 1 --chdir ~/dotfiles ./endos/main.py --dry-run`. Never edit files under `~`, `~/.config` or `/` directly; change them in your worktree.
+- Never run `provision/apply.py`: it installs packages, writes to `/`, and needs sudo. The one exception is its dry run, only in this sandbox (no network, read-only, no system sockets), with the branch cloned to `<clone>` first (`git clone --branch <branch> ~/dotfiles <clone>`): `bwrap --ro-bind / / --dev /dev --proc /proc --ro-bind <clone> ~/dotfiles --tmpfs /tmp --tmpfs /run --unshare-net --unshare-ipc --die-with-parent --new-session --overlay-src ~/.cache/uv --tmp-overlay ~/.cache/uv --setenv UV_OFFLINE 1 --chdir ~/dotfiles ./provision/apply.py --dry-run`. Never edit files under `~`, `~/.config` or `/` directly; change them in your worktree.
 
 ## Public repository
 
@@ -44,17 +44,17 @@ The owner decides `decide:` issues, reviews and merges your pull requests, pushe
 ## Commits
 
 - Commit only on your `agent/*` branch: `git add` names each file. Never `git add -A` or `git commit -a`.
-- Commits are small and each one is valid on its own; commit line `<tool>: <imperative summary>` (`nvim: ...`, `sway: ...`, `endos: ...`), body says what and why and refers to the issue as `#N`.
+- Commits are small and each one is valid on its own; commit line `<tool>: <imperative summary>` (`nvim: ...`, `sway: ...`, `provision: ...`), body says what and why and refers to the issue as `#N`.
 - Push only `agent/*` branches, only to `https://git.hjarl.com/henrik/dotfiles.git`, with your own token (a `credential.helper` override, never the owner's stored credentials). Never push `main`, and never push to GitHub.
 - Open a draft pull request per branch, titled `WIP: <commit-style title>`. Its text says what changed per issue item, the checks and their results, and what the owner must do beyond pulling (see below), and ends with `Fixes #N`. The owner reviews, merges and closes the issue.
 
 ## Checks after each change
 
 - Syntax-check every file you changed: `luac -p` for Lua, `zsh -n` for zsh, `bash -n` for shell scripts, `python -m py_compile` for Python, and the tool's own check where it has one (`sway -C -c CONFIG/sway/config`). That sway check also reads the live `~/.config/sway/local_config`; to check a `custom-<host>/` change, run it with `HOME` set to a temporary folder that links that host's `local_config`.
-- After a change to `endos/`: `uvx ruff check endos` and `endos/test_endos.py` (its first lines say how) pass.
+- After a change to `provision/`: `uvx ruff check provision` and `provision/test_provision.py` (its first lines say how) pass.
 - After a Neovim change, load the worktree's configuration headless (plain `nvim` reads the live one): `nvim --headless -u <worktree>/CONFIG/nvim/init.lua +qa`, and report its errors.
-- A change to `endos/`, or one that adds, moves or removes a file it installs, lists in its pull request every target under `~`, `~/.config` or `/` that is added, moved or removed.
+- A change to `provision/`, or one that adds, moves or removes a file it installs, lists in its pull request every target under `~`, `~/.config` or `/` that is added, moved or removed.
 
 ## Beyond the checkout
 
-- Only the owner runs `endos/main.py`. A change that needs a step beyond merging and pulling (a package or plugin install, a new symlink, a sudo copy, a reload of a running program) lists the exact commands in its pull request.
+- Only the owner runs `provision/apply.py`. A change that needs a step beyond merging and pulling (a package or plugin install, a new symlink, a sudo copy, a reload of a running program) lists the exact commands in its pull request.

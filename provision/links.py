@@ -5,6 +5,7 @@ from difflib import unified_diff
 from pathlib import Path
 
 import gate
+from options import args
 from paths import CFG, CUSTOM, DOTFILES, HOME
 
 TREES = (
@@ -28,7 +29,7 @@ def tracked(root: Path) -> list[Path]:
         if (root / rel).is_file():
             found.append(rel)
         else:
-            print(f"! missing (secret not revealed?): {root / rel}")
+            gate.warn(f"missing (secret not revealed?): {root / rel}")
     return found
 
 
@@ -51,7 +52,7 @@ def show_diff(src: Path, tgt: Path) -> None:
     try:
         old, new = (p.read_text().splitlines(keepends=True) for p in (tgt, src))
     except (OSError, UnicodeDecodeError) as err:
-        print("! cannot compare:", err)
+        gate.warn(f"cannot compare {tgt}: {err}")
         return
     if src.with_name(src.name + ".secret").exists():
         print("a git-secret file: the differences are not shown")
@@ -61,11 +62,11 @@ def show_diff(src: Path, tgt: Path) -> None:
 
 def may_replace(src: Path, tgt: Path) -> bool:
     show_diff(src, tgt)
-    return gate.args.overwrite or gate.confirm(f"replace {tgt}?")
+    return args.overwrite or gate.confirm(f"replace {tgt}?")
 
 
 def set_aside(path: Path) -> bool:
-    backup = path.with_name(path.name + ".endos-bak")
+    backup = path.with_name(path.name + ".dotfiles-bak")
     while os.path.lexists(backup):
         backup = backup.with_name(backup.name + "~")
     return gate.do(f"rename {path} to {backup.name}", path.rename, backup)
@@ -102,13 +103,18 @@ def link_tree(source: Path, root: Path, skip: set[str]) -> None:
             gate.do(f"remove the folder link {folder}", folder.unlink)
             unfolded.add(folder)
     for rel in files:
-        if gate.args.dry_run and not unfolded.isdisjoint((root / rel).parents):
-            print(f"+ link {root / rel} -> {source / rel}")
+        if args.dry_run and not unfolded.isdisjoint((root / rel).parents):
+            gate.do(
+                f"link {root / rel} -> {source / rel}",
+                make_link,
+                source / rel,
+                root / rel,
+            )
         else:
             link(source / rel, root / rel)
     if source.is_dir():
         for name in list_files(source, "--others", "--directory", "--exclude-standard"):
-            print(f"! not in git, so not linked: {source / name}")
+            gate.warn(f"not in git, so not linked: {source / name}")
 
 
 def prune_links() -> None:

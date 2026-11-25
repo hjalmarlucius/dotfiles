@@ -7,19 +7,12 @@ import shutil
 import tomllib
 
 import gate
-from cleanup import clean_up
 from copies import copy_homeassistant, copy_system_files
 from links import into_checkout, set_aside
+from options import args
 from paths import CFG, CUSTOM, DOTFILES, HOME
-from unlock import check_unlock
+from tables import UNITS
 
-UNITS = {  # system unit: package group
-    "bluetooth.service": "sway",
-    "docker.service": "k8s",
-    "iscsid.service": "k8s",
-    "coolercontrold.service": "coolercontrol",
-    "libvirtd.service": "virtwin",
-}
 FONT_URL = "https://raw.githubusercontent.com/SUNET/static_sunet_se/refs/heads/master/fonts/Akkurat-Mono.otf"
 
 
@@ -67,9 +60,11 @@ def setup_yazi() -> None:
     unknown = {path.name for path in old.iterdir()} - listed
     missing = {name for name in listed if not (plugins / name).is_dir()}
     in_place = plugins.is_dir() and not into_checkout(plugins) and not missing
-    if unknown or not (in_place or gate.args.dry_run):
-        print(f"! {old} is kept; not in package.toml: {sorted(unknown)}")
-        print(f"  not installed: {sorted(missing)}")
+    if unknown or not (in_place or args.dry_run):
+        gate.warn(
+            f"{old} is kept; not in package.toml: {sorted(unknown)}; "
+            f"not installed: {sorted(missing)}"
+        )
     elif gate.confirm(f"remove {old}, now that {plugins} replaces it?"):
         gate.do(f"remove {old}", shutil.rmtree, old)
 
@@ -88,8 +83,6 @@ def setup_virtwin() -> None:
 
 
 def set_up(groups: list[str]) -> None:
-    if "luks" in groups:
-        check_unlock()
     copy_system_files(CUSTOM / "ROOT")
     if "k8s" in groups:
         copy_system_files(DOTFILES / "ROOT")
@@ -102,4 +95,3 @@ def set_up(groups: list[str]) -> None:
         copy_homeassistant()
     if "virtwin" in groups:
         setup_virtwin()
-    clean_up()

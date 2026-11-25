@@ -3,13 +3,13 @@
 # requires-python = ">=3.13"
 # dependencies = ["tyro"]
 # ///
-"""Checks of endos. Run it without access to anything that matters (and
-./endos/main.py --help once before, which puts tyro in the cache of uv):
+"""Checks of provision. Run it without access to anything that matters (and
+./provision/apply.py --help once before, which puts tyro in the cache of uv):
 
 bwrap --ro-bind / / --dev /dev --proc /proc --tmpfs /tmp --unshare-net \\
     --overlay-src ~/.cache/uv --tmp-overlay ~/.cache/uv \\
     --ro-bind "$PWD" "$PWD" --chdir "$PWD" uv run --offline --script \\
-    endos/test_endos.py
+    provision/test_provision.py
 """
 
 import ast
@@ -38,7 +38,7 @@ GATES = {
 def check_gates() -> None:
     """Calls that change something are only made inside the gates."""
     files = [p for p in SOURCE.glob("*.py") if p.name != Path(__file__).name]
-    assert len(files) == 9, files
+    assert len(files) == 13, files
     for path in files:
         gates = {"gate": GATES - {"make_link"}, "links": {"make_link"}}
         scan(path, gates.get(path.stem, set()))
@@ -65,7 +65,7 @@ def scan(path: Path, gates: set[str]) -> None:
 def in_child(home: Path, code: str) -> str:
     """Run code after importing the modules with HOME=home; packages are never touched."""
     setup = (
-        "import cleanup, gate, links, main, packages, paths, steps, unlock\n"
+        "import apply, cleanup, drift, gate, links, options, packages, paths, steps, summary, tables, unlock\n"
         "import sys, subprocess, os\nfrom pathlib import Path\n"
     )
     result = subprocess.run(
@@ -89,8 +89,8 @@ def snapshot(home: Path) -> dict[str, object]:
     return found
 
 
-DRY = "gate.args.dry_run = True\nsys.addaudithook(gate.audit)\n"
-LINK = "links.PRIVATE = ()\nlinks.link_all(packages.groups_for('mothership'))\n"
+DRY = "options.args.dry_run = True\nsys.addaudithook(gate.audit)\n"
+LINK = "links.PRIVATE = ()\nlinks.link_all(tables.groups_for('mothership'))\n"
 YES = "gate.confirm = lambda question: True\n"
 
 
@@ -109,7 +109,7 @@ def check_links(home: Path) -> None:
 
     assert lines(plan) == lines(done), "the dry run showed something else"
     assert len(lines(done)) > 50
-    assert (home / ".gitconfig.endos-bak").read_text() == "mine\n"
+    assert (home / ".gitconfig.dotfiles-bak").read_text() == "mine\n"
     assert not (home / ".config/nvim/after").is_symlink()
     assert not (home / ".config/dead").is_symlink()
     assert not lines(in_child(home, LINK)), "a second run changed something"
@@ -130,29 +130,56 @@ def check_audit(home: Path) -> None:
         in_child(home, DRY + expect)
 
 
+def check_tables(home: Path) -> None:
+    """Groups exist, and hosts.toml has the right shape."""
+    in_child(
+        home,
+        """
+from tables import CLEANUP, HOSTS, PACKAGES, TABLES, UNITS, packages_for
+assert list(TABLES) == ["hosts", "packages", "units", "cleanup"]
+used = [group for groups in HOSTS.values() for group in groups]
+for group in used + list(UNITS.values()):
+    assert group in PACKAGES, group
+for group, names in PACKAGES.items():
+    assert isinstance(names, list) and names, group
+    assert all(isinstance(name, str) for name in names), group
+    assert len(set(names)) == len(names), group
+for host in HOSTS:
+    assert (Path(paths.DOTFILES) / f"custom-{host}").is_dir(), host
+    assert not packages_for(host) & set(CLEANUP), "installed and cleaned up"
+assert all(isinstance(reason, str) for reason in CLEANUP.values())
+""",
+    )
+
+
 MAIN = """
 calls = []
-for name in ("link_all", "set_up", "check_unlock"):
-    setattr(main, name, lambda *a, name=name: calls.append(name))
-main.install = lambda packages: (calls.append("install"), works)[1]
-main.HOSTNAME = host
-sys.argv = ["main.py", *options]
+for name in ("link_all", "set_up", "check_unlock", "clean_up", "list_drift"):
+    setattr(apply, name, lambda *a, name=name: calls.append(name))
+apply.install = lambda packages: (calls.append("install"), works)[1]
+apply.HOSTNAME = host
+sys.argv = ["apply.py", *options]
 status = 0
-try: main.main()
+try: apply.main()
 except SystemExit as stop: status = stop.code
 """
 
 
 def check_main(home: Path) -> None:
-    normal = ["link_all", "install", "set_up"]
+    last = ["set_up", "clean_up", "list_drift"]
+    normal = ["link_all", "install", *last]
+    luks = ["link_all", "install", "check_unlock", *last]
     for host, options, works, calls, status in (
-        ("mothership", [], True, normal, "0"),
+        ("mothership", [], True, luks, "0"),
         ("sl3", ["-o", "-r"], True, normal, "0"),
         ("spro5", ["--dry-run"], True, normal, "0"),
         ("sl3", [], False, normal[:2], "0"),
-        ("droneship", ["--check"], True, ["check_unlock"], "0"),
-        ("sl3", ["--check"], True, [], "0"),
-        ("elsewhere", [], True, [], "'unknown host elsewhere: add it to HOSTS'"),
+        ("sl3", ["--only", "system", "links"], True, ["link_all", "set_up"], "0"),
+        ("sl3", ["--only", "drift"], True, ["list_drift"], "0"),
+        ("sl3", ["--only", "nonsense"], True, [], "2"),
+        ("droneship", ["--only", "unlock"], True, ["check_unlock"], "0"),
+        ("sl3", ["--only", "unlock"], True, [], "0"),
+        ("elsewhere", [], True, [], "'unknown host elsewhere: add it to hosts.toml'"),
         ("sl3", ["--nonsense"], True, [], "2"),
     ):
         setup = f"host, options, works = {(host, options, works)!r}\n"
@@ -160,6 +187,39 @@ def check_main(home: Path) -> None:
         in_child(home, setup + MAIN + expect)
     broken = "host, options, works = 'sl3', [], True\ngate.run('false')\n"
     in_child(home, broken + MAIN + "assert 'false' in status, status")
+
+
+def check_summary(home: Path) -> None:
+    out = in_child(
+        home,
+        """
+gate.run("true")
+gate.run("false")
+gate.do("link a -> b", lambda: None)
+gate.do("rename c to d", lambda: None)
+gate.input = lambda question: ""
+assert not gate.confirm("replace e?")
+assert gate.choose("remove which?", {"f": "old"}) == []
+gate.warn("missing g")
+summary.print_summary()
+""",
+    ).split("Summary")[1]
+    assert (
+        out
+        == """
+ran: 1
+  true
+linked: 1
+set aside: 1
+  rename c to d
+you said no to: 2
+  replace e?
+  remove which? f
+warnings: 1
+  missing g
+"""
+    ), out
+    assert "nothing to do" in in_child(home, "summary.print_summary()")
 
 
 UNLOCK = """
@@ -188,13 +248,13 @@ def check_unlocking(home: Path) -> None:
     (home / "custom/ROOT").mkdir(parents=True)
     (home / "custom/ROOT/conf").write_text("ours")
     for overwrite in ("False", "True"):  # no key chosen: the conf stays out
-        setup = f"{UNLOCK}gate.args.overwrite = {overwrite}\nunlock.check_unlock()\n"
+        setup = f"{UNLOCK}options.args.overwrite = {overwrite}\nunlock.check_unlock()\n"
         in_child(home, setup + "assert 'install' not in str(planned), planned")
     # choosing keys is safe in a dry run, with the real gate
     setup = UNLOCK.replace("gate.choose =", "unused =").replace(
         "gate.run =", "unused ="
     )
-    dry = "gate.args.dry_run = True\nsys.addaudithook(gate.audit)\n"
+    dry = "options.args.dry_run = True\nsys.addaudithook(gate.audit)\n"
     shown = in_child(
         home, "import sys\n" + setup + dry + "assert unlock.add_unlock_keys()"
     )
@@ -214,7 +274,7 @@ assert (("sudo", "tee"), "quiet root=/dev/x ip=10.0.0.2 rw rd.neednet=1\\n") in 
 assert (("sudo", "tee"), 'omit_dracutmodules+=" nfs  brltty "\\n') in planned
 assert (("sudo", "install"), None) in planned
 assert not any("reinstall-kernels" in cmd for cmd, text in planned)
-gate.args.check = True
+options.args.only = ("unlock",)
 planned.clear()
 unlock.entries_ok, unlock.image_ok = lambda: True, lambda version: None
 unlock.check_unlock()
@@ -251,7 +311,7 @@ asked = []
 gate.choose = lambda question, options: (asked.extend(options), picked)[1]
 """
     for overwrite in ("False", "True"):
-        option = f"gate.args.overwrite = {overwrite}\npicked = []\n"
+        option = f"options.args.overwrite = {overwrite}\npicked = []\n"
         before = snapshot(home)
         in_child(home, stub + option + "cleanup.clean_up()")
         assert snapshot(home) == before
@@ -259,7 +319,7 @@ gate.choose = lambda question, options: (asked.extend(options), picked)[1]
     assert "RUN yay -Rns mako" in out
     assert "zsh" not in out
     assert not (home / ".config/helix").exists()
-    assert (home / ".config/mako.endos-bak/config").read_text() == "mine\n"
+    assert (home / ".config/mako.dotfiles-bak/config").read_text() == "mine\n"
 
 
 YAZI = """
@@ -291,7 +351,7 @@ def check_yazi(home: Path) -> None:
     assert old.is_dir(), "a plugin that is not in package.toml is kept"
     assert (link / "git.yazi").is_dir()
     (old / "own.yazi").rmdir()
-    in_child(home, "works = False\ngate.args.dry_run = True\n" + YAZI)
+    in_child(home, "works = False\noptions.args.dry_run = True\n" + YAZI)
     assert old.is_dir()
     in_child(home, "works = True\n" + YAZI.replace("if works:", "if False:"))
     assert not old.exists()
