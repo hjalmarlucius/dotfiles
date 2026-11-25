@@ -10,8 +10,9 @@ from pathlib import Path
 import gate
 from links import same, show_diff
 from options import args
-from packages import PACKAGES, install
+from packages import install
 from paths import CUSTOM, HOME
+from tables import PACKAGES
 
 CRYPT_CONF = Path("etc/dracut.conf.d/crypt-ssh.conf")
 HOST_KEY = "/etc/dracut-crypt-ssh/ssh_host_ed25519_key"

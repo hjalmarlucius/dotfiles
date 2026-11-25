@@ -12,15 +12,9 @@ from copies import copy_homeassistant, copy_system_files
 from links import into_checkout, set_aside
 from options import args
 from paths import CFG, CUSTOM, DOTFILES, HOME
+from tables import UNITS
 from unlock import check_unlock
 
-UNITS = {  # system unit: package group
-    "bluetooth.service": "sway",
-    "docker.service": "k8s",
-    "iscsid.service": "k8s",
-    "coolercontrold.service": "coolercontrol",
-    "libvirtd.service": "virtwin",
-}
 FONT_URL = "https://raw.githubusercontent.com/SUNET/static_sunet_se/refs/heads/master/fonts/Akkurat-Mono.otf"
 
 

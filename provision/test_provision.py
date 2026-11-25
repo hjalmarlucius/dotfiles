@@ -38,7 +38,7 @@ GATES = {
 def check_gates() -> None:
     """Calls that change something are only made inside the gates."""
     files = [p for p in SOURCE.glob("*.py") if p.name != Path(__file__).name]
-    assert len(files) == 10, files
+    assert len(files) == 11, files
     for path in files:
         gates = {"gate": GATES - {"make_link"}, "links": {"make_link"}}
         scan(path, gates.get(path.stem, set()))
@@ -65,7 +65,7 @@ def scan(path: Path, gates: set[str]) -> None:
 def in_child(home: Path, code: str) -> str:
     """Run code after importing the modules with HOME=home; packages are never touched."""
     setup = (
-        "import apply, cleanup, gate, links, options, packages, paths, steps, unlock\n"
+        "import apply, cleanup, gate, links, options, packages, paths, steps, tables, unlock\n"
         "import sys, subprocess, os\nfrom pathlib import Path\n"
     )
     result = subprocess.run(
@@ -90,7 +90,7 @@ def snapshot(home: Path) -> dict[str, object]:
 
 
 DRY = "options.args.dry_run = True\nsys.addaudithook(gate.audit)\n"
-LINK = "links.PRIVATE = ()\nlinks.link_all(packages.groups_for('mothership'))\n"
+LINK = "links.PRIVATE = ()\nlinks.link_all(tables.groups_for('mothership'))\n"
 YES = "gate.confirm = lambda question: True\n"
 
 
@@ -130,6 +130,28 @@ def check_audit(home: Path) -> None:
         in_child(home, DRY + expect)
 
 
+def check_tables(home: Path) -> None:
+    """Groups exist, and hosts.toml has the right shape."""
+    in_child(
+        home,
+        """
+from tables import CLEANUP, HOSTS, PACKAGES, TABLES, UNITS, packages_for
+assert list(TABLES) == ["hosts", "packages", "units", "cleanup"]
+used = [group for groups in HOSTS.values() for group in groups]
+for group in used + list(UNITS.values()):
+    assert group in PACKAGES, group
+for group, names in PACKAGES.items():
+    assert isinstance(names, list) and names, group
+    assert all(isinstance(name, str) for name in names), group
+    assert len(set(names)) == len(names), group
+for host in HOSTS:
+    assert (Path(paths.DOTFILES) / f"custom-{host}").is_dir(), host
+    assert not packages_for(host) & set(CLEANUP), "installed and cleaned up"
+assert all(isinstance(reason, str) for reason in CLEANUP.values())
+""",
+    )
+
+
 MAIN = """
 calls = []
 for name in ("link_all", "set_up", "check_unlock"):
@@ -152,7 +174,7 @@ def check_main(home: Path) -> None:
         ("sl3", [], False, normal[:2], "0"),
         ("droneship", ["--check"], True, ["check_unlock"], "0"),
         ("sl3", ["--check"], True, [], "0"),
-        ("elsewhere", [], True, [], "'unknown host elsewhere: add it to HOSTS'"),
+        ("elsewhere", [], True, [], "'unknown host elsewhere: add it to hosts.toml'"),
         ("sl3", ["--nonsense"], True, [], "2"),
     ):
         setup = f"host, options, works = {(host, options, works)!r}\n"

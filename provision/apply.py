@@ -11,9 +11,10 @@ import gate
 import tyro
 from links import link_all
 from options import Args, args
-from packages import HOSTS, groups_for, install, packages_for
+from packages import install
 from paths import DOTFILES, HOSTNAME
 from steps import set_up
+from tables import HOSTS, groups_for, packages_for
 from unlock import check_unlock
 
 
@@ -22,7 +23,7 @@ def main() -> None:
     given = tyro.cli(Args, description=__doc__, config=flags)
     vars(args).update(vars(given))  # the other modules hold this object
     if HOSTNAME not in HOSTS:
-        sys.exit(f"unknown host {HOSTNAME}: add it to HOSTS")
+        sys.exit(f"unknown host {HOSTNAME}: add it to hosts.toml")
     if args.dry_run:
         sys.addaudithook(gate.audit)
     groups = groups_for(HOSTNAME)
