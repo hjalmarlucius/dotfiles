@@ -156,7 +156,7 @@ workstation = [
 ]
 notes = ["xournalpp"]
 games = ["steam"]  # needs multilib
-nvidia = ["cuda", "nvidia-settings"]
+nvidia = ["cuda", "nvidia-settings", "nvidia-container-toolkit"]
 coolercontrol = ["coolercontrol"]
 docker = [
     "docker",
