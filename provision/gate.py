@@ -22,6 +22,9 @@ QUERIES = (  # all that query() may run: these change nothing
     ("systemctl", "--user", "is-enabled"),
 )
 
+done: list[str] = []
+skipped: list[str] = []
+warned: list[str] = []
 failed: list[str] = []
 
 
@@ -81,6 +84,7 @@ def do(what: str, change: Callable, *params, **options) -> bool:
     """Show a change, and make it unless this is a dry run."""
     print("+", what, flush=True)
     if args.dry_run:
+        done.append(what)
         return True
     try:
         change(*params, **options)
@@ -88,14 +92,23 @@ def do(what: str, change: Callable, *params, **options) -> bool:
         print("!", err)
         failed.append(what)
         return False
+    done.append(what)
     return True
+
+
+def warn(text: str) -> None:
+    print("!", text)
+    warned.append(text)
 
 
 def confirm(question: str) -> bool:
     if args.dry_run:
         print("? would ask:", question)
         return True
-    return input(f"{question} (y/N) ").strip().lower() in ("y", "yes")
+    yes = input(f"{question} (y/N) ").strip().lower() in ("y", "yes")
+    if not yes:
+        skipped.append(question)
+    return yes
 
 
 def choose(question: str, options: dict[str, str]) -> list[str]:
@@ -108,4 +121,6 @@ def choose(question: str, options: dict[str, str]) -> list[str]:
     answer = input(f"{question} (names, numbers or all; default none) ").split()
     if answer == ["all"]:
         return list(options)
-    return [n for i, n in enumerate(options, 1) if n in answer or str(i) in answer]
+    chosen = [n for i, n in enumerate(options, 1) if n in answer or str(i) in answer]
+    skipped.extend(f"{question} {name}" for name in options if name not in chosen)
+    return chosen

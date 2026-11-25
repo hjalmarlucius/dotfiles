@@ -18,6 +18,7 @@ from options import Args, args
 from packages import install
 from paths import DOTFILES, HOSTNAME
 from steps import set_up
+from summary import print_summary
 from tables import HOSTS, groups_for, packages_for
 from unlock import check_unlock
 
@@ -46,10 +47,13 @@ def main() -> None:
         sys.exit(f"unknown host {HOSTNAME}: add it to hosts.toml")
     if args.dry_run:
         sys.addaudithook(gate.audit)
-    for step, act in steps_for(HOSTNAME).items():
-        if (not args.only or step in args.only) and act() is False:
-            print(f"stopped after {step}: the rest needs it")
-            break
+    try:
+        for step, act in steps_for(HOSTNAME).items():
+            if (not args.only or step in args.only) and act() is False:
+                gate.warn(f"stopped after {step}: the rest needs it")
+                break
+    finally:  # also after Ctrl-C
+        print_summary()
     if gate.failed:
         sys.exit("\n".join(["FAILED:", *gate.failed]))
     print(f"Steps left to you: {DOTFILES / 'manual.md'}")

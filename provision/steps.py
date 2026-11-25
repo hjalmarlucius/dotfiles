@@ -61,8 +61,10 @@ def setup_yazi() -> None:
     missing = {name for name in listed if not (plugins / name).is_dir()}
     in_place = plugins.is_dir() and not into_checkout(plugins) and not missing
     if unknown or not (in_place or args.dry_run):
-        print(f"! {old} is kept; not in package.toml: {sorted(unknown)}")
-        print(f"  not installed: {sorted(missing)}")
+        gate.warn(
+            f"{old} is kept; not in package.toml: {sorted(unknown)}; "
+            f"not installed: {sorted(missing)}"
+        )
     elif gate.confirm(f"remove {old}, now that {plugins} replaces it?"):
         gate.do(f"remove {old}", shutil.rmtree, old)
 

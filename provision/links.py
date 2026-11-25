@@ -29,7 +29,7 @@ def tracked(root: Path) -> list[Path]:
         if (root / rel).is_file():
             found.append(rel)
         else:
-            print(f"! missing (secret not revealed?): {root / rel}")
+            gate.warn(f"missing (secret not revealed?): {root / rel}")
     return found
 
 
@@ -52,7 +52,7 @@ def show_diff(src: Path, tgt: Path) -> None:
     try:
         old, new = (p.read_text().splitlines(keepends=True) for p in (tgt, src))
     except (OSError, UnicodeDecodeError) as err:
-        print("! cannot compare:", err)
+        gate.warn(f"cannot compare {tgt}: {err}")
         return
     if src.with_name(src.name + ".secret").exists():
         print("a git-secret file: the differences are not shown")
@@ -104,12 +104,17 @@ def link_tree(source: Path, root: Path, skip: set[str]) -> None:
             unfolded.add(folder)
     for rel in files:
         if args.dry_run and not unfolded.isdisjoint((root / rel).parents):
-            print(f"+ link {root / rel} -> {source / rel}")
+            gate.do(
+                f"link {root / rel} -> {source / rel}",
+                make_link,
+                source / rel,
+                root / rel,
+            )
         else:
             link(source / rel, root / rel)
     if source.is_dir():
         for name in list_files(source, "--others", "--directory", "--exclude-standard"):
-            print(f"! not in git, so not linked: {source / name}")
+            gate.warn(f"not in git, so not linked: {source / name}")
 
 
 def prune_links() -> None:

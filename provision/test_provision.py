@@ -38,7 +38,7 @@ GATES = {
 def check_gates() -> None:
     """Calls that change something are only made inside the gates."""
     files = [p for p in SOURCE.glob("*.py") if p.name != Path(__file__).name]
-    assert len(files) == 12, files
+    assert len(files) == 13, files
     for path in files:
         gates = {"gate": GATES - {"make_link"}, "links": {"make_link"}}
         scan(path, gates.get(path.stem, set()))
@@ -65,7 +65,7 @@ def scan(path: Path, gates: set[str]) -> None:
 def in_child(home: Path, code: str) -> str:
     """Run code after importing the modules with HOME=home; packages are never touched."""
     setup = (
-        "import apply, cleanup, drift, gate, links, options, packages, paths, steps, tables, unlock\n"
+        "import apply, cleanup, drift, gate, links, options, packages, paths, steps, summary, tables, unlock\n"
         "import sys, subprocess, os\nfrom pathlib import Path\n"
     )
     result = subprocess.run(
@@ -187,6 +187,39 @@ def check_main(home: Path) -> None:
         in_child(home, setup + MAIN + expect)
     broken = "host, options, works = 'sl3', [], True\ngate.run('false')\n"
     in_child(home, broken + MAIN + "assert 'false' in status, status")
+
+
+def check_summary(home: Path) -> None:
+    out = in_child(
+        home,
+        """
+gate.run("true")
+gate.run("false")
+gate.do("link a -> b", lambda: None)
+gate.do("rename c to d", lambda: None)
+gate.input = lambda question: ""
+assert not gate.confirm("replace e?")
+assert gate.choose("remove which?", {"f": "old"}) == []
+gate.warn("missing g")
+summary.print_summary()
+""",
+    ).split("Summary")[1]
+    assert (
+        out
+        == """
+ran: 1
+  true
+linked: 1
+set aside: 1
+  rename c to d
+you said no to: 2
+  replace e?
+  remove which? f
+warnings: 1
+  missing g
+"""
+    ), out
+    assert "nothing to do" in in_child(home, "summary.print_summary()")
 
 
 UNLOCK = """

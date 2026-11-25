@@ -68,7 +68,7 @@ def add_unlock_keys() -> bool:
             fingerprint = "SHA256:" + base64.b64encode(digest).decode().rstrip("=")
             keys[fingerprint] = (found[2], line)
     if not keys:
-        print("! no public keys found to choose from; see manual.md")
+        gate.warn("no public keys found to choose from; see manual.md")
         return False
     names = gate.choose("which may unlock?", {name: keys[name][0] for name in keys})
     if not names:
