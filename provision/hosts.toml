@@ -1,7 +1,7 @@
 # What each host gets. The package groups not named under [hosts] are for every host.
 
 [hosts]
-mothership = ["workstation", "notes", "nvidia", "luks", "k8s", "coolercontrol", "docker", "virtwin"]
+mothership = ["workstation", "notes", "games", "nvidia", "luks", "k8s", "coolercontrol", "docker", "virtwin"]
 droneship = ["workstation", "nvidia", "luks", "k8s", "coolercontrol"]
 sl3 = []
 spro5 = ["tablet"]
@@ -145,7 +145,6 @@ remotedata = ["rclone", "dropbox", "minio-client"]
 screensharing = ["wireplumber"]
 workstation = [
     "remmina-plugin-rdesktop",  # with remmina
-    "steam",  # needs multilib
     "thunderbird",
     "signal-desktop",
     "inkscape",
@@ -156,6 +155,7 @@ workstation = [
     "miniserve",  # share a folder over http
 ]
 notes = ["xournalpp"]
+games = ["steam"]  # needs multilib
 nvidia = ["cuda", "nvidia-settings"]
 coolercontrol = ["coolercontrol"]
 docker = [

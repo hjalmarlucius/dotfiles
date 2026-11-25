@@ -15,7 +15,7 @@ git secret reveal
 ```
 Verify: `git secret list | xargs ls -l` shows each file.
 
-mothership and droneship: steam needs `[multilib]` in /etc/pacman.conf (uncomment it
+mothership: steam needs `[multilib]` in /etc/pacman.conf (uncomment it
 and its Include line, then `sudo pacman -Syu`).
 Verify: `pacman -Si steam`.
 
