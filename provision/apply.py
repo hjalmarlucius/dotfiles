@@ -52,10 +52,12 @@ def main() -> None:
             if (not args.only or step in args.only) and act() is False:
                 gate.warn(f"stopped after {step}: the rest needs it")
                 break
-    finally:  # also after Ctrl-C
+    except KeyboardInterrupt:
+        gate.failed.append("stopped with Ctrl-C")
+    finally:
         print_summary()
     if gate.failed:
-        sys.exit("\n".join(["FAILED:", *gate.failed]))
+        sys.exit(1)
     print(f"Steps left to you: {DOTFILES / 'manual.md'}")
 
 

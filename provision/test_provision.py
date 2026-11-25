@@ -65,7 +65,7 @@ def scan(path: Path, gates: set[str]) -> None:
 def in_child(home: Path, code: str) -> str:
     """Run code after importing the modules with HOME=home; packages are never touched."""
     setup = (
-        "import apply, cleanup, drift, gate, links, options, packages, paths, steps, summary, tables, unlock\n"
+        "import apply, cleanup, copies, drift, gate, links, options, packages, paths, steps, summary, tables, unlock\n"
         "import sys, subprocess, os\nfrom pathlib import Path\n"
     )
     result = subprocess.run(
@@ -120,6 +120,7 @@ def check_install(home: Path) -> None:
     out = in_child(
         home,
         """
+packages.PINS = {}
 gate.query = lambda *cmd: "zsh\\nmpv" if cmd[1] == "-Qqd" else missing
 gate.run = lambda *cmd: print("RUN", *cmd) or cmd[0] != "yay"
 missing = ""
@@ -129,6 +130,49 @@ assert not packages.install({"fd"})
 """,
     )
     assert out == "RUN sudo pacman -D --asexplicit mpv\nRUN yay -S fd\n", out
+
+
+def check_pins(home: Path) -> None:
+    out = in_child(
+        home,
+        """
+packages.HOSTNAME, packages.PINS = "h", {"h": ["nvidia-open*", "cuda"]}
+answers = {"IgnorePkg": "cuda", "-Qq": "cuda nvidia-open-dkms nvidia-container-toolkit"}
+answers["-T"] = "fd"
+gate.query = lambda *cmd: answers.get(cmd[1], "")
+gate.run = lambda *cmd: print("RUN", *cmd) or True
+assert not packages.install({"fd"})
+assert "IgnorePkg = nvidia-open-dkms" in gate.warned
+answers["IgnorePkg"] = "cuda nvidia-*"
+assert packages.install({"fd"})
+options.args.reinstall = True
+assert packages.install({"fd", "cuda"})
+""",
+    )
+    runs = [line for line in out.splitlines() if line.startswith("RUN")]
+    assert runs == ["RUN yay -S fd", "RUN yay -S fd"], runs
+
+
+COPY = """
+at = Path.home()
+copies.tracked = lambda source: [Path(str(at / "new")[1:])]
+gate.run = lambda *cmd: print("RUN", *cmd)
+gate.confirm = lambda question: "install" in question and yes
+copies.copy_system_files(at / "src")
+"""
+
+
+def check_copies(home: Path) -> None:
+    source = home / "src" / str(home / "new")[1:]
+    source.parent.mkdir(parents=True)
+    source.write_text("x")
+    assert "RUN" not in in_child(home, "yes = False\n" + COPY)
+    assert "RUN sudo install" in in_child(home, "yes = True\n" + COPY)
+
+
+def check_skips(home: Path) -> None:
+    code = "print(links.tracked(paths.DOTFILES / 'CONFIG', {'homeassistant'}))"
+    assert "homeassistant" not in in_child(home, code)
 
 
 def check_keeps(home: Path) -> None:
@@ -167,8 +211,9 @@ def check_tables(home: Path) -> None:
     in_child(
         home,
         """
-from tables import CLEANUP, HOSTS, PACKAGES, TABLES, UNITS, packages_for
-assert list(TABLES) == ["hosts", "packages", "units", "cleanup"]
+from tables import CLEANUP, HOSTS, PACKAGES, PINS, TABLES, UNITS, packages_for
+assert set(PINS) <= set(HOSTS)
+assert list(TABLES) == ["hosts", "packages", "pins", "units", "cleanup"]
 used = [group for groups in HOSTS.values() for group in groups]
 for group in used + list(UNITS.values()):
     assert group in PACKAGES, group
@@ -218,7 +263,13 @@ def check_main(home: Path) -> None:
         expect = f"assert (calls, status) == ({calls!r}, {status}), (calls, status)"
         in_child(home, setup + MAIN + expect)
     broken = "host, options, works = 'sl3', [], True\ngate.run('false')\n"
-    in_child(home, broken + MAIN + "assert 'false' in status, status")
+    out = in_child(home, broken + MAIN + "assert status == 1, status")
+    assert "FAILED: 1\n  false" in out, out
+    stop = "host, options, works = 'sl3', [], True\n"
+    ctrl_c = "def stop(*a): raise KeyboardInterrupt\nmain_code"
+    code = MAIN.replace("status = 0", "apply.link_all = stop\nstatus = 0")
+    stop += ctrl_c.replace("main_code", code) + "assert status == 1, status"
+    assert "stopped with Ctrl-C" in in_child(home, stop)
 
 
 def check_summary(home: Path) -> None:
@@ -249,6 +300,8 @@ you said no to: 2
   remove which? f
 warnings: 1
   missing g
+FAILED: 1
+  false
 """
     ), out
     assert "nothing to do" in in_child(home, "summary.print_summary()")

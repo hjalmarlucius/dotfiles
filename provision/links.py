@@ -2,6 +2,7 @@
 
 import os
 import shutil
+from collections.abc import Iterable
 from difflib import unified_diff
 from functools import partial
 from pathlib import Path
@@ -23,11 +24,13 @@ def list_files(root: Path, *options: str) -> list[str]:
     return [name for name in output.split("\0") if name]
 
 
-def tracked(root: Path) -> list[Path]:
+def tracked(root: Path, skip: Iterable[str] = ()) -> list[Path]:
     """Files in git below root. A git-secret file x.secret stands for x."""
     found = []
     for name in list_files(root) if root.is_dir() else ():
         rel = Path(name.removesuffix(".secret"))
+        if rel.parts[0] in skip:
+            continue
         if (root / rel).is_file():
             found.append(rel)
         else:
@@ -109,7 +112,7 @@ def link(src: Path, tgt: Path) -> None:
 
 
 def link_tree(source: Path, root: Path, skip: set[str]) -> None:
-    files = [rel for rel in tracked(source) if rel.parts[0] not in skip]
+    files = tracked(source, skip)
     # older versions linked whole folders; those become real folders
     unfolded = set()
     for folder in sorted({root / p for rel in files for p in rel.parents[:-1]}):

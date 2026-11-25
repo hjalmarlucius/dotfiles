@@ -19,6 +19,10 @@ mothership: steam needs `[multilib]` in /etc/pacman.conf (uncomment it
 and its Include line, then `sudo pacman -Syu`).
 Verify: `pacman -Si steam`.
 
+droneship: updating nvidia or the kernel breaks things (`[pins]` in hosts.toml). A run
+stops before packages and prints the `IgnorePkg` line that /etc/pacman.conf lacks.
+Verify: `pacman-conf IgnorePkg`. Never use `--reinstall` or a partial `-Sy` there.
+
 ## 2. linux-surface kernel and iptsd (sl3, spro5)
 
 From the linux-surface wiki, Installation and Setup. Check that the fingerprint

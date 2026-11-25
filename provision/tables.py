@@ -6,6 +6,7 @@ from pathlib import Path
 TABLES = tomllib.loads(Path(__file__).with_name("hosts.toml").read_text())
 HOSTS: dict[str, list[str]] = TABLES["hosts"]
 PACKAGES: dict[str, list[str]] = TABLES["packages"]
+PINS: dict[str, list[str]] = TABLES["pins"]
 UNITS: dict[str, str] = TABLES["units"]
 CLEANUP: dict[str, str] = TABLES["cleanup"]
 

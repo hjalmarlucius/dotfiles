@@ -124,6 +124,26 @@ monitors = [
 apps = ["keepassxc", "bitwarden", "qalculate-gtk"]
 sway = [
     "xdg-terminal-exec",
+    # EndeavourOS's sway edition has these; our config calls them
+    "sway",
+    "swaybg",
+    "swayidle",
+    "gtklock",
+    "waybar",
+    "foot",
+    "grim",
+    "slurp",
+    "wl-clipboard",
+    "brightnessctl",
+    "polkit-gnome",
+    "network-manager-applet",
+    "xdg-desktop-portal-wlr",
+    "xorg-xwayland",
+    "greetd",
+    "greetd-regreet",
+    "ttf-jetbrains-mono",
+    "ttf-nerd-fonts-symbols",  # waybar
+    "eos-qogir-icons",  # cursor and icons
     "swaync",  # notifications
     "fuzzel",  # launcher
     "nwg-drawer",  # app menu
@@ -192,6 +212,25 @@ virtwin = [
     "vde2",  # networking plumbing
     "openbsd-netcat",  # networking plumbing
     "swtpm",  # win11 requirement
+]
+
+# Packages an update of which breaks the host: a run refuses to touch packages until
+# IgnorePkg in /etc/pacman.conf holds back those that are installed. * is any text.
+[pins]
+droneship = [
+    "linux",
+    "linux-headers",
+    "linux-lts",
+    "linux-lts-headers",
+    "nvidia",
+    "nvidia-*dkms",
+    "nvidia-lts",
+    "nvidia-open*",
+    "nvidia-settings",
+    "nvidia-utils",
+    "lib32-nvidia-utils",
+    "opencl-nvidia",
+    "cuda",
 ]
 
 # system unit: package group

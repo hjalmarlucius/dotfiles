@@ -17,7 +17,11 @@ def print_summary() -> None:
     for what in gate.done:
         kind = next((k for start, k in KINDS.items() if what.startswith(start)), "ran")
         kinds.setdefault(kind, []).append(what)
-    kinds |= {"you said no to": gate.skipped, "warnings": gate.warned}
+    kinds |= {
+        "you said no to": gate.skipped,
+        "warnings": gate.warned,
+        "FAILED": gate.failed,
+    }
     print("\nSummary" + (" (dry run: nothing was changed)" if args.dry_run else ""))
     for kind, lines in kinds.items():
         if lines:
