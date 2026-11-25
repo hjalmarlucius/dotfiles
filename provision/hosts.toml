@@ -1,7 +1,7 @@
 # What each host gets. The package groups not named under [hosts] are for every host.
 
 [hosts]
-mothership = ["workstation", "notes", "games", "nvidia", "luks", "k8s", "coolercontrol", "docker", "virtwin"]
+mothership = ["workstation", "notes", "games", "rss", "nvidia", "luks", "k8s", "coolercontrol", "docker", "virtwin"]
 droneship = ["workstation", "nvidia", "luks", "k8s", "coolercontrol"]
 sl3 = []
 spro5 = ["tablet"]
@@ -106,7 +106,6 @@ emailcalrss = [
     "khard",  # contacts
     "khal",  # calendar
     "aerc",  # email
-    "eilmeldung",  # rss reader
     "vdirsyncer",  # sync calendar+contacts
     "pandoc-cli",  # md2html for aerc
     "poppler",  # pdftotext for aerc
@@ -155,6 +154,7 @@ workstation = [
     "miniserve",  # share a folder over http
 ]
 notes = ["xournalpp"]
+rss = ["eilmeldung"]  # a heavy build
 games = ["steam"]  # needs multilib
 nvidia = ["cuda", "nvidia-settings", "nvidia-container-toolkit"]
 coolercontrol = ["coolercontrol"]
