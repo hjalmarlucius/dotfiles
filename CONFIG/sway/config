@@ -21,7 +21,7 @@ smart_borders on
 font pango:Noto Sans Regular 10
 
 # Cursor
-seat seat0 xcursor_theme Adwaita 0
+seat seat0 xcursor_theme Qogir-Dark 20
 
 set $1ary     #55e0ec
 set $2ary     #519ce6
@@ -252,7 +252,7 @@ include $HOME/.config/sway/local_config
 # apps
 bindsym {
     # Snip a selection and pipe to swappy
-    $mod+Shift+s exec env XCURSOR_THEME=Adwaita XCURSOR_SIZE=24 sh -c 'grim -g "$(slurp)" - | swappy -f -'
+    $mod+Shift+s exec env XCURSOR_THEME=Qogir-Dark XCURSOR_SIZE=20 sh -c 'grim -g "$(slurp)" - | swappy -f -'
 
     # Screenshot of all screens to the clipboard
     $mod+Ctrl+s exec grim - | wl-copy
