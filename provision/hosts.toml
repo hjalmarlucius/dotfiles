@@ -160,11 +160,10 @@ nvidia = ["cuda", "nvidia-settings"]
 coolercontrol = ["coolercontrol"]
 docker = [
     "docker",
+    "docker-buildx",  # advanced build
     "dry-bin",  # docker tui
 ]
 k8s = [
-    "docker",
-    "docker-buildx",  # advanced build
     "qemu-user-static-binfmt",  # build arm64
     "qemu-user-static",  # build arm64
     "k9s",  # kubernetes tui
@@ -196,7 +195,7 @@ virtwin = [
 # system unit: package group
 [units]
 "bluetooth.service" = "sway"
-"docker.service" = "k8s"
+"docker.service" = "docker"
 "iscsid.service" = "k8s"
 "coolercontrold.service" = "coolercontrol"
 "libvirtd.service" = "virtwin"
