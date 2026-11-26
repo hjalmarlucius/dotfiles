@@ -7,7 +7,7 @@ import shutil
 import tomllib
 
 import gate
-from copies import copy_homeassistant, copy_system_files
+from copies import copy_system_files
 from links import delete, into_checkout, may_delete
 from options import args
 from paths import CFG, CUSTOM, DOTFILES, HOME
@@ -96,6 +96,5 @@ def set_up(groups: list[str]) -> None:
     setup_common()
     if "docker" in groups:
         join_group("docker")
-        copy_homeassistant()
     if "virtwin" in groups:
         setup_virtwin()
