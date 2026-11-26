@@ -5,5 +5,10 @@
   "tui": "fullscreen",
   "viewMode": "focus",
   "spinnerTipsEnabled": false,
-  "showTurnDuration": false
+  "showTurnDuration": false,
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "refreshInterval": 60
+  }
 }
