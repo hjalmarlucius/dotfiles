@@ -6,7 +6,6 @@ from pathlib import Path
 import gate
 from links import may_replace, same, tracked
 from options import args
-from paths import CFG, DOTFILES
 from unlock import CRYPT_CONF
 
 
@@ -28,10 +27,3 @@ def copy_system_files(source: Path) -> None:
     if units:
         gate.run("sudo", "systemctl", "daemon-reload")
 
-
-def copy_homeassistant() -> None:
-    """The container writes to these files, so never replace them."""
-    source, root = DOTFILES / "CONFIG/homeassistant", CFG / "homeassistant"
-    for rel in tracked(source):
-        if not os.path.lexists(root / rel):
-            gate.run("install", "-D", "-m", "644", source / rel, root / rel)

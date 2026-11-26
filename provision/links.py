@@ -153,7 +153,7 @@ def prune_links() -> None:
 
 def link_all(groups: list[str]) -> None:
     prune_links()
-    skip = {"homeassistant"} if "k8s" in groups else {"homeassistant", "k9s"}
+    skip = set() if "k8s" in groups else {"k9s"}
     for source, root in TREES:
         link_tree(source, root, skip)
     for path in (DOTFILES / name for name in PRIVATE):

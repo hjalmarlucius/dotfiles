@@ -2,7 +2,8 @@
 # input type:tablet_tool map_to_region 2560 0 2560 1440
 
 # Monitor definition
-set $main_monitor "BNQ BenQ RD280UG SERIAL"
+# BenQ RD280UG, matched by connector (DP-1)
+set $main_monitor DP-1
 
 # Output configuration
 output $main_monitor mode 3840x2560@119.991Hz scale 1.25

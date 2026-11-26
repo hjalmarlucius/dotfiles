@@ -19,7 +19,7 @@ path: `/jffs/scripts`
 CLOUDFLARE_API_TOKEN='...'
 DNS_ZONE_ID='...'
 DNS_RECORD_ID='...'
-DNS_RECORD_NAME='host.example.org'
+DNS_RECORD_NAME='<home-host>'
 IP=${1}
 
 curl -fs -o /dev/null -X PUT "https://api.cloudflare.com/client/v4/zones/$DNS_ZONE_ID/dns_records/$DNS_RECORD_ID" \

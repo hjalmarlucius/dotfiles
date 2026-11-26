@@ -140,6 +140,7 @@ Verify: `sudo ufw status verbose`.
 ~/dotfiles/scripts/run_musicassistant.sh
 ```
 Verify: `docker ps` lists both (they restart by themselves from then on).
+Home Assistant's configuration lives only in `~/.config/homeassistant` on mothership, not in the dotfiles; back it up with the rest of mothership.
 
 ## 11. Virtual machines (mothership)
 

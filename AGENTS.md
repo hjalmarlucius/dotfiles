@@ -24,7 +24,7 @@ The owner decides `decide:` issues, reviews and merges your pull requests, pushe
 
 ## Public repository
 
-- The repository is public on both remotes. Never commit secrets, tokens, passwords, private keys, email addresses, phone numbers, home IP addresses or private URLs. Read your whole diff for them before every commit.
+- Treat the repository as public. Never commit secrets, tokens, passwords, private keys, phone numbers, home IP addresses, home hostnames or private URLs. The owner's own email addresses may appear (decided on #12). Read your whole diff for these before every commit.
 - Leave `.gitsecret/`, the `*.secret` files and the plaintext files they encrypt (listed in `.gitignore`) alone. Never run `git secret reveal` or `git secret hide`. A change that needs a secret goes on an issue for the owner.
 - A value that differs per machine goes in `custom-<hostname>/`, only for the host the issue names, or in an untracked local file.
 
