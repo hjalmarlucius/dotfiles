@@ -28,8 +28,6 @@ config.bind("<Shift+F12>", "view-source")
 config.bind("<Shift+Escape>", "mode-enter passthrough", mode="normal")
 config.bind("<Shift+Escape>", "mode-enter passthrough", mode="insert")
 config.bind(">", "tab-move +")
-config.bind("K", "tab-prev")
-config.bind("J", "tab-next")
 fuzzelargs = """--dmenu-invocation 'fuzzel --dmenu -p "Bitwarden"' --password-prompt-invocation 'fuzzel --dmenu -p "Master Password: " --password --lines 0'"""
 config.bind("pww", f"spawn --userscript qute-bitwarden {fuzzelargs}")
 config.bind("pwu", f"spawn --userscript qute-bitwarden {fuzzelargs} --username-only")
@@ -73,9 +71,7 @@ c.completion.open_categories = [
 ]
 c.content.pdfjs = True
 c.content.register_protocol_handler = False
-c.content.blocking.enabled = True
 c.content.fullscreen.window = True
-c.content.blocking.method = "auto"
 c.content.blocking.adblock.lists = [
     "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt",
     "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/badware.txt",
@@ -95,8 +91,6 @@ c.content.javascript.log_message.excludes = {
 c.completion.web_history.max_items = 10000
 c.completion.height = "100%"
 c.confirm_quit = ["multiple-tabs", "downloads"]
-c.content.javascript.clipboard = "ask"
-c.content.local_content_can_access_remote_urls = False
 c.content.autoplay = False
 c.content.geolocation = False
 c.content.cache.size = 52428800
@@ -113,12 +107,6 @@ urlconfigs: dict[str, list[tuple[str, bool | str | dict[str, str]]]] = {
     "https://mail.google.com": [("content.javascript.clipboard", "access-paste")],
     "https://*.hjarl.com": [("content.javascript.clipboard", "access-paste")],
     "https://chatgpt.com": [("content.javascript.clipboard", "access-paste")],
-    "*://*.youtube.com/*": [
-        (
-            "content.headers.custom",
-            {"X-YouTube-Client-Name": "85", "X-YouTube-Client-Version": "2.0"},
-        )
-    ],
     "https://*.altinn.no": [
         ("content.cookies.accept", "all"),
         ("content.javascript.can_open_tabs_automatically", True),
@@ -133,7 +121,6 @@ for url, urlconfig in urlconfigs.items():
         config.set(setting, value, url)
 
 c.downloads.position = "bottom"
-c.downloads.prevent_mixed_content = True
 c.editor.command = [
     "footclient",
     "--app-id",
@@ -170,12 +157,9 @@ if os.environ.get("QUTE_DISABLE_GPU") == "1":
 
 c.qt.args = qt_args
 c.scrolling.bar = "always"
-c.scrolling.smooth = False
 c.session.lazy_restore = True
 c.session.default_name = "hb"
 c.statusbar.padding = {"bottom": 5, "left": 5, "right": 5, "top": 5}
-c.statusbar.position = "bottom"
-c.statusbar.show = "always"
 c.statusbar.widgets = [
     "keypress",
     "search_match",
@@ -184,22 +168,14 @@ c.statusbar.widgets = [
     "history",
     "progress",
 ]
-c.tabs.background = True
 c.tabs.favicons.show = "pinned"
-c.tabs.indicator.width = 3
 c.tabs.last_close = "close"
 c.tabs.max_width = 8000
-c.tabs.min_width = -1
 c.tabs.mode_on_change = "restore"
-c.tabs.new_position.related = "next"
 c.tabs.padding = {"bottom": 2, "left": 5, "right": 5, "top": 2}
-c.tabs.position = "top"
-c.tabs.show = "always"
 c.tabs.show_switching_delay = 5000
-c.tabs.tabs_are_windows = False
 c.tabs.title.format = "{index}.{current_title}"
 c.tabs.undo_stack_size = 1000
-c.tabs.width = "15%"
 c.url.start_pages = "https://www.google.com/search?hl=en&source=hp"
 c.url.default_page = "https://www.google.com/search?hl=en&source=hp"
 c.url.searchengines = {
@@ -213,7 +189,6 @@ c.url.searchengines = {
     "sh": "https://explainshell.com/explain?cmd={}",
     "wi": "https://en.wikipedia.org/w/index.php?search={}",
 }
-c.zoom.default = "100%"
 
 # FONTS
 c.fonts.default_family = ["Hack"]
@@ -242,9 +217,9 @@ base0D = "#00E5FF"
 base0E = "#ba8baf"
 base0F = "#a16946"
 c.colors.webpage.preferred_color_scheme = "dark"
-c.colors.webpage.darkmode.enabled = False
 
 # from https://raw.githubusercontent.com/tinted-theming/base16-qutebrowser/refs/heads/main/templates/default.mustache
+# (hints and the selected tab changed from the template)
 c.colors.completion.fg = base05
 c.colors.completion.odd.bg = base01
 c.colors.completion.even.bg = base00
@@ -272,9 +247,9 @@ c.colors.downloads.start.bg = base0D
 c.colors.downloads.stop.fg = base00
 c.colors.downloads.stop.bg = base0C
 c.colors.downloads.error.fg = base08
-c.colors.hints.bg = base00
-c.colors.hints.fg = base0B
-c.colors.hints.match.fg = base08
+c.colors.hints.bg = base02
+c.colors.hints.fg = base05
+c.colors.hints.match.fg = base0A
 c.colors.keyhint.fg = base05
 c.colors.keyhint.suffix.fg = base05
 c.colors.keyhint.bg = base00
@@ -333,12 +308,5 @@ c.colors.tabs.pinned.selected.odd.bg = base02
 c.colors.tabs.pinned.selected.odd.fg = base05
 c.colors.tabs.selected.odd.fg = base05
 c.colors.tabs.selected.even.fg = base05
-c.colors.tabs.selected.odd.bg = base0B
-c.colors.tabs.selected.even.bg = base0B
-
-# overrides
-c.colors.hints.fg = base05
-c.colors.hints.bg = base02
-c.colors.hints.match.fg = base0A
 c.colors.tabs.selected.odd.bg = "teal"
 c.colors.tabs.selected.even.bg = "teal"
