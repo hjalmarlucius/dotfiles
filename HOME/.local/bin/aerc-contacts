@@ -1,0 +1,17 @@
+#!/bin/sh
+# Browse the khard contacts in fzf, with the full entry as preview. Prints
+# the arguments for aerc's :compose, so in aerc (gc):
+#   :menu -c aerc-contacts :compose
+# starts a mail to the chosen contact. Prints nothing if cancelled.
+command -v khard >/dev/null || { echo "khard is not installed" >&2; sleep 2; exit 1; }
+choice=$(khard list --parsable | awk -F '\t' '$2 != ""' |
+    fzf --delimiter '\t' --with-nth 2 --prompt 'contacts> ' \
+        --preview 'khard show uid:{1}' --preview-window right,65%) || exit 0
+uid=$(printf '%s\n' "$choice" | cut -f1)
+address=$(khard email --parsable --remove-first-line "uid:$uid" | head -n 1 | cut -f1)
+if [ -z "$address" ]; then
+    echo "No email address for this contact." >&2
+    sleep 2
+    exit 1
+fi
+printf "%s\n" "-H 'To: $address'"
