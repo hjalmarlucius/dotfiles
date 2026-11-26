@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/jesseduffield/lazygit/master/schema/config.json
+# Diffs through delta, which also reads the [delta] section of ~/.gitconfig.
+# The second renderer is git's plain diff, for narrow panes.
+git:
+  diffRenderers:
+    - command: delta --{{colorScheme}} --paging=never
+    - type: rawGit
+      name: plain
+
+# In the branches panel, o opens a new pull request on Gitea and O offers the
+# options (pick the target branch, copy the URL).
+services:
+  git.hjarl.com: gitea:git.hjarl.com
