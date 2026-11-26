@@ -1102,6 +1102,9 @@ local function makespec_snacks()
             { "<M-d>", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
             { "<leader>qd", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
             { "<leader>gl", function() Snacks.lazygit() end, desc = "Launch Lazygit" },
+            -- <CR> checkout, <C-a> new branch, <C-x> delete (asks, then git branch -D)
+            { "<leader>go", function() Snacks.picker.git_branches() end, desc = "Git Branches" },
+            { "<leader>gO", function() Snacks.picker.git_branches({ all = true }) end, desc = "Git Branches (With Remotes)" },
             { "<leader>.", function() Snacks.scratch.open() end, desc = "Scratch Buffer" },
             { "<leader>b", function() Snacks.picker.buffers() end, desc = "Buffers" },
 
