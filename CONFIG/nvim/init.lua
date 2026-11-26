@@ -188,8 +188,9 @@ map("n", "<M-V>", "<cmd>vnew<cr>", { desc = "New Window Right", remap = true })
 map("n", "<M-S>", "<cmd>new<cr>", { desc = "New Window Below", remap = true })
 
 -- buffers
-map("n", "<M-K>", "<cmd>bprev<cr>", { desc = "Prev Buffer" })
-map("n", "<M-J>", "<cmd>bnext<cr>", { desc = "Next Buffer" })
+-- Alt+Shift+hjkl resizes windows (smart-splits), so buffers use Alt+Shift+N/P
+map("n", "<M-P>", "<cmd>bprev<cr>", { desc = "Prev Buffer" })
+map("n", "<M-N>", "<cmd>bnext<cr>", { desc = "Next Buffer" })
 
 -- quickfix window
 map("n", "<C-p>", "<cmd>cprev<cr>", { desc = "Prev Quickfix" })
@@ -1320,10 +1321,10 @@ local function makespec_smartsplits()
             { "<M-k>", function() require("smart-splits").move_cursor_up() end, desc = "Go to Upper Window" },
             { "<M-l>", function() require("smart-splits").move_cursor_right() end, desc = "Go to Right Window" },
             { "<M-\\>", function() require("smart-splits").move_cursor_previous() end, desc = "Go to Previous Window" },
-            { "<M-C-h>", function() require("smart-splits").resize_left() end, desc = "Resize Window Left" },
-            { "<M-C-j>", function() require("smart-splits").resize_down() end, desc = "Resize Window Down" },
-            { "<M-C-k>", function() require("smart-splits").resize_up() end, desc = "Resize Window Up" },
-            { "<M-C-l>", function() require("smart-splits").resize_right() end, desc = "Resize Window Right" },
+            { "<M-H>", function() require("smart-splits").resize_left() end, desc = "Resize Window Left" },
+            { "<M-J>", function() require("smart-splits").resize_down() end, desc = "Resize Window Down" },
+            { "<M-K>", function() require("smart-splits").resize_up() end, desc = "Resize Window Up" },
+            { "<M-L>", function() require("smart-splits").resize_right() end, desc = "Resize Window Right" },
         },
     }
 end
