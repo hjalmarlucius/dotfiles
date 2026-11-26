@@ -734,7 +734,11 @@ local function makespec_neotree()
                     },
                 },
             },
-            keys = { { "<leader>ff", "<cmd>Neotree toggle<cr>", desc = "Neotree Explorer (sidebar)" } },
+            keys = {
+                { "<leader>ff", "<cmd>Neotree filesystem toggle<cr>", desc = "Neotree Files (sidebar)" },
+                { "<leader>fb", "<cmd>Neotree buffers toggle<cr>", desc = "Neotree Open Files (sidebar)" },
+                { "<leader>fs", "<cmd>Neotree git_status toggle<cr>", desc = "Neotree Git Changes (sidebar)" },
+            },
         },
     }
 end
