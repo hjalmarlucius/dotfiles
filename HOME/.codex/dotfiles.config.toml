@@ -1,0 +1,22 @@
+# Codex settings from the dotfiles. `codex -p dotfiles` (the zsh alias) reads
+# them as a layer over ~/.codex/config.toml, where Codex itself keeps writing
+# trusted folders, notices and model choices; that file stays out of the repo.
+# The /statusline picker writes here instead.
+check_for_update_on_startup = false # pacman updates it
+hide_agent_reasoning = true
+
+[tui]
+vim_mode_default = true
+show_tooltips = false
+show_server_version_notice = false
+# Fullscreen, so completed turns collapse to a summary of their tool calls
+alternate_screen = "always"
+collapse_turn_details = true
+status_line = ["model", "project-name", "git-branch", "context-used", "weekly-limit"]
+
+[tui.effects]
+welcome = false
+
+[tui.keymap.chat]
+# Esc no longer interrupts a turn; Ctrl+X Ctrl+C does, as in Claude Code
+interrupt_turn = "ctrl-x ctrl-c"

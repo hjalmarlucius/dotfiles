@@ -15,6 +15,7 @@ alias ls='ls --color=auto -Ah'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias sioyek="QT_QPA_PLATFORM=xcb sioyek"
+alias codex='codex -p dotfiles'  # settings in ~/.codex/dotfiles.config.toml
 
 # --- yazi: cd to its folder on quit (Q quits without) ---
 function y() {
