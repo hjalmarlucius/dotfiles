@@ -262,7 +262,7 @@ bindsym {
 
     # Launch the browser
     $mod+i exec qutebrowser
-    $mod+Shift+i exec env QUTE_ENABLE_GPU=1 qutebrowser
+    $mod+Shift+i exec env QUTE_DISABLE_GPU=1 qutebrowser
 
     # Launch the file explorer
     $mod+o exec pcmanfm

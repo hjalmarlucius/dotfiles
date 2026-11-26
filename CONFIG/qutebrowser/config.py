@@ -155,11 +155,10 @@ c.qt.highdpi = True
 qt_args = [
     "disable-features=WebAuth",  # makes BankID work
 ]
-# Disable GPU on the AI training hosts, unless QUTE_ENABLE_GPU is set
-if (
-    os.uname().nodename in ("mothership", "droneship")
-    and os.environ.get("QUTE_ENABLE_GPU") != "1"
-):
+# Without the GPU when started with QUTE_DISABLE_GPU=1 (sway: $mod+Shift+i),
+# e.g. to keep VRAM free during training. Only a fresh start applies it: with
+# qutebrowser running, a new launch opens a window in the running one.
+if os.environ.get("QUTE_DISABLE_GPU") == "1":
     qt_args.extend(
         [
             "disable-gpu",  # Stops using the GPU for rendering
