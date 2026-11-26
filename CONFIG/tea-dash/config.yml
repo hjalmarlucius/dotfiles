@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=/usr/share/tea-dash/schema.json
-# Without repos:, the tabs cover every repository the login can see. Repository
-# names stay out: this file is public.
+# Each view opens on everything the login can see, then one tab per
+# repository (h/l or tab to switch). Launched inside one of these checkouts,
+# the "All open" tab narrows to that repository (t toggles it).
 instance:
   url: https://git.hjarl.com
   # the login of gt, from the keyring: gt auth login --host git.hjarl.com
@@ -14,28 +15,36 @@ pager:
   diff: delta --paging always --pager "less -R"
 
 prSections:
-  - title: Needs my review
-    filter:
-      state: open
-      reviewRequested: "@me"
-  - title: Mine
-    filter:
-      state: open
-      createdBy: "@me"
   - title: All open
+    filter:
+      state: open
+  - title: core
+    repo: Hjarl/hjarl-core
+    filter:
+      state: open
+  - title: system
+    repo: Hjarl/hjarl-system
+    filter:
+      state: open
+  - title: dotfiles
+    repo: henrik/dotfiles
     filter:
       state: open
 
 issuesSections:
-  - title: Assigned to me
-    filter:
-      state: open
-      assignedBy: "@me"
-  - title: Mine
-    filter:
-      state: open
-      createdBy: "@me"
   - title: All open
+    filter:
+      state: open
+  - title: core
+    repo: Hjarl/hjarl-core
+    filter:
+      state: open
+  - title: system
+    repo: Hjarl/hjarl-system
+    filter:
+      state: open
+  - title: dotfiles
+    repo: henrik/dotfiles
     filter:
       state: open
 
