@@ -16,7 +16,3 @@ status_line = ["model", "project-name", "git-branch", "context-used", "weekly-li
 
 [tui.effects]
 welcome = false
-
-[tui.keymap.chat]
-# Esc no longer interrupts a turn; Ctrl+X Ctrl+C does, as in Claude Code
-interrupt_turn = "ctrl-x ctrl-c"
