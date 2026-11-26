@@ -107,12 +107,6 @@ urlconfigs: dict[str, list[tuple[str, bool | str | dict[str, str]]]] = {
     "https://mail.google.com": [("content.javascript.clipboard", "access-paste")],
     "https://*.hjarl.com": [("content.javascript.clipboard", "access-paste")],
     "https://chatgpt.com": [("content.javascript.clipboard", "access-paste")],
-    "*://*.youtube.com/*": [
-        (
-            "content.headers.custom",
-            {"X-YouTube-Client-Name": "85", "X-YouTube-Client-Version": "2.0"},
-        )
-    ],
     "https://*.altinn.no": [
         ("content.cookies.accept", "all"),
         ("content.javascript.can_open_tabs_automatically", True),
