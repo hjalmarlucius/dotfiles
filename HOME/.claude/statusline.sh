@@ -1,6 +1,6 @@
 #!/bin/bash
 # Claude Code status line (settings.json statusLine): model, folder, git
-# branch, context used, 5-hour limit used, and the open pull requests of the
+# branch, context used, weekly limit used, and the open pull requests of the
 # repository's git.hjarl.com remote. PR numbers are links (Ctrl+click in
 # foot); drafts are dim. Claude Code passes its session data as JSON on stdin.
 in=$(cat)
@@ -20,7 +20,7 @@ parts=("$(field .model.display_name)" "${dir##*/}")
 branch=$(git -C "$dir" branch --show-current 2>/dev/null)
 [ -n "$branch" ] && parts+=("$branch")
 ctx=$(pct "$(field .context_window.used_percentage)" ctx) && [ -n "$ctx" ] && parts+=("$ctx")
-five=$(pct "$(field .rate_limits.five_hour.used_percentage)" 5h) && [ -n "$five" ] && parts+=("$five")
+week=$(pct "$(field .rate_limits.seven_day.used_percentage)" week) && [ -n "$week" ] && parts+=("$week")
 
 # Open pull requests on git.hjarl.com, cached for a minute per repository
 url=$(git -C "$dir" remote -v 2>/dev/null | awk '$2 ~ /git\.hjarl\.com[:\/]/ {print $2; exit}')
