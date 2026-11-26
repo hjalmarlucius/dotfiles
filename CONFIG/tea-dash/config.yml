@@ -51,7 +51,7 @@ issuesSections:
 notificationsSections:
   - title: Inbox
 
-# Moving never changes the repository tab:
+# Moving never changes the repository tab (n opens a number, see below):
 #   j/k  rows in the list, or scroll the preview when it has focus
 #   l/h  into the preview and back (both toggle: tea-dash has no
 #        per-pane keys); enter and esc still work
@@ -59,6 +59,18 @@ notificationsSections:
 #   H/L  previous/next repository tab
 #   [/]  preview tabs (Overview, Comments)
 keybindings:
+  # n: type a number, open that issue or PR of the selected row's repository
+  # in the browser (Gitea sends /issues/N on to /pulls/N for pull requests).
+  prs:
+    - &open-number
+      key: n
+      name: "open #N in browser"
+      command: >-
+        printf 'Open #'; read -r n;
+        case "$n" in ''|*[!0-9]*) exit 0;; esac;
+        xdg-open "{{.InstanceURL}}/{{.RepoName}}/issues/$n" >/dev/null 2>&1
+  issues:
+    - *open-number
   universal:
     - key: l
       builtin: focusPreview
