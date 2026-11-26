@@ -1,0 +1,18 @@
+{
+  "general": {
+    "vimMode": true,
+    "enableAutoUpdate": false,
+    "enableAutoUpdateNotification": false
+  },
+  "ui": {
+    "hideTips": true,
+    "hideBanner": true,
+    "hideContextSummary": true,
+    "showShortcutsHint": false,
+    "showUserIdentity": false,
+    "footer": {
+      "items": ["model-name", "workspace", "git-branch", "context-used", "quota"],
+      "showLabels": false
+    }
+  }
+}

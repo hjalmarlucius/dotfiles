@@ -33,7 +33,7 @@ editors = [
     "tree-sitter-cli",  # required for nvim treesitter
 ]
 utils = ["uv", "gdu", "unzip", "jq", "bluetui", "scc", "ufw", "haproxy"]
-agents = ["claude-code", "openai-codex", "repomix"]
+agents = ["claude-code", "openai-codex", "gemini-cli", "repomix"]
 gittools = [
     "tig",
     "diff-so-fancy",
