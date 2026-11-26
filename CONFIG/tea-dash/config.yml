@@ -50,3 +50,12 @@ issuesSections:
 
 notificationsSections:
   - title: Inbox
+
+# J/K move to the next/previous row even while the preview is focused, so
+# the Comments tab stays open from one issue or PR to the next.
+keybindings:
+  universal:
+    - key: J
+      builtin: down
+    - key: K
+      builtin: up
