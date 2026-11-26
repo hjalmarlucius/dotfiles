@@ -26,6 +26,16 @@ function y() {
   command rm -f -- "$tmp"
 }
 
+# --- lazygit: cd to the repository it ended in ---
+function lg() {
+  local tmp dir
+  tmp="$(mktemp -t "lazygit-dir.XXXXXX")" || return
+  LAZYGIT_NEW_DIR_FILE="$tmp" command lazygit "$@"
+  dir="$(<"$tmp")"
+  [[ -n "$dir" && "$dir" != "$PWD" && -d "$dir" ]] && builtin cd -- "$dir"
+  command rm -f -- "$tmp"
+}
+
 # --- basic keybinds ---
 bindkey '^[[Z' reverse-menu-complete  # shift-tab
 bindkey '^[^M' self-insert-unmeta  # alt+enter newline
