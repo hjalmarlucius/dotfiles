@@ -17,6 +17,8 @@ TREES = (
     (CUSTOM / "CONFIG", CFG),
 )
 PRIVATE = ("CONFIG/aerc/accounts.conf", "CONFIG/vdirsyncer/config")  # mode 600
+# Config folders linked only on hosts with the package group
+GROUP_CONFIGS = {"k9s": "k8s", "rclone": "rclone"}
 
 
 def list_files(root: Path, *options: str) -> list[str]:
@@ -151,9 +153,13 @@ def prune_links() -> None:
             gate.do(f"remove the dead link {path}", path.unlink)
 
 
+def skipped(groups: list[str]) -> set[str]:
+    return {name for name, group in GROUP_CONFIGS.items() if group not in groups}
+
+
 def link_all(groups: list[str]) -> None:
     prune_links()
-    skip = set() if "k8s" in groups else {"k9s"}
+    skip = skipped(groups)
     for source, root in TREES:
         link_tree(source, root, skip)
     for path in (DOTFILES / name for name in PRIVATE):

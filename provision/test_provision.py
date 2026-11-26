@@ -171,8 +171,11 @@ def check_copies(home: Path) -> None:
 
 
 def check_skips(home: Path) -> None:
-    code = "print(links.tracked(paths.DOTFILES / 'CONFIG', {'k9s'}))"
-    assert "k9s" not in in_child(home, code)
+    code = "print(links.tracked(paths.DOTFILES / 'CONFIG', links.skipped(['x'])))"
+    found = in_child(home, code)
+    assert "k9s" not in found and "rclone" not in found
+    code = "print(sorted(links.skipped(['k8s', 'rclone'])))"
+    assert "[]" in in_child(home, code)
 
 
 def check_keeps(home: Path) -> None:
