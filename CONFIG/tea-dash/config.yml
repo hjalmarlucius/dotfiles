@@ -51,11 +51,24 @@ issuesSections:
 notificationsSections:
   - title: Inbox
 
-# J/K move to the next/previous row even while the preview is focused, so
-# the Comments tab stays open from one issue or PR to the next.
+# Moving never changes the repository tab:
+#   j/k  rows in the list, or scroll the preview when it has focus
+#   l/h  into the preview and back (both toggle: tea-dash has no
+#        per-pane keys); enter and esc still work
+#   J/K  next/previous row from either pane, keeping the preview tab
+#   H/L  previous/next repository tab
+#   [/]  preview tabs (Overview, Comments)
 keybindings:
   universal:
+    - key: l
+      builtin: focusPreview
+    - key: h
+      builtin: focusPreview
     - key: J
       builtin: down
     - key: K
       builtin: up
+    - key: H
+      builtin: prevSection
+    - key: L
+      builtin: nextSection
